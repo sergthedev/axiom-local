@@ -16,11 +16,13 @@ from .errors import PlanError
 from .ingest import Dataset
 from .limits import DEFAULT_LIMITS, Limits
 from .ops_inspect import run_inspect
+from .ops_relate import run_relate
 from .plan import (
     POLICY_VERSION,
     BoundPlan,
     CandidatePlan,
     InspectPlan,
+    RelatePlan,
     bind_plan,
     plan_sha256,
     plan_to_dict,
@@ -30,6 +32,7 @@ RESULT_SCHEMA_VERSION = "axiom.result/1"
 
 _EXECUTORS = {
     InspectPlan: run_inspect,
+    RelatePlan: run_relate,
 }
 
 
