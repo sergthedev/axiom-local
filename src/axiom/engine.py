@@ -15,12 +15,14 @@ from .canonical import SERIALIZER_VERSION, canonical_dumps, sha256_hex
 from .errors import PlanError
 from .ingest import Dataset
 from .limits import DEFAULT_LIMITS, Limits
+from .ops_compare import run_compare
 from .ops_inspect import run_inspect
 from .ops_relate import run_relate
 from .plan import (
     POLICY_VERSION,
     BoundPlan,
     CandidatePlan,
+    ComparePlan,
     InspectPlan,
     RelatePlan,
     bind_plan,
@@ -33,6 +35,7 @@ RESULT_SCHEMA_VERSION = "axiom.result/1"
 _EXECUTORS = {
     InspectPlan: run_inspect,
     RelatePlan: run_relate,
+    ComparePlan: run_compare,
 }
 
 
