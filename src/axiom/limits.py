@@ -24,7 +24,8 @@ class Limits:
     max_plan_depth: int = 8
     max_plan_nodes: int = 4_096
     # n_eligible_rows * k * n_features * n_init * max_iter (distance-component evaluations, an
-    # upper bound on solver work). Provisional; rejects joint worst cases before any fit.
+    # conservative iteration-work proxy, not a count of distance evaluations and not a wall-time
+    # bound). Provisional; rejects joint worst cases before any fit.
     max_cluster_work: int = 100_000_000_000
 
 

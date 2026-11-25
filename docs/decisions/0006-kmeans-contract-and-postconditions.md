@@ -65,11 +65,13 @@ The original text above is preserved. Changes:
 
 - **v1 solver settings** are bounded in the plan schema (provisional): `n_init` 1..20, `max_iter` 1..1,000, `tol` 1e-8..1e-2 (defaults
   unchanged: 10, 300, 1e-4).
-- **Joint workload guard.** Work bound W = eligible rows x k x features x n_init x max_iter must be <= `Limits.max_cluster_work` =
-  1e11 (provisional). It is checked at binding (rows upper bound), at execution (with the limits given there) and defensively inside
-  the operation, always before any fit; tests assert that `KMeans` is never constructed when the cap is exceeded. EXP-003 measured
-  wall time against W on one machine: the slowest observed rate was about 3e9 W-units per second, so the cap corresponds to roughly
-  30-35 s single-threaded if every allowed iteration were used. This is a resource guard, not a statistical constant.
+- **Joint workload guard.** The work proxy W = eligible rows x k x features x n_init x max_iter must be <= `Limits.max_cluster_work` =
+  1e11 (provisional). W is a conservative iteration-work proxy: it is **not** a count of distance evaluations actually performed and
+  **not** a wall-time bound (initialization, early convergence and other work differ). It is checked at binding (rows upper bound), at
+  execution (with the limits given there) and defensively inside the operation, always before any fit; tests assert that `KMeans` is never
+  constructed when the cap is exceeded. EXP-003 compared wall time with W on one machine for five configurations (slowest observed rate
+  about 3e9 W per second); that is context for the chosen value, **not** a guarantee of any maximum run time. This is a resource guard, not a
+  statistical constant. (An earlier wording of this paragraph implied a 30-35 s worst case; that was withdrawn in amendment 2.)
 - **Solver output validation** before any indexing or serialization: labels shape, integer dtype and range [0, k); centers shape,
   float dtype and finiteness; inertia finite and non-negative; n_iter positive; missing or malformed attributes. Failures are
   `ComputationError("invalid_solver_output")`; solver `ValueError`/`OverflowError`/`MemoryError` become `solver_failure`; a
@@ -88,3 +90,28 @@ The original text above is preserved. Changes:
 - **Reproducibility wording.** Single-threaded fitting removed the thread-order nondeterminism observed in EXP-001, on one machine. It does not
   by itself guarantee reproducibility across platforms, BLAS builds or library versions; capturing and verifying the effective thread policy
   belongs to Issue #3.
+
+## Amendment 2 (2026-11-25): response to the final technical re-review (original-unit numeric range)
+
+The originals above are preserved. A narrow numeric-range issue was reported and **reproduced end to end**: for
+`x = [0, 5e-324, 0, 5e-324]` and k = 2 the result contained a scaler scale of `0.0` for a feature that varies (the exact
+original-unit population mean and SD are 2^-1075, which rounds to zero), and a cluster summary mean that was a false zero.
+The scaled-space computation was valid; the failure was in the reporting back to original units, which also ran outside the
+guarded block. Conservative policy (no new schema):
+
+- **Original-unit scaler statistics must round-trip exactly.** `mean` and `scale` are converted back inside the guarded
+  warning/FloatingPoint block and accepted only if finite and `ldexp(converted, -shift)` equals the scaled-space value exactly (no underflow, no
+  lost bits, no overflow). Otherwise the result is rejected with `original_units_not_representable`. A nonconstant feature can no
+  longer be reported with scale 0.
+- **Cluster summaries use the Inspect rule.** The original-unit cluster mean is the exact mean rounded once; if it is nonzero but rounds to
+  zero the result is rejected with `original_units_not_representable` (reason `underflow_to_zero`). `min` and `max` are exact data values.
+- **Pre-scaling must be lossless.** After scaling each feature by a power of two, the data are scaled back and compared with the input; if any entry
+  changed (underflow or lost bits, i.e. a feature range wider than roughly 2^1022 between the largest and some smaller nonzero entries) the result
+  is rejected with `prescaling_underflow`, naming the features. **This revises amendment 1**, where such entries were silently flushed toward zero and the
+  distinct-points check was the only guard (an earlier test even allowed k=2 on such data). No claim of exact scaling is made when underflow occurs.
+- **Valid edge cases** (tested): mixed-sign subnormals whose original-unit mean and SD are representable (`[-2^-1074, 2^-1074, ...]`), max-range inputs
+  (`[-M, M, ...]`), wide ranges that stay lossless, and exact power-of-two rescalings of ordinary data.
+- **Workload wording corrected** (see amendment 1): W is a conservative iteration-work proxy, not a measured count of distance evaluations and not a
+  wall-time guarantee.
+- Rejection is preferred over representing "unavailable" metadata; if users need results for such inputs, a schema extension with explicit reasons can be
+  designed later.

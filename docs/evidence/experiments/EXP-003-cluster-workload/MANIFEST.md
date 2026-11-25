@@ -1,4 +1,4 @@
-# Experiment manifest: EXP-003 — K-means wall time versus the workload upper bound
+# Experiment manifest: EXP-003 — K-means wall time versus the workload proxy
 
 - Issue / PR: Issue #2 / PR #6 (review blocker 4: justify the provisional joint workload cap)
 - Date: 2026-11-25
@@ -11,11 +11,11 @@
 
 ## Execution
 - Command: `uv run python benchmarks/issue2_cluster_workload.py > results.json` (exit status 0). Result file: `results.json`.
-- Work upper bound W = rows x k x features x n_init x max_iter (distinct from the work actually done, which stops at convergence).
+- Work proxy W = rows x k x features x n_init x max_iter. W is a conservative iteration-work proxy, **not** a count of distance evaluations performed and **not** a wall-time bound (the benchmark script's JSON fields and docstring call it an "upper bound"; that name is kept because the script and `results.json` are preserved unchanged).
 
 ## Results (measured only)
 
-| rows | features | k | n_init | max_iter | data | upper bound W | iterations (diagnostic) | outcome | seconds | W / second |
+| rows | features | k | n_init | max_iter | data | work proxy W | iterations (diagnostic) | outcome | seconds | W / second |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 10,000 | 4 | 8 | 10 | 300 | blobs | 960,000,000 | 7 | result | 0.116 | 8,275,862,069 |
 | 100,000 | 4 | 8 | 10 | 300 | blobs | 9,600,000,000 | 7 | result | 0.811 | 11,837,237,978 |
@@ -23,7 +23,9 @@
 | 200,000 | 8 | 16 | 3 | 1000 | uniform | 76,800,000,000 | 76 | result | 4.893 | 15,695,892,091 |
 | 400,000 | 4 | 8 | 5 | 300 | uniform | 19,200,000,000 | 43 | result | 6.534 | 2,938,475,666 |
 
-Observations: the slowest runs per unit of the upper bound were those that needed many iterations (204 of 300 and 43 of 300), at about 3e9 bound-units per second; fast-converging blobs ran at 8e9 to 1.2e10. A run that reached the iteration cap would be rejected anyway (`iteration_cap_reached`). At the measured slowest rate, the provisional cap `max_cluster_work = 1e11` corresponds to roughly 30-35 seconds of single-threaded work if every allowed iteration were used; typical runs finish in a small fraction of that. The cap is a resource guard chosen with these measurements in view, not a statistical constant, and it should be revisited with profiling on other machines.
+Observations: per unit of W, the slowest runs were those that needed many iterations (204 of 300 and 43 of 300), at about 3e9 W per second; fast-converging blobs ran at 8e9 to 1.2e10 W per second. These rates are context for the provisional cap `max_cluster_work = 1e11`, which is a resource guard; they are **not** a guarantee of any maximum wall time (initialization, early convergence and other work differ, other machines were not measured). A run that reached the iteration cap would be rejected anyway (`iteration_cap_reached`). The cap should be revisited with profiling.
+
+**Correction (2026-11-25, after the final technical re-review):** an earlier version of this paragraph said the cap "corresponds to roughly 30-35 seconds of single-threaded work if every allowed iteration were used". That implied a worst-case wall-time guarantee the data do not support and was removed; the measured table and `results.json` are unchanged.
 
 ## Limitations and failures
 - Single runs on one machine; timings vary between runs (see EXP-001 section 7 for the observed variation). Throughput on Windows x64 and on slower machines was not measured.

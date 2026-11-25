@@ -258,7 +258,11 @@ def _columns_of(plan: CandidatePlan) -> list[tuple[str, str]]:
 
 
 def cluster_work(plan: ClusterPlan, n_rows: int) -> int:
-    """Upper bound on distance-component evaluations: rows * k * features * n_init * max_iter."""
+    """Conservative iteration-work proxy: rows * k * features * n_init * max_iter.
+
+    Not a count of distance evaluations actually performed and not a wall-time bound:
+    initialization, early convergence and other work differ (EXP-003).
+    """
     return n_rows * plan.k * len(plan.features) * plan.n_init * plan.max_iter
 
 

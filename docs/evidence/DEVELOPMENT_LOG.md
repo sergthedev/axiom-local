@@ -164,3 +164,24 @@ The pull request CI for the fixed head follows.
 - GitHub Actions run [45661119280](https://github.com/sergthedev/axiom-local/actions/runs/45661119280) on head `972d733`: `test (macos-latest)` passed (259 tests in 12.11 s, CPython 3.12.10, darwin) and
   `test (windows-latest)` passed (259 tests in 9.43 s, CPython 3.12.10, win32). Locked install, lint, format check and pytest only; observed by the implementer from the run logs, not yet re-verified by the reviewer.
   The head after this entry is a documentation-only commit with its own CI run.
+
+## 2026-11-25 — Issue #2, PR #6: final technical re-review (original-unit numeric range)
+
+Review: [technical re-review of head `cc70cfa`](https://github.com/sergthedev/axiom-local/pull/6#issuecomment-7169191502) (AI-assisted static re-review; blockers 1-3 accepted, one narrow issue left in blocker 4).
+
+- **Reproduced end to end** (before any change): `x = [0, 5e-324, 0, 5e-324]`, k = 2 returned `scaler.scale = [0.0]` for a varying feature. Neighbouring probe `x = [0, 5e-324, 1e-323, 0, 5e-324, 1e-323]` showed a second defect of the same kind: a cluster mean reported as `0.0` for the exact value 2.5e-324 (a false zero). Max-range and mixed-sign subnormal inputs with representable results were fine.
+- **Cause:** the inverse power-of-two conversion of the scaler and the original-unit cluster means ran outside the guarded block and without an exactness check; pre-scaling could also flush tiny entries (the previous test even allowed k=2 on such data).
+- **Fix (conservative rejection, no schema change; ADR 0006 amendment 2):** exact round-trip required for original-unit scaler statistics and, via the shared Inspect mean rule, for cluster means (`original_units_not_representable`); lossless pre-scaling required (`prescaling_underflow`). The earlier permissive collapse policy is revised and documented.
+- **Regression tests:** the reported counterexample, a scaler that would round in original units, a cluster mean that underflows (found by exhaustive search of small subnormal fixtures), lossy pre-scaling (named features), valid cases (mixed-sign subnormals, max range, wide lossless ranges) and a non-finite conversion. Five of the new tests were confirmed to fail on the previous source.
+- **Wording corrected:** W (rows x k x features x n_init x max_iter) is a conservative iteration-work proxy, not a measured count of distance evaluations and not a wall-time guarantee; the "30-35 s" statement in ADR 0006 and the EXP-003 manifest was withdrawn (the EXP-003 table and `results.json` are unchanged; the correction is marked in the manifest).
+- Preserved: EXP-001, EXP-002 and the EXP-003 data. No Issue #3 work, no merge.
+
+### Local verification (measured, one run; Apple M5, macOS 27.0.1, CPython 3.12.16, locked environment)
+| Command | Exit status | Result |
+|---------|-------------|--------|
+| `uv sync --locked` | 0 | environment from `uv.lock` |
+| `uv run pytest -q` | 0 | 266 passed (about 14-17 s) |
+| `uv run ruff check .` | 0 | All checks passed |
+| `uv run ruff format --check .` | 0 | 75 files already formatted |
+
+No experiment scripts were re-run: the change affects reporting edge cases only, and EXP-001/002/003 data are preserved unchanged. CI for the final head follows once observed.
