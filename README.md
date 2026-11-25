@@ -1,16 +1,19 @@
 # AXIOM (axiom-local)
 
-Local-first, deterministic and verifiable data intelligence powered by a specialized language model.
+Open-source research prototype for local, bounded and reproducible statistical analysis; specialized bilingual intent
+parsing under development.
 
 AXIOM is a small, offline data-analysis workbench. A deterministic Python statistical engine performs all
-calculations; an optional, locally fine-tuned open-weight model (planned name: AX-01) only routes user intent
-to typed analysis plans and never computes or alters results. Target platforms: macOS on Apple Silicon first,
-Windows later.
+calculations. A planned optional intent router (AX-01) may only propose one of four supported analyses for the person
+to confirm; it never computes or alters results. **No model has been trained or evaluated for AXIOM yet.** Target
+platforms: macOS on Apple Silicon first, Windows later.
 
 ## Status
 
-**Early development.** The repository contains governance, CI and the first version of the deterministic
-statistical core (Issue #2, merged) with verification and replay (Issue #3, under review). **No language model, desktop UI or trained model exists yet.**
+**Research prototype, early development.** The repository contains governance, CI, the deterministic statistical
+core (Issue #2) with verification and replay (Issue #3), and, under review for Issue #4, the router candidate
+contract, the AXIOM Guard, the AXBENCH benchmark tooling and a rule baseline. **No trained model, no model
+evaluation and no desktop UI exist yet.**
 
 | Area | Status |
 |------|--------|
@@ -18,10 +21,12 @@ statistical core (Issue #2, merged) with verification and replay (Issue #3, unde
 | CSV input guard, typed plans, canonical results | Implemented (Issue #2), see [ADR 0003](docs/decisions/0003-input-guard-and-dataset-snapshot.md), [ADR 0005](docs/decisions/0005-typed-plans-binding-and-result-serialization.md) |
 | Inspect, Relate (Pearson/Spearman), Compare, Cluster (K-means) | Implemented (Issue #2); measured on one macOS arm64 machine, see [EXP-001](docs/evidence/experiments/EXP-001-issue2-numerical-validation/MANIFEST.md) |
 | Correlation matrix, outlier flags, p-values | Not implemented (deferred or out of scope) |
-| Analysis Passport, fresh-process replay, cross-platform comparison | Implemented (Issue #3, under review), see [ADR 0007](docs/decisions/0007-analysis-passport-and-environment-capture.md), [ADR 0008](docs/decisions/0008-replay-mismatch-classification-and-comparison-criteria.md), [EXP-004](docs/evidence/experiments/EXP-004-replay-benchmark/MANIFEST.md), [EXP-005](docs/evidence/experiments/EXP-005-cross-platform/MANIFEST.md) |
-| Intent router (AX-01) | Planned, no model exists |
-| Desktop UI | Planned |
-| Model training | Planned, no results exist |
+| Analysis Passport, fresh-process replay, cross-platform comparison | Implemented (Issue #3, accepted; ADRs 0007 and 0008 ratified), see [ADR 0007](docs/decisions/0007-analysis-passport-and-environment-capture.md), [ADR 0008](docs/decisions/0008-replay-mismatch-classification-and-comparison-criteria.md), [EXP-004](docs/evidence/experiments/EXP-004-replay-benchmark/MANIFEST.md), [EXP-005](docs/evidence/experiments/EXP-005-cross-platform/MANIFEST.md) |
+| Router candidate contract, schema projection, AXIOM Guard (confirmation before any dispatch) | Implemented, under review (Issue #4), see [ADR 0009](docs/decisions/0009-ax01-candidate-contract-and-schema-projection.md), [ADR 0010](docs/decisions/0010-axiom-guard-confirmation-and-dispatch.md) |
+| AXBENCH bilingual routing benchmark (synthetic draft, unreviewed) and rule baseline | Draft tooling under review (Issue #4), see [dataset card](data/axbench/DATASET_CARD.md), [ADR 0011](docs/decisions/0011-axbench-benchmark-metrics-and-sealing.md); rule baseline measured on validation only ([EXP-008](docs/evidence/experiments/EXP-008-axbench-rule-baseline/MANIFEST.md)) |
+| AX-01 language model | Not trained; candidate checkpoints and an optional Apple Silicon environment prepared ([ADR 0012](docs/decisions/0012-optional-model-environment.md)) |
+| Desktop UI | Planned, not started |
+| Model training | Planned, protocols only; no results exist |
 
 See [docs/roadmap.md](docs/roadmap.md) and [docs/evidence/CLAIMS.md](docs/evidence/CLAIMS.md).
 
@@ -80,10 +85,15 @@ The exact commands, environment and exit statuses of the last verified run are r
 
 - `src/axiom/` – the deterministic core (`ingest`, `plan`, `kernels`, `ops_*`, `engine`, `canonical`) and verification
   (`environment`, `passport`, `replay`, `agreement`, `partition`; CLI `python -m axiom`)
+- `src/axiom_router/` – router candidate contract, schema projection, semantic validation, Guard, prompt, rule router
+  (separate from `axiom`, so Core identities do not change)
+- `src/axbench/` – AXBENCH generator, audits, scoring, statistics, sealing (CLI `python -m axbench`);
+  `data/axbench/` – draft corpus and dataset card (no final test split)
+- `envs/model/` – optional Apple Silicon MLX-LM environment (separate lock, not needed for Core or CI)
 - `tests/` – tests, exact-arithmetic oracles, vendored NIST reference data
 - `benchmarks/` – scripts that produced the numbers in `docs/evidence/experiments/`
 - `docs/` – architecture, roadmap, reproducibility, demo, ADRs, research, evidence
-- `examples/` – synthetic example data and plans; `training/` – placeholder, nothing implemented
+- `examples/` – synthetic example data and plans; `training/` – protocols only, no training run
 - `AGENTS.md` – canonical contribution and engineering rules
 
 ## License and third-party notices

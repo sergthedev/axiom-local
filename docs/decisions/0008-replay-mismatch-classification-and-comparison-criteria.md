@@ -1,6 +1,9 @@
 # ADR 0008: Fresh-process replay, mismatch classification and comparison criteria
 
-- Status: Proposed (awaiting technical review and owner approval). Revised after the
+- Status: **Accepted.** Technical review accepted with the
+  [Verify acceptance](https://github.com/sergthedev/axiom-local/pull/7#issuecomment-7173588575) (PR #7 merged); ratified
+  by the repository owner on 2026-11-25 in the owner's Phase 3A authorization for Issue #4 (a project-thread message,
+  recorded in `docs/evidence/DEVELOPMENT_LOG.md`). Text unchanged since the final revision. Revised after the
   [PR #7 review](https://github.com/sergthedev/axiom-local/pull/7#issuecomment-7171558913) (blockers B1 and B3; see
   "Revision after technical review" below) and after the
   [final review](https://github.com/sergthedev/axiom-local/pull/7#issuecomment-7172653455) (residual B1 and final audit).

@@ -224,3 +224,10 @@ __marimo__/
 
 # macOS Finder metadata
 .DS_Store
+
+# Model weights, adapters and caches are never committed (ADR 0012)
+*.safetensors
+*.gguf
+*.npz
+models/
+adapters/

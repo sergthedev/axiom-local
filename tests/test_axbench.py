@@ -307,6 +307,13 @@ def test_mcnemar_exact_known_answer():
     assert mcnemar_exact(5, 5) == 1.0
 
 
+def test_lead_recalculated_hypothetical_values():
+    # DR-005 review: hypothetical 300/360 and 30 vs 12 discordant pairs (arithmetic, not AXIOM data)
+    lo, hi = wilson(300, 360)
+    assert round(100 * lo, 2) == 79.14 and round(100 * hi, 2) == 86.83
+    assert mcnemar_exact(12, 30) == pytest.approx(0.0079159, abs=5e-8)
+
+
 def test_cluster_bootstrap_properties():
     out = cluster_bootstrap([1, 1, 0, 0, 1, 0], ["a", "a", "b", "b", "c", "c"], reps=500, seed=1)
     assert out["n_clusters"] == 3 and out["estimate"] == pytest.approx(0.5)
