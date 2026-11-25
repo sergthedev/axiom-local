@@ -8,6 +8,7 @@ check shows internal consistency of a local solution, never a global optimum.
 
 from __future__ import annotations
 
+import math
 import statistics
 import warnings
 from typing import Any
@@ -17,13 +18,12 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from threadpoolctl import threadpool_limits
 
-from .errors import ComputationError
+from .errors import ComputationError, PlanError
 from .ingest import Dataset
 from .kernels import NEAR_CONSTANT_RELATIVE_SPREAD
 from .limits import Limits
-from .plan import ClusterPlan
+from .plan import ClusterPlan, cluster_work
 
-MAX_ABS_FEATURE_VALUE = 2.0**500  # keeps squares and sums of squares far from overflow
 ASSIGNMENT_TOLERANCE = 1e-9  # squared-distance excess allowed, times (1 + ||x||^2)
 INERTIA_RTOL = 1e-9
 SCALE_RTOL = 1e-9
@@ -36,8 +36,6 @@ def _check_features(X: np.ndarray, names: tuple[str, ...]) -> None:
     for j, name in enumerate(names):
         col = X[:, j]
         lo, hi = float(col.min()), float(col.max())
-        if max(abs(lo), abs(hi)) > MAX_ABS_FEATURE_VALUE:
-            raise ComputationError("unsafe_scale", "feature magnitude too large", feature=name)
         if lo == hi:
             raise ComputationError("constant_feature", "feature is constant", feature=name)
         if hi - lo <= NEAR_CONSTANT_RELATIVE_SPREAD * max(abs(lo), abs(hi)):
@@ -68,6 +66,43 @@ def _nearest_assignment_ok(Xs: np.ndarray, centers: np.ndarray, labels: np.ndarr
     return True
 
 
+def _nearest_labels(Xs: np.ndarray, centers: np.ndarray) -> np.ndarray:
+    k, p = centers.shape
+    out = np.empty(len(Xs), dtype=np.int64)
+    for lo, hi in _batches(len(Xs), k, p):
+        d2 = ((Xs[lo:hi, None, :] - centers[None, :, :]) ** 2).sum(axis=2)
+        out[lo:hi] = d2.argmin(axis=1)
+    return out
+
+
+def _check_solver_output(
+    model: Any, n: int, k: int, p: int
+) -> tuple[np.ndarray, np.ndarray, float, int]:
+    """Validate shape, dtype, range and finiteness of the solver's outputs before any indexing."""
+
+    def bad(problem: str) -> ComputationError:
+        return ComputationError("invalid_solver_output", "solver output rejected", problem=problem)
+
+    try:
+        labels = np.asarray(model.labels_)
+        centers = np.asarray(model.cluster_centers_)
+        inertia = float(model.inertia_)
+        n_iter = int(model.n_iter_)
+    except (AttributeError, TypeError, ValueError) as exc:
+        raise bad(f"missing or malformed attribute ({type(exc).__name__})") from exc
+    if labels.shape != (n,) or labels.dtype.kind not in "iu":
+        raise bad("labels have the wrong shape or dtype")
+    if n and (int(labels.min()) < 0 or int(labels.max()) >= k):
+        raise bad("labels outside [0, k)")
+    if centers.shape != (k, p) or centers.dtype.kind != "f" or not np.all(np.isfinite(centers)):
+        raise bad("centers have the wrong shape or are not finite floats")
+    if not math.isfinite(inertia) or inertia < 0.0:
+        raise bad("inertia is not a finite non-negative number")
+    if n_iter < 1:
+        raise bad("n_iter is not positive")
+    return labels.astype(np.int64), centers, inertia, n_iter
+
+
 def _inertia(Xs: np.ndarray, centers: np.ndarray, labels: np.ndarray) -> float:
     total = 0.0
     for lo, hi in _batches(len(Xs), 1, Xs.shape[1]):
@@ -96,9 +131,17 @@ def run_cluster(dataset: Dataset, plan: ClusterPlan, limits: Limits) -> tuple[di
     eligible = [i for i in range(dataset.n_rows) if all(c[i] is not None for c in cols)]
     eligible_set = set(eligible)
     excluded = [i + 1 for i in range(dataset.n_rows) if i not in eligible_set]
-    n = len(eligible)
+    n, p = len(eligible), len(plan.features)
     if n < plan.k:
         raise ComputationError("too_few_rows", "fewer eligible rows than k", n_eligible=n, k=plan.k)
+    work = cluster_work(plan, n)
+    if work > limits.max_cluster_work:  # defensive: also checked at binding and execution
+        raise PlanError(
+            "cluster_workload_too_large",
+            "workload exceeds cap",
+            work=work,
+            cap=limits.max_cluster_work,
+        )
     X = np.array([[c[i] for c in cols] for i in eligible], dtype=np.float64)
     _check_features(X, plan.features)
     distinct = _distinct_rows(X)
@@ -109,62 +152,81 @@ def run_cluster(dataset: Dataset, plan: ClusterPlan, limits: Limits) -> tuple[di
             distinct=distinct,
             k=plan.k,
         )
+    # Standardization is invariant under exact power-of-two scaling, so each feature is scaled to
+    # max|v| in [0.5, 1) first: squares and sums cannot overflow or underflow for any representable
+    # input, and results are reported back in original units (exactly, by the inverse scaling).
+    shifts = np.array([math.frexp(float(np.abs(X[:, j]).max()))[1] for j in range(p)])
+    Xp = np.ldexp(X, -shifts[None, :])
 
-    scaler = StandardScaler(with_mean=True, with_std=True, copy=True)
-    Xs = scaler.fit_transform(X)
-    if not np.all(np.isfinite(Xs)) or not np.all(scaler.scale_ > 0):
-        raise ComputationError("unsafe_scale", "standardization produced non-finite values")
-    if _distinct_rows(Xs) < plan.k:
+    try:
+        with (
+            warnings.catch_warnings(record=True) as caught,
+            threadpool_limits(limits=1),
+            np.errstate(over="raise", invalid="raise", divide="raise"),
+        ):
+            warnings.simplefilter("always")
+            scaler = StandardScaler(with_mean=True, with_std=True, copy=True)
+            Xs = scaler.fit_transform(Xp)
+            if not np.all(np.isfinite(Xs)) or not np.all(scaler.scale_ > 0):
+                raise ComputationError("unsafe_scale", "standardization produced invalid values")
+            if _distinct_rows(Xs) < plan.k:
+                raise ComputationError(
+                    "k_exceeds_distinct_points", "k exceeds distinct standardized points"
+                )
+            ref_mean = Xp.mean(axis=0)
+            ref_scale = np.sqrt(((Xp - ref_mean) ** 2).mean(axis=0))
+            scaler_ok = bool(
+                np.all(np.abs(scaler.scale_ - ref_scale) <= SCALE_RTOL * ref_scale)
+                and np.all(np.abs(scaler.mean_ - ref_mean) <= MEAN_TOL_IN_SCALES * ref_scale)
+            )
+            model = KMeans(
+                n_clusters=plan.k,
+                init=plan.init,
+                n_init=plan.n_init,
+                max_iter=plan.max_iter,
+                tol=plan.tol,
+                algorithm=plan.algorithm,
+                copy_x=True,
+                random_state=plan.seed,
+            )
+            model.fit(Xs)
+            labels, centers, solver_inertia, n_iter = _check_solver_output(model, n, plan.k, p)
+            sizes = np.bincount(labels, minlength=plan.k)
+            if np.any(sizes == 0):
+                raise ComputationError("empty_cluster", "solver returned an empty cluster")
+            mean_var = float(np.var(Xs, axis=0).mean())
+            members_mean = np.vstack([Xs[labels == j].mean(axis=0) for j in range(plan.k)])
+            residual = float(((centers - members_mean) ** 2).sum())
+            inertia = _inertia(Xs, centers, labels)
+            checks = {
+                "nearest_center": _nearest_assignment_ok(Xs, centers, labels),
+                "nonempty_clusters": True,
+                # Approximate by design: the solver's stopping rule bounds the last center shift
+                # (squared) by tol * mean(var); it does not prove an exact Lloyd fixed point.
+                "centroid_consistency_approx": residual <= plan.tol * mean_var + CENTROID_ABS_SLACK,
+                "inertia_consistent": abs(inertia - solver_inertia)
+                <= INERTIA_RTOL * max(1.0, inertia),
+                "scaler_consistent": scaler_ok,
+            }
+            lloyd_fixed_point = bool(np.array_equal(_nearest_labels(Xs, members_mean), labels))
+    except FloatingPointError as exc:
         raise ComputationError(
-            "k_exceeds_distinct_points", "k exceeds distinct standardized points"
-        )
-    ref_mean = X.mean(axis=0)
-    ref_scale = np.sqrt(((X - ref_mean) ** 2).mean(axis=0))
-    scaler_ok = bool(
-        np.all(np.abs(scaler.scale_ - ref_scale) <= SCALE_RTOL * ref_scale)
-        and np.all(np.abs(scaler.mean_ - ref_mean) <= MEAN_TOL_IN_SCALES * ref_scale)
-    )
-
-    model = KMeans(
-        n_clusters=plan.k,
-        init=plan.init,
-        n_init=plan.n_init,
-        max_iter=plan.max_iter,
-        tol=plan.tol,
-        algorithm=plan.algorithm,
-        copy_x=True,
-        random_state=plan.seed,
-    )
-    with warnings.catch_warnings(record=True) as caught, threadpool_limits(limits=1):
-        warnings.simplefilter("always")
-        model.fit(Xs)
+            "numeric_exception", "floating-point exception during standardization or fit"
+        ) from exc
+    except (ValueError, OverflowError, MemoryError) as exc:
+        raise ComputationError(
+            "solver_failure", f"solver raised {type(exc).__name__}", exception=type(exc).__name__
+        ) from exc
     if caught:
         raise ComputationError(
             "solver_warning",
-            "solver or NumPy emitted a warning; result rejected",
+            "scaler, solver or NumPy emitted a warning; result rejected",
             categories=sorted({w.category.__name__ for w in caught}),
         )
-    if model.n_iter_ >= plan.max_iter:
+    if n_iter >= plan.max_iter:
         raise ComputationError(
             "iteration_cap_reached", "solver hit max_iter; result rejected (conservative)"
         )
-
-    labels, centers = model.labels_.astype(np.int64), np.asarray(model.cluster_centers_)
-    sizes = np.bincount(labels, minlength=plan.k)
-    if np.any(sizes == 0):
-        raise ComputationError("empty_cluster", "solver returned an empty cluster")
-    mean_var = float(np.var(Xs, axis=0).mean())
-    members_mean = np.vstack([Xs[labels == j].mean(axis=0) for j in range(plan.k)])
-    residual = float(((centers - members_mean) ** 2).sum())
-    inertia = _inertia(Xs, centers, labels)
-    checks = {
-        "nearest_center": _nearest_assignment_ok(Xs, centers, labels),
-        "nonempty_clusters": True,
-        "centroid_fixed_point": residual <= plan.tol * mean_var + CENTROID_ABS_SLACK,
-        "inertia_consistent": abs(inertia - float(model.inertia_))
-        <= INERTIA_RTOL * max(1.0, inertia),
-        "scaler_consistent": scaler_ok,
-    }
     failed = sorted(name for name, ok in checks.items() if not ok)
     if failed:
         raise ComputationError("postcondition_failed", "independent check failed", failed=failed)
@@ -200,8 +262,8 @@ def run_cluster(dataset: Dataset, plan: ClusterPlan, limits: Limits) -> tuple[di
         "excluded_row_ordinals_truncated": len(excluded) > cap,
         "scaler": {
             "kind": plan.scaling,
-            "mean": [float(v) + 0.0 for v in scaler.mean_],
-            "scale": [float(v) + 0.0 for v in scaler.scale_],
+            "mean": [float(v) + 0.0 for v in np.ldexp(scaler.mean_, shifts)],
+            "scale": [float(v) + 0.0 for v in np.ldexp(scaler.scale_, shifts)],
         },
         "solver": {
             "init": plan.init,
@@ -212,13 +274,14 @@ def run_cluster(dataset: Dataset, plan: ClusterPlan, limits: Limits) -> tuple[di
             "tol": plan.tol,
             "copy_x": True,
             "threadpool_limit": 1,
-            "n_iter_diagnostic": int(model.n_iter_),
+            "n_iter_diagnostic": n_iter,
         },
         "inertia_standardized": inertia + 0.0,
         "clusters": clusters,
         "eligible_row_ordinals": [i + 1 for i in eligible],
         "assignments": canon.tolist(),
         "postconditions": checks,
+        "diagnostics": {"lloyd_label_fixed_point": lloyd_fixed_point},
     }
     warns = [
         {

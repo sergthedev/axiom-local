@@ -188,7 +188,6 @@ def test_listwise_exclusions_are_disclosed_and_ordinals_preserved() -> None:
         ([(1.0, 1.0)] * 3 + [(2.0, 2.0)] * 3, 3, "k_exceeds_distinct_points"),
         ([(1.0, 5.0), (2.0, 5.0), (3.0, 5.0)], 2, "constant_feature"),
         ([(1.0, 1.0), (2.0, 1.0 + 2.0**-50), (3.0, 1.0 + 2.0**-49)], 2, "near_constant_feature"),
-        ([(1.0, 1.0), (2.0, 2.0), (1e300 * 3, 3.0)], 2, "unsafe_scale"),
     ],
 )
 def test_invalid_data_fails_closed_with_a_structured_error(rows: list, k: int, code: str) -> None:
@@ -265,7 +264,7 @@ def test_independent_checks_detect_a_corrupted_solver_result(
     assert e.value.code == "empty_cluster"
 
 
-def test_twenty_fresh_repeats_are_byte_identical() -> None:
+def test_twenty_in_process_repeats_are_byte_identical() -> None:
     rng = random.Random(8)
     pts = [
         (rng.gauss(cx, 1.0), rng.gauss(cy, 1.0))
@@ -291,3 +290,195 @@ def test_descriptive_warnings_are_present_and_no_semantic_labels() -> None:
     core = cluster([(0.0, 0.0), (0.1, 0.0), (9.0, 9.0), (9.1, 9.0)], 2).core
     assert {w["code"] for w in core["warnings"]} >= {"clusters_are_descriptive", "local_solution"}
     assert "label" not in json.dumps(core["result"]["clusters"][0]).lower().replace("labels", "")
+
+
+# ---- scale handling ----
+
+
+def _blobs(seed: int = 21) -> list[tuple[float, float]]:
+    rng = random.Random(seed)
+    return [
+        (rng.gauss(cx, 0.4), rng.gauss(cy, 0.4))
+        for cx, cy in ((1, 1), (9, 2), (4, 11))
+        for _ in range(25)
+    ]
+
+
+@pytest.mark.parametrize("exponent", [-1000, -600, 600, 900])
+def test_exact_power_of_two_rescaling_gives_identical_clusters_in_scaled_units(
+    exponent: int,
+) -> None:
+    base = cluster(_blobs(), 3).core["result"]
+    factor = 2.0**exponent
+    scaled_rows = [(x * factor, y * factor) for x, y in _blobs()]
+    res = cluster(scaled_rows, 3).core["result"]
+    assert res["assignments"] == base["assignments"]
+    assert [c["centroid_standardized"] for c in res["clusters"]] == [
+        c["centroid_standardized"] for c in base["clusters"]
+    ]
+    assert res["inertia_standardized"] == base["inertia_standardized"]
+    # the scaler is reported in original units, exactly (inverse power-of-two scaling)
+    assert res["scaler"]["mean"] == [v * factor for v in base["scaler"]["mean"]]
+    assert res["scaler"]["scale"] == [v * factor for v in base["scaler"]["scale"]]
+
+
+@pytest.mark.parametrize("scale", [1e-200, 1e-100, 1e100, 1e200])
+def test_tiny_and_huge_magnitudes_are_valid_and_give_the_same_partition(scale: float) -> None:
+    base = cluster(_blobs(), 3).core["result"]
+    rows = [(x * scale, y * scale) for x, y in _blobs()]
+    res = cluster(rows, 3).core["result"]
+    assert same_partition(res["assignments"], base["assignments"])
+    assert all(res["postconditions"].values())
+    assert res["scaler"]["scale"][0] > 0.0 and math.isfinite(res["scaler"]["scale"][0])
+
+
+def test_outlier_that_collapses_other_points_after_scaling_is_rejected() -> None:
+    rows = [(1e-300,), (2e-300,), (3e-300,), (1e300,)]
+    with pytest.raises(ComputationError) as e:
+        cluster(rows, 4, ("x",))
+    assert e.value.code == "k_exceeds_distinct_points"
+    ok = cluster(rows, 2, ("x",)).core["result"]  # 2 distinct standardized levels still allow k=2
+    assert sorted(c["size"] for c in ok["clusters"]) == [1, 3]
+
+
+# ---- solver contract ----
+
+
+def _patched(monkeypatch: pytest.MonkeyPatch, **overrides: object) -> None:
+    from sklearn.cluster import KMeans
+
+    class Faulty(KMeans):
+        def fit(self, X, y=None, sample_weight=None):  # noqa: ANN001
+            super().fit(X, y, sample_weight)
+            for name, value in overrides.items():
+                if callable(value):
+                    value = value(self)
+                if value is _DELETE:
+                    delattr(self, name)
+                else:
+                    setattr(self, name, value)
+            return self
+
+    monkeypatch.setattr(ops_cluster, "KMeans", Faulty)
+
+
+_DELETE = object()
+FOUR = [(0.0, 0.0), (0.1, 0.0), (9.0, 9.0), (9.1, 9.0)]
+
+
+@pytest.mark.parametrize(
+    ("overrides", "problem"),
+    [
+        ({"labels_": lambda m: m.labels_ + 5}, "labels outside"),
+        ({"labels_": lambda m: -m.labels_ - 1}, "labels outside"),
+        ({"labels_": lambda m: m.labels_[:-1]}, "wrong shape"),
+        ({"labels_": lambda m: m.labels_.astype(float)}, "wrong shape or dtype"),
+        ({"cluster_centers_": lambda m: m.cluster_centers_[:1]}, "centers"),
+        ({"cluster_centers_": lambda m: m.cluster_centers_ * float("nan")}, "centers"),
+        ({"inertia_": float("nan")}, "inertia"),
+        ({"inertia_": -1.0}, "inertia"),
+        ({"n_iter_": 0}, "n_iter"),
+        ({"labels_": _DELETE}, "missing or malformed"),
+        ({"inertia_": "not a number"}, "missing or malformed"),
+    ],
+)
+def test_corrupted_solver_outputs_fail_closed_before_indexing(
+    monkeypatch: pytest.MonkeyPatch, overrides: dict, problem: str
+) -> None:
+    _patched(monkeypatch, **overrides)
+    with pytest.raises(ComputationError) as e:
+        cluster(FOUR, 2)
+    assert e.value.code == "invalid_solver_output"
+    assert problem in e.value.details["problem"]
+
+
+def test_warnings_from_the_scaler_are_rejected_not_only_from_the_fit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import warnings
+
+    from sklearn.preprocessing import StandardScaler
+
+    class NoisyScaler(StandardScaler):
+        def fit_transform(self, X, y=None, **kwargs):  # noqa: ANN001
+            warnings.warn("synthetic scaler warning", RuntimeWarning, stacklevel=2)
+            return super().fit_transform(X, y, **kwargs)
+
+    monkeypatch.setattr(ops_cluster, "StandardScaler", NoisyScaler)
+    with pytest.raises(ComputationError) as e:
+        cluster(FOUR, 2)
+    assert e.value.code == "solver_warning" and e.value.details["categories"] == ["RuntimeWarning"]
+
+
+def test_floating_point_exceptions_and_solver_errors_are_structured(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from sklearn.cluster import KMeans
+    from sklearn.preprocessing import StandardScaler
+
+    class Overflowing(StandardScaler):
+        def fit_transform(self, X, y=None, **kwargs):  # noqa: ANN001
+            raise FloatingPointError("overflow encountered")
+
+    monkeypatch.setattr(ops_cluster, "StandardScaler", Overflowing)
+    with pytest.raises(ComputationError) as e:
+        cluster(FOUR, 2)
+    assert e.value.code == "numeric_exception"
+    monkeypatch.undo()
+
+    class Broken(KMeans):
+        def fit(self, X, y=None, sample_weight=None):  # noqa: ANN001
+            raise ValueError("synthetic solver failure")
+
+    monkeypatch.setattr(ops_cluster, "KMeans", Broken)
+    with pytest.raises(ComputationError) as e:
+        cluster(FOUR, 2)
+    assert e.value.code == "solver_failure" and e.value.details["exception"] == "ValueError"
+
+
+def test_reported_checks_are_explicitly_approximate_and_lloyd_fixed_point_is_a_diagnostic() -> None:
+    res = cluster(_blobs(), 3).core["result"]
+    assert "centroid_consistency_approx" in res["postconditions"]
+    assert "centroid_fixed_point" not in res["postconditions"]
+    assert isinstance(res["diagnostics"]["lloyd_label_fixed_point"], bool)
+    assert res["diagnostics"]["lloyd_label_fixed_point"] is True  # well-separated blobs
+
+
+# ---- joint workload guard ----
+
+
+def test_workload_guard_rejects_before_any_fit(monkeypatch: pytest.MonkeyPatch) -> None:
+    from axiom import Limits, PlanError
+
+    class MustNotRun:
+        def __init__(self, *args: object, **kwargs: object) -> None:
+            raise AssertionError("KMeans was constructed although the workload cap was exceeded")
+
+    monkeypatch.setattr(ops_cluster, "KMeans", MustNotRun)
+    ds = dataset(_blobs())
+    with pytest.raises(PlanError) as e:
+        run(ds, plan(["x", "y"], 3), Limits(max_cluster_work=1_000))
+    assert e.value.code == "cluster_workload_too_large"
+    assert e.value.details["work"] == 75 * 3 * 2 * 10 * 300
+
+
+def test_documented_worst_cases_exceed_the_default_cap_without_building_data() -> None:
+    from axiom import DEFAULT_LIMITS
+    from axiom.plan import cluster_work
+
+    worst = parse_plan_json(
+        json.dumps(
+            {
+                "schema_version": "axiom.plan/1",
+                "operation": "cluster",
+                "features": [f"f{i}" for i in range(64)],
+                "k": 64,
+                "n_init": 20,
+                "max_iter": 1000,
+            }
+        )
+    )
+    assert cluster_work(worst, 1_000_000) > DEFAULT_LIMITS.max_cluster_work
+    assert cluster_work(worst, 1_000) <= DEFAULT_LIMITS.max_cluster_work  # small data stay allowed
+    default_plan = plan(["a", "b", "c", "d"], 8)
+    assert cluster_work(default_plan, 100_000) <= DEFAULT_LIMITS.max_cluster_work

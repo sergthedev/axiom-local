@@ -25,7 +25,7 @@ class Limits:
     max_plan_nodes: int = 4_096
     # n_eligible_rows * k * n_features * n_init * max_iter (distance-component evaluations, an
     # upper bound on solver work). Provisional; rejects joint worst cases before any fit.
-    max_cluster_work: int = 50_000_000_000
+    max_cluster_work: int = 100_000_000_000
 
 
 DEFAULT_LIMITS = Limits()
