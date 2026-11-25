@@ -313,3 +313,7 @@ No experiment scripts were re-run: the change affects reporting edge cases only,
   (all were LF already).
 - Historical evidence kept: EXP-004 and EXP-005 results unchanged; a correction note narrows the EXP-004 per-worker
   thread statement (C-025); EXP-005 notes the commit/content distinction and the confirmed cause.
+- CI run [45685214061](https://github.com/sergthedev/axiom-local/actions/runs/45685214061) (head `8310baa`, merge `efa20ba`):
+  384 passed on Windows (86.24 s) and macOS (103.28 s), lint and format passed. EXP-006 D2 met: no hashed file differs from
+  its blob on either runner; engine digest `4b904d42…` and lock digest `0591cb58…` identical on both. Part X again 10 of 10
+  `exact_match` per runner.

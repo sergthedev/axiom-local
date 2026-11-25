@@ -2,7 +2,7 @@
 
 - Issue / PR: Issue #3, PR #7 ([technical review](https://github.com/sergthedev/axiom-local/pull/7#issuecomment-7171558913))
 - Date: 2026-11-25
-- Status: parts R, D1 and X run (every pre-registered criterion met; hypothesis H confirmed); part D2 **pending**
+- Status: run (parts R, D1, D2 and X; every pre-registered criterion met; hypothesis H confirmed and the fix verified)
 - Pre-registration: [PREREGISTRATION.md](PREREGISTRATION.md), committed in `fd61eb6` before any run
 
 ## Part R: fresh-process replay on the revised code (development Mac)
@@ -77,8 +77,20 @@
   is unchanged. The example JSON files are parsed, never hashed as bytes, so they are left alone (minimal change).
 - Reports: `ci_d1_windows_x64.json`, `ci_d1_macos_arm64.json` (copied verbatim from the job logs; no paths).
 
-### D2 (after the change)
-- Pending: recorded once the CI run of the commit with the `.gitattributes` change completes.
+### D2 (after the change): criterion met
+CI run [45685214061](https://github.com/sergthedev/axiom-local/actions/runs/45685214061), head `8310baa` (merge `efa20ba`):
+
+| Runner | `core.autocrlf` | Hashed files (`.py`, `uv.lock`) differing from blob | Recorded engine digest | Recorded lock digest |
+|---|---|---|---|---|
+| `windows-latest` (job 139455889771) | `true` | 0 | `4b904d42…` | `0591cb58…` |
+| `macos-latest` (job 139455889363) | unset | 0 | `4b904d42…` | `0591cb58…` |
+
+- Both recorded digests are equal on the two runners, equal to the committed-blob digests and equal to the local
+  part R values. In part X of this run the Windows comparison no longer lists `code.lock_sha256` as differing.
+- The six example JSON files are still checked out with CRLF on Windows (not hashed; deliberately not covered).
+- 384 tests passed on each runner (Windows 86.24 s, macOS 103.28 s); lint and format passed (101 files); part X again
+  10 of 10 `exact_match` on both runners, reports complete.
+- Reports: `ci_d2_windows_x64.json`, `ci_d2_macos_arm64.json`.
 
 ## Part X: revised code versus the EXP-005 reference passports (same CI run, report-only)
 
