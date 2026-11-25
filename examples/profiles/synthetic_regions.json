@@ -1,0 +1,13 @@
+{
+  "encoding": "utf-8",
+  "delimiter": ",",
+  "decimal": ".",
+  "columns": [
+    {"name": "region_id", "kind": "text"},
+    {"name": "macro_region", "kind": "text"},
+    {"name": "gdp_per_capita", "kind": "numeric"},
+    {"name": "unemployment_rate", "kind": "numeric"},
+    {"name": "education_years", "kind": "numeric"},
+    {"name": "household_income", "kind": "numeric"}
+  ]
+}
