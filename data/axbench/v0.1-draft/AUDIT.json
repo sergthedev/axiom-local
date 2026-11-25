@@ -1,0 +1,297 @@
+{
+  "checks": {
+    "components_spanning_splits": 0,
+    "connected_components": 100,
+    "failures": [],
+    "passed": true
+  },
+  "near_duplicates": {
+    "train~test": {
+      "max_jaccard": 0.4722,
+      "pairs_at_or_above_threshold": 0,
+      "threshold": 0.8
+    },
+    "train~validation": {
+      "closest_pair": [
+        [
+          "train-0396",
+          "Split the data into 6 clusters using wind speed and bagil_nem."
+        ],
+        [
+          "validation-0039",
+          "Split the data into 6 clusters."
+        ]
+      ],
+      "max_jaccard": 0.4833,
+      "pairs_at_or_above_threshold": 0,
+      "threshold": 0.8
+    },
+    "validation~test": {
+      "max_jaccard": 0.337,
+      "pairs_at_or_above_threshold": 0,
+      "threshold": 0.8
+    }
+  },
+  "note": "test split generated in memory with the development seed for this audit; no test text is included; a sealed test is re-audited at sealing",
+  "splits": {
+    "test": {
+      "action": {
+        "CLARIFY": 98,
+        "PLAN": 190,
+        "REJECT": 72
+      },
+      "distinct_request_texts": 338,
+      "domain": {
+        "economic": 165,
+        "non_economic": 195
+      },
+      "frame": {
+        "clarify:ambiguous_column": 11,
+        "clarify:column_not_found": 11,
+        "clarify:column_type_mismatch": 11,
+        "clarify:invalid_parameter": 11,
+        "clarify:missing_cluster_count": 11,
+        "clarify:missing_column": 11,
+        "clarify:missing_correlation_method": 11,
+        "clarify:missing_operation": 11,
+        "clarify:multiple_operations": 10,
+        "cluster": 47,
+        "compare": 47,
+        "inspect": 36,
+        "inspect_all": 10,
+        "reject:causal_inference": 8,
+        "reject:code_or_system_request": 8,
+        "reject:data_modification": 8,
+        "reject:forecasting": 8,
+        "reject:hypothesis_test": 8,
+        "reject:instruction_override": 8,
+        "reject:out_of_scope": 8,
+        "reject:regression": 8,
+        "reject:unsupported_analysis": 8,
+        "relate": 50
+      },
+      "groups": {
+        "families": 11,
+        "largest_instance_share": 0.0722,
+        "largest_lineage_share": 0.1139,
+        "lineages": 28,
+        "schema_instances": 30
+      },
+      "invalid_gold": 0,
+      "language": {
+        "en": 144,
+        "mixed": 72,
+        "tr": 144
+      },
+      "language_x_action": {
+        "en/CLARIFY": 39,
+        "en/PLAN": 76,
+        "en/REJECT": 29,
+        "mixed/CLARIFY": 20,
+        "mixed/PLAN": 38,
+        "mixed/REJECT": 14,
+        "tr/CLARIFY": 39,
+        "tr/PLAN": 76,
+        "tr/REJECT": 29
+      },
+      "max_repeats_of_one_text": 4,
+      "n": 360,
+      "plan_operation": {
+        "cluster": 47,
+        "compare": 47,
+        "inspect": 46,
+        "relate": 50
+      },
+      "stratum": {
+        "A_heldout_family": 120,
+        "B_novel_instance": 120,
+        "C_familiar_instance": 120
+      },
+      "tags": {
+        "absent_column": 11,
+        "ambiguous_mention": 11,
+        "case_variant": 69,
+        "cross_language_mention": 65,
+        "diacritics_stripped": 48,
+        "generic_alias": 2,
+        "k_word": 26,
+        "malicious_header": 90,
+        "quoted_name": 91,
+        "request_injection": 8,
+        "typo": 93
+      }
+    },
+    "train": {
+      "action": {
+        "CLARIFY": 108,
+        "PLAN": 212,
+        "REJECT": 80
+      },
+      "distinct_request_texts": 380,
+      "domain": {
+        "economic": 210,
+        "non_economic": 190
+      },
+      "frame": {
+        "clarify:ambiguous_column": 12,
+        "clarify:column_not_found": 12,
+        "clarify:column_type_mismatch": 12,
+        "clarify:invalid_parameter": 12,
+        "clarify:missing_cluster_count": 12,
+        "clarify:missing_column": 12,
+        "clarify:missing_correlation_method": 12,
+        "clarify:missing_operation": 12,
+        "clarify:multiple_operations": 12,
+        "cluster": 52,
+        "compare": 52,
+        "inspect": 40,
+        "inspect_all": 12,
+        "reject:causal_inference": 9,
+        "reject:code_or_system_request": 9,
+        "reject:data_modification": 9,
+        "reject:forecasting": 9,
+        "reject:hypothesis_test": 9,
+        "reject:instruction_override": 9,
+        "reject:out_of_scope": 9,
+        "reject:regression": 9,
+        "reject:unsupported_analysis": 8,
+        "relate": 56
+      },
+      "groups": {
+        "families": 8,
+        "largest_instance_share": 0.0875,
+        "largest_lineage_share": 0.0625,
+        "lineages": 48,
+        "schema_instances": 16
+      },
+      "invalid_gold": 0,
+      "language": {
+        "en": 160,
+        "mixed": 80,
+        "tr": 160
+      },
+      "language_x_action": {
+        "en/CLARIFY": 43,
+        "en/PLAN": 85,
+        "en/REJECT": 32,
+        "mixed/CLARIFY": 22,
+        "mixed/PLAN": 42,
+        "mixed/REJECT": 16,
+        "tr/CLARIFY": 43,
+        "tr/PLAN": 85,
+        "tr/REJECT": 32
+      },
+      "max_repeats_of_one_text": 5,
+      "n": 400,
+      "plan_operation": {
+        "cluster": 52,
+        "compare": 52,
+        "inspect": 52,
+        "relate": 56
+      },
+      "stratum": {
+        "train": 400
+      },
+      "tags": {
+        "absent_column": 12,
+        "ambiguous_mention": 12,
+        "case_variant": 66,
+        "cross_language_mention": 74,
+        "diacritics_stripped": 58,
+        "generic_alias": 3,
+        "k_word": 13,
+        "malicious_header": 122,
+        "quoted_name": 101,
+        "request_injection": 9,
+        "typo": 119
+      }
+    },
+    "validation": {
+      "action": {
+        "CLARIFY": 45,
+        "PLAN": 85,
+        "REJECT": 30
+      },
+      "distinct_request_texts": 156,
+      "domain": {
+        "economic": 85,
+        "non_economic": 75
+      },
+      "frame": {
+        "clarify:ambiguous_column": 5,
+        "clarify:column_not_found": 5,
+        "clarify:column_type_mismatch": 5,
+        "clarify:invalid_parameter": 5,
+        "clarify:missing_cluster_count": 5,
+        "clarify:missing_column": 5,
+        "clarify:missing_correlation_method": 5,
+        "clarify:missing_operation": 5,
+        "clarify:multiple_operations": 5,
+        "cluster": 21,
+        "compare": 21,
+        "inspect": 16,
+        "inspect_all": 5,
+        "reject:causal_inference": 4,
+        "reject:code_or_system_request": 4,
+        "reject:data_modification": 4,
+        "reject:forecasting": 3,
+        "reject:hypothesis_test": 3,
+        "reject:instruction_override": 3,
+        "reject:out_of_scope": 3,
+        "reject:regression": 3,
+        "reject:unsupported_analysis": 3,
+        "relate": 22
+      },
+      "groups": {
+        "families": 10,
+        "largest_instance_share": 0.1,
+        "largest_lineage_share": 0.1313,
+        "lineages": 24,
+        "schema_instances": 27
+      },
+      "invalid_gold": 0,
+      "language": {
+        "en": 64,
+        "mixed": 32,
+        "tr": 64
+      },
+      "language_x_action": {
+        "en/CLARIFY": 18,
+        "en/PLAN": 34,
+        "en/REJECT": 12,
+        "mixed/CLARIFY": 9,
+        "mixed/PLAN": 17,
+        "mixed/REJECT": 6,
+        "tr/CLARIFY": 18,
+        "tr/PLAN": 34,
+        "tr/REJECT": 12
+      },
+      "max_repeats_of_one_text": 2,
+      "n": 160,
+      "plan_operation": {
+        "cluster": 21,
+        "compare": 21,
+        "inspect": 21,
+        "relate": 22
+      },
+      "stratum": {
+        "A_heldout_family": 54,
+        "B_novel_instance": 53,
+        "C_familiar_instance": 53
+      },
+      "tags": {
+        "absent_column": 5,
+        "ambiguous_mention": 5,
+        "case_variant": 28,
+        "cross_language_mention": 28,
+        "diacritics_stripped": 12,
+        "generic_alias": 1,
+        "k_word": 9,
+        "malicious_header": 45,
+        "quoted_name": 49,
+        "request_injection": 3,
+        "typo": 48
+      }
+    }
+  }
+}
