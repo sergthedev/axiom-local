@@ -15,6 +15,8 @@ import random
 from decimal import Decimal
 from fractions import Fraction
 
+import pytest
+
 from _helpers import make_dataset
 from axiom import parse_plan_json, run
 from axiom.kernels import describe
@@ -93,7 +95,7 @@ def _random_dataset(rng: random.Random) -> list[float]:
 
 def test_random_datasets_against_exact_oracles() -> None:
     rng = random.Random(20261125)
-    worst = {"mean": 0.0, "variance": 0.0, "sd": 0.0, "q": 0.0}
+    worst = {"mean": 0.0, "variance": 0.0, "sd": 0.0, "q": 0.0, "q_result": 0.0}
     for _ in range(300):
         values = _random_dataset(rng)
         stats, undefined = describe(values)
@@ -115,10 +117,13 @@ def test_random_datasets_against_exact_oracles() -> None:
             scale = max(abs(s[lo]), abs(s[hi]), abs(stats[key]))
             err = abs(Decimal(stats[key]) - exact_q) / Decimal(math.ulp(scale))
             worst["q"] = max(worst["q"], float(err))
+            if stats[key] != 0:  # exact rounding: <= 0.5 ulp of the result itself
+                worst["q_result"] = max(worst["q_result"], ulp_error(stats[key], exact_q))
     assert worst["mean"] <= 1.0
     assert worst["variance"] <= 1.0
     assert worst["sd"] <= 1.0
     assert worst["q"] <= 1.0
+    assert worst["q_result"] <= 0.5  # quartiles are exact values rounded once
 
 
 def test_median_matches_exact_midpoint() -> None:
@@ -142,15 +147,32 @@ def test_extreme_magnitudes_do_not_overflow_the_mean_or_median() -> None:
     assert stats["mean"] == 0.0 and stats["median"] == 0.0
 
 
-def test_unrepresentable_results_are_reported_undefined_never_inf() -> None:
-    big = 1.7976931348623157e308
-    stats, undefined = describe([-big, big])
+BIG = 1.7976931348623157e308
+
+
+def test_full_range_pair_has_exact_representable_quartiles_and_iqr() -> None:
+    # Regression for a defect in the first implementation: NumPy's lerp overflowed in b - a, so the
+    # first version reported IQR overflow although q1 = -M/2, q3 = M/2 and IQR = M are all
+    # representable.
+    stats, undefined = describe([-BIG, BIG])
+    assert stats["q1"] == -BIG / 2 and stats["q3"] == BIG / 2 and stats["iqr"] == BIG
+    assert stats["median"] == 0.0 and stats["mean"] == 0.0
+    assert "iqr" not in undefined and "q1" not in undefined and "q3" not in undefined
+    # the variance and SD are genuinely unrepresentable: exact SD = sqrt(2) * M > max float
     assert undefined["sample_variance"] == "overflow_exceeds_float64"
-    assert undefined["sample_sd"] == "overflow_exceeds_float64"  # sd = big * sqrt(2) > max float
-    assert undefined["iqr"] == "overflow_exceeds_float64"
+    assert undefined["sample_sd"] == "overflow_exceeds_float64"
     for value in stats.values():
         assert value is None or math.isfinite(value)
-    # representable SD although the variance overflows
+
+
+def test_true_iqr_overflow_is_distinguished_from_intermediate_overflow() -> None:
+    stats, undefined = describe([-BIG, -BIG, BIG, BIG])
+    assert stats["q1"] == -BIG and stats["q3"] == BIG  # both representable
+    assert stats["iqr"] is None and undefined["iqr"] == "overflow_exceeds_float64"  # exact IQR = 2M
+    assert stats["median"] == 0.0 and stats["mean"] == 0.0
+
+
+def test_overflowing_sd_but_representable_variance_boundary() -> None:
     stats, undefined = describe([-1e155, 1e155])
     assert undefined["sample_variance"] == "overflow_exceeds_float64"
     assert "sample_sd" not in undefined
@@ -158,6 +180,75 @@ def test_unrepresentable_results_are_reported_undefined_never_inf() -> None:
     stats, undefined = describe([-1e200, 1e200])
     assert undefined["sample_variance"] == "overflow_exceeds_float64"
     assert math.isclose(stats["sample_sd"], 1e200 * math.sqrt(2), rel_tol=1e-15)
+
+
+@pytest.mark.parametrize(
+    "values",
+    [
+        [-BIG, BIG],
+        [-BIG, -BIG, BIG, BIG],
+        [BIG, BIG, BIG],
+        [-BIG, 0.0, BIG],
+        [-1.8041831441410014e-08, 5.1370316991998964e-09],  # cancellation case from EXP-001
+        [-1.8041831441410014e-08, 5.1370316991998964e-09, 3.0, -7.0, 1e-300],
+        [1e300, -1e300, 1e-300, 2.5e-300, -3.5e300],
+    ],
+)
+def test_quartiles_and_median_are_correctly_rounded_exact_values(values: list[float]) -> None:
+    stats, undefined = describe(values)
+    s = sorted(values)
+    for key, q in (("q1", Fraction(1, 4)), ("q3", Fraction(3, 4))):
+        exact = exact_quantile_type7(values, q)
+        assert stats[key] == float(exact) and key not in undefined
+    n = len(s)
+    exact_median = (
+        Fraction(s[n // 2]) if n % 2 else (Fraction(s[n // 2 - 1]) + Fraction(s[n // 2])) / 2
+    )
+    assert stats["median"] == float(exact_median)
+
+
+def test_quartiles_agree_with_numpy_linear_semantics_on_ordinary_data() -> None:
+    # NumPy's method="linear" is the semantic reference for type 7 (REF-009), used here only as a
+    # cross-check (its lerp is not exactly rounded, so allow 2 ulp of the operand scale).
+    import numpy as np
+
+    rng = random.Random(41)
+    for _ in range(200):
+        values = [rng.gauss(0, 1) * 10.0 ** rng.randint(-3, 3) for _ in range(rng.randint(1, 40))]
+        stats, _ = describe(values)
+        expected = np.quantile(np.asarray(values), [0.25, 0.75], method="linear")
+        scale = max(abs(min(values)), abs(max(values)))
+        for key, ref in zip(("q1", "q3"), expected, strict=True):
+            assert abs(stats[key] - float(ref)) <= 2 * math.ulp(scale)
+
+
+def test_exact_nonzero_values_that_round_to_zero_are_undefined_not_false_zero() -> None:
+    tiny = 5e-324  # smallest subnormal
+    stats, undefined = describe([0.0, tiny])
+    assert stats["median"] is None and undefined["median"] == "underflow_to_zero"  # exact tiny/2
+    assert stats["mean"] is None and undefined["mean"] == "underflow_to_zero"
+    assert stats["q1"] is None and undefined["q1"] == "underflow_to_zero"  # exact tiny/4
+    assert stats["q3"] == tiny  # exact 3*tiny/4 rounds to tiny
+    assert stats["iqr"] is None and undefined["iqr"] == "underflow_to_zero"  # exact tiny/2
+    assert stats["min"] == 0.0 and stats["max"] == tiny  # exact order statistics are never flagged
+    stats, undefined = describe([tiny, 0.0, 0.0])
+    assert undefined["mean"] == "underflow_to_zero" and stats["median"] == 0.0  # true zero median
+    # a true zero is a value, not an underflow
+    stats, undefined = describe([-tiny, tiny])
+    assert stats["mean"] == 0.0 and stats["median"] == 0.0 and "mean" not in undefined
+    stats, undefined = describe([0.0, 0.0, 0.0])
+    assert stats["mean"] == 0.0 and undefined == {}
+    # consistent semantics with variance: exact nonzero variance that rounds to zero
+    _, undefined = describe([0.0, tiny])
+    assert undefined["sample_variance"] == "underflow_to_zero"
+
+
+def test_subnormal_inputs_with_representable_results() -> None:
+    values = [5e-324, 1e-323, 1.5e-323, 2e-323]
+    stats, undefined = describe(values)
+    assert stats["min"] == 5e-324 and stats["max"] == 2e-323
+    assert stats["median"] == float((Fraction(1e-323) + Fraction(1.5e-323)) / 2)
+    assert undefined.get("mean") is None
 
 
 def test_underflow_is_not_reported_as_false_zero() -> None:

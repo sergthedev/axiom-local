@@ -1,8 +1,10 @@
 """Numerical kernels (ADR 0004).
 
-Descriptive statistics use the Python 3.12 standard library (exact rational accumulation) and NumPy
-``method='linear'`` quantiles. Correlation uses ``statistics.correlation`` behind explicit range and
-conditioning guards. Undefined results are ``None`` with an explicit reason, never a silent value.
+Descriptive statistics use the Python 3.12 standard library (exact rational accumulation). The
+median and the type-7 quartiles are computed exactly (rational arithmetic) and rounded once; NumPy's
+``method='linear'`` is only a cross-check in tests (ADR 0004, amendment). Correlation uses
+``statistics.correlation`` behind explicit range and conditioning guards. Undefined results are
+``None`` with an explicit reason, never a silent value.
 """
 
 from __future__ import annotations
@@ -11,8 +13,6 @@ import math
 import statistics
 from collections.abc import Sequence
 from fractions import Fraction
-
-import numpy as np
 
 from .errors import ComputationError
 
@@ -39,23 +39,50 @@ DESCRIPTIVE_KEYS = (
 )
 
 
-def exact_midpoint(a: float, b: float) -> float:
-    """Correctly rounded (a + b) / 2 without intermediate overflow."""
-    return float((Fraction(a) + Fraction(b)) / 2)
+def exact_midpoint(a: float, b: float) -> Fraction:
+    """Exact (a + b) / 2 as a rational, so no intermediate overflow can occur."""
+    return (Fraction(a) + Fraction(b)) / 2
 
 
-def _median(sorted_values: Sequence[float]) -> float:
+def round_exact(x: Fraction) -> tuple[float | None, str | None]:
+    """Round an exact rational to binary64 once, classifying the outcome.
+
+    Returns ``(value, None)`` or ``(None, reason)``. ``overflow_exceeds_float64`` means the *exact*
+    result is not representable (a true range limit, not an intermediate failure);
+    ``underflow_to_zero`` means the exact result is nonzero but rounds to zero. A false zero is
+    never reported as a value.
+    """
+    try:
+        value = float(x)
+    except OverflowError:
+        return None, "overflow_exceeds_float64"
+    if not math.isfinite(value):
+        return None, "overflow_exceeds_float64"
+    if value == 0.0 and x != 0:
+        return None, "underflow_to_zero"
+    return value + 0.0, None
+
+
+def quantile_type7(sorted_values: Sequence[float], numerator: int, denominator: int) -> Fraction:
+    """Exact type-7 (Hyndman-Fan, NumPy ``linear``) quantile at p = numerator / denominator.
+
+    h = (n - 1) p; result = x[floor(h)] + (h - floor(h)) * (x[floor(h) + 1] - x[floor(h)]), all in
+    exact rational arithmetic. The caller rounds once with :func:`round_exact`.
+    """
     n = len(sorted_values)
-    mid = n // 2
-    if n % 2:
-        return sorted_values[mid]
-    return exact_midpoint(sorted_values[mid - 1], sorted_values[mid])
+    pos = Fraction((n - 1) * numerator, denominator)
+    lo = pos.numerator // pos.denominator
+    hi = min(lo + 1, n - 1)
+    a = Fraction(sorted_values[lo])
+    return a + (pos - lo) * (Fraction(sorted_values[hi]) - a)
 
 
 def describe(values: Sequence[float]) -> tuple[dict[str, float | None], dict[str, str]]:
     """Descriptive statistics of finite floats: ``(stats, undefined_reasons)``.
 
-    Sample variance and standard deviation use ddof=1. Quartiles are type 7 (NumPy ``linear``).
+    Sample variance and standard deviation use ddof=1. Quartiles are type 7 and, like the median,
+    are computed exactly and rounded once. Semantics for unrepresentable results: a statistic whose
+    exact value overflows binary64, or is nonzero but rounds to zero, is ``None`` with a reason.
     """
     stats: dict[str, float | None] = dict.fromkeys(DESCRIPTIVE_KEYS)
     undefined: dict[str, str] = {}
@@ -63,10 +90,30 @@ def describe(values: Sequence[float]) -> tuple[dict[str, float | None], dict[str
     if n == 0:
         return stats, dict.fromkeys(DESCRIPTIVE_KEYS, "no_valid_values")
 
-    lo, hi = min(values), max(values)
-    stats["min"], stats["max"] = lo, hi
-    stats["mean"] = statistics.mean(values) + 0.0
-    stats["median"] = _median(sorted(values)) + 0.0
+    ordered = sorted(values)
+    lo, hi = ordered[0], ordered[-1]
+    stats["min"], stats["max"] = lo + 0.0, hi + 0.0
+
+    mean = statistics.mean(values)
+    if mean == 0.0 and any(v != 0.0 for v in values) and sum(map(Fraction, values)) != 0:
+        undefined["mean"] = "underflow_to_zero"
+    else:
+        stats["mean"] = mean + 0.0
+
+    mid = n // 2
+    median_exact = (
+        Fraction(ordered[mid]) if n % 2 else exact_midpoint(ordered[mid - 1], ordered[mid])
+    )
+    exact: dict[str, Fraction] = {"median": median_exact}
+    exact["q1"] = quantile_type7(ordered, 1, 4)
+    exact["q3"] = quantile_type7(ordered, 3, 4)
+    exact["iqr"] = exact["q3"] - exact["q1"]
+    for key, fraction in exact.items():
+        value, reason = round_exact(fraction)
+        if reason is None:
+            stats[key] = value
+        else:
+            undefined[key] = reason
 
     if n < 2:
         undefined["sample_variance"] = undefined["sample_sd"] = "requires_n_ge_2"
@@ -83,16 +130,6 @@ def describe(values: Sequence[float]) -> tuple[dict[str, float | None], dict[str
                 undefined[key] = "underflow_to_zero"
             else:
                 stats[key] = result + 0.0
-
-    with np.errstate(all="ignore"):
-        q1, q3 = np.quantile(np.asarray(values, dtype=np.float64), [0.25, 0.75], method="linear")
-        q1, q3 = float(q1), float(q3)
-        iqr = q3 - q1
-    for key, value in (("q1", q1), ("q3", q3), ("iqr", iqr)):
-        if math.isfinite(value):
-            stats[key] = value + 0.0
-        else:
-            undefined[key] = "overflow_exceeds_float64"
     return stats, undefined
 
 
