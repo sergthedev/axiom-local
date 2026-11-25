@@ -246,3 +246,12 @@ No experiment scripts were re-run: the change affects reporting edge cases only,
 | `uv run ruff format --check .` | 0 | 95 files already formatted |
 | `uv run python benchmarks/issue3_replay_benchmark.py --runs 20` | 0 | EXP-004 |
 | `uv run python benchmarks/issue3_cross_platform.py --write-reference ...` | 0 | EXP-005 reference |
+
+### First PR CI run (implementer-observed)
+- Run [45675071394](https://github.com/sergthedev/axiom-local/actions/runs/45675071394) on head `8b4d84b`: `test (windows-latest)` **failed**: 326 passed, 1 failed
+  (`test_compare_passports`). Cause: a **test defect**: the test simulated "another environment" by setting `os.system` to `"Windows"`,
+  which is the real value on the Windows runner, so the environments were equal and the comparison mode was correctly
+  `same_environment_exact`. The test now uses a value that differs on every runner; the engine was not changed. Because the
+  tests failed, the EXP-005 step did not run on that job.
+- `test (macos-latest)` was **cancelled** without being assigned a runner (no steps ran; started 18:25:52Z, cancelled 18:40:54Z).
+  Not caused by the change; recorded as an infrastructure event.

@@ -268,7 +268,7 @@ def test_compare_passports(passports) -> None:
     a = passports["inspect"]
     assert compare_passports(a, copy.deepcopy(a))["verdict"] == "exact_match"
     elsewhere = copy.deepcopy(_forge_mean(a, 2))
-    elsewhere["environment"]["os"]["system"] = "Windows"
+    elsewhere["environment"]["os"]["system"] = "recorded-on-another-os"  # differs on every runner
     elsewhere = reseal(elsewhere)
     report = compare_passports(a, elsewhere)
     assert report["comparison_mode"] == "cross_environment_numeric"
