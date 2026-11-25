@@ -295,6 +295,9 @@ def test_descriptive_warnings_are_present_and_no_semantic_labels() -> None:
 # ---- scale handling ----
 
 
+FOUR = [(0.0, 0.0), (0.1, 0.0), (9.0, 9.0), (9.1, 9.0)]
+
+
 def _blobs(seed: int = 21) -> list[tuple[float, float]]:
     rng = random.Random(seed)
     return [
@@ -332,13 +335,93 @@ def test_tiny_and_huge_magnitudes_are_valid_and_give_the_same_partition(scale: f
     assert res["scaler"]["scale"][0] > 0.0 and math.isfinite(res["scaler"]["scale"][0])
 
 
-def test_outlier_that_collapses_other_points_after_scaling_is_rejected() -> None:
+def test_lossy_prescaling_is_rejected_not_silently_collapsed() -> None:
+    # 1e-300 / 1e300 spans more than 2^1074: scaling by a power of two would underflow the small
+    # entries to zero. The scaling would not be exact, so the result is rejected (any k).
     rows = [(1e-300,), (2e-300,), (3e-300,), (1e300,)]
+    for k in (2, 4):
+        with pytest.raises(ComputationError) as e:
+            cluster(rows, k, ("x",))
+        assert e.value.code == "prescaling_underflow" and e.value.details["features"] == ["x"]
+    two = [(1.0, 1e-300), (2.0, 2e-300), (3.0, 1e300), (4.0, 5.0)]
     with pytest.raises(ComputationError) as e:
-        cluster(rows, 4, ("x",))
-    assert e.value.code == "k_exceeds_distinct_points"
-    ok = cluster(rows, 2, ("x",)).core["result"]  # 2 distinct standardized levels still allow k=2
-    assert sorted(c["size"] for c in ok["clusters"]) == [1, 3]
+        cluster(two, 2)
+    assert e.value.details["features"] == ["y"]  # only the lossy feature is named
+
+
+def test_wide_but_lossless_ranges_are_valid() -> None:
+    # entries stay exactly representable after scaling by 2^-21 (smallest becomes 2^-1021, normal)
+    values = [2.0**-1000, 2.0**-500, 1.0, 3.0, 2.0**20, 2.0**19]
+    res = cluster([(v,) for v in values], 2, ("x",)).core["result"]
+    assert all(res["postconditions"].values())
+    assert res["scaler"]["scale"][0] > 0.0
+
+
+# ---- original-unit reporting at the edges of the binary64 range ----
+
+
+SMALLEST = 5e-324  # 2^-1074, the smallest positive subnormal
+MAX = 1.7976931348623157e308
+
+
+def test_reported_counterexample_is_rejected_instead_of_reporting_scale_zero() -> None:
+    # Review counterexample: scaling makes the data [0, .5, 0, .5] (well defined), but the
+    # original-unit population mean and SD are 2^-1075, which rounds to zero. A nonconstant
+    # feature must never be reported with scale 0.0.
+    rows = [(0.0,), (SMALLEST,), (0.0,), (SMALLEST,)]
+    with pytest.raises(ComputationError) as e:
+        cluster(rows, 2, ("x",))
+    assert e.value.code == "original_units_not_representable"
+    assert e.value.details["feature"] == "x" and "cluster" not in e.value.details
+
+
+def test_scaler_that_rounds_in_original_units_is_rejected() -> None:
+    # exact population SD is sqrt(8/6) * 2^-1074: not a multiple of the smallest subnormal
+    units = (-2, -2, -2, -1, 0, 1)
+    with pytest.raises(ComputationError) as e:
+        cluster([(u * SMALLEST,) for u in units], 2, ("x",))
+    assert e.value.code == "original_units_not_representable"
+
+
+def test_cluster_mean_that_underflows_to_zero_is_rejected_not_reported_as_zero() -> None:
+    # the scaler is exact here (mean 1 unit, SD 2 units) but one cluster mean is exactly half a unit
+    units = (-2, 0, 1, 2, 4)
+    with pytest.raises(ComputationError) as e:
+        cluster([(u * SMALLEST,) for u in units], 2, ("x",))
+    assert e.value.code == "original_units_not_representable"
+    assert e.value.details["reason"] == "underflow_to_zero" and "cluster" in e.value.details
+
+
+def test_mixed_sign_subnormal_inputs_with_exact_original_units_are_valid() -> None:
+    res = cluster([(-SMALLEST,), (SMALLEST,), (-SMALLEST,), (SMALLEST,)], 2, ("x",)).core["result"]
+    assert res["scaler"]["mean"] == [0.0] and res["scaler"]["scale"] == [SMALLEST]
+    assert [c["original_units"]["x"]["mean"] for c in res["clusters"]] == [-SMALLEST, SMALLEST]
+    assert all(res["postconditions"].values())
+
+
+def test_max_range_inputs_are_valid_and_reported_exactly() -> None:
+    rows = [(-MAX,), (MAX,), (-MAX,), (MAX,), (-MAX,), (MAX,)]
+    res = cluster(rows, 2, ("x",)).core["result"]
+    assert res["scaler"]["mean"] == [0.0] and res["scaler"]["scale"] == [MAX]
+    assert sorted(c["original_units"]["x"]["mean"] for c in res["clusters"]) == [-MAX, MAX]
+    assert all(res["postconditions"].values())
+
+
+def test_nonfinite_original_unit_conversion_is_a_structured_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from sklearn.preprocessing import StandardScaler
+
+    class Huge(StandardScaler):
+        def fit_transform(self, X, y=None, **kwargs):  # noqa: ANN001
+            out = super().fit_transform(X, y, **kwargs)
+            self.mean_ = self.mean_ * 0 + 1e308  # converting back to original units overflows
+            return out
+
+    monkeypatch.setattr(ops_cluster, "StandardScaler", Huge)
+    with pytest.raises(ComputationError) as e:
+        cluster(FOUR, 2)
+    assert e.value.code in {"numeric_exception", "original_units_not_representable"}
 
 
 # ---- solver contract ----
@@ -363,7 +446,6 @@ def _patched(monkeypatch: pytest.MonkeyPatch, **overrides: object) -> None:
 
 
 _DELETE = object()
-FOUR = [(0.0, 0.0), (0.1, 0.0), (9.0, 9.0), (9.1, 9.0)]
 
 
 @pytest.mark.parametrize(

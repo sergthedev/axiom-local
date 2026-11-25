@@ -63,6 +63,14 @@ def round_exact(x: Fraction) -> tuple[float | None, str | None]:
     return value + 0.0, None
 
 
+def mean_checked(values: Sequence[float]) -> tuple[float | None, str | None]:
+    """Exact mean rounded once; ``(None, "underflow_to_zero")`` if nonzero but rounded to zero."""
+    mean = statistics.mean(values)
+    if mean == 0.0 and any(v != 0.0 for v in values) and sum(map(Fraction, values)) != 0:
+        return None, "underflow_to_zero"
+    return mean + 0.0, None
+
+
 def quantile_type7(sorted_values: Sequence[float], numerator: int, denominator: int) -> Fraction:
     """Exact type-7 (Hyndman-Fan, NumPy ``linear``) quantile at p = numerator / denominator.
 
@@ -94,11 +102,11 @@ def describe(values: Sequence[float]) -> tuple[dict[str, float | None], dict[str
     lo, hi = ordered[0], ordered[-1]
     stats["min"], stats["max"] = lo + 0.0, hi + 0.0
 
-    mean = statistics.mean(values)
-    if mean == 0.0 and any(v != 0.0 for v in values) and sum(map(Fraction, values)) != 0:
-        undefined["mean"] = "underflow_to_zero"
+    mean, mean_reason = mean_checked(values)
+    if mean_reason is None:
+        stats["mean"] = mean
     else:
-        stats["mean"] = mean + 0.0
+        undefined["mean"] = mean_reason
 
     mid = n // 2
     median_exact = (

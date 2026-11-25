@@ -9,7 +9,6 @@ check shows internal consistency of a local solution, never a global optimum.
 from __future__ import annotations
 
 import math
-import statistics
 import warnings
 from typing import Any
 
@@ -20,7 +19,7 @@ from threadpoolctl import threadpool_limits
 
 from .errors import ComputationError, PlanError
 from .ingest import Dataset
-from .kernels import NEAR_CONSTANT_RELATIVE_SPREAD
+from .kernels import NEAR_CONSTANT_RELATIVE_SPREAD, mean_checked
 from .limits import Limits
 from .plan import ClusterPlan, cluster_work
 
@@ -157,6 +156,13 @@ def run_cluster(dataset: Dataset, plan: ClusterPlan, limits: Limits) -> tuple[di
     # input, and results are reported back in original units (exactly, by the inverse scaling).
     shifts = np.array([math.frexp(float(np.abs(X[:, j]).max()))[1] for j in range(p)])
     Xp = np.ldexp(X, -shifts[None, :])
+    lossy = np.flatnonzero(~np.all(np.ldexp(Xp, shifts[None, :]) == X, axis=0))
+    if lossy.size:  # an entry underflowed (or lost bits) while scaling: the scaling is not exact
+        raise ComputationError(
+            "prescaling_underflow",
+            "feature range is too wide for exact power-of-two scaling; result rejected",
+            features=[plan.features[int(j)] for j in lossy],
+        )
 
     try:
         with (
@@ -173,6 +179,21 @@ def run_cluster(dataset: Dataset, plan: ClusterPlan, limits: Limits) -> tuple[di
                 raise ComputationError(
                     "k_exceeds_distinct_points", "k exceeds distinct standardized points"
                 )
+            mean_original = np.ldexp(scaler.mean_, shifts)
+            scale_original = np.ldexp(scaler.scale_, shifts)
+            for j, name in enumerate(plan.features):
+                exact = bool(
+                    np.isfinite(mean_original[j])
+                    and np.isfinite(scale_original[j])
+                    and np.ldexp(mean_original[j], -shifts[j]) == scaler.mean_[j]
+                    and np.ldexp(scale_original[j], -shifts[j]) == scaler.scale_[j]
+                )
+                if not exact:
+                    raise ComputationError(
+                        "original_units_not_representable",
+                        "scaler mean or scale cannot be reported exactly in original units",
+                        feature=name,
+                    )
             ref_mean = Xp.mean(axis=0)
             ref_scale = np.sqrt(((Xp - ref_mean) ** 2).mean(axis=0))
             scaler_ok = bool(
@@ -238,11 +259,16 @@ def run_cluster(dataset: Dataset, plan: ClusterPlan, limits: Limits) -> tuple[di
         original = {}
         for j, name in enumerate(plan.features):
             vals = X[member_idx, j].tolist()
-            original[name] = {
-                "mean": statistics.mean(vals) + 0.0,
-                "min": min(vals) + 0.0,
-                "max": max(vals) + 0.0,
-            }
+            mean, reason = mean_checked(vals)
+            if reason is not None:
+                raise ComputationError(
+                    "original_units_not_representable",
+                    "cluster mean cannot be reported in original units",
+                    feature=name,
+                    cluster=new_id,
+                    reason=reason,
+                )
+            original[name] = {"mean": mean, "min": min(vals) + 0.0, "max": max(vals) + 0.0}
         clusters.append(
             {
                 "id": new_id,
@@ -262,8 +288,8 @@ def run_cluster(dataset: Dataset, plan: ClusterPlan, limits: Limits) -> tuple[di
         "excluded_row_ordinals_truncated": len(excluded) > cap,
         "scaler": {
             "kind": plan.scaling,
-            "mean": [float(v) + 0.0 for v in np.ldexp(scaler.mean_, shifts)],
-            "scale": [float(v) + 0.0 for v in np.ldexp(scaler.scale_, shifts)],
+            "mean": [float(v) + 0.0 for v in mean_original],
+            "scale": [float(v) + 0.0 for v in scale_original],
         },
         "solver": {
             "init": plan.init,
