@@ -158,4 +158,9 @@ sign-off). Addressed on the same branch with focused commits; no history was rew
 | `uv run python benchmarks/issue2_cluster_workload.py` | 0 | EXP-003 |
 
 EXP-001 describes the code at commit `f92117a` (before these fixes) and is deliberately not re-run or edited; the NIST comparisons are re-asserted by `tests/test_nist.py` on the current code.
-The pull request CI for the fixed head is recorded below after it has run.
+The pull request CI for the fixed head follows.
+
+### CI for the fixed head (implementer-observed)
+- GitHub Actions run [45661119280](https://github.com/sergthedev/axiom-local/actions/runs/45661119280) on head `972d733`: `test (macos-latest)` passed (259 tests in 12.11 s, CPython 3.12.10, darwin) and
+  `test (windows-latest)` passed (259 tests in 9.43 s, CPython 3.12.10, win32). Locked install, lint, format check and pytest only; observed by the implementer from the run logs, not yet re-verified by the reviewer.
+  The head after this entry is a documentation-only commit with its own CI run.
