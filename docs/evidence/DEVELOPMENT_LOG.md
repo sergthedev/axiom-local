@@ -101,4 +101,7 @@ after the workflow actually runs, not asserted here. The single smoke test prove
 | `uv run python benchmarks/issue2_evidence.py` | 0 | EXP-001 sections 1-3, 5-8 |
 
 Limitations: one machine; the author of the engine also wrote the tests and oracles; no independent reviewer has reproduced
-these results; Windows numerics are not measured (see `EXP-001`). CI results for the pull request are recorded below once observed.
+these results; Windows numerics are not measured (see `EXP-001`).
+
+### CI for the pull request
+- GitHub Actions run [45656746267](https://github.com/sergthedev/axiom-local/actions/runs/45656746267) on PR commit `1a8c63d`: `test (macos-latest)` passed (14 s) and `test (windows-latest)` passed (43 s). Observed by the implementer; the workflow runs `uv sync --locked`, ruff check/format check and pytest only. This is not a numerical comparison between platforms.
