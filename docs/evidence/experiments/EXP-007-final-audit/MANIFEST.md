@@ -2,7 +2,7 @@
 
 - Issue / PR: Issue #3, PR #7 ([final technical review](https://github.com/sergthedev/axiom-local/pull/7#issuecomment-7172653455))
 - Date: 2026-11-25
-- Status: run (parts S, B and P on the development Mac: every pre-registered criterion met; part C: see below)
+- Status: run (parts S, B and P on the development Mac; part C on GitHub Actions; every pre-registered criterion met)
 - Pre-registration: [PREREGISTRATION.md](PREREGISTRATION.md), committed in `ab33266` before any run
 
 ## Provenance (parts S, B, P)
@@ -96,9 +96,21 @@ since the padding sits in a free-form field):
   counting containers before parsing would change it; neither was implemented (no new limit without a decision).
 - Wall times are with `tracemalloc` active and therefore slower than untraced parsing.
 
-## Part C: both CI platforms at the final head
+## Part C: both CI platforms at the final code head — all criteria met
 
-Pending until the final head has run on GitHub Actions; recorded below once observed.
+CI run [45692893944](https://github.com/sergthedev/axiom-local/actions/runs/45692893944), head `c597e7a` (merge `9391082`
+into `main` `323620d`); implementer-observed from the job logs.
+
+| Runner | Job | Tests | Lint / format | Hashed files differing from blob | Recorded engine / lock digest | Cross-platform report | Verdicts |
+|---|---|---|---|---|---|---|---|
+| `macos-latest` | 139482695225 | 457 passed (131.73 s) | passed (105 files) | 0 (no file differs) | `b0e2c5e4…` / `0591cb58…` | complete, 10 compared | 10 `exact_match` |
+| `windows-latest` | 139482696199 | 457 passed (79.97 s) | passed (105 files) | 0 (`core.autocrlf=true`; only the six example JSON files differ, by CRLF, not hashed) | `b0e2c5e4…` / `0591cb58…` | complete, 10 compared | 10 `exact_match` |
+
+- **C1 met**; **C2 met**. Prediction held: 10 `exact_match` per runner against the EXP-005 reference passports,
+  environment status `different` (commit and engine digest differ from the reference by construction).
+- The engine digest recorded on both runners equals the local part S/B/P digest `b0e2c5e4…`: identical engine bytes on
+  macOS arm64 (local and runner) and Windows x64.
+- The commit recording this part changes documentation only; its own CI run is reported in the pull request.
 
 ## Independent reference
 - None. Parts S and B are repeatability and resource checks; part P is a measurement. No result here says anything about

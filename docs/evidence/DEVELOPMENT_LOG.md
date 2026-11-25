@@ -363,4 +363,7 @@ for a comprehensive final audit of AXIOM Verify.
   19,698 bytes for claimed `k` up to 2^63 - 1, no worker started, policy before integrity. P: parse memory linear; at
   most 25.2 times the text (empty objects); 1.6 GiB at the 64 MiB cap is an extrapolation and an open limitation.
 - Negative result kept: the parse amplification is not reduced by this change.
-
+- CI run [45692893944](https://github.com/sergthedev/axiom-local/actions/runs/45692893944) (head `c597e7a`, merge
+  `9391082`): 457 passed on macOS (131.73 s) and Windows (79.97 s); lint and format passed (105 files); engine digest
+  `b0e2c5e4…` and lock digest `0591cb58…` on both runners; no hashed file differs from its blob; cross-platform report
+  complete with 10 of 10 `exact_match` on each runner. EXP-007 part C met.
