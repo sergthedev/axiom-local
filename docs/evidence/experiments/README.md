@@ -16,3 +16,4 @@ sanitized logs. Failed experiments are recorded too. Training, validation and he
 | [EXP-009](EXP-009-untuned-baselines/PROTOCOL.md) | Untuned Qwen3 baselines on AXBENCH validation; frozen base-selection rule | proposed (not run; Phase 3B) | Requires checkpoint download approval |
 | [EXP-010](EXP-010-lora-pilot/PROTOCOL.md) | LoRA smoke and pilot | proposed (not run; Phase 3B) | Starts only after EXP-009 and owner approval |
 | [EXP-011](EXP-011-axbench-rescore-v02/MANIFEST.md) | EXP-008 rule-baseline predictions rescored with `axbench.score/0.2` | run (one machine) | Pre-registered; same 160 predictions; no metric changed (72 of 160 exact); 0 dispatches |
+| [EXP-012](EXP-012-rules-compare-train-diagnosis/MANIFEST.md) | Train-only diagnosis of the rule baseline's Compare cues | run (one machine; exploratory) | Reads train only; 7 of 11 Compare cues are lineage-specific; leave-one-lineage-out 24 of 52 Compare PLANs keep a cue; no rule change |
