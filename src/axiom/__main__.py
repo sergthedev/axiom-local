@@ -29,12 +29,30 @@ from .replay import AnalysisFailed, analyze, compare_passports, replay
 _OK = ("exact_match", "numeric_agreement")
 
 
-def _write(obj: Any, out: str | None) -> None:
-    text = json.dumps(obj, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False) + "\n"
+def _emit(text: str, out: str | None) -> None:
+    """Write UTF-8 bytes with LF line endings on every platform (final audit).
+
+    Text-mode output would use the locale encoding when stdout is redirected on Windows (for
+    example cp1252), which fails on, or silently re-encodes, non-ASCII column names, and would
+    write CRLF line endings to files; a passport written there could then not be read back.
+    """
+    data = text.encode("utf-8")
     if out:
-        Path(out).write_text(text, encoding="utf-8")
-    else:
+        Path(out).write_bytes(data)
+        return
+    buffer = getattr(sys.stdout, "buffer", None)
+    if buffer is None:  # a replaced text stream (for example in tests)
         sys.stdout.write(text)
+        return
+    sys.stdout.flush()
+    buffer.write(data)
+    buffer.flush()
+
+
+def _write(obj: Any, out: str | None) -> None:
+    _emit(
+        json.dumps(obj, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False) + "\n", out
+    )
 
 
 def _read_passport(path: str) -> dict[str, Any]:
@@ -82,11 +100,7 @@ def main(argv: list[str] | None = None) -> int:
             except AnalysisFailed as exc:
                 _write({"verdict": "execution_failure", "worker": exc.response}, None)
                 return 1
-            text = dumps_passport(passport)
-            if args.out:
-                Path(args.out).write_text(text, encoding="utf-8")
-            else:
-                sys.stdout.write(text)
+            _emit(dumps_passport(passport), args.out)
             return 0
         if args.command == "replay":
             report = replay(

@@ -29,6 +29,17 @@ from .plan import PLAN_SCHEMA_VERSION, POLICY_VERSION
 # Deepest nesting a valid passport reaches is 8 (cluster original-unit statistics); 32 leaves room
 # without allowing pathological documents.
 MAX_DEPTH = 32
+# Every integer in a passport is a count, a size, a seed, an index or a limit; all fit in a signed
+# 64-bit integer (the NumPy index type). Larger integers are rejected before any arithmetic,
+# hashing or text conversion sees them: Python refuses to convert integers of more than 4300
+# digits to text, so hashing one would raise ``ValueError`` (final audit).
+INT_MIN, INT_MAX = -(2**63), 2**63 - 1
+# Unpaired UTF-16 surrogates are valid in a Python ``str`` (and JSON ``\ud800`` escapes decode to
+# them) but have no UTF-8 encoding, so canonical hashing would raise ``UnicodeEncodeError``.
+_SURROGATE = re.compile("[\ud800-\udfff]")
+# Values and path components quoted in error messages are shortened to this many characters, so an
+# error report does not echo (a multiple of) the rejected document.
+_QUOTE_CHARS = 64
 
 _HEX64 = re.compile(r"[0-9a-f]{64}")
 _HEX32 = re.compile(r"[0-9a-f]{32}")
@@ -51,6 +62,16 @@ Check = Callable[[Any, tuple[Any, ...]], None]
 
 def _type_name(value: Any) -> str:
     return "null" if value is None else type(value).__name__
+
+
+def _quote(value: Any) -> str:
+    """Bounded ``repr`` for error messages (strings and scalars only; containers by type)."""
+    if isinstance(value, (dict, list)):
+        return f"<{_type_name(value)}>"
+    if isinstance(value, int) and not isinstance(value, bool) and not INT_MIN <= value <= INT_MAX:
+        return "<integer out of range>"
+    text = repr(value)
+    return text if len(text) <= _QUOTE_CHARS else text[: _QUOTE_CHARS - 3] + "..."
 
 
 def _validate(value: Any, spec: Spec, path: tuple[Any, ...]) -> None:
@@ -91,7 +112,7 @@ STR, BOOL, INT, NAT, FLOAT = (_scalar(k) for k in ("str", "bool", "int", "nat", 
 def const(expected: Any) -> Check:
     def check(value: Any, path: tuple[Any, ...]) -> None:
         if type(value) is not type(expected) or value != expected:
-            raise _Invalid(path, f"unsupported value {value!r} (expected {expected!r})")
+            raise _Invalid(path, f"unsupported value {_quote(value)} (expected {expected!r})")
 
     return check
 
@@ -99,7 +120,7 @@ def const(expected: Any) -> Check:
 def enum(*allowed: str) -> Check:
     def check(value: Any, path: tuple[Any, ...]) -> None:
         if not isinstance(value, str) or value not in allowed:
-            raise _Invalid(path, f"value {value!r} is not one of {list(allowed)}")
+            raise _Invalid(path, f"value {_quote(value)} is not one of {list(allowed)}")
 
     return check
 
@@ -382,15 +403,22 @@ EXECUTION = {
 
 
 def _scan(value: Any, path: tuple[Any, ...], depth: int) -> None:
-    """Whole-document bounds: nesting depth, string keys, finite numbers only."""
+    """Whole-document bounds: nesting depth, string keys, finite numbers, 64-bit integers and
+    UTF-8-encodable text only. Linear in the size of the document."""
     if depth > MAX_DEPTH:
         raise _Invalid(path, f"nesting deeper than {MAX_DEPTH}")
     if isinstance(value, float) and not math.isfinite(value):
         raise _Invalid(path, "non-finite number")
+    if isinstance(value, int) and not isinstance(value, bool) and not INT_MIN <= value <= INT_MAX:
+        raise _Invalid(path, "integer outside the signed 64-bit range")
+    if isinstance(value, str) and _SURROGATE.search(value):
+        raise _Invalid(path, "string contains an unpaired surrogate (not encodable as UTF-8)")
     if isinstance(value, dict):
         for k, v in value.items():
             if not isinstance(k, str):
                 raise _Invalid(path, "object keys must be strings")
+            if _SURROGATE.search(k):
+                raise _Invalid(path, "key contains an unpaired surrogate (not encodable as UTF-8)")
             _scan(v, (*path, k), depth + 1)
     elif isinstance(value, list):
         for i, v in enumerate(value):
@@ -412,13 +440,18 @@ def passport_spec(passport_version: str) -> dict[str, Spec]:
     }
 
 
+def _short(part: Any) -> str:
+    text = part if isinstance(part, str) else str(part)  # path parts are keys or list indices
+    return text if len(text) <= _QUOTE_CHARS else text[: _QUOTE_CHARS - 3] + "..."
+
+
 def validate_document(document: Any, spec: dict[str, Spec], what: str) -> None:
     """Raise :class:`PassportError` (``invalid_passport``) naming the first offending field."""
     try:
         _scan(document, (), 0)
         _validate(document, spec, ())
     except _Invalid as exc:
-        where = "/".join(str(p) for p in exc.path) or "(root)"
+        where = "/".join(_short(p) for p in exc.path) or "(root)"
         raise PassportError(
             "invalid_passport", f"{what} is malformed at {where}: {exc.message}", field=where
         ) from None

@@ -82,13 +82,18 @@ def _cli(*args: str) -> subprocess.CompletedProcess:
 def test_resealed_oversized_limits_are_rejected_before_any_worker(passports, no_dispatch) -> None:
     p = copy.deepcopy(passports["inspect"])
     p["inputs"]["limits"]["max_bytes"] = DEFAULT_LIMITS.max_bytes * 1000
-    p["inputs"]["limits"]["max_cluster_work"] = 10**30
+    p["inputs"]["limits"]["max_cluster_work"] = 2**62  # was 10**30: now outside int64 (audit)
     p = reseal(p)
     assert all(c["status"] == "pass" for c in integrity_checks(p))  # a consistent forgery
     with pytest.raises(VerifyError) as e:
         replay(p, DATA)
     assert e.value.code == "limits_exceed_policy"
     assert set(e.value.details["fields"]) == {"max_bytes", "max_cluster_work"}
+    p["inputs"]["limits"]["max_cluster_work"] = 10**30
+    with pytest.raises(PassportError) as e2:
+        replay(reseal(p), DATA)
+    assert e2.value.code == "invalid_passport"
+    assert e2.value.details["field"] == "inputs/limits/max_cluster_work"
     assert no_dispatch == []
 
 

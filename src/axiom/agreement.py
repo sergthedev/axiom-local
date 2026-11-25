@@ -132,6 +132,15 @@ def _within(rule: Rule, a: float, b: float, ctx: dict[str, Any], index: int | No
     return True  # diagnostic
 
 
+def _brief(value: Any) -> Any:
+    """A scalar as is; a list or object by its size, so a report never copies whole containers."""
+    if isinstance(value, list):
+        return {"type": "list", "length": len(value)}
+    if isinstance(value, dict):
+        return {"type": "object", "n_keys": len(value)}
+    return value
+
+
 def _walk(
     ref: Any,
     obs: Any,
@@ -141,7 +150,7 @@ def _walk(
     index: int | None = None,
 ) -> None:
     def shape(kind: str) -> None:
-        emit({"path": path, "kind": kind, "reference": ref, "observed": obs})
+        emit({"path": path, "kind": kind, "reference": _brief(ref), "observed": _brief(obs)})
 
     if isinstance(ref, bool) or isinstance(obs, bool):
         if ref is not obs:
@@ -152,7 +161,16 @@ def _walk(
         return
     if isinstance(ref, dict) and isinstance(obs, dict):
         if set(ref) != set(obs):
-            shape("keys")
+            emit(
+                {
+                    "path": path,
+                    "kind": "keys",
+                    "reference": _brief(ref),
+                    "observed": _brief(obs),
+                    "keys_only_in_reference": sorted(set(ref) - set(obs))[:20],
+                    "keys_only_in_observed": sorted(set(obs) - set(ref))[:20],
+                }
+            )
             return
         for key in sorted(ref):
             _walk(ref[key], obs[key], (*path, key), emit, float_leaf, index)
@@ -274,6 +292,11 @@ def _align_cluster_labels(
         groups_b = _groups(rb["assignments"], rb["eligible_row_ordinals"])
         label_of_a = {members: label for label, members in groups_a.items()}
         mapping = {label: label_of_a[members] for label, members in groups_b.items()}
+        # Renumber only if every observed cluster id is a label of some member (no empty or
+        # unknown cluster); otherwise compare as recorded (final audit: a re-sealed passport with
+        # an empty cluster raised KeyError here).
+        if any(cluster["id"] not in mapping for cluster in rb["clusters"]):
+            return observed, False
     except (KeyError, TypeError, ValueError):
         return observed, False
     if all(a == b for b, a in mapping.items()):

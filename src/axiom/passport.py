@@ -216,7 +216,7 @@ def validate_passport(passport: Any) -> dict[str, Any]:
             raise PassportError(
                 "unsupported_passport_version",
                 "passport version is not supported",
-                found=version if isinstance(version, str) else None,
+                found=version[:64] if isinstance(version, str) else None,
             )
     validate_document(passport, passport_spec(PASSPORT_VERSION), "passport")
     return passport
@@ -228,7 +228,15 @@ def loads_passport(text: str | bytes, *, max_bytes: int = MAX_PASSPORT_BYTES) ->
     Text longer than ``max_bytes`` (UTF-8) is rejected before parsing. Duplicate keys, ``NaN``,
     ``Infinity`` and numbers outside the binary64 range are rejected.
     """
-    raw = text.encode("utf-8") if isinstance(text, str) else text
+    if isinstance(text, str):
+        try:
+            raw = text.encode("utf-8")
+        except UnicodeEncodeError as exc:  # unpaired surrogate in the text itself
+            raise PassportError("invalid_passport", "passport text is not valid Unicode") from exc
+    elif isinstance(text, (bytes, bytearray)):
+        raw = bytes(text)
+    else:
+        raise PassportError("invalid_passport", "passport text must be str or bytes")
     if len(raw) > max_bytes:
         raise PassportError(
             "passport_too_large", "passport exceeds the size limit", limit=max_bytes
@@ -286,6 +294,7 @@ def integrity_checks(passport: dict[str, Any]) -> list[dict[str, Any]]:
         )
     except PlanError:
         plan_ok = False
+    validated_plan = inputs["plan"] if plan_ok else None
     add(
         "plan_digest",
         plan_ok,
@@ -316,18 +325,37 @@ def integrity_checks(passport: dict[str, Any]) -> list[dict[str, Any]]:
     except PassportError:
         limits = None
     add("replay_inputs_valid", limits is not None, "CSV profile and limits can be reconstructed")
-    problems = result_problems(core, limits) if limits is not None else ["limits are not valid"]
-    out.append(
-        check(
-            "result_consistency",
-            "exact",
-            "integrity",
-            "fail" if problems else "pass",
-            "counts, row ordinals, plan fields and cluster sizes in the result agree with each "
-            "other (internal consistency of the record, not correctness of the numbers)",
-            problems=problems[:10],
-        )
+    detail = (
+        "counts, row ordinals, plan fields and cluster sizes in the result agree with each other "
+        "and with the validated plan and recorded limits (internal consistency of the record, not "
+        "correctness of the numbers)"
     )
+    if validated_plan is None or limits is None:
+        # Nothing in the result is checked against an unvalidated plan or limits (final audit):
+        # the passport already fails plan_digest or replay_inputs_valid.
+        missing = [name for name, v in (("plan", validated_plan), ("limits", limits)) if v is None]
+        out.append(
+            check(
+                "result_consistency",
+                "exact",
+                "integrity",
+                "not_run",
+                detail,
+                problems=[f"not checked: invalid {' and '.join(missing)}"],
+            )
+        )
+    else:
+        problems = result_problems(core, limits, validated_plan)
+        out.append(
+            check(
+                "result_consistency",
+                "exact",
+                "integrity",
+                "fail" if problems else "pass",
+                detail,
+                problems=problems[:10],
+            )
+        )
     add(
         "verification_record",
         passport["verification"] == creation_checks(core),
@@ -335,6 +363,12 @@ def integrity_checks(passport: dict[str, Any]) -> list[dict[str, Any]]:
         "historical record and was not performed again here",
     )
     return out
+
+
+def _label(name: str) -> str:
+    """A column or group name for a problem message, shortened so reports stay bounded."""
+    text = repr(name)
+    return text if len(text) <= 40 else text[:37] + "..."
 
 
 def _stats_consistent(entry: dict[str, Any]) -> bool:
@@ -352,9 +386,17 @@ def _ordinals_consistent(ordinals: list[int], truncated: bool, n: int, cap: int)
     )
 
 
-def result_problems(core: dict[str, Any], limits: Limits) -> list[str]:
-    """Internal-consistency problems of a structurally valid result core (empty if none)."""
-    op, plan, res = core["operation"], core["plan"], core["result"]
+def result_problems(
+    core: dict[str, Any], limits: Limits, plan: dict[str, Any] | None = None
+) -> list[str]:
+    """Internal-consistency problems of a structurally valid result core (empty if none).
+
+    ``plan`` is the validated plan (default: the core's own plan); ``limits`` are the recorded
+    limits. Every loop and allocation here is linear in the size of the document: no count stated
+    in the record (such as the cluster count ``k``) is used to size or drive any work (review B1).
+    """
+    op, res = core["operation"], core["result"]
+    plan = core["plan"] if plan is None else plan
     n_rows = core["inputs"]["n_rows"]
     cap = limits.max_reported_ordinals
     kinds = {c["name"]: c["kind"] for c in core["inputs"]["columns"]}
@@ -368,11 +410,12 @@ def result_problems(core: dict[str, Any], limits: Limits) -> list[str]:
         need(res["n_rows"] == n_rows, "n_rows")
         need([c["name"] for c in res["columns"]] == plan.get("columns"), "columns != plan")
         for c in res["columns"]:
-            need(c["n_total"] == n_rows, f"column {c['name']!r} n_total")
-            need(c["n_valid"] + c["n_missing"] == c["n_total"], f"column {c['name']!r} counts")
-            need(kinds.get(c["name"]) == c["kind"], f"column {c['name']!r} kind")
+            name = _label(c["name"])
+            need(c["n_total"] == n_rows, f"column {name} n_total")
+            need(c["n_valid"] + c["n_missing"] == c["n_total"], f"column {name} counts")
+            need(kinds.get(c["name"]) == c["kind"], f"column {name} kind")
             if c["kind"] == "numeric":
-                need(_stats_consistent(c), f"column {c['name']!r} stats/undefined")
+                need(_stats_consistent(c), f"column {name} stats/undefined")
     elif op == "relate":
         for key in ("x", "y", "method"):
             need(res[key] == plan.get(key), f"{key} != plan")
@@ -406,8 +449,8 @@ def result_problems(core: dict[str, Any], limits: Limits) -> list[str]:
             "group totals",
         )
         for g in res["groups"]:
-            need(g["n_valid"] + g["n_missing"] == g["n_total"], f"group {g['key']!r} counts")
-            need(_stats_consistent(g), f"group {g['key']!r} stats/undefined")
+            need(g["n_valid"] + g["n_missing"] == g["n_total"], f"group {_label(g['key'])} counts")
+            need(_stats_consistent(g), f"group {_label(g['key'])} stats/undefined")
         mk = res["missing_group_key"]
         need(
             _ordinals_consistent(
@@ -416,9 +459,11 @@ def result_problems(core: dict[str, Any], limits: Limits) -> list[str]:
             "missing group key ordinals",
         )
     elif op == "cluster":
-        features, k = res["features"], res["k"]
+        features, k, clusters = res["features"], res["k"], res["clusters"]
         need(features == plan.get("features"), "features != plan")
         need(k == plan.get("k"), "k != plan")
+        need(k <= limits.max_k, "k exceeds the recorded max_k")
+        need(len(clusters) == k, "number of clusters != k")
         need(res["scaler"]["kind"] == plan.get("scaling"), "scaler kind != plan")
         solver = res["solver"]
         for key in ("init", "algorithm", "seed", "n_init", "max_iter", "tol"):
@@ -437,18 +482,22 @@ def result_problems(core: dict[str, Any], limits: Limits) -> list[str]:
         eligible, labels = res["eligible_row_ordinals"], res["assignments"]
         need(len(eligible) == len(labels) == res["n_eligible"], "assignment count")
         need(eligible == sorted(set(eligible)) and all(o >= 1 for o in eligible), "eligible rows")
-        need([c["id"] for c in res["clusters"]] == list(range(k)), "cluster ids")
-        need(all(0 <= label < k for label in labels), "assignment labels")
-        sizes = [0] * k
+        # Ids, labels and sizes are compared over the entries that exist, never over range(k).
+        n_clusters = len(clusters)
+        need(all(c["id"] == i for i, c in enumerate(clusters)), "cluster ids")
+        need(all(label < n_clusters for label in labels), "assignment labels")  # labels are NAT
+        counts: dict[int, int] = {}
         for label in labels:
-            if 0 <= label < k:
-                sizes[label] += 1
-        need([c["size"] for c in res["clusters"]] == sizes, "cluster sizes")
-        width = len(features)
+            counts[label] = counts.get(label, 0) + 1
+        need(all(c["size"] == counts.get(c["id"], 0) for c in clusters), "cluster sizes")
+        # The engine never issues an empty cluster or a failed postcondition (ADR 0006).
+        need(all(c["size"] >= 1 for c in clusters), "empty cluster")
+        need(all(res["postconditions"].values()), "recorded postcondition false")
+        width, feature_set = len(features), set(features)
         need(len(res["scaler"]["mean"]) == len(res["scaler"]["scale"]) == width, "scaler width")
-        for c in res["clusters"]:
-            need(len(c["centroid_standardized"]) == width, f"cluster {c['id']} centroid width")
-            need(set(c["original_units"]) == set(features), f"cluster {c['id']} features")
+        for i, c in enumerate(clusters):
+            need(len(c["centroid_standardized"]) == width, f"cluster {i} centroid width")
+            need(c["original_units"].keys() == feature_set, f"cluster {i} features")
     return p
 
 

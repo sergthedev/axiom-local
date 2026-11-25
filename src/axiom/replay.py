@@ -95,10 +95,12 @@ def _now() -> str:
 
 
 def _check_timeout(timeout: Any) -> float:
+    # No float conversion before the range check: math.isfinite(10**400) raises OverflowError,
+    # while comparing an int with a float is exact in Python (final audit).
     if (
         isinstance(timeout, bool)
         or not isinstance(timeout, (int, float))
-        or not math.isfinite(timeout)
+        or (isinstance(timeout, float) and not math.isfinite(timeout))
         or not 0 < timeout <= MAX_TIMEOUT_SECONDS
     ):
         raise VerifyError(
@@ -107,6 +109,17 @@ def _check_timeout(timeout: Any) -> float:
             max=MAX_TIMEOUT_SECONDS,
         )
     return float(timeout)
+
+
+def _check_data_path(data_path: Any) -> Path:
+    """A str or path-like naming the data file (read by the worker, never stored in a report)."""
+    try:
+        path = Path(data_path)
+    except TypeError:
+        raise VerifyError("invalid_data_path", "data path must be a str or path-like") from None
+    if "\x00" in str(path):
+        raise VerifyError("invalid_data_path", "data path contains a NUL character")
+    return path
 
 
 def _check_runs(runs: Any) -> int:
@@ -168,13 +181,36 @@ def run_worker(
         response = json.loads(proc.stdout.decode("utf-8"))
         if not isinstance(response, dict):
             raise ValueError("response is not an object")
-    except (UnicodeDecodeError, ValueError):
+    except (UnicodeDecodeError, ValueError, RecursionError):
+        status = "crashed" if proc.returncode != 0 else "bad_output"
+        return {"status": status, "exit_code": proc.returncode, "parent_wall_seconds": wall}
+    if not isinstance(response.get("timing", {}), dict) or not isinstance(
+        response.get("error") or {}, dict
+    ):
+        # e.g. the worker's bad_request response carries its error as text
+        response["error"] = {"code": str(response.get("status")), "message": "worker error"}
+        response["timing"] = {}
+    if response.get("status") == "ok" and (proc.returncode != 0 or not _ok_shape(response)):
+        # A successful response must carry everything the parent reads (final audit), so that a
+        # malformed worker response is a reported failure, never an exception in the parent.
         status = "crashed" if proc.returncode != 0 else "bad_output"
         return {"status": status, "exit_code": proc.returncode, "parent_wall_seconds": wall}
     response["exit_code"] = proc.returncode
     response["parent_wall_seconds"] = wall
     response["fresh_workspace"] = True
     return response
+
+
+def _ok_shape(response: dict[str, Any]) -> bool:
+    fp = response.get("fingerprints")
+    return (
+        isinstance(response.get("result_canonical_json"), str)
+        and isinstance(response.get("environment"), dict)
+        and isinstance(fp, dict)
+        and isinstance(fp.get("raw_sha256"), str)
+        and isinstance(fp.get("dataset_sha256"), str)
+        and type(fp.get("n_bytes")) is int
+    )
 
 
 def _request(
@@ -209,6 +245,7 @@ def analyze(
     """
     timeout = _check_timeout(timeout)
     limits = _check_limits(limits)  # the caller's own, trusted limits
+    data_path = _check_data_path(data_path)
     plan = revalidate_plan(plan)
     request = _request(data_path, profile, plan_to_dict(plan), limits, None)
     response = run_worker(request, timeout=timeout)
@@ -310,9 +347,19 @@ def _classify_run(
         return run
     text = response["result_canonical_json"]
     observed = AnalysisResult(text)
+    try:
+        observed_core = observed.core
+        if not isinstance(observed_core, dict):
+            raise ValueError("result is not an object")
+    except (ValueError, RecursionError):
+        # unreadable result text: a failed run, never a crash of the parent (final audit)
+        run["worker_status"] = "bad_output"
+        run["error"] = {"code": "bad_output"}
+        run["outcome"] = "execution_failure"
+        return run
     run["result_sha256"] = observed.result_sha256
     run["byte_identical"] = observed.result_sha256 == identity["result_sha256"]
-    comparison = compare_cores(passport["result"], observed.core)
+    comparison = compare_cores(passport["result"], observed_core)
     run["comparison"] = _summarize(comparison)
     if run["byte_identical"]:
         run["outcome"] = "exact_match"
@@ -366,11 +413,11 @@ def replay(
     """Re-execute a passport's bound plan ``runs`` times, each in a fresh process, and judge it.
 
     Before anything executes: the passport's structure is validated and the arguments are bounded
-    (:class:`~axiom.passport.PassportError` / :class:`VerifyError`); the passport's digests and
-    internal consistency are checked, and if any fails nothing is executed (verdict
-    ``integrity_mismatch``); the limits the passport *records* are compared with ``policy``, the
-    trusted local caps, and a passport asking for more is rejected (``limits_exceed_policy``),
-    never clamped, since different limits can be a different analysis. Each run then presents the
+    (:class:`~axiom.passport.PassportError` / :class:`VerifyError`); the limits the passport
+    *records* are compared with ``policy``, the trusted local caps, and a passport asking for more
+    is rejected (``limits_exceed_policy``), never clamped, since different limits can be a
+    different analysis; then the passport's digests and internal consistency are checked, and if
+    any fails nothing is executed (verdict ``integrity_mismatch``). Each run then presents the
     *old* binding to the engine, so changed data is rejected by the engine itself, and a changed
     plan by its digest.
     """
@@ -378,6 +425,21 @@ def replay(
     runs = _check_runs(runs)
     timeout = _check_timeout(timeout)
     policy = _check_limits(policy)
+    data_path = _check_data_path(data_path)
+    # Trusted policy first, before any integrity work (final review B1). Limits that cannot be
+    # reconstructed are reported by the integrity check replay_inputs_valid instead.
+    try:
+        recorded_limits: Limits | None = limits_from_dict(passport["inputs"]["limits"])
+    except AxiomError:
+        recorded_limits = None
+    if recorded_limits is not None:
+        over = limits_within_policy(recorded_limits, policy)
+        if over:
+            raise VerifyError(
+                "limits_exceed_policy",
+                "the passport records resource limits above the local policy; nothing was executed",
+                fields=over,
+            )
     started = _now()
     integrity = integrity_checks(passport)
     report: dict[str, Any] = {
@@ -411,14 +473,7 @@ def replay(
         report["finished_utc"] = _now()
         return report
 
-    limits = limits_from_dict(passport["inputs"]["limits"])
-    over = limits_within_policy(limits, policy)
-    if over:
-        raise VerifyError(
-            "limits_exceed_policy",
-            "the passport records resource limits above the local policy; nothing was executed",
-            fields=over,
-        )
+    limits = limits_from_dict(passport["inputs"]["limits"])  # valid: replay_inputs_valid passed
     profile = profile_from_dict(passport["inputs"]["csv_profile"])
     identity = passport["identity"]
     binding = {
@@ -650,9 +705,11 @@ def compare_passports(reference: dict[str, Any], observed: dict[str, Any]) -> di
     """Compare two passports' results (for example macOS arm64 versus Windows x64).
 
     Both passports are validated (raises :class:`~axiom.passport.PassportError`) and
-    integrity-checked first. The inputs (raw bytes, typed dataset, plan) must be identical,
-    otherwise the comparison is an integrity mismatch and the results are not compared. Byte
-    identity is required unless the two environments were observed to differ.
+    integrity-checked first. No local resource policy applies here, since nothing is executed;
+    validation, integrity checks and comparison are linear in the size of the two documents and
+    never sized by a count the documents state. The inputs (raw bytes, typed dataset, plan) must
+    be identical, otherwise the comparison is an integrity mismatch and the results are not
+    compared. Byte identity is required unless the two environments were observed to differ.
     """
     validate_passport(reference)
     validate_passport(observed)

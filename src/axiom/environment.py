@@ -79,7 +79,7 @@ def _source_root() -> Path | None:
 def _git(root: Path, *args: str) -> str | None:
     try:
         proc = subprocess.run(
-            ["git", *args],
+            ["git", "--no-optional-locks", *args],  # read-only: never refresh the index
             cwd=root,
             capture_output=True,
             text=True,
