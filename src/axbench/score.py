@@ -13,6 +13,20 @@ before any human correction. Canonical semantic comparison follows the engine co
 * ``CLARIFY`` / ``REJECT``: the action and the frozen reason code; optional hints are not scored.
 
 Accepted variants listed on an example (fixed before predictions) also count as a match.
+
+Version 0.2 (Phase 3A review of PR #8; 0.1 is preserved with EXP-008 at its commit):
+
+* a match requires a **semantically valid** candidate (0.1 counted, for example, a ``CLARIFY`` with
+  the right reason but a nonexistent column id as exact);
+* action, operation, slot and reason metrics credit only semantically valid candidates, so an
+  invalid prediction is wrong on every metric; ``raw_action_recognition`` separately reports the
+  action of any schema-valid candidate, valid or not;
+* per-class precision/recall/F1 use zero for an undefined ratio when the class has gold support, so
+  a supported class with no predicted positives contributes F1 = 0 to the macro F1 (0.1 omitted
+  it); classes without gold support are listed as excluded, never silently dropped;
+* one prediction per example: duplicate or unknown prediction ids are an error
+  (:func:`index_predictions`), never a silent overwrite.
+
 Secondary metrics separate JSON validity, candidate-schema validity, semantic validity, the Guard
 outcome, operation and slot accuracy, clarification and rejection recall, false rejection,
 coverage, wrong executable proposals and unauthorized dispatches.
@@ -33,7 +47,7 @@ from axiom_router.semantic import SemanticError, validate_candidate
 
 from .stats import cluster_bootstrap, wilson
 
-SCORE_VERSION = "axbench.score/0.1"
+SCORE_VERSION = "axbench.score/0.2"
 STATUSES = ("ok", "timeout", "unavailable", "error")
 
 
@@ -64,6 +78,7 @@ class Scored:
     error_stage: str | None
     error_code: str | None
     exact_match: bool
+    raw_action: str | None
     action_match: bool
     reason_match: bool | None
     operation_match: bool | None
@@ -130,15 +145,16 @@ def score_one(example: dict[str, Any], prediction: dict[str, Any]) -> Scored:
     gold_keys = {semantic_key(gold)} | {
         semantic_key(v) for v in example.get("accepted_variants", [])
     }
-    exact = pred is not None and semantic_key(pred) in gold_keys
-    action_match = pred is not None and pred["action"] == gold["action"]
+    valid = pred if semantic_valid else None  # only a valid candidate earns credit (0.2)
+    exact = valid is not None and semantic_key(valid) in gold_keys
+    action_match = valid is not None and valid["action"] == gold["action"]
     reason_match = None
     if gold["action"] != "PLAN":
-        reason_match = action_match and pred.get("reason") == gold.get("reason")
+        reason_match = action_match and valid.get("reason") == gold.get("reason")
     op_match = None
     if gold["action"] == "PLAN":
-        op_match = action_match and pred.get("operation") == gold["operation"]
-    accepted_plan = pred is not None and pred["action"] == "PLAN" and semantic_valid
+        op_match = action_match and valid.get("operation") == gold["operation"]
+    accepted_plan = valid is not None and valid["action"] == "PLAN"
     elapsed = prediction.get("elapsed_ms")
     return Scored(
         id=example["id"],
@@ -150,10 +166,11 @@ def score_one(example: dict[str, Any], prediction: dict[str, Any]) -> Scored:
         error_stage=stage,
         error_code=code,
         exact_match=exact,
+        raw_action=pred["action"] if pred is not None else None,
         action_match=action_match,
         reason_match=reason_match,
         operation_match=op_match,
-        slots=_slots(gold, pred),
+        slots=_slots(gold, valid),
         validator_accepted_plan=accepted_plan,
         wrong_executable=accepted_plan and not exact,
         elapsed_ms=float(elapsed) if isinstance(elapsed, (int, float)) else None,
@@ -165,17 +182,71 @@ def _rate(num: int, den: int) -> dict[str, Any]:
 
 
 def _prf(golds: list[str], preds: list[str | None], label: str) -> dict[str, Any]:
+    """Per-class scores; for a class with gold support an undefined ratio counts as zero.
+
+    A class without gold support has no defined recall or F1 (``None``) and is excluded from the
+    macro average by :func:`summarize`, which lists it.
+    """
     tp = sum(1 for g, p in zip(golds, preds, strict=True) if g == label and p == label)
     fp = sum(1 for g, p in zip(golds, preds, strict=True) if g != label and p == label)
     fn = sum(1 for g, p in zip(golds, preds, strict=True) if g == label and p != label)
-    precision = tp / (tp + fp) if tp + fp else None
-    recall = tp / (tp + fn) if tp + fn else None
-    f1 = (
-        2 * precision * recall / (precision + recall)
-        if precision is not None and recall is not None and precision + recall
-        else (0.0 if precision is not None and recall is not None else None)
-    )
-    return {"precision": precision, "recall": recall, "f1": f1, "support": tp + fn}
+    support = tp + fn
+    if not support:
+        return {
+            "precision": (tp / (tp + fp)) if tp + fp else None,
+            "recall": None,
+            "f1": None,
+            "support": 0,
+            "predicted": tp + fp,
+        }
+    precision = tp / (tp + fp) if tp + fp else 0.0
+    recall = tp / support
+    f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
+    return {
+        "precision": precision,
+        "recall": recall,
+        "f1": f1,
+        "support": support,
+        "predicted": tp + fp,
+    }
+
+
+ACTIONS = ("PLAN", "CLARIFY", "REJECT")
+
+
+def index_predictions(
+    examples: Sequence[dict[str, Any]], predictions: Sequence[dict[str, Any]]
+) -> tuple[list[dict[str, Any]], int]:
+    """One prediction per example id, in example order; missing ones become ``error``.
+
+    Raises ``ValueError`` on a duplicate prediction id, an id that is not in ``examples`` or a
+    prediction without a string id: a prediction file must never be silently overwritten or
+    partially ignored.
+    """
+    ids = [e["id"] for e in examples]
+    if len(set(ids)) != len(ids):
+        raise ValueError("duplicate example ids")
+    by_id: dict[str, dict[str, Any]] = {}
+    duplicates: list[str] = []
+    unknown: list[str] = []
+    known = set(ids)
+    for p in predictions:
+        pid = p.get("example_id") if isinstance(p, dict) else None
+        if not isinstance(pid, str):
+            raise ValueError("prediction without a string example_id")
+        if pid in by_id:
+            duplicates.append(pid)
+        elif pid not in known:
+            unknown.append(pid)
+        else:
+            by_id[pid] = p
+    if duplicates or unknown:
+        raise ValueError(
+            f"prediction ids must match the examples one to one: {len(duplicates)} duplicate "
+            f"({sorted(set(duplicates))[:5]}), {len(unknown)} unknown ({sorted(unknown)[:5]})"
+        )
+    ordered = [by_id.get(i, {"status": "error", "raw_output": None}) for i in ids]
+    return ordered, sum(1 for i in ids if i not in by_id)
 
 
 def summarize(
@@ -191,7 +262,8 @@ def summarize(
         raise ValueError("one score per example is required")
     golds = [e["gold"] for e in examples]
     g_action = [g["action"] for g in golds]
-    p_action = [s.predicted["action"] if s.predicted else None for s in scored]
+    # Only semantically valid candidates have a predicted action (0.2); see raw_action_recognition.
+    p_action = [s.predicted["action"] if s.semantic_valid else None for s in scored]
     em = [s.exact_match for s in scored]
     out: dict[str, Any] = {"n": n}
     out["primary_semantic_exact_match"] = {
@@ -209,10 +281,20 @@ def summarize(
         sorted(Counter(f"{s.error_stage}/{s.error_code}" for s in scored if s.error_code).items())
     )
     out["action_accuracy"] = _rate(sum(s.action_match for s in scored), n)
-    per_class = {a: _prf(g_action, p_action, a) for a in ("PLAN", "CLARIFY", "REJECT")}
-    f1s = [v["f1"] for v in per_class.values() if v["f1"] is not None]
+    out["raw_action_recognition"] = {
+        **_rate(sum(s.raw_action == g for s, g in zip(scored, g_action, strict=True)), n),
+        "note": "action of any schema-valid candidate, including semantically invalid ones",
+    }
+    per_class = {a: _prf(g_action, p_action, a) for a in ACTIONS}
+    included = [a for a in ACTIONS if per_class[a]["support"]]
     out["action_per_class"] = per_class
-    out["action_macro_f1"] = sum(f1s) / len(f1s) if f1s else None
+    out["action_macro_f1"] = (
+        sum(per_class[a]["f1"] for a in included) / len(included) if included else None
+    )
+    out["action_macro_f1_classes"] = {
+        "included": included,
+        "excluded_no_gold_support": [a for a in ACTIONS if a not in included],
+    }
     gold_plan = [i for i, a in enumerate(g_action) if a == "PLAN"]
     gold_clarify = [i for i, a in enumerate(g_action) if a == "CLARIFY"]
     gold_reject = [i for i, a in enumerate(g_action) if a == "REJECT"]
@@ -244,7 +326,7 @@ def summarize(
         sum(p_action[i] == "REJECT" for i in supported), len(supported)
     )
     accepted = [i for i, s in enumerate(scored) if s.validator_accepted_plan]
-    proposed = [i for i, s in enumerate(scored) if s.predicted and s.predicted["action"] == "PLAN"]
+    proposed = [i for i, s in enumerate(scored) if s.raw_action == "PLAN"]
     out["plan_coverage_all"] = _rate(len(accepted), n)
     out["plan_coverage_gold_plan"] = _rate(
         sum(scored[i].validator_accepted_plan and scored[i].exact_match for i in gold_plan),

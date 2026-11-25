@@ -17,7 +17,15 @@ from .contract import (
     parse_candidate,
     parse_strict_json,
 )
-from .guard import GUARD_POLICY_VERSION, ConfirmationView, Guard, GuardError, Review, ReviewStatus
+from .guard import (
+    GUARD_POLICY_VERSION,
+    ConfirmationView,
+    Guard,
+    GuardError,
+    RequestContext,
+    Review,
+    ReviewStatus,
+)
 from .prompt import PROMPT_VERSION, RouterInput, RouterInputError, build_router_input
 from .schema import SchemaView, display_name, project_columns, project_schema
 from .semantic import Resolved, SemanticError, validate_candidate
@@ -35,6 +43,7 @@ __all__ = [
     "ConfirmationView",
     "Guard",
     "GuardError",
+    "RequestContext",
     "Resolved",
     "Review",
     "ReviewStatus",

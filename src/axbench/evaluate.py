@@ -9,6 +9,11 @@ Three layers are reported separately (DR-005):
    dispatch (the harness never confirms). The expected count is zero; zero observed is not proof.
 
 Systems receive only :class:`axiom_router.RouterInput` (request + schema projection).
+
+Version 0.2 (Phase 3A review of PR #8): the Guard layer opens a request context
+(:meth:`axiom_router.Guard.begin_request`) before reviewing each answer, as the application must;
+an awaiting-confirmation preview counts as correct when it matches the gold label *or* an accepted
+variant (the same rule as the raw exact match); prediction ids must match the examples one to one.
 """
 
 from __future__ import annotations
@@ -23,15 +28,16 @@ from collections.abc import Callable, Sequence
 from typing import Any
 
 from axiom.ingest import ColumnSpec, CsvProfile, load_csv_bytes
-from axiom_router import Guard, ReviewStatus, build_router_input
+from axiom_router import Guard, ReviewStatus, build_router_input, parse_candidate
+from axiom_router.contract import candidate_to_dict
 from axiom_router.prompt import RouterInputError
 from axiom_router.rules import Lexicon, RuleRouter
 from axiom_router.schema import project_columns
 
 from .families import FAMILIES, GENERIC, STYLES, column_name
-from .score import SCORE_VERSION, score_one, slices, summarize
+from .score import SCORE_VERSION, index_predictions, score_one, semantic_key, slices, summarize
 
-HARNESS_VERSION = "axbench.evaluate/0.1"
+HARNESS_VERSION = "axbench.evaluate/0.2"
 Router = Callable[[Any], str]
 
 
@@ -127,25 +133,29 @@ def guard_layer(
 
     statuses: Counter[str] = Counter()
     awaiting_correct = awaiting_wrong = 0
-    from .score import semantic_key
 
     for e, p in zip(examples, predictions, strict=True):
         guard = Guard(synthetic_dataset(e["schema"]), executor=spy)
+        try:
+            context = guard.begin_request(e["request"])
+        except RouterInputError:  # the application would not have called the router
+            statuses["router_input_rejected"] += 1
+            continue
         if p.get("status") != "ok":
             status = {
                 "timeout": ReviewStatus.ROUTER_TIMEOUT,
                 "unavailable": ReviewStatus.ROUTER_UNAVAILABLE,
             }.get(p.get("status"), ReviewStatus.ROUTER_ERROR)
-            review = Guard.router_failure(status)
+            review = guard.router_failure(context, status)
         else:
-            review = guard.review_candidate_text(p.get("raw_output"))
+            review = guard.review_candidate_text(context, p.get("raw_output"))
         statuses[review.status.value] += 1
         if review.status is ReviewStatus.AWAITING_CONFIRMATION:
-            from axiom_router import parse_candidate
-            from axiom_router.contract import candidate_to_dict
-
+            gold_keys = {semantic_key(e["gold"])} | {
+                semantic_key(v) for v in e.get("accepted_variants", [])
+            }
             pred_key = semantic_key(candidate_to_dict(parse_candidate(p["raw_output"])))
-            if pred_key == semantic_key(e["gold"]):
+            if pred_key in gold_keys:
                 awaiting_correct += 1
             else:
                 awaiting_wrong += 1
@@ -168,9 +178,7 @@ def evaluate(
     split: str,
     bootstrap_reps: int = 2000,
 ) -> dict[str, Any]:
-    by_id = {p["example_id"]: p for p in predictions}
-    ordered = [by_id.get(e["id"], {"status": "error", "raw_output": None}) for e in examples]
-    missing = sum(1 for e in examples if e["id"] not in by_id)
+    ordered, missing = index_predictions(examples, predictions)
     scored = [score_one(e, p) for e, p in zip(examples, ordered, strict=True)]
     return {
         "harness_version": HARNESS_VERSION,

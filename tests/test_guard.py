@@ -56,6 +56,11 @@ def _guard(ds=DS, **kw) -> tuple[Guard, Spy]:
     return Guard(ds, executor=spy, **kw), spy
 
 
+def _ask(guard: Guard, text, request: str = "analyse this"):
+    """The application flow: open a trusted request context, then review the router answer."""
+    return guard.review_candidate_text(guard.begin_request(request), text)
+
+
 # --------------------------------------------------------------------------- positive
 
 
@@ -100,7 +105,7 @@ def _guard(ds=DS, **kw) -> tuple[Guard, Spy]:
 )
 def test_confirmed_preview_dispatches_exactly_once(text, plan) -> None:
     guard, spy = _guard()
-    review = guard.review_candidate_text(text)
+    review = _ask(guard, text)
     assert review.status is ReviewStatus.AWAITING_CONFIRMATION
     assert review.structurally_valid and review.semantically_valid
     assert spy.calls == []  # a valid candidate is not authorized by itself
@@ -116,7 +121,7 @@ def test_confirmed_preview_dispatches_exactly_once(text, plan) -> None:
 
 def test_confirmation_view_shows_exact_resolved_plan() -> None:
     guard, _ = _guard()
-    view = guard.review_candidate_text(CLUSTER).confirmation
+    view = _ask(guard, CLUSTER).confirmation
     assert view.operation == "cluster"
     assert [(c["role"], c["id"], c["name"], c["kind"]) for c in view.columns] == [
         ("feature", "c2", "income", "numeric"),
@@ -174,7 +179,7 @@ def test_manual_path_needs_no_router() -> None:
 )
 def test_invalid_candidates_never_dispatch(text, status, code) -> None:
     guard, spy = _guard(limits=Limits(max_cluster_work=10_000))
-    review = guard.review_candidate_text(text)
+    review = _ask(guard, text)
     assert review.status is status
     if code:
         assert review.code == code
@@ -184,7 +189,7 @@ def test_invalid_candidates_never_dispatch(text, status, code) -> None:
 
 def test_binding_rejection_reports_core_code() -> None:
     guard, spy = _guard(limits=Limits(max_cluster_work=10_000))
-    review = guard.review_candidate_text(CLUSTER)
+    review = _ask(guard, CLUSTER)
     assert review.status is ReviewStatus.BINDING_REJECTED
     assert review.code == "cluster_workload_too_large"
     assert spy.calls == []
@@ -192,41 +197,44 @@ def test_binding_rejection_reports_core_code() -> None:
 
 def test_clarify_and_reject_are_outcomes_not_dispatches() -> None:
     guard, spy = _guard()
-    c = guard.review_candidate_text(
-        "{" + V + ',"action":"CLARIFY","reason":"missing_correlation_method","operation":"relate"}'
+    c = _ask(
+        guard,
+        "{" + V + ',"action":"CLARIFY","reason":"missing_correlation_method","operation":"relate"}',
     )
-    r = guard.review_candidate_text("{" + V + ',"action":"REJECT","reason":"causal_inference"}')
+    r = _ask(guard, "{" + V + ',"action":"REJECT","reason":"causal_inference"}')
     assert (c.status, c.reason) == (ReviewStatus.CLARIFY, "missing_correlation_method")
     assert (r.status, r.reason) == (ReviewStatus.REJECT, "causal_inference")
-    bad_hint = guard.review_candidate_text(
-        "{" + V + ',"action":"CLARIFY","reason":"ambiguous_column","columns":["c2","c7"]}'
+    bad_hint = _ask(
+        guard, "{" + V + ',"action":"CLARIFY","reason":"ambiguous_column","columns":["c2","c7"]}'
     )
     assert bad_hint.status is ReviewStatus.SEMANTIC_INVALID
     assert spy.calls == []
 
 
 def test_router_failures_are_system_statuses_not_rejections() -> None:
+    guard, spy = _guard()
     for status in (
         ReviewStatus.ROUTER_UNAVAILABLE,
         ReviewStatus.ROUTER_TIMEOUT,
         ReviewStatus.ROUTER_ERROR,
     ):
-        review = Guard.router_failure(status, "x")
+        review = guard.router_failure(guard.begin_request("q"), status, "x")
         assert review.status is status and review.reason is None
         assert not review.structurally_valid and not review.semantically_valid
     with pytest.raises(ValueError):
-        Guard.router_failure(ReviewStatus.REJECT)
+        guard.router_failure(guard.begin_request("q"), ReviewStatus.REJECT)
+    assert spy.calls == []
 
 
 def test_unconfirmed_preview_never_dispatches() -> None:
     guard, spy = _guard()
     for text in (RELATE, INSPECT, COMPARE, CLUSTER):
-        guard.review_candidate_text(text)
+        _ask(guard, text)
     assert spy.calls == []
 
 
 def _open(guard: Guard, text: str = RELATE):
-    view = guard.review_candidate_text(text).confirmation
+    view = _ask(guard, text).confirmation
     assert view is not None
     return view
 
@@ -299,8 +307,11 @@ def test_wrong_reused_or_foreign_confirmations_are_refused() -> None:
     view = _open(guard)
     flipped = ("0" if view.confirmation_digest[0] != "0" else "1") + view.confirmation_digest[1:]
     _refused(guard, spy, view.token, flipped, "digest_mismatch")
-    _refused(guard, spy, view.token, "", "digest_mismatch")
-    _refused(guard, spy, view.token + "x", view.confirmation_digest, "unknown_token")
+    # guard-policy/2: values that cannot be a digest or token are shape errors, checked first.
+    _refused(guard, spy, view.token, "", "malformed_confirmation")
+    _refused(guard, spy, view.token + "x", view.confirmation_digest, "malformed_confirmation")
+    unknown = ("A" if view.token[0] != "A" else "B") + view.token[1:]
+    _refused(guard, spy, unknown, view.confirmation_digest, "unknown_token")
     _refused(guard, spy, None, view.confirmation_digest, "malformed_confirmation")
     _refused(guard, spy, view.token, None, "malformed_confirmation")
     other_guard, other_spy = _guard()
@@ -402,8 +413,9 @@ def test_malicious_headers_are_data_and_displayed_visibly() -> None:
     )
     ds = make_dataset(header + "\n" + rows + "\n", spec)
     guard, spy = _guard(ds)
-    review = guard.review_candidate_text(
-        "{" + V + ',"action":"PLAN","operation":"relate","x":"c2","y":"c3","method":"spearman"}'
+    review = _ask(
+        guard,
+        "{" + V + ',"action":"PLAN","operation":"relate","x":"c2","y":"c3","method":"spearman"}',
     )
     names = [c["name"] for c in review.confirmation.columns]
     assert names == ["=cmd|' /C calc'!A0", "gelir\\u{202E}(LT)"]
@@ -416,8 +428,9 @@ def test_colliding_column_names_require_disambiguation() -> None:
     spec = {"region": "text", "Gelir": "numeric", "gelir": "numeric", "age": "numeric"}
     ds = make_dataset("region,Gelir,gelir,age\na,1,2,3\nb,2,3,5\nc,4,1,6\n", spec)
     guard, spy = _guard(ds)
-    review = guard.review_candidate_text(
-        "{" + V + ',"action":"PLAN","operation":"relate","x":"c2","y":"c4","method":"pearson"}'
+    review = _ask(
+        guard,
+        "{" + V + ',"action":"PLAN","operation":"relate","x":"c2","y":"c4","method":"pearson"}',
     )
     assert (review.status, review.code) == (ReviewStatus.SEMANTIC_INVALID, "column_collision")
     # The manual path can still choose the exact column explicitly.

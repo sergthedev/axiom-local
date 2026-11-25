@@ -10,6 +10,16 @@ Four questions are kept apart:
 4. **execution authorization**: has the person confirmed *this* preview, for *this* dataset
    snapshot, and has nothing changed since? Only then is the executor called, exactly once.
 
+Router calls are bound to a trusted **request context** (revision 2, after the Phase 3A review):
+:meth:`Guard.begin_request` captures the current dataset fingerprints, schema digest and a random,
+session-local request id *before* inference and returns the exact router input. A router answer is
+accepted only through :meth:`Guard.review_candidate_text` with that context, only once, and only
+while the context is the newest request of this session and its dataset and schema are still
+current. A late, duplicated, out-of-order, cancelled or cross-dataset answer is refused as
+``stale_response`` before any parsing or column resolution, so schema-local ids are never resolved
+against a schema the router did not see. The request id is never shown to the router and carries
+no authority by itself.
+
 A valid candidate is never authorized by itself. Confirmation is tied to a trusted pending record
 held by this ``Guard`` instance (one session): a random token, the digest of what was displayed
 (plan digest, dataset fingerprints, schema digest, policy versions), a creation time and a state.
@@ -29,6 +39,7 @@ person intended: confirmation authorizes execution, it does not validate intent.
 from __future__ import annotations
 
 import hmac
+import re
 import secrets
 import threading
 import time
@@ -60,12 +71,16 @@ from .contract import (
     RejectCandidate,
     parse_candidate,
 )
+from .prompt import RouterInput, build_router_input
 from .schema import SchemaView, display_name, project_schema
 from .semantic import SemanticError, validate_candidate
 
-GUARD_POLICY_VERSION = "axiom.guard-policy/1"
+GUARD_POLICY_VERSION = "axiom.guard-policy/2"
 DEFAULT_TTL_SECONDS = 900.0
 MAX_CLOSED_RECORDS = 256  # closed previews remembered so a reused token reports why it is refused
+MAX_CLOSED_REQUESTS = 256  # closed request contexts remembered so a late answer reports why
+_TOKEN_RE = re.compile(r"[A-Za-z0-9_-]{32}", re.ASCII)  # secrets.token_urlsafe(24)
+_DIGEST_RE = re.compile(r"[0-9a-f]{64}", re.ASCII)
 
 Executor = Callable[[Dataset, BoundPlan, Limits], AnalysisResult]
 
@@ -75,6 +90,8 @@ class ReviewStatus(StrEnum):
     ROUTER_UNAVAILABLE = "router_unavailable"
     ROUTER_TIMEOUT = "router_timeout"
     ROUTER_ERROR = "router_error"
+    # The answer does not belong to the newest open request for the current dataset.
+    STALE_RESPONSE = "stale_response"
     # Structural stage.
     INVALID_JSON = "invalid_json"
     INVALID_CANDIDATE = "invalid_candidate"
@@ -127,6 +144,7 @@ class Review:
     @property
     def structurally_valid(self) -> bool:
         return self.status not in ROUTER_FAILURES and self.status not in (
+            ReviewStatus.STALE_RESPONSE,
             ReviewStatus.INVALID_JSON,
             ReviewStatus.INVALID_CANDIDATE,
         )
@@ -147,6 +165,31 @@ _MISSING = {
     "non-missing measure values.",
     "cluster": "Only rows with a value in every feature are clustered; others are excluded.",
 }
+
+
+@dataclass(frozen=True, slots=True)
+class RequestContext:
+    """Trusted record of one router request, created by the Guard before inference.
+
+    ``router_input`` is what the router receives; the other fields stay with the application and
+    are never sent to the router.
+    """
+
+    request_id: str
+    generation: int
+    router_input: RouterInput
+    dataset_raw_sha256: str
+    dataset_logical_sha256: str
+    schema_sha256: str
+
+
+class _RequestState(StrEnum):
+    OPEN = "open"
+    ANSWERED = "answered"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+    SUPERSEDED = "superseded"
+    STALE = "stale"
 
 
 class _State(StrEnum):
@@ -204,6 +247,8 @@ class Guard:
         self._clock = clock
         self._ttl = float(ttl_seconds)
         self._pending: dict[str, _Pending] = {}
+        self._requests: dict[str, tuple[RequestContext, _RequestState]] = {}
+        self._generation = 0
 
     # ------------------------------------------------------------------ session state
 
@@ -217,6 +262,7 @@ class Guard:
             raise TypeError("Guard requires a Dataset")
         with self._lock:
             self._invalidate_all(_State.STALE)
+            self._close_requests(_RequestState.STALE)
             self._dataset = dataset
             self._view = project_schema(dataset)
 
@@ -228,23 +274,70 @@ class Guard:
 
     # ------------------------------------------------------------------ proposals
 
-    @staticmethod
-    def router_failure(status: ReviewStatus, code: str | None = None) -> Review:
-        """Record a technical router failure (unavailable, timeout, error): never a REJECT."""
+    def begin_request(self, request: Any) -> RequestContext:
+        """Open a router request for the current dataset; returns the context and router input.
+
+        Raises :class:`~axiom_router.prompt.RouterInputError` when the request or schema cannot be
+        given to a router (the manual path remains). Opening a request supersedes every earlier
+        open request and every open preview: the person has moved on to a new question.
+        """
+        with self._lock:
+            router_input = build_router_input(request, self._view)
+            self._close_requests(_RequestState.SUPERSEDED)
+            self._invalidate_all(_State.SUPERSEDED)
+            self._generation += 1
+            context = RequestContext(
+                request_id=secrets.token_urlsafe(24),
+                generation=self._generation,
+                router_input=router_input,
+                dataset_raw_sha256=self._dataset.raw_sha256,
+                dataset_logical_sha256=self._dataset.logical_sha256,
+                schema_sha256=self._view.schema_sha256,
+            )
+            self._requests[context.request_id] = (context, _RequestState.OPEN)
+            return context
+
+    def cancel_request(self, context: RequestContext) -> None:
+        """The person withdrew the request; a later router answer is refused."""
+        with self._lock:
+            entry = self._requests.get(getattr(context, "request_id", None))
+            if entry is not None and entry[0] == context and entry[1] is _RequestState.OPEN:
+                self._requests[context.request_id] = (context, _RequestState.CANCELLED)
+
+    def router_failure(
+        self, context: RequestContext, status: ReviewStatus, code: str | None = None
+    ) -> Review:
+        """Record a technical router failure (unavailable, timeout, error): never a REJECT.
+
+        The request is closed, so a router answer arriving after its timeout is refused.
+        """
         if status not in ROUTER_FAILURES:
             raise ValueError("not a router failure status")
-        return Review(status, code=code)
-
-    def review_candidate_text(self, text: Any, *, source: str = "model") -> Review:
-        """Validate router output and, for a valid PLAN, open a confirmation preview."""
-        try:
-            candidate = parse_candidate(text, self._candidate_limits)
-        except CandidateError as exc:
-            status = (
-                ReviewStatus.INVALID_JSON if exc.stage == "json" else ReviewStatus.INVALID_CANDIDATE
-            )
-            return Review(status, code=exc.code)
         with self._lock:
+            refusal = self._take_request(context, _RequestState.FAILED)
+        return refusal if refusal is not None else Review(status, code=code)
+
+    def review_candidate_text(
+        self, context: RequestContext, text: Any, *, source: str = "model"
+    ) -> Review:
+        """Validate the router answer to ``context`` and, for a valid PLAN, open a preview.
+
+        The context is checked first (and closed: one answer per request). Parsing and column
+        resolution happen only for the newest open request whose dataset and schema are current.
+        """
+        with self._lock:
+            refusal = self._take_request(context, _RequestState.ANSWERED)
+            if refusal is not None:
+                return refusal
+            try:
+                candidate = parse_candidate(text, self._candidate_limits)
+            except CandidateError as exc:
+                status = (
+                    ReviewStatus.INVALID_JSON
+                    if exc.stage == "json"
+                    else ReviewStatus.INVALID_CANDIDATE
+                )
+                return Review(status, code=exc.code)
             try:
                 resolved = validate_candidate(candidate, self._view, self._limits)
             except SemanticError as exc:
@@ -256,6 +349,35 @@ class Guard:
             assert resolved.plan is not None
             return self._open_preview(resolved.plan, source)
 
+    def _take_request(self, context: Any, closed_as: _RequestState) -> Review | None:
+        # Caller holds the lock. Returns a refusal, or None after closing the request.
+        request_id = getattr(context, "request_id", None)
+        entry = self._requests.get(request_id) if isinstance(request_id, str) else None
+        if entry is None or entry[0] != context:
+            return Review(ReviewStatus.STALE_RESPONSE, code="unknown_request")
+        stored, state = entry
+        if state is not _RequestState.OPEN:
+            return Review(ReviewStatus.STALE_RESPONSE, code=f"request_{state.value}")
+        if (
+            stored.generation != self._generation
+            or stored.dataset_raw_sha256 != self._dataset.raw_sha256
+            or stored.dataset_logical_sha256 != self._dataset.logical_sha256
+            or stored.schema_sha256 != self._view.schema_sha256
+        ):
+            self._requests[request_id] = (stored, _RequestState.STALE)
+            return Review(ReviewStatus.STALE_RESPONSE, code="request_stale")
+        self._requests[request_id] = (stored, closed_as)
+        return None
+
+    def _close_requests(self, state: _RequestState) -> None:
+        # Caller holds the lock.
+        for request_id, (ctx, current) in list(self._requests.items()):
+            if current is _RequestState.OPEN:
+                self._requests[request_id] = (ctx, state)
+        closed = [r for r, (_, st) in self._requests.items() if st is not _RequestState.OPEN]
+        for old in closed[: max(0, len(closed) - MAX_CLOSED_REQUESTS)]:
+            del self._requests[old]  # an evicted request is then reported as unknown: refused
+
     def propose_manual(self, plan: CandidatePlan) -> Review:
         """Manual path: a Core plan written or edited by a person gets the same preview."""
         try:
@@ -263,6 +385,7 @@ class Guard:
         except PlanError as exc:
             return Review(ReviewStatus.INVALID_CANDIDATE, code=exc.code)
         with self._lock:
+            self._close_requests(_RequestState.SUPERSEDED)  # a late router answer cannot replace it
             return self._open_preview(plan, "manual")
 
     def edit(self, token: str, plan: CandidatePlan) -> Review:
@@ -346,8 +469,14 @@ class Guard:
 
     def confirm(self, token: Any, confirmation_digest: Any) -> AnalysisResult:
         """Execute a previewed plan once, after every check passes; otherwise raise GuardError."""
-        if not isinstance(token, str) or not isinstance(confirmation_digest, str):
-            raise GuardError("malformed_confirmation", "token and digest must be text")
+        if (
+            not isinstance(token, str)
+            or not isinstance(confirmation_digest, str)
+            or _TOKEN_RE.fullmatch(token) is None
+            or _DIGEST_RE.fullmatch(confirmation_digest) is None
+        ):
+            # Shape first: hmac.compare_digest raises TypeError on non-ASCII text.
+            raise GuardError("malformed_confirmation", "token or digest has the wrong shape")
         with self._lock:
             record = self._pending.get(token)
             if record is None:
@@ -392,6 +521,7 @@ __all__ = [
     "ConfirmationView",
     "Guard",
     "GuardError",
+    "RequestContext",
     "Review",
     "ReviewStatus",
 ]
