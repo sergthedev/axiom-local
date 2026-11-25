@@ -5,4 +5,9 @@ Statuses: Proposed, Accepted, Superseded, Rejected. Cite `REF-NNN` IDs from `REF
 
 | ADR | Title | Status |
 |-----|-------|--------|
-| [0001](0001-initial-architecture.md) | Initial architecture and tooling | Proposed |
+| [0001](0001-initial-architecture.md) | Initial architecture and tooling | Accepted by technical lead; owner approval pending |
+| [0002](0002-dependency-stack-and-python-version.md) | Dependency stack and Python version | Proposed |
+| [0003](0003-input-guard-and-dataset-snapshot.md) | Input guard, dataset snapshot and provisional caps | Proposed |
+| [0004](0004-statistical-kernels-and-accuracy-criteria.md) | Inspect, Relate and Compare kernels and accuracy criteria | Proposed |
+| [0005](0005-typed-plans-binding-and-result-serialization.md) | Typed plans, plan binding and result serialization v1 | Proposed |
+| [0006](0006-kmeans-contract-and-postconditions.md) | K-means contract and independent postconditions | Proposed |

@@ -1,6 +1,6 @@
 # ADR 0001: Initial architecture and tooling
 
-- Status: Proposed (awaiting technical review and owner approval)
+- Status: Accepted by the technical lead as part of the Issue #1 foundation review ([review](https://github.com/sergthedev/axiom-local/issues/1#issuecomment-7166799471)); formal owner approval is not recorded here and remains pending
 - Date: 2026-11-25
 - Issue / PR: Issue #1
 
@@ -30,12 +30,12 @@ libraries (e.g. for statistics) are **not** chosen here; that requires research 
 ## Tradeoffs and consequences
 
 - uv adds a tool prerequisite for contributors.
-- Zero runtime dependencies keeps the skeleton light but defers all dependency decisions.
+- Zero runtime dependencies keeps the skeleton light but defers all dependency decisions (superseded in part by ADR 0002 for the numerical dependency stack).
 
 ## Unvalidated assumptions
 
-- That uv and hatchling work equally on Windows CI (not yet observed; see issue report for actual CI state).
-- That Python 3.11 and 3.12 behave identically for our later numerical code (untested).
+- That uv and hatchling work equally on Windows CI (observed afterwards: the `core-tests` run 45644347806 for commit 1d3b646 succeeded on macOS and Windows, inspected independently by the technical lead; one run only).
+- That Python 3.11 and 3.12 behave identically for our later numerical code (untested; Python 3.11 support was dropped in ADR 0002).
 - That a locally fine-tuned small model is accurate enough for intent routing (no data, no measurement).
 - That determinism across macOS arm64 and Windows is achievable within a tolerance (not measured).
 
