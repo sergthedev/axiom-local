@@ -1,6 +1,7 @@
 """Candidate-kernel smoke comparison against exact oracles (records why kernels were chosen).
 
-Run from the repository root:  uv run python benchmarks/issue2_candidate_smoke.py > candidate_smoke.json
+Run from the repository root; output is JSON on stdout:
+  uv run python benchmarks/issue2_candidate_smoke.py > candidate_smoke.json
 Compares, on the same inputs: stdlib vs SciPy vs NumPy kernels, against exact rational oracles.
 Not a performance benchmark and not an accuracy guarantee.
 """

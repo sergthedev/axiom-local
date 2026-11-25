@@ -1,4 +1,4 @@
-"""Provisional engineering caps (ADR 0002).
+"""Provisional engineering caps (ADR 0003).
 
 These are bounded-resource guards, **not** statistical or scientific constants. They are
 conservative starting values chosen before any profiling and must be revisited after profiling.
