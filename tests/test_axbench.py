@@ -352,16 +352,25 @@ def test_export_mlx_writes_no_test_file(tmp_path):
     parse_candidate(first["messages"][-1]["content"])
 
 
-def test_seal_refuses_repository_path_and_short_seed(tmp_path):
+@pytest.fixture(scope="module")
+def frozen_corpus(tmp_path_factory):
+    from axbench.corpus import freeze
+
+    out = tmp_path_factory.mktemp("frozen") / "corpus"
+    freeze(REPO / "data" / "axbench" / "v0.1-draft", out, version="axbench/0.1-unit-frozen")
+    return out
+
+
+def test_seal_refuses_repository_path_and_short_seed(tmp_path, frozen_corpus):
     with pytest.raises(SealError, match="outside the repository"):
-        seal(REPO / "data" / "sealed-test", "x" * 32, size=30)
+        seal(REPO / "data" / "sealed-test", "x" * 32, corpus_dir=frozen_corpus, size=30)
     with pytest.raises(SealError, match="16 characters"):
-        seal(tmp_path / "s", "short", size=30)
+        seal(tmp_path / "s", "short", corpus_dir=frozen_corpus, size=30)
 
 
-def test_seal_writes_verifiable_test_outside_repo(tmp_path):
+def test_seal_writes_verifiable_test_outside_repo(tmp_path, frozen_corpus):
     out = tmp_path / "sealed"
-    manifest = seal(out, "owner-secret-seed-for-unit-test", size=30)
+    manifest = seal(out, "owner-secret-seed-for-unit-test", corpus_dir=frozen_corpus, size=30)
     assert manifest["n_test"] == 30 and manifest["audit_passed"]
     data = (out / "test.jsonl").read_bytes()
     assert hashlib.sha256(data).hexdigest() == manifest["test_sha256"]
@@ -374,7 +383,7 @@ def test_seal_writes_verifiable_test_outside_repo(tmp_path):
     with pytest.raises(SealError, match="does not match"):
         verify_sealed(out / "test.jsonl", out / "SEAL.json")
     with pytest.raises(SealError, match="empty"):
-        seal(out, "owner-secret-seed-for-unit-test", size=30)
+        seal(out, "owner-secret-seed-for-unit-test", corpus_dir=frozen_corpus, size=30)
 
 
 def test_committed_draft_corpus_matches_generator():

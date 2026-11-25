@@ -1,14 +1,20 @@
 """AXBENCH command line: ``python -m axbench <command>`` (ADR 0011).
 
 Commands never write the final test split into the repository and never export it for training.
+Every command except ``generate`` reads the development splits from a committed corpus directory
+(``--corpus``, default the v0.1 draft) after verifying its manifest hashes; nothing else
+regenerates them from templates.
 
-* ``generate --out DIR``: write the development corpus (train, validation) and its manifest;
-* ``audit --out FILE``: audit all splits (test generated in memory with the development seed);
+* ``generate --out DIR``: write a draft development corpus from the templates;
+* ``freeze --corpus DIR --out DIR --version V [--decisions CSV --reviewer R --human-review]``:
+  a frozen corpus version, applying a human reviewer's decisions (an AI review is not one);
+* ``audit --out FILE``: audit the corpus plus a test split generated in memory (development seed);
 * ``review-batch --out DIR``: the Turkish annotation batch for the owner (train/validation only);
 * ``rules --split S --out FILE``: run the rule baseline and write raw predictions;
 * ``score --split S --predictions FILE --out FILE``: score predictions (not the test split);
 * ``export-mlx --out DIR``: chat-format train/valid JSONL for MLX-LM (no test file is written);
-* ``seal --out DIR --seed-file FILE [--owner-lineages FILE]``: owner-only sealing of the test.
+* ``seal --corpus DIR --out DIR --seed-file FILE [--owner-lineages FILE]``: owner-only sealing of
+  the test against a frozen corpus, run by the owner outside any AI tool session.
 """
 
 from __future__ import annotations
@@ -25,15 +31,20 @@ from axiom_router.prompt import build_router_input, chat_messages
 from axiom_router.schema import display_name, project_columns
 
 from .audit import audit
+from .corpus import CorpusError, freeze, load_corpus
 from .evaluate import evaluate, rule_router, run_router
 from .generate import (
     CORPUS_VERSION,
+    DEV_SEEDS,
     GENERATOR_VERSION,
     TARGET_SIZES,
-    generate_all_for_audit,
     generate_development_corpus,
+    generate_split,
+    normalize_request,
 )
 from .score import load_jsonl
+
+DEFAULT_CORPUS = Path(__file__).resolve().parents[2] / "data" / "axbench" / "v0.1-draft"
 
 
 def _dump_jsonl(records: list[dict[str, Any]]) -> str:
@@ -47,13 +58,16 @@ def _write(path: Path, text: str) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def _dev_records() -> dict[str, list[dict[str, Any]]]:
-    return {s: [e.to_record() for e in exs] for s, exs in generate_development_corpus().items()}
+def _corpus(args) -> dict[str, list[dict[str, Any]]]:
+    try:
+        return load_corpus(args.corpus)[1]
+    except CorpusError as exc:
+        raise SystemExit(f"corpus not usable: {exc}") from exc
 
 
 def cmd_generate(args) -> int:
     out = Path(args.out)
-    corpus = _dev_records()
+    corpus = {s: [e.to_record() for e in exs] for s, exs in generate_development_corpus().items()}
     manifest: dict[str, Any] = {
         "corpus_version": CORPUS_VERSION,
         "generator_version": GENERATOR_VERSION,
@@ -70,8 +84,29 @@ def cmd_generate(args) -> int:
     return 0
 
 
+def cmd_freeze(args) -> int:
+    decisions = Path(args.decisions).read_bytes() if args.decisions else None
+    try:
+        manifest = freeze(
+            args.corpus,
+            args.out,
+            version=args.version,
+            decisions_csv=decisions,
+            reviewer=args.reviewer,
+            human_review_attested=args.human_review,
+        )
+    except CorpusError as exc:
+        raise SystemExit(f"freeze refused: {exc}") from exc
+    print(json.dumps({k: manifest[k] for k in ("corpus_version", "files", "human_review")}))
+    return 0
+
+
 def cmd_audit(args) -> int:
-    corpus = {s: [e.to_record() for e in exs] for s, exs in generate_all_for_audit().items()}
+    corpus = _corpus(args)
+    seen = {normalize_request(r["request"]) for records in corpus.values() for r in records}
+    corpus["test"] = [
+        e.to_record() for e in generate_split("test", seed=DEV_SEEDS["test"], seen=seen)
+    ]
     report = audit(corpus)
     report["note"] = (
         "test split generated in memory with the development seed for this audit; "
@@ -145,7 +180,7 @@ def review_selection(
 
 
 def cmd_review(args) -> int:
-    corpus = _dev_records()
+    corpus = _corpus(args)
     batch = review_selection(corpus)
     out = Path(args.out)
     rows = []
@@ -206,23 +241,24 @@ def cmd_review(args) -> int:
     return 0
 
 
-def _split_records(split: str, path: str | None) -> list[dict[str, Any]]:
+def _split_records(args) -> list[dict[str, Any]]:
+    split, path = args.split, args.data
     if split == "test":
         raise SystemExit("the test split is sealed; use the frozen final-evaluation procedure")
     if path:
         return load_jsonl(path)
-    return _dev_records()[split]
+    return _corpus(args)[split]
 
 
 def cmd_rules(args) -> int:
-    records = _split_records(args.split, args.data)
+    records = _split_records(args)
     preds = run_router(rule_router(), records, system="rules")
     _write(Path(args.out), _dump_jsonl(preds))
     return 0
 
 
 def cmd_score(args) -> int:
-    records = _split_records(args.split, args.data)
+    records = _split_records(args)
     preds = load_jsonl(args.predictions)
     report = evaluate(records, preds, system=args.system, split=args.split)
     _write(Path(args.out), json.dumps(report, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
@@ -230,7 +266,7 @@ def cmd_score(args) -> int:
 
 
 def cmd_export_mlx(args) -> int:
-    corpus = _dev_records()
+    corpus = _corpus(args)
     out = Path(args.out)
     for split, name in (("train", "train.jsonl"), ("validation", "valid.jsonl")):
         lines = []
@@ -245,13 +281,16 @@ def cmd_export_mlx(args) -> int:
 
 
 def cmd_seal(args) -> int:
-    from .seal import load_owner_lineages, seal
+    from .seal import SealError, load_owner_lineages, seal
 
     seed = Path(args.seed_file).read_text(encoding="utf-8").strip()
     owner = load_owner_lineages(args.owner_lineages) if args.owner_lineages else None
-    manifest = seal(args.out, seed, owner_lineages=owner)
+    try:
+        manifest = seal(args.out, seed, corpus_dir=args.corpus, owner_lineages=owner)
+    except SealError as exc:
+        raise SystemExit(f"seal refused, nothing written: {exc}") from exc
     print(json.dumps({k: manifest[k] for k in ("test_sha256", "n_test", "audit_passed")}))
-    return 0 if manifest["audit_passed"] else 1
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -261,28 +300,55 @@ def main(argv: list[str] | None = None) -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     sub = parser.add_subparsers(dest="command", required=True)
+
+    def corpus_arg(p, default=True) -> None:
+        p.add_argument(
+            "--corpus",
+            default=str(DEFAULT_CORPUS) if default else None,
+            required=not default,
+            help="committed corpus directory with MANIFEST.json"
+            + (" (default: the v0.1 draft)" if default else ""),
+        )
+
     p = sub.add_parser("generate")
     p.add_argument("--out", required=True)
     p.set_defaults(fn=cmd_generate)
+    p = sub.add_parser("freeze")
+    corpus_arg(p)
+    p.add_argument("--out", required=True)
+    p.add_argument("--version", required=True)
+    p.add_argument("--decisions", help="the review CSV filled in by a human reviewer")
+    p.add_argument("--reviewer", help="reviewer label recorded in provenance (no contact details)")
+    p.add_argument(
+        "--human-review",
+        action="store_true",
+        help="attest that every decision in the CSV was made by the named human reviewer",
+    )
+    p.set_defaults(fn=cmd_freeze)
     p = sub.add_parser("audit")
+    corpus_arg(p)
     p.add_argument("--out")
     p.set_defaults(fn=cmd_audit)
     p = sub.add_parser("review-batch")
+    corpus_arg(p)
     p.add_argument("--out", required=True)
     p.set_defaults(fn=cmd_review)
     for name, fn in (("rules", cmd_rules), ("score", cmd_score)):
         p = sub.add_parser(name)
+        corpus_arg(p)
         p.add_argument("--split", required=True, choices=("train", "validation", "test"))
-        p.add_argument("--data", help="split JSONL (default: regenerate the development corpus)")
+        p.add_argument("--data", help="split JSONL (default: the split from --corpus)")
         p.add_argument("--out", required=True)
         if name == "score":
             p.add_argument("--predictions", required=True)
             p.add_argument("--system", required=True)
         p.set_defaults(fn=fn)
     p = sub.add_parser("export-mlx")
+    corpus_arg(p)
     p.add_argument("--out", required=True)
     p.set_defaults(fn=cmd_export_mlx)
     p = sub.add_parser("seal")
+    corpus_arg(p, default=False)
     p.add_argument("--out", required=True)
     p.add_argument("--seed-file", required=True)
     p.add_argument("--owner-lineages")

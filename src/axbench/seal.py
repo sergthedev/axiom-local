@@ -9,9 +9,16 @@ from a file that the implementing tool never sees. The command writes:
 
 Only ``SEAL.json`` (hashes, counts, generator commit, no texts) is meant to be published before
 the final evaluation. The hash proves later that the evaluated file is the sealed one; it does not
-prevent anyone with the file or the seed from reading it, and the repository templates of the
-test lineages are visible to the implementing tool (see the dataset card). The test file is opened
+prevent anyone with the file or the seed from reading it. A private seed hides which examples are
+drawn, **not** the repository test lineages: their templates are visible to the implementing tool,
+so test examples rendered from them are not blind (see the dataset card). The test file is opened
 for one frozen, pre-registered final evaluation only.
+
+Revision 2 (Phase 3A review): the seal reads the development splits from a **frozen** corpus
+directory and verifies their hashes (no regeneration from templates); the audit runs before
+anything is written, and a failed audit writes nothing; examples drawn from owner lineages are
+labelled ``owner_template_ai_rendered`` (the owner wrote the template, the generator rendered the
+example; nobody reviewed the rendered example) and are counted per lineage.
 """
 
 from __future__ import annotations
@@ -24,17 +31,17 @@ from pathlib import Path
 from typing import Any
 
 from .audit import audit
+from .corpus import CorpusError, load_corpus, manifest_sha256
 from .generate import (
-    CORPUS_VERSION,
     GENERATOR_VERSION,
     TARGET_SIZES,
-    generate_development_corpus,
     generate_split,
     normalize_request,
 )
 from .lineages import LINEAGES, Lineage
 
-SEAL_VERSION = "axbench.seal/0.1"
+SEAL_VERSION = "axbench.seal/0.2"
+OWNER_PREFIX = "O-"
 
 
 class SealError(Exception):
@@ -64,7 +71,7 @@ def load_owner_lineages(path: str | os.PathLike) -> list[Lineage]:
         fixed = {"method": item["method"]} if item.get("method") else {}
         out.append(
             Lineage(
-                f"O-{item['id']}",
+                f"{OWNER_PREFIX}{item['id']}",
                 item["frame"],
                 "test",
                 item["tr"],
@@ -94,9 +101,15 @@ def seal(
     out_dir: str | os.PathLike,
     seed: str,
     *,
+    corpus_dir: str | os.PathLike,
     owner_lineages: list[Lineage] | None = None,
     size: int | None = None,
 ) -> dict[str, Any]:
+    """Generate, audit and write the sealed test against a frozen development corpus.
+
+    Raises :class:`SealError` and writes nothing when the corpus is not a verified frozen version,
+    the output is inside the repository or not empty, or the audit fails.
+    """
     out = Path(out_dir)
     if _inside(out, _repo_root()):
         raise SealError("the sealed test must be written outside the repository")
@@ -104,41 +117,64 @@ def seal(
         raise SealError("use a seed of at least 16 characters that only the owner knows")
     if out.exists() and any(out.iterdir()):
         raise SealError("output directory must be empty")
-    out.mkdir(parents=True, exist_ok=True)
-    dev = generate_development_corpus()
-    seen = {normalize_request(e.request) for exs in dev.values() for e in exs}
+    try:
+        dev_manifest, dev = load_corpus(corpus_dir)
+    except CorpusError as exc:
+        raise SealError(f"development corpus not usable: {exc}") from exc
+    if dev_manifest.get("status") != "frozen":
+        raise SealError("seal only against a frozen development corpus (python -m axbench freeze)")
+    owner = list(owner_lineages or ())
+    if len({lin.id for lin in owner}) != len(owner):
+        raise SealError("owner lineage ids must be unique")
+    seen = {normalize_request(r["request"]) for records in dev.values() for r in records}
     test = generate_split(
         "test",
         seed=seed,
         size=size or TARGET_SIZES["test"],
         seen=seen,
-        extra_lineages=tuple(owner_lineages or ()),
+        extra_lineages=tuple(owner),
     )
     records = [e.to_record() for e in test]
-    text = "".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in records)
-    data = text.encode("utf-8")
-    (out / "test.jsonl").write_bytes(data)  # bytes: no newline translation, so the hash holds
-    report = audit(
-        {
-            "train": [e.to_record() for e in dev["train"]],
-            "validation": [e.to_record() for e in dev["validation"]],
-            "test": records,
-        }
-    )
+    per_owner_lineage = {lin.id: 0 for lin in owner}
+    for r in records:
+        r["corpus_version"] = dev_manifest["corpus_version"]
+        if r["lineage_id"] in per_owner_lineage:
+            per_owner_lineage[r["lineage_id"]] += 1
+            r["provenance"]["authoring"] = "owner_template_ai_rendered"
+    report = audit({"train": dev["train"], "validation": dev["validation"], "test": records})
+    if not report["checks"]["passed"]:
+        raise SealError(f"audit failed; nothing written: {report['checks']['failures']}")
+    data = "".join(
+        json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in records
+    ).encode("utf-8")
     manifest = {
         "seal_version": SEAL_VERSION,
-        "corpus_version": CORPUS_VERSION,
+        "corpus_version": dev_manifest["corpus_version"],
+        "development_corpus": {
+            "manifest_sha256": manifest_sha256(corpus_dir),
+            "files": dev_manifest["files"],
+        },
         "generator_version": GENERATOR_VERSION,
         "generator_commit": _commit(),
         "test_sha256": hashlib.sha256(data).hexdigest(),
         "seed_sha256": hashlib.sha256(seed.encode("utf-8")).hexdigest(),
         "n_test": len(records),
-        "owner_lineages": len(owner_lineages or []),
-        "audit_passed": report["checks"]["passed"],
-        "audit_failures": report["checks"]["failures"],
+        "owner_lineages": {
+            "supplied": len(owner),
+            "used": sum(1 for n in per_owner_lineage.values() if n),
+            "examples": sum(per_owner_lineage.values()),
+            "examples_per_lineage": dict(sorted(per_owner_lineage.items())),
+            "note": "owner-written templates rendered by the generator; the rendered examples "
+            "are not human-reviewed",
+        },
+        "examples_from_repository_lineages": len(records) - sum(per_owner_lineage.values()),
+        "audit_passed": True,
         "test_distribution": report["splits"]["test"],
-        "note": "Publish this file only; keep test.jsonl and the seed private until the final run.",
+        "note": "Publish this file only; keep test.jsonl, the seed and the owner lineage file "
+        "private and outside the repository and any AI tool's context until the final run.",
     }
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "test.jsonl").write_bytes(data)  # bytes: no newline translation, so the hash holds
     (out / "SEAL.json").write_bytes(
         (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8")
     )
