@@ -48,9 +48,13 @@ uv run ruff format --check .
 ```python
 from axiom import ColumnSpec, CsvProfile, load_csv, parse_plan_json, run
 
-profile = CsvProfile(columns=(ColumnSpec(name="region", kind="text"), ColumnSpec(name="income", kind="numeric")))
+profile = CsvProfile(
+    columns=(ColumnSpec(name="region", kind="text"), ColumnSpec(name="income", kind="numeric"))
+)
 dataset = load_csv("data.csv", profile)  # explicit schema; nothing is guessed
-plan = parse_plan_json('{"schema_version":"axiom.plan/1","operation":"compare","group_by":"region","measure":"income"}')
+plan = parse_plan_json(
+    '{"schema_version":"axiom.plan/1","operation":"compare","group_by":"region","measure":"income"}'
+)
 result = run(dataset, plan)
 print(result.canonical_json, result.result_sha256)
 ```
