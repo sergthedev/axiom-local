@@ -23,7 +23,7 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/axiom"]
+packages = ["src/axiom", "src/axiom_router", "src/axbench"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
