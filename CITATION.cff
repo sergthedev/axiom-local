@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below. No release or DOI exists yet."
+title: "AXIOM (axiom-local)"
+type: software
+authors:
+  - alias: "sergthedev"
+repository-code: "https://github.com/sergthedev/axiom-local"
+license: MIT
+abstract: "Local-first, deterministic and verifiable data intelligence. Bootstrap stage: no analysis features are implemented yet."
