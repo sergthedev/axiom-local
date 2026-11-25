@@ -423,7 +423,7 @@ for a comprehensive final audit of AXIOM Verify.
   `PROVENANCE.json` are written as bytes.
 
 ### Model environment install and source reading (2026-11-26)
-- `uv sync --locked` in `envs/model` took about 25 minutes on the home connection (the 78 MB `mlx-metal` wheel was the
+- `uv sync --locked` in `envs/model` took more than 20 minutes on the home connection (the 78 MB `mlx-metal` wheel was the
   slowest download); exit 0. Import probe: mlx 0.32.4, mlx-lm 0.32.2, transformers 5.22.2; `Device(gpu, 0)`, Metal
   available, a 3-element computation returned 14.0; `mlx_lm.models.qwen3` present.
 - Reading the installed MLX-LM source (REF-035) found two template issues for the protocols: inference must pass
