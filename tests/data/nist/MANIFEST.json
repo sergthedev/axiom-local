@@ -1,0 +1,76 @@
+{
+  "description": "NIST Statistical Reference Datasets (StRD), univariate summary statistics. Data files are verbatim copies of the files served by NIST; certified values were transcribed from each file's header block (lines 41-43) and cross-checked against the certified-values web page.",
+  "publisher": "National Institute of Standards and Technology (NIST), Statistical Engineering Division; NIST Standard Reference Database 140",
+  "landing_page": "https://www.itl.nist.gov/div898/strd/index.html",
+  "access_date": "2026-11-25",
+  "redistribution_basis": "NIST web pages state that, except for material marked as copyrighted, information on NIST sites is public information that may be distributed or copied, with credit requested (https://www.nist.gov/copyrights-disclaimers, accessed 2026-11-25). These files carry no copyright marking.",
+  "endorsement": "NIST does not endorse or certify AXIOM. Agreement with certified values is a comparison, not NIST certification (https://www.itl.nist.gov/div898/strd/general/faq.html).",
+  "datasets": {
+    "PiDigits": {
+      "file": "PiDigits.dat",
+      "url": "https://www.itl.nist.gov/div898/strd/univ/data/PiDigits.dat",
+      "sha256": "e9421a2f4c0a31c505099332b4d22e507e808953c3c57bddae9226f25587d7d2",
+      "certified_values_page": "https://www.itl.nist.gov/div898/strd/univ/certvalues/pidigits.html",
+      "certified_values_page_sha256_as_retrieved": "cd53c02712ece2b1b9d1cae265bdce714d2dde1cac5bdfef946985f2b3dd0ac6",
+      "difficulty": "Lower",
+      "n_observations": 5000,
+      "certified_mean": "4.53480000000000",
+      "certified_mean_is_exact": false,
+      "certified_sd_n_minus_1": "2.86733906028871",
+      "certified_sd_is_exact": false
+    },
+    "NumAcc1": {
+      "file": "NumAcc1.dat",
+      "url": "https://www.itl.nist.gov/div898/strd/univ/data/NumAcc1.dat",
+      "sha256": "ce7c7a0fc6d7cedd0d5e1f9911afb9337544be6836730beb9968ca0a4571d375",
+      "certified_values_page": "https://www.itl.nist.gov/div898/strd/univ/certvalues/numacc1.html",
+      "certified_values_page_sha256_as_retrieved": "b1789418aa4e99f9c383f1452694c024fb8bf619c9011be9f3d4c75594580e71",
+      "difficulty": "Lower",
+      "n_observations": 3,
+      "certified_mean": "10000002",
+      "certified_mean_is_exact": true,
+      "certified_sd_n_minus_1": "1",
+      "certified_sd_is_exact": true
+    },
+    "NumAcc2": {
+      "file": "NumAcc2.dat",
+      "url": "https://www.itl.nist.gov/div898/strd/univ/data/NumAcc2.dat",
+      "sha256": "5be29522dfbe299541f0ec98ec1c22a51a5587bf06561ba21a92c209fb7ef0f9",
+      "certified_values_page": "https://www.itl.nist.gov/div898/strd/univ/certvalues/numacc2.html",
+      "certified_values_page_sha256_as_retrieved": "89735345af70b981e93ebf8bee873076f22220fb39c567434db91cb37d463d04",
+      "difficulty": "Average",
+      "n_observations": 1001,
+      "certified_mean": "1.2",
+      "certified_mean_is_exact": true,
+      "certified_sd_n_minus_1": "0.1",
+      "certified_sd_is_exact": true
+    },
+    "NumAcc3": {
+      "file": "NumAcc3.dat",
+      "url": "https://www.itl.nist.gov/div898/strd/univ/data/NumAcc3.dat",
+      "sha256": "66df1b96596735936f37fd889e7c1c6ce998eb2b523bfc46c98ec1737e992aec",
+      "certified_values_page": "https://www.itl.nist.gov/div898/strd/univ/certvalues/numacc3.html",
+      "certified_values_page_sha256_as_retrieved": "4991cf6726a04f912a30b1d0d4a5f8d9301b95dd5aa3f2a436247ed83eec97b1",
+      "difficulty": "Average",
+      "n_observations": 1001,
+      "certified_mean": "1000000.2",
+      "certified_mean_is_exact": true,
+      "certified_sd_n_minus_1": "0.1",
+      "certified_sd_is_exact": true
+    },
+    "NumAcc4": {
+      "file": "NumAcc4.dat",
+      "url": "https://www.itl.nist.gov/div898/strd/univ/data/NumAcc4.dat",
+      "sha256": "ca310dc767f5130f980f8280bbe69e26ba414a4d85a89fc11b6c767b828e5fe4",
+      "certified_values_page": "https://www.itl.nist.gov/div898/strd/univ/certvalues/numacc4.html",
+      "certified_values_page_sha256_as_retrieved": "ad595001d354d74ad91e67b3c80fb0a8913bf0fcbf6985933498459e1e2401b5",
+      "difficulty": "Higher",
+      "n_observations": 1001,
+      "certified_mean": "10000000.2",
+      "certified_mean_is_exact": true,
+      "certified_sd_n_minus_1": "0.1",
+      "certified_sd_is_exact": true
+    }
+  },
+  "extraction": "Observations are the whitespace-trimmed lines after the 'Data: Y' marker and its dashed underline, to end of file; each is parsed as text by AXIOM's CSV input guard (decimal point)."
+}
