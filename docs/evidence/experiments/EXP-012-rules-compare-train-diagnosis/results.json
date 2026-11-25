@@ -1,0 +1,189 @@
+{
+  "compare_cue_list_size": 11,
+  "compare_cues_matched_in_train": 11,
+  "cue_to_lineage_count": {
+    "across": 2,
+    "bazinda": 5,
+    "compare": 4,
+    "comparison": 1,
+    "differ": 1,
+    "for each": 1,
+    "group": 1,
+    "grubu icin": 1,
+    "gruplarina gore": 1,
+    "karsilastir": 5,
+    "karsilastirma": 1
+  },
+  "cues_in_only_one_lineage": [
+    "comparison",
+    "differ",
+    "for each",
+    "group",
+    "grubu icin",
+    "gruplarina gore",
+    "karsilastirma"
+  ],
+  "experiment": "EXP-012",
+  "git": {
+    "commit": "a2c50e1fb0ef7419a6e69ee9f0bd4a4128ea305b",
+    "dirty": false
+  },
+  "inputs": {
+    "train.jsonl": "fd885f1535d31983771493b6aa8e27ea3e9e0182ec58f385d96f1c686f9c2f3e",
+    "validation_or_test_read": false
+  },
+  "leave_one_lineage_out_covered": {
+    "count": 55,
+    "n": 86
+  },
+  "lineages": {
+    "L-amb-02": {
+      "compare_cues_used": {
+        "bazinda": 3,
+        "compare": 4,
+        "karsilastir": 3
+      },
+      "gold_action": {
+        "CLARIFY": 7
+      },
+      "inspect_cues_seen": {},
+      "language": {
+        "en": 4,
+        "tr": 3
+      },
+      "n": 7,
+      "still_covered_by_other_lineages_cues": 7,
+      "with_an_inspect_cue": 0,
+      "with_any_compare_cue": 7
+    },
+    "L-cmc-02": {
+      "compare_cues_used": {
+        "bazinda": 2,
+        "comparison": 3,
+        "karsilastir": 2,
+        "karsilastirma": 2
+      },
+      "gold_action": {
+        "CLARIFY": 5
+      },
+      "inspect_cues_seen": {},
+      "language": {
+        "en": 2,
+        "mixed": 1,
+        "tr": 2
+      },
+      "n": 5,
+      "still_covered_by_other_lineages_cues": 2,
+      "with_an_inspect_cue": 0,
+      "with_any_compare_cue": 5
+    },
+    "L-cmp-01": {
+      "compare_cues_used": {
+        "across": 10,
+        "bazinda": 14,
+        "compare": 10,
+        "karsilastir": 14
+      },
+      "gold_action": {
+        "PLAN": 24
+      },
+      "inspect_cues_seen": {},
+      "language": {
+        "en": 9,
+        "mixed": 4,
+        "tr": 11
+      },
+      "n": 24,
+      "still_covered_by_other_lineages_cues": 24,
+      "with_an_inspect_cue": 0,
+      "with_any_compare_cue": 24
+    },
+    "L-cmp-02": {
+      "compare_cues_used": {
+        "for each": 13,
+        "group": 13,
+        "grubu icin": 8
+      },
+      "gold_action": {
+        "PLAN": 21
+      },
+      "inspect_cues_seen": {
+        "ozet": 8,
+        "ozetini": 8,
+        "ozetini cikar": 8,
+        "summarize": 13
+      },
+      "language": {
+        "en": 9,
+        "mixed": 6,
+        "tr": 6
+      },
+      "n": 21,
+      "still_covered_by_other_lineages_cues": 0,
+      "with_an_inspect_cue": 21,
+      "with_any_compare_cue": 21
+    },
+    "L-cmp-03": {
+      "compare_cues_used": {
+        "differ": 3,
+        "gruplarina gore": 4
+      },
+      "gold_action": {
+        "PLAN": 7
+      },
+      "inspect_cues_seen": {},
+      "language": {
+        "en": 3,
+        "tr": 4
+      },
+      "n": 7,
+      "still_covered_by_other_lineages_cues": 0,
+      "with_an_inspect_cue": 0,
+      "with_any_compare_cue": 7
+    },
+    "L-cnf-02": {
+      "compare_cues_used": {
+        "bazinda": 6,
+        "compare": 6,
+        "karsilastir": 6
+      },
+      "gold_action": {
+        "CLARIFY": 12
+      },
+      "inspect_cues_seen": {},
+      "language": {
+        "en": 5,
+        "mixed": 2,
+        "tr": 5
+      },
+      "n": 12,
+      "still_covered_by_other_lineages_cues": 12,
+      "with_an_inspect_cue": 0,
+      "with_any_compare_cue": 12
+    },
+    "L-ctm-02": {
+      "compare_cues_used": {
+        "across": 5,
+        "bazinda": 5,
+        "compare": 5,
+        "karsilastir": 5
+      },
+      "gold_action": {
+        "CLARIFY": 10
+      },
+      "inspect_cues_seen": {},
+      "language": {
+        "en": 4,
+        "mixed": 2,
+        "tr": 4
+      },
+      "n": 10,
+      "still_covered_by_other_lineages_cues": 10,
+      "with_an_inspect_cue": 0,
+      "with_any_compare_cue": 10
+    }
+  },
+  "n_train_examples_with_compare_gold": 86,
+  "rules_version": "axiom.rules/0.1",
+  "with_an_inspect_cue": 21
+}

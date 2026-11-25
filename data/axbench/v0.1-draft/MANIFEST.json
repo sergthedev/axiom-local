@@ -1,0 +1,21 @@
+{
+  "corpus_version": "axbench/0.1-draft",
+  "files": {
+    "train.jsonl": {
+      "n": 400,
+      "sha256": "fd885f1535d31983771493b6aa8e27ea3e9e0182ec58f385d96f1c686f9c2f3e"
+    },
+    "validation.jsonl": {
+      "n": 160,
+      "sha256": "87771e489e186e4b4753adcf35916f41541355ed159c8d9bfe321d9d100ed9e4"
+    }
+  },
+  "generator_version": "axbench.generate/0.1",
+  "status": "draft: unreviewed, not frozen",
+  "target_sizes": {
+    "test": 360,
+    "train": 400,
+    "validation": 160
+  },
+  "test": "not in the repository; sealed by the owner (python -m axbench seal)"
+}

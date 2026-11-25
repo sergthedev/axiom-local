@@ -1,0 +1,27 @@
+# Optional Apple Silicon model environment for AX-01 experiments (ADR 0012).
+#
+# A separate uv project with its own lock file, so the AXIOM Core environment, its uv.lock digest
+# (recorded in analysis passports, ADR 0007) and the Windows CI are unaffected. Never required by
+# Core, Verify, the Guard or AXBENCH. Model weights are never stored in Git.
+[project]
+name = "axiom-model-env"
+version = "0.0.0"
+description = "Optional MLX-LM environment for AX-01 experiments on Apple Silicon (not part of Core)."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "axiom-local",
+    "mlx==0.32.4",
+    "mlx-lm==0.32.2",
+    "huggingface-hub",
+]
+
+[tool.uv]
+package = false
+# Resolve only releases at least two weeks old at the time of locking (supply-chain hygiene).
+exclude-newer = "2026-11-12T00:00:00Z"
+# Core pins are reviewed in the main project's lock; they are exempt from the cut-off here.
+exclude-newer-package = { numpy = "2026-11-26T00:00:00Z", pydantic = "2026-11-26T00:00:00Z", pydantic-core = "2026-11-26T00:00:00Z", scikit-learn = "2026-11-26T00:00:00Z", scipy = "2026-11-26T00:00:00Z", threadpoolctl = "2026-11-26T00:00:00Z" }
+environments = ["sys_platform == 'darwin' and platform_machine == 'arm64'"]
+
+[tool.uv.sources]
+axiom-local = { path = "../..", editable = true }
