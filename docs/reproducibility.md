@@ -24,8 +24,8 @@
   `numeric_agreement`, `numerical_discrepancy`, `execution_failure` or `integrity_mismatch` (ADR 0008).
 - **Same environment**: only byte identity passes. **Different environment**: per-operation criteria `axiom.agreement/1`
   (ADR 0008), with cluster partitions compared by membership sets independent of label numbers.
-- Measured: 200 of 200 replays byte-identical on one Mac (EXP-004); the cross-platform comparison with GitHub-hosted
-  macOS and Windows x64 runners is EXP-005.
+- Measured: 200 of 200 replays byte-identical on one Mac (EXP-004); in EXP-005, ten scenarios computed on a GitHub-hosted
+  Windows x64 runner and a macOS arm64 runner were byte-identical to the Mac reference (one CI run each).
 
 ```bash
 uv run python -m axiom analyze --data examples/synthetic_regions.csv \
@@ -38,5 +38,8 @@ uv run python -m axiom replay --passport passport.json --data examples/synthetic
 - A lockfile pins versions; it does not prove numerical correctness, and neither do a seed or a hash.
 - Bit-for-bit equality across platforms is **not** claimed. Cross-platform results are limited to what EXP-005 measured on
   GitHub-hosted runners; that is not packaged Windows support and not independent human replication.
+- The engine file digest and the `uv.lock` digest hash checked-out bytes. On the Windows runner both differed from the Mac
+  reference for the same commit, most likely because of line-ending conversion at checkout (not verified), so identical code
+  can be reported as a different environment (EXP-005).
 - Replay checks data, plan and result against a passport using the installed code; it cannot detect a modified engine or
   Python installation, and a passport digest is not a signature.

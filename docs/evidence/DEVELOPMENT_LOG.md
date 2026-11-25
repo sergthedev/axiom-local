@@ -255,3 +255,11 @@ No experiment scripts were re-run: the change affects reporting edge cases only,
   tests failed, the EXP-005 step did not run on that job.
 - `test (macos-latest)` was **cancelled** without being assigned a runner (no steps ran; started 18:25:52Z, cancelled 18:40:54Z).
   Not caused by the change; recorded as an infrastructure event.
+
+### Second PR CI run and EXP-005 (implementer-observed)
+- Run [45677769454](https://github.com/sergthedev/axiom-local/actions/runs/45677769454) on head `031360b` (merge ref `ef0b84b`): `test (windows-latest)` passed
+  (327 tests in 48.31 s, CPython 3.12.10, win32) and `test (macos-latest)` passed (327 tests in 81.48 s, CPython 3.12.10, darwin); lint and format
+  passed on both (95 files).
+- EXP-005 step: **10 of 10 scenarios byte-identical** to the Mac reference on both runners. Finding: on Windows the `uv.lock` and engine-file digests
+  differ from the reference (most likely CRLF conversion at checkout; not verified), so the manifest reports a different environment for identical
+  code. Recorded as a limitation of ADR 0007; not changed in this PR, to keep the measured code fixed after the experiment.

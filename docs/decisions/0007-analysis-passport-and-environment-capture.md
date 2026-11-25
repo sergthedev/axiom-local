@@ -78,6 +78,11 @@ Accelerate, which threadpoolctl does not list, so `blas_thread_control` reads
 
 - A passport for a K-means result contains the full assignment list, so its size grows with the number of rows.
 - Environment capture loads the solver's native libraries to probe thread pools; this costs import time.
+- The engine file digest and the lock digest hash the bytes on disk, so they are sensitive to line-ending conversion at
+  checkout. Observed in EXP-005: on the Windows runner both differed from the Mac reference for the same commit (cause
+  most likely Git line-ending conversion; not verified). The error is conservative (identical code reported as a
+  different environment), but it removes same-environment byte-identity checks for such checkouts. Normalizing line
+  endings before hashing, or a `.gitattributes` rule, is a possible follow-up and is not part of this change.
 - `platform.version()` and `processor()` are recorded verbatim; they describe the OS build and CPU, not the user.
 
 ## Unvalidated assumptions
