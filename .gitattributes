@@ -1,2 +1,6 @@
 tests/data/nist/*.dat -text
 examples/*.csv -text
+# Files whose bytes the environment manifest hashes (engine file digest, uv.lock digest) are checked out
+# with LF on every platform, so identical repository content gives identical digests (EXP-006 part D).
+*.py text eol=lf
+uv.lock text eol=lf

@@ -115,3 +115,19 @@ guarded block. Conservative policy (no new schema):
   wall-time guarantee.
 - Rejection is preferred over representing "unavailable" metadata; if users need results for such inputs, a schema extension with explicit reasons can be
   designed later.
+
+## Amendment 3 (2026-11-25): documentation carry-forward from the final Issue #2 acceptance (no code change)
+
+Recorded in Issue #3 as requested in the [final technical acceptance](https://github.com/sergthedev/axiom-local/pull/6#issuecomment-7169639125).
+The text above is preserved.
+
+- **Conservative policy, not exact statistics.** The representability rules of amendment 2 decide when a result is
+  *reported or rejected*. They do not make the reported scaler statistics exact real-valued quantities: StandardScaler's
+  mean and scale are floating-point computations; amendment 2 only requires that the inverse power-of-two conversion of
+  those computed values is lossless (round trip). Round-trip equality is not proof that the scaler statistics equal the
+  exact mean and standard deviation of the data.
+- **Power-of-two round trip is local.** Exact pre-scaling and exact inverse scaling make *those two steps* lossless. They
+  do not make standardization, the K-means iterations, distances, inertia or the independent checks exact; all
+  downstream floating-point operations round as usual, which is why the postconditions carry tolerances.
+- **Cross-platform comparison** of K-means results is defined in ADR 0008 (exact partition membership sets; derived
+  tolerances for scaler, centroids and inertia; iteration counts diagnostic) and measured in EXP-005.

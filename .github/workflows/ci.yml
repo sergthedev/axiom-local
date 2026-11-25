@@ -24,9 +24,17 @@ jobs:
         run: python -m pip install "uv==0.13.10"
       - name: Sync locked environment
         run: uv sync --locked
+      - name: Checkout line-ending diagnostic (report only, EXP-006)
+        # Compares committed Git blobs with checked-out bytes for the files the environment manifest hashes.
+        run: uv run python benchmarks/checkout_line_endings.py
       - name: Lint
         run: |
           uv run ruff check .
           uv run ruff format --check .
       - name: Tests
         run: uv run pytest
+      - name: Cross-platform numerical comparison (report only, EXP-005 / EXP-006)
+        # Prints a JSON report against the committed macOS arm64 reference passports. It exits non-zero
+        # if any scenario could not be compared ("complete": false); a green step is NOT evidence of
+        # numerical agreement: verdicts must be read from the report.
+        run: uv run python benchmarks/issue3_cross_platform.py --compare docs/evidence/experiments/EXP-005-cross-platform/reference

@@ -189,3 +189,181 @@ No experiment scripts were re-run: the change affects reporting edge cases only,
 ### CI for the numeric-range fix (implementer-observed)
 - Run [45664213878](https://github.com/sergthedev/axiom-local/actions/runs/45664213878) on head `afaabf8`: `test (macos-latest)` passed (266 tests in 16.96 s) and `test (windows-latest)` passed (266 tests in 10.57 s),
   CPython 3.12.x on both runners; locked install, lint, format check and pytest only. Observed from the run logs by the implementer, not yet re-verified by the reviewer; the entry's own commit is documentation-only with its own CI run.
+
+## 2026-11-25 — Issue #3: verification engine (Analysis Passport and replay)
+
+### Starting state and authorization
+- PR #6 (Issue #2) was accepted by the technical lead at head `0b52b44c1532ea90f69fe17f902817da32f5f7c4`
+  ([final acceptance](https://github.com/sergthedev/axiom-local/pull/6#issuecomment-7169639125)) and merged by the owner as
+  `323620d0d8fe6a989a1d9c2cb18e549fd565aa83`. Reviewer-observed CI: run
+  [45665324679](https://github.com/sergthedev/axiom-local/actions/runs/45665324679) on merge ref `12b6d69`, macOS job 139385821828
+  (266 passed, 13.84 s) and Windows job 139385822124 (266 passed, 9.38 s), CPython 3.12.10, lint and format passed; the lead also
+  reported `main` as protected with both required checks. Issue #2 is closed. (Recorded here as reported by the lead; not
+  re-inspected by the implementer.)
+- The owner authorized Issue #3 in the project thread. Branch `feat/issue-3-verification-engine` from `323620d`.
+- Read: Issue #3 body, [DR-001 note](https://github.com/sergthedev/axiom-local/issues/3#issuecomment-7166468157),
+  [DR-001 + DR-002 decision](https://github.com/sergthedev/axiom-local/issues/3#issuecomment-7167524679), the PR #6 acceptance,
+  and the [Issue #5 research positioning](https://github.com/sergthedev/axiom-local/issues/5#issuecomment-7170027058).
+- Not done on purpose: AX-01, AXBENCH, training, Studio UI, regression, forecasting, PROV/RO-Crate, offline (network-disabled)
+  rehearsal, Windows packaging. No Core contract change: the four fingerprints, `execute`, `AnalysisResult` and
+  `environment_info()` are reused unchanged.
+
+### Implementation (commit `26eb769`)
+- `environment` (manifest `axiom.environment/1`), `passport` (`axiom.passport/1`), `_worker` + `replay` (fresh-process analysis,
+  replay, classification, passport comparison), `agreement` (criteria `axiom.agreement/1`), exact rational ARI in `partition`,
+  CLI `python -m axiom env|analyze|replay|compare`, example profile JSON. ADRs 0007 and 0008.
+- Defects found while testing and fixed before commit: (1) `build_passport` aliased the plan object between `inputs` and the result
+  core, so a test edit of one changed both; fixed with independent copies. (2) The replay summary first reported `plan_identity: pass`
+  when the engine had rejected the data before reaching the plan check; it is now `not_run` when not reached.
+- Observation: on the development Mac NumPy uses Apple Accelerate, which threadpoolctl does not list; the manifest reports BLAS
+  thread control as unverified instead of single-threaded.
+
+### Pre-registration (commit `f163b41`) and experiments
+- EXP-004 and EXP-005 pre-registrations, ADR 0008 criteria and the scripts were committed before the measured runs. A one-replay
+  smoke run of the EXP-004 script preceded the pre-registration (stated in it); its output was not kept.
+- **EXP-004** at `f163b41`: 200 of 200 fresh-process replays byte-identical (ten plans x 20), every mutation and malformed-input
+  criterion met; 0 failures. See the manifest.
+- **EXP-005**: reference passports written at `f163b41` on the Mac (their result hashes equal the EXP-004 references); a local
+  self-comparison against them gave 10 of 10 `exact_match` in the same environment (a sanity check, not part of EXP-005). The
+  cross-platform result comes from the pull request CI and is recorded in the EXP-005 manifest.
+- The new CI step is report-only: it prints the comparison and exits non-zero only if a scenario cannot be run.
+
+### Documentation carry-forward from the Issue #2 acceptance
+- ADR 0006 amendment 3: representability rules are a conservative reporting policy, not exact statistics; a power-of-two round trip
+  does not make downstream floating-point operations exact. ADR statuses remain Proposed until owner acceptance.
+- The initial PR #6 summary mentioned NumPy quartiles and unverified branch protection; both are outdated (quartiles are exact
+  rationals since amendment 1 of ADR 0004; the lead later observed `main` protected). The merged PR text was not edited.
+- The README tagline ("powered by a specialized language model") may read as if a trained model exists. The lead proposed
+  owner-approved wording in the Issue #5 comment; it was **not** changed here because it needs the owner's decision.
+- Experiments index now lists EXP-002 and EXP-003, which were missing.
+
+### Local verification (measured, one run; Apple M5, macOS 27.0.1, CPython 3.12.16, locked environment)
+| Command | Exit status | Result |
+|---------|-------------|--------|
+| `uv sync --locked` | 0 | environment from `uv.lock` (unchanged; no new dependency) |
+| `uv run pytest -q` | 0 | 327 passed in about 40 s (266 existing + 61 new; the fresh-process tests start about 30 interpreters) |
+| `uv run ruff check .` | 0 | All checks passed |
+| `uv run ruff format --check .` | 0 | 95 files already formatted |
+| `uv run python benchmarks/issue3_replay_benchmark.py --runs 20` | 0 | EXP-004 |
+| `uv run python benchmarks/issue3_cross_platform.py --write-reference ...` | 0 | EXP-005 reference |
+
+### First PR CI run (implementer-observed)
+- Run [45675071394](https://github.com/sergthedev/axiom-local/actions/runs/45675071394) on head `8b4d84b`: `test (windows-latest)` **failed**: 326 passed, 1 failed
+  (`test_compare_passports`). Cause: a **test defect**: the test simulated "another environment" by setting `os.system` to `"Windows"`,
+  which is the real value on the Windows runner, so the environments were equal and the comparison mode was correctly
+  `same_environment_exact`. The test now uses a value that differs on every runner; the engine was not changed. Because the
+  tests failed, the EXP-005 step did not run on that job.
+- `test (macos-latest)` was **cancelled** without being assigned a runner (no steps ran; started 18:25:52Z, cancelled 18:40:54Z).
+  Not caused by the change; recorded as an infrastructure event.
+
+### Second PR CI run and EXP-005 (implementer-observed)
+- Run [45677769454](https://github.com/sergthedev/axiom-local/actions/runs/45677769454) on head `031360b` (merge ref `ef0b84b`): `test (windows-latest)` passed
+  (327 tests in 48.31 s, CPython 3.12.10, win32) and `test (macos-latest)` passed (327 tests in 81.48 s, CPython 3.12.10, darwin); lint and format
+  passed on both (95 files).
+- EXP-005 step: **10 of 10 scenarios byte-identical** to the Mac reference on both runners. Finding: on Windows the `uv.lock` and engine-file digests
+  differ from the reference (most likely CRLF conversion at checkout; not verified), so the manifest reports a different environment for identical
+  code. Recorded as a limitation of ADR 0007; not changed in this PR, to keep the measured code fixed after the experiment.
+- CI run [45679448835](https://github.com/sergthedev/axiom-local/actions/runs/45679448835) on the evidence-only head `3172cdc` also
+  succeeded on both runners (observed after the review was posted).
+
+## 2026-11-25 — Issue #3, PR #7: technical review response (B1-B3, Windows digests)
+
+### Review and reproduction
+- [Technical review](https://github.com/sergthedev/axiom-local/pull/7#issuecomment-7171558913) of head `3172cdc`: changes
+  required (B1 resource policy, B2 strict structure and structured errors, B3 environment classification and evidence
+  precision; Windows checkout digests). Static counterexamples, not executed by the reviewer.
+- Reproduced on `3172cdc` before any change, with a scratch script (not committed) using the test helpers:
+  - B1: a re-sealed passport with `max_bytes` x1000 and `max_cluster_work` 1e30 passed all integrity checks, was
+    dispatched to a worker with `max_bytes` 33,554,432,000 and replayed as `exact_match`; `timeout=inf` crashed with
+    an unstructured `OverflowError`.
+  - B2: a re-sealed passport with an invented verification entry, `dataset_format` `axiom.dataset/999`, a non-hex
+    `raw_sha256` and `n_rows` -5 loaded and passed all five integrity checks; two identical passports with result block
+    `{"nonsense": 1}` compared as `exact_match`; `1e999` parsed to `inf`; a passport with `result: []` raised
+    `AttributeError` in `replay`; opposite largest floats gave `abs_diff = inf` and a report that `allow_nan=False`
+    could not serialize.
+  - B3: equal `unavailable` package markers plus two `unverified` probes gave no environment difference; pools at 8
+    threads versus 1 gave no difference; Accelerate reported `unverified` while the probe read `verified_single_thread`.
+  - All counterexamples were confirmed.
+
+### Corrections (commit `fd61eb6`)
+- B1: `replay(..., policy=DEFAULT_LIMITS)` rejects recorded limits above the trusted policy (`limits_exceed_policy`)
+  before any worker; runs in [1, 100], timeout finite in (0, 3600] s, `Limits` validated; passport text bounded at
+  64 MiB before parsing (`VerifyError` / `PassportError`, CLI exit 2).
+- B2: new `src/axiom/passport_schema.py` (full nested validation, depth, finiteness, vocabulary, per-operation result
+  shape); `integrity_checks` adds `result_consistency` and `verification_record` and checks versions, row count and
+  operation/plan agreement; `abs_diff` is `null` beyond the binary64 range.
+- B3: `compare_environments` (verified_same / unverified / different; nested unknowns, `None`/`"unknown"` versions and
+  `unverified` statuses are unknown; thread variables, pools, probe and BLAS visibility compared);
+  `exact_environment_unverified` mode keeps byte identity; per-run run id, environment status and worker thread
+  evidence; `native_thread_policy` check; partial runs never pass; the CI comparison script reports completeness and
+  exits 1 if any scenario was not compared.
+- Tests: `tests/test_review_regressions.py` (55 tests), four existing tests adapted to the new semantics (environment
+  modes; one forged-plan test split into an integrity failure and a consistent-forgery test). The Core contract and
+  `axiom.agreement/1` are unchanged.
+- Local: `uv sync --locked`; `uv run pytest -q` 384 passed (68 s); ruff check and format clean (100 files).
+
+### EXP-006 (pre-registered in `fd61eb6`)
+- Part R (local, clean `fd61eb6`): 200 of 200 `exact_match`, 200 distinct stored run ids, per-worker evidence; mutations,
+  malformed input and A1-A3 met. One smoke run of the uncommitted script preceded the pre-registration (stated there).
+- CI run [45683518798](https://github.com/sergthedev/axiom-local/actions/runs/45683518798) (merge `6074227`): 384 passed on
+  Windows (77.88 s) and macOS (90.12 s). D1 confirmed the CRLF hypothesis (`core.autocrlf=true` on Windows; 28 files
+  differing only by LF -> CRLF; blob digests equal to macOS). Part X: 10 of 10 `exact_match` on both runners against the
+  EXP-005 reference, reports complete.
+- `.gitattributes`: `*.py text eol=lf`, `uv.lock text eol=lf` (pre-registered decision after D1). No blob changed
+  (all were LF already).
+- Historical evidence kept: EXP-004 and EXP-005 results unchanged; a correction note narrows the EXP-004 per-worker
+  thread statement (C-025); EXP-005 notes the commit/content distinction and the confirmed cause.
+- CI run [45685214061](https://github.com/sergthedev/axiom-local/actions/runs/45685214061) (head `8310baa`, merge `efa20ba`):
+  384 passed on Windows (86.24 s) and macOS (103.28 s), lint and format passed. EXP-006 D2 met: no hashed file differs from
+  its blob on either runner; engine digest `4b904d42…` and lock digest `0591cb58…` identical on both. Part X again 10 of 10
+  `exact_match` per runner.
+
+## 2026-11-25 — PR #7 final review: residual B1 and final audit (Issue #3)
+
+Input: the [final technical review](https://github.com/sergthedev/axiom-local/pull/7#issuecomment-7172653455) of head
+`e8a9f57` (accepts B3 and the Windows fix; B2 substantially addressed; one blocker: residual B1) and the owner's request
+for a comprehensive final audit of AXIOM Verify.
+
+### Reproduction on `e8a9f57` (before any change; safe scale only, no OOM-sized allocation)
+- Residual B1: re-sealed example Cluster passports claiming `k` (result only) gave a peak traced allocation in
+  `integrity_checks` of 0.02 / 3.99 / 39.99 / 79.99 MB for `k` = 10 / 10^5 / 10^6 / 2 x 10^6. With `max_k` also raised,
+  `replay` reached 40.0 MB before returning `integrity_mismatch` (integrity ran before the policy) and
+  `compare_passports` 40.0 MB; no worker was started. Confirmed.
+- Other findings of the audit, each confirmed: `replay(timeout=10**400)` raised `OverflowError`; a passport whose text
+  contains the escape `\ud800` loaded and then raised `UnicodeEncodeError` in `integrity_checks`; integers of 5000
+  digits in API objects raised `ValueError` when hashed; a re-sealed passport with an added empty cluster passed all
+  seven integrity checks and `compare_passports` raised `KeyError` while realigning labels; error messages quoted whole
+  rejected values; with `PYTHONIOENCODING=cp1252` (the locale encoding of a redirected stdout on a Windows runner)
+  `python -m axiom analyze` with a column named `温度` exited 2 with `UnicodeEncodeError`; status `ok` worker responses
+  missing fields, worker errors given as text, and unreadable result text would raise in the parent; the worker's
+  `git status` may refresh the repository index; `None` or NUL data paths raised `TypeError`/`ValueError`.
+- Audited without a finding: the worker timeout kills the child and `subprocess.run` waits for it (now tested with a
+  real worker); plan text is already bounded and rejects surrogates (Core); environment classification never treats
+  unknown as equal; agreement tolerances are inclusive as documented (now tested at the boundaries); report sizes are
+  linear in the documents.
+
+### Corrections (commit `ab33266`)
+- `passport.py`: cluster checks enumerate existing entries, `k` against the validated plan and recorded `max_k`, labels
+  counted in a dictionary, features compared once per cluster against one set; result checks `not_run` when the plan
+  or limits are invalid; empty clusters and false postconditions are failures; problem messages bounded; passport text
+  must be str/bytes and valid Unicode.
+- `passport_schema.py`: integers in the signed 64-bit range, no unpaired surrogates in strings or keys, quoted values
+  and paths shortened to 64 characters.
+- `replay.py`: trusted policy before integrity; overflow-free timeout check; data path validation; worker response
+  shape check (`bad_output` / `crashed`); unreadable result text is a failed run.
+- `agreement.py`: realignment only if every observed cluster id is a label; compact shape differences.
+- `__main__.py`: UTF-8 bytes with LF to stdout and `--out`. `environment.py`: `git --no-optional-locks`.
+- Tests: `tests/test_final_audit.py` (73 tests; 53 failed when run against the `e8a9f57` sources, the rest are
+  boundary and termination tests that passed before too); one existing test changed (`10**30` is now outside the
+  64-bit range, so the oversized-limits test uses `2**62` and asserts that `10**30` is rejected structurally).
+- Local: `uv run pytest -q` 457 passed (47 s); ruff check and format clean (104 files).
+
+### EXP-007 (pre-registered in `ab33266`, run once on the clean commit)
+- S: 30 of 30 `exact_match`, all four families, distinct run ids, per-run evidence. B: peak traced allocation at most
+  19,698 bytes for claimed `k` up to 2^63 - 1, no worker started, policy before integrity. P: parse memory linear; at
+  most 25.2 times the text (empty objects); 1.6 GiB at the 64 MiB cap is an extrapolation and an open limitation.
+- Negative result kept: the parse amplification is not reduced by this change.
+- CI run [45692893944](https://github.com/sergthedev/axiom-local/actions/runs/45692893944) (head `c597e7a`, merge
+  `9391082`): 457 passed on macOS (131.73 s) and Windows (79.97 s); lint and format passed (105 files); engine digest
+  `b0e2c5e4…` and lock digest `0591cb58…` on both runners; no hashed file differs from its blob; cross-platform report
+  complete with 10 of 10 `exact_match` on each runner. EXP-007 part C met.

@@ -1,0 +1,696 @@
+{
+  "diagnostic": "checkout line endings (EXP-006 D1/D2)",
+  "digests": {
+    "lock_sha256_of_committed_blob": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+    "lock_sha256_recorded": "93f27c7eceb788e7816773218f1265e334fff3534bf7366e1c7f6ff2e9f81255",
+    "package_files_sha256_of_checkout": "4e4c5356268bd8e6a761679d0bbc248748ae60a8b46fe46e1b30c14286d08a3e",
+    "package_files_sha256_of_committed_blobs": "4b904d4266ed24d7b80a51220d0a361deb1c5d2e2b33d10e7dd76d2e1e1fe19b",
+    "package_files_sha256_recorded": "4e4c5356268bd8e6a761679d0bbc248748ae60a8b46fe46e1b30c14286d08a3e"
+  },
+  "files": [
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 48
+      },
+      "blob_sha256": "a5c7e2f8f8150e78bfc00d32201a7a17b299a54d5f2bc2fb75df11438b0f834c",
+      "checkout_endings": {
+        "crlf": 48,
+        "lf_only": 0
+      },
+      "checkout_sha256": "4c5f7e19f3e8dd536ea4bf7356e977a1dd0251490df77cd8d7ad56beb324f3a1",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/__init__.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 113
+      },
+      "blob_sha256": "8118432c9e2b1267677c550a6b3b3a715fd95639c34efe1f6bb4efe3be3a8805",
+      "checkout_endings": {
+        "crlf": 113,
+        "lf_only": 0
+      },
+      "checkout_sha256": "1c80cd5830dd3f27c539084a2a2638c349f64e0ac8a21061d0ebf6ac4f66b6a9",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/__main__.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 114
+      },
+      "blob_sha256": "37b32d7bf9d3a7443b0926be6260c885f7dc2af79a7ad57776436d7a64530895",
+      "checkout_endings": {
+        "crlf": 114,
+        "lf_only": 0
+      },
+      "checkout_sha256": "6c196993519c9b11064d903735a3b14a5176f3d5ae6bb40d33399889866fbce4",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/_worker.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 309
+      },
+      "blob_sha256": "47c66fb73121006b04d0f2f23dcfa5ee124cbf61caa3affce10a312fc74cdc8d",
+      "checkout_endings": {
+        "crlf": 309,
+        "lf_only": 0
+      },
+      "checkout_sha256": "11654bc1612ae73346278204f7fe75ead64e0b6ec09b75573a0f46c1c08d4d7a",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/agreement.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 61
+      },
+      "blob_sha256": "4c23099bfa359ecf9a7bc5b1416219c97a25471fe6f881229b36cb0a461aa456",
+      "checkout_endings": {
+        "crlf": 61,
+        "lf_only": 0
+      },
+      "checkout_sha256": "62855d79679e4f749ddd52757580ae9c9f39527265d3412a4cd7a0218a20f3b5",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/canonical.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 136
+      },
+      "blob_sha256": "a303bb3e309c95f9ff3a4fb461765dee7030f8bd7d973ade2a4ccf367eaacdef",
+      "checkout_endings": {
+        "crlf": 136,
+        "lf_only": 0
+      },
+      "checkout_sha256": "55e99584efc9f08a435fdbe564ba721a0c968facac9c9fd5c9d1d1ff94c33e6f",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/engine.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 381
+      },
+      "blob_sha256": "fb0c7c68d47a6e4581d595ff12d1e3469d1a5ac7f02b9b8cf416d6b395f452be",
+      "checkout_endings": {
+        "crlf": 381,
+        "lf_only": 0
+      },
+      "checkout_sha256": "4c94b7a78c04282ed34501284e1eab1dd1c037dc9450d5087d4ac591c00a3d2c",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/environment.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 35
+      },
+      "blob_sha256": "29576ab782e176e0efe162dca32905fc86c7a4f4a47c0f207ab531404dbd5ae4",
+      "checkout_endings": {
+        "crlf": 35,
+        "lf_only": 0
+      },
+      "checkout_sha256": "3c9b1423695b88ac47bd2dfbb5fc9fe98f76158f8aeea4ec677b04276843ad21",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/errors.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 311
+      },
+      "blob_sha256": "5a86fb2d5dcae100b36fb67a541d01ce84641efe1dd9344d6ddd3c04ecc504bd",
+      "checkout_endings": {
+        "crlf": 311,
+        "lf_only": 0
+      },
+      "checkout_sha256": "9a5763873ac688a9b122e9a0b6c114868f8c30bf1f72423e0a3a16da11edecfc",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/ingest.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 186
+      },
+      "blob_sha256": "2685cb9ccce91008516be1b21263077cb354fcf96e95446eb620674ccbdc6d10",
+      "checkout_endings": {
+        "crlf": 186,
+        "lf_only": 0
+      },
+      "checkout_sha256": "e689a612474c6b5a540c754b3ea4624b3581ff50d270af4923b609bdcce23bab",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/kernels.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 32
+      },
+      "blob_sha256": "48cd2f7af5845653bddb807c70d138c755efc8332eef2e91a7679619424695bd",
+      "checkout_endings": {
+        "crlf": 32,
+        "lf_only": 0
+      },
+      "checkout_sha256": "9c54f8e66c7ab618300e36abb4b3abb2c6b3f7b56255bfeb70240dfc21e2488d",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/limits.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 322
+      },
+      "blob_sha256": "701abe16134bb3c01f39b2bcbc7a75072bd9c4085660b7e79bcbf8f8687d21de",
+      "checkout_endings": {
+        "crlf": 322,
+        "lf_only": 0
+      },
+      "checkout_sha256": "8b2462d1f63eea5e6d87aeee987a33bb9f067dae50b3a89b962777bd37f0be84",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/ops_cluster.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 27
+      },
+      "blob_sha256": "c7ee5cec370638c1aa92cd533ee4eca8fdea4a7cdc0e9d90ef83691fc10b16f9",
+      "checkout_endings": {
+        "crlf": 27,
+        "lf_only": 0
+      },
+      "checkout_sha256": "668e52083106e67edcaec3d452b5f054b7a27b9e792aae3886faff3f9cf7e8bb",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/ops_common.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 63
+      },
+      "blob_sha256": "171bbc0361790340651c6201b4a5d4155ee78d7bd0775713397309ddfadcc92c",
+      "checkout_endings": {
+        "crlf": 63,
+        "lf_only": 0
+      },
+      "checkout_sha256": "562398f35f679d67e355622d50feec1bc25efecb3a907021151b6fbb18874470",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/ops_compare.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 33
+      },
+      "blob_sha256": "ca37e2e7012584d65377c17b06475ec6b02bf45fb054704da2d4858a262111dc",
+      "checkout_endings": {
+        "crlf": 33,
+        "lf_only": 0
+      },
+      "checkout_sha256": "83dc8f21ad94d7c4313c486b0e67dc7e7b22f4ddd17f38792e20b8441bde2ed8",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/ops_inspect.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 51
+      },
+      "blob_sha256": "7c942db335071366a807185a39eca9834c232f4aa1bc39d2f5bee9cea9e16d19",
+      "checkout_endings": {
+        "crlf": 51,
+        "lf_only": 0
+      },
+      "checkout_sha256": "ae18f66c30a448bd322545275f0f429a92aad4c3974fb5cab9f6736af513fecf",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/ops_relate.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 71
+      },
+      "blob_sha256": "63aebd914ff3e797eae156c8806f0d1fc17300bedf97a7fe2ad1e9ea834fb870",
+      "checkout_endings": {
+        "crlf": 71,
+        "lf_only": 0
+      },
+      "checkout_sha256": "b8bedb90a4099b0160470263caf806004b2aa77a5e115c58c85896cb2d1e57dd",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/partition.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 456
+      },
+      "blob_sha256": "83ded244c689b5030f7527132d863b11476cde9c312f84b26cc1f17444a3a187",
+      "checkout_endings": {
+        "crlf": 456,
+        "lf_only": 0
+      },
+      "checkout_sha256": "b8cbb588e2f56967009184fe4a7a026a2be5cc61c872fd1422f8a196ec058325",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/passport.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 426
+      },
+      "blob_sha256": "7508709218678917b266eeba442b81a9954b6efd6f07665369e7ed38a0730f95",
+      "checkout_endings": {
+        "crlf": 426,
+        "lf_only": 0
+      },
+      "checkout_sha256": "9ec7f5582c5caf9c01cc3eeb60751c6ae0d36c464e83e467254bc6a9127b74dd",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/passport_schema.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 314
+      },
+      "blob_sha256": "1162be4af5946596afbac448cae8a14fd28d1c992072f6144dee1c0d84b34333",
+      "checkout_endings": {
+        "crlf": 314,
+        "lf_only": 0
+      },
+      "checkout_sha256": "7ad7146be850985ffec7717f7ddc012d8866f26bf548f036a4ecd3c0bb4ed9ef",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/plan.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 702
+      },
+      "blob_sha256": "fcf6e96a3105a0b5ac1884eb9d9c62467a2b77102dac47a3fa52f45904a661c0",
+      "checkout_endings": {
+        "crlf": 702,
+        "lf_only": 0
+      },
+      "checkout_sha256": "c24f116b724c2d1f3b8b23dbcc67fa37acd760e14ff16569fb2a384d2beb525d",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "src/axiom/replay.py"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 295
+      },
+      "blob_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+      "checkout_endings": {
+        "crlf": 295,
+        "lf_only": 0
+      },
+      "checkout_sha256": "93f27c7eceb788e7816773218f1265e334fff3534bf7366e1c7f6ff2e9f81255",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "uv.lock"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 7
+      },
+      "blob_sha256": "fc6be5acad0d5e06fb55dbc4d5e0ce8b9299a67522331b4fc091f733aa19da60",
+      "checkout_endings": {
+        "crlf": 7,
+        "lf_only": 0
+      },
+      "checkout_sha256": "e577ac0e1a0692900172147508986371219874663567e81edf1f7b6a2a0cf8e5",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "examples/plans/cluster.json"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 6
+      },
+      "blob_sha256": "f7d76438775e7236c12a7b380b047cc63713a1dceb9ae4dc9fc81684ab1a5659",
+      "checkout_endings": {
+        "crlf": 6,
+        "lf_only": 0
+      },
+      "checkout_sha256": "05596c9db72f3414c4851f9167f6b91fb92086f3ca28549f65c35758a7621f5a",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "examples/plans/compare.json"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 5
+      },
+      "blob_sha256": "b213844f71e8c7dbd9fe6e20c0aecf2b1ad8021adef7b8587f4f862ab73c26dd",
+      "checkout_endings": {
+        "crlf": 5,
+        "lf_only": 0
+      },
+      "checkout_sha256": "5b023768af095bfd8da9e4a43cfc734129878a1b3802d7712dc000f8ac236c65",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "examples/plans/inspect.json"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 7
+      },
+      "blob_sha256": "33c22726ea60c38e73f6ba96e74cadb76a4189a95f897b64aa5047c6428e032e",
+      "checkout_endings": {
+        "crlf": 7,
+        "lf_only": 0
+      },
+      "checkout_sha256": "b98d1fc97a7dc2e662828f40e7c9b9e430f91202f79ad173d9a2aff8a582e938",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "examples/plans/relate_pearson.json"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 7
+      },
+      "blob_sha256": "0e59a3e6110aa3821e1118ec191fd35ebe4b3608a74196526115006c7cd51f65",
+      "checkout_endings": {
+        "crlf": 7,
+        "lf_only": 0
+      },
+      "checkout_sha256": "47b4763200f5dddf4fb8005e4e86713bfcf204460f8b4b9de881c310ce6ca659",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "examples/plans/relate_spearman.json"
+    },
+    {
+      "attributes": [
+        "text: unspecified",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 13
+      },
+      "blob_sha256": "c498a4d38357c0647d5dc1f7c00f859907cb4b8ab5a8b7e8e47f6164f1a87b23",
+      "checkout_endings": {
+        "crlf": 13,
+        "lf_only": 0
+      },
+      "checkout_sha256": "fed54f184fae6054ffe3ce0f91f9e119711bb50394f152b22f9718e06ab22da4",
+      "identical": false,
+      "identical_after_crlf_to_lf": true,
+      "path": "examples/profiles/synthetic_regions.json"
+    },
+    {
+      "attributes": [
+        "text: unset",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 0,
+        "lf_only": 151
+      },
+      "blob_sha256": "4f39a4f3cac2395df392ad93d56e59ecda3fc49636dde736c0f0aa9f946fd4ad",
+      "checkout_endings": {
+        "crlf": 0,
+        "lf_only": 151
+      },
+      "checkout_sha256": "4f39a4f3cac2395df392ad93d56e59ecda3fc49636dde736c0f0aa9f946fd4ad",
+      "identical": true,
+      "identical_after_crlf_to_lf": true,
+      "path": "examples/synthetic_regions.csv"
+    },
+    {
+      "attributes": [
+        "text: unset",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 63,
+        "lf_only": 0
+      },
+      "blob_sha256": "ce7c7a0fc6d7cedd0d5e1f9911afb9337544be6836730beb9968ca0a4571d375",
+      "checkout_endings": {
+        "crlf": 63,
+        "lf_only": 0
+      },
+      "checkout_sha256": "ce7c7a0fc6d7cedd0d5e1f9911afb9337544be6836730beb9968ca0a4571d375",
+      "identical": true,
+      "identical_after_crlf_to_lf": false,
+      "path": "tests/data/nist/NumAcc1.dat"
+    },
+    {
+      "attributes": [
+        "text: unset",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 1061,
+        "lf_only": 0
+      },
+      "blob_sha256": "5be29522dfbe299541f0ec98ec1c22a51a5587bf06561ba21a92c209fb7ef0f9",
+      "checkout_endings": {
+        "crlf": 1061,
+        "lf_only": 0
+      },
+      "checkout_sha256": "5be29522dfbe299541f0ec98ec1c22a51a5587bf06561ba21a92c209fb7ef0f9",
+      "identical": true,
+      "identical_after_crlf_to_lf": false,
+      "path": "tests/data/nist/NumAcc2.dat"
+    },
+    {
+      "attributes": [
+        "text: unset",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 1061,
+        "lf_only": 0
+      },
+      "blob_sha256": "66df1b96596735936f37fd889e7c1c6ce998eb2b523bfc46c98ec1737e992aec",
+      "checkout_endings": {
+        "crlf": 1061,
+        "lf_only": 0
+      },
+      "checkout_sha256": "66df1b96596735936f37fd889e7c1c6ce998eb2b523bfc46c98ec1737e992aec",
+      "identical": true,
+      "identical_after_crlf_to_lf": false,
+      "path": "tests/data/nist/NumAcc3.dat"
+    },
+    {
+      "attributes": [
+        "text: unset",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 1061,
+        "lf_only": 0
+      },
+      "blob_sha256": "ca310dc767f5130f980f8280bbe69e26ba414a4d85a89fc11b6c767b828e5fe4",
+      "checkout_endings": {
+        "crlf": 1061,
+        "lf_only": 0
+      },
+      "checkout_sha256": "ca310dc767f5130f980f8280bbe69e26ba414a4d85a89fc11b6c767b828e5fe4",
+      "identical": true,
+      "identical_after_crlf_to_lf": false,
+      "path": "tests/data/nist/NumAcc4.dat"
+    },
+    {
+      "attributes": [
+        "text: unset",
+        "eol: unspecified"
+      ],
+      "blob_endings": {
+        "crlf": 5060,
+        "lf_only": 0
+      },
+      "blob_sha256": "e9421a2f4c0a31c505099332b4d22e507e808953c3c57bddae9226f25587d7d2",
+      "checkout_endings": {
+        "crlf": 5060,
+        "lf_only": 0
+      },
+      "checkout_sha256": "e9421a2f4c0a31c505099332b4d22e507e808953c3c57bddae9226f25587d7d2",
+      "identical": true,
+      "identical_after_crlf_to_lf": false,
+      "path": "tests/data/nist/PiDigits.dat"
+    }
+  ],
+  "files_differing": [
+    "src/axiom/__init__.py",
+    "src/axiom/__main__.py",
+    "src/axiom/_worker.py",
+    "src/axiom/agreement.py",
+    "src/axiom/canonical.py",
+    "src/axiom/engine.py",
+    "src/axiom/environment.py",
+    "src/axiom/errors.py",
+    "src/axiom/ingest.py",
+    "src/axiom/kernels.py",
+    "src/axiom/limits.py",
+    "src/axiom/ops_cluster.py",
+    "src/axiom/ops_common.py",
+    "src/axiom/ops_compare.py",
+    "src/axiom/ops_inspect.py",
+    "src/axiom/ops_relate.py",
+    "src/axiom/partition.py",
+    "src/axiom/passport.py",
+    "src/axiom/passport_schema.py",
+    "src/axiom/plan.py",
+    "src/axiom/replay.py",
+    "uv.lock",
+    "examples/plans/cluster.json",
+    "examples/plans/compare.json",
+    "examples/plans/inspect.json",
+    "examples/plans/relate_pearson.json",
+    "examples/plans/relate_spearman.json",
+    "examples/profiles/synthetic_regions.json"
+  ],
+  "git_config": {
+    "core.autocrlf": "true",
+    "core.eol": null,
+    "core.safecrlf": null
+  },
+  "head": "6074227f4c14890deeb47ea78eceeef05d00942d",
+  "n_files": 34,
+  "platform": "win32"
+}

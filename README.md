@@ -10,7 +10,7 @@ Windows later.
 ## Status
 
 **Early development.** The repository contains governance, CI and the first version of the deterministic
-statistical core (Issue #2, under review). **No language model, desktop UI or trained model exists yet.**
+statistical core (Issue #2, merged) with verification and replay (Issue #3, under review). **No language model, desktop UI or trained model exists yet.**
 
 | Area | Status |
 |------|--------|
@@ -18,7 +18,7 @@ statistical core (Issue #2, under review). **No language model, desktop UI or tr
 | CSV input guard, typed plans, canonical results | Implemented (Issue #2), see [ADR 0003](docs/decisions/0003-input-guard-and-dataset-snapshot.md), [ADR 0005](docs/decisions/0005-typed-plans-binding-and-result-serialization.md) |
 | Inspect, Relate (Pearson/Spearman), Compare, Cluster (K-means) | Implemented (Issue #2); measured on one macOS arm64 machine, see [EXP-001](docs/evidence/experiments/EXP-001-issue2-numerical-validation/MANIFEST.md) |
 | Correlation matrix, outlier flags, p-values | Not implemented (deferred or out of scope) |
-| Run passport, replay, cross-platform comparison | Planned (Issue #3) |
+| Analysis Passport, fresh-process replay, cross-platform comparison | Implemented (Issue #3, under review), see [ADR 0007](docs/decisions/0007-analysis-passport-and-environment-capture.md), [ADR 0008](docs/decisions/0008-replay-mismatch-classification-and-comparison-criteria.md), [EXP-004](docs/evidence/experiments/EXP-004-replay-benchmark/MANIFEST.md), [EXP-005](docs/evidence/experiments/EXP-005-cross-platform/MANIFEST.md) |
 | Intent router (AX-01) | Planned, no model exists |
 | Desktop UI | Planned |
 | Model training | Planned, no results exist |
@@ -61,12 +61,25 @@ print(result.canonical_json, result.result_sha256)
 
 A complete synthetic example with one plan per operation is in [examples/](examples/README.md).
 
+## Verify and replay
+
+```bash
+uv run python -m axiom analyze --data examples/synthetic_regions.csv \
+  --profile examples/profiles/synthetic_regions.json --plan examples/plans/compare.json --out passport.json
+uv run python -m axiom replay --passport passport.json --data examples/synthetic_regions.csv --runs 5
+```
+
+The passport records the identities, inputs, full-precision result and environment; replay recomputes in fresh processes
+and reports `exact_match`, `numeric_agreement`, `numerical_discrepancy`, `execution_failure` or `integrity_mismatch`.
+Repeatability and agreement are not correctness ([docs/reproducibility.md](docs/reproducibility.md)).
+
 The exact commands, environment and exit statuses of the last verified run are recorded in
 [docs/evidence/DEVELOPMENT_LOG.md](docs/evidence/DEVELOPMENT_LOG.md).
 
 ## Repository map
 
-- `src/axiom/` – the deterministic core (`ingest`, `plan`, `kernels`, `ops_*`, `engine`, `canonical`)
+- `src/axiom/` – the deterministic core (`ingest`, `plan`, `kernels`, `ops_*`, `engine`, `canonical`) and verification
+  (`environment`, `passport`, `replay`, `agreement`, `partition`; CLI `python -m axiom`)
 - `tests/` – tests, exact-arithmetic oracles, vendored NIST reference data
 - `benchmarks/` – scripts that produced the numbers in `docs/evidence/experiments/`
 - `docs/` – architecture, roadmap, reproducibility, demo, ADRs, research, evidence

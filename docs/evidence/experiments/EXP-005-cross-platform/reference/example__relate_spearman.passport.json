@@ -1,0 +1,298 @@
+{
+  "environment": {
+    "code": {
+      "commit": "f163b41f437cbb7dbe40b5d42b78cea5b086fd22",
+      "dirty": false,
+      "lock_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+      "package_files_sha256": "ad7764e15416429f662b8052fd977daeba2a613c321adb44f6e389c00f81fcca"
+    },
+    "numerical_backend": {
+      "numpy_blas": {
+        "name": "accelerate",
+        "version": "unknown"
+      },
+      "numpy_lapack": {
+        "name": "accelerate",
+        "version": "unknown"
+      },
+      "simd": {
+        "baseline": [
+          "NEON",
+          "NEON_FP16",
+          "NEON_VFPV4",
+          "ASIMD"
+        ],
+        "found": [
+          "ASIMDHP",
+          "ASIMDDP"
+        ],
+        "not_found": [
+          "ASIMDFHM",
+          "SVE"
+        ]
+      }
+    },
+    "os": {
+      "byteorder": "little",
+      "logical_cpus": 10,
+      "machine": "arm64",
+      "platform": "macOS-27.0.1-arm64-arm-64bit",
+      "processor": "arm",
+      "release": "27.0.0",
+      "system": "Darwin",
+      "version": "Darwin Kernel Version 27.0.0: Tue Aug 11 21:02:59 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_T8142"
+    },
+    "packages": {
+      "axiom-local": "0.0.0",
+      "joblib": "1.6.0",
+      "numpy": "2.5.5",
+      "pydantic": "2.14.4",
+      "pydantic-core": "2.50.5",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "threadpoolctl": "3.8.0"
+    },
+    "python": {
+      "bits": 64,
+      "build": [
+        "main",
+        "Oct 25 2026 18:24:37"
+      ],
+      "compiler": "Clang 21.0.0 (clang-2100.3.34.2)",
+      "float_repr_style": "short",
+      "implementation": "CPython",
+      "version": "3.12.16"
+    },
+    "schema_version": "axiom.environment/1",
+    "threads": {
+      "blas_thread_control": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+      "detected_pools": [
+        {
+          "internal_api": "openmp",
+          "num_threads": 1,
+          "prefix": "libomp",
+          "user_api": "openmp",
+          "version": null
+        }
+      ],
+      "environment_variables": {
+        "BLIS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "VECLIB_MAXIMUM_THREADS": "1"
+      },
+      "fit_limit_probe": "verified_single_thread"
+    }
+  },
+  "execution": {
+    "finished_utc": "2026-11-25T18:21:32.211730+00:00",
+    "mode": "fresh_process",
+    "result_cache": "none: the worker recomputes from the data file",
+    "run_id": "d2864e3af517461aab46c4cf6f653d18",
+    "started_utc": "2026-11-25T18:21:32.117605+00:00",
+    "thread_environment": {
+      "BLIS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    },
+    "timing_seconds": {
+      "compute_seconds": 0.0006396250100806355,
+      "import_seconds": 0.0006262090755626559,
+      "load_seconds": 0.0015875839162617922,
+      "parent_wall": 1.474388749920763
+    },
+    "workspace": "fresh temporary directory, deleted after the run"
+  },
+  "identity": {
+    "dataset_format": "axiom.dataset/1",
+    "dataset_sha256": "44cbe8dc6374105bc24f911415697989a9a71172bdfd30683b892b2fdc5a9245",
+    "plan_schema": "axiom.plan/1",
+    "plan_sha256": "7e1a7726a3063af7e0c5e36c206a0a69da021bee9143f72216446cf0442b4f40",
+    "policy_version": "axiom.policy/1",
+    "raw_sha256": "4f39a4f3cac2395df392ad93d56e59ecda3fc49636dde736c0f0aa9f946fd4ad",
+    "result_schema": "axiom.result/1",
+    "result_sha256": "7ccd02a9de6dd91ba6d89caa04274bf4a2ec97436e8c308a0a1b06fe3ea4f4c2",
+    "serializer": "axiom.canonical-json/1"
+  },
+  "inputs": {
+    "csv_profile": {
+      "columns": [
+        {
+          "kind": "text",
+          "name": "region_id"
+        },
+        {
+          "kind": "text",
+          "name": "macro_region"
+        },
+        {
+          "kind": "numeric",
+          "name": "gdp_per_capita"
+        },
+        {
+          "kind": "numeric",
+          "name": "unemployment_rate"
+        },
+        {
+          "kind": "numeric",
+          "name": "education_years"
+        },
+        {
+          "kind": "numeric",
+          "name": "household_income"
+        }
+      ],
+      "decimal": ".",
+      "delimiter": ",",
+      "encoding": "utf-8"
+    },
+    "limits": {
+      "max_bytes": 33554432,
+      "max_cluster_features": 64,
+      "max_cluster_work": 100000000000,
+      "max_columns": 256,
+      "max_field_chars": 65536,
+      "max_groups": 10000,
+      "max_header_chars": 256,
+      "max_k": 64,
+      "max_plan_bytes": 65536,
+      "max_plan_depth": 8,
+      "max_plan_nodes": 4096,
+      "max_reported_ordinals": 100,
+      "max_rows": 1000000
+    },
+    "n_bytes": 6040,
+    "n_rows": 150,
+    "plan": {
+      "method": "spearman",
+      "operation": "relate",
+      "schema_version": "axiom.plan/1",
+      "x": "unemployment_rate",
+      "y": "gdp_per_capita"
+    }
+  },
+  "passport_sha256": "5fcc7bcfbc011a411608765ca3c3faa7c71fb4380f74c6db71dc12df91593800",
+  "passport_version": "axiom.passport/1",
+  "result": {
+    "inputs": {
+      "columns": [
+        {
+          "kind": "text",
+          "name": "region_id"
+        },
+        {
+          "kind": "text",
+          "name": "macro_region"
+        },
+        {
+          "kind": "numeric",
+          "name": "gdp_per_capita"
+        },
+        {
+          "kind": "numeric",
+          "name": "unemployment_rate"
+        },
+        {
+          "kind": "numeric",
+          "name": "education_years"
+        },
+        {
+          "kind": "numeric",
+          "name": "household_income"
+        }
+      ],
+      "dataset_sha256": "44cbe8dc6374105bc24f911415697989a9a71172bdfd30683b892b2fdc5a9245",
+      "n_rows": 150,
+      "plan_sha256": "7e1a7726a3063af7e0c5e36c206a0a69da021bee9143f72216446cf0442b4f40",
+      "raw_sha256": "4f39a4f3cac2395df392ad93d56e59ecda3fc49636dde736c0f0aa9f946fd4ad"
+    },
+    "operation": "relate",
+    "plan": {
+      "method": "spearman",
+      "operation": "relate",
+      "schema_version": "axiom.plan/1",
+      "x": "unemployment_rate",
+      "y": "gdp_per_capita"
+    },
+    "policy_version": "axiom.policy/1",
+    "result": {
+      "coefficient": -0.6154037986937521,
+      "excluded": {
+        "row_ordinals": [
+          17,
+          34,
+          51,
+          68,
+          85,
+          102,
+          119,
+          136
+        ],
+        "row_ordinals_truncated": false
+      },
+      "excluded_missing_both": 0,
+      "excluded_missing_x_only": 8,
+      "excluded_missing_y_only": 0,
+      "method": "spearman",
+      "minimum_n": 3,
+      "n_excluded": 8,
+      "n_rows_total": 150,
+      "n_used": 142,
+      "undefined": null,
+      "x": "unemployment_rate",
+      "y": "gdp_per_capita"
+    },
+    "schema_version": "axiom.result/1",
+    "serializer": "axiom.canonical-json/1",
+    "warnings": [
+      {
+        "code": "not_causal",
+        "detail": "a correlation coefficient does not establish causation"
+      },
+      {
+        "code": "monotonic_only",
+        "detail": "Spearman measures monotonic association (average ranks for ties)"
+      }
+    ]
+  },
+  "verification": [
+    {
+      "detail": "engine recomputed the plan digest at binding and execution",
+      "evidence": "integrity",
+      "id": "plan_digest_recomputed",
+      "kind": "exact",
+      "status": "pass"
+    },
+    {
+      "detail": "result_sha256 is the SHA-256 of the canonical result bytes",
+      "evidence": "integrity",
+      "id": "result_digest_recomputed",
+      "kind": "exact",
+      "status": "pass"
+    },
+    {
+      "detail": "use axiom replay",
+      "evidence": "repeatability",
+      "id": "fresh_process_replay",
+      "kind": "exact",
+      "status": "not_run"
+    },
+    {
+      "detail": "compare with a passport from another environment (axiom compare)",
+      "evidence": "cross_environment",
+      "id": "cross_environment_agreement",
+      "kind": "numeric",
+      "status": "not_run"
+    },
+    {
+      "detail": "a passport does not compare its result with an independent oracle; see the test suite and EXP-001/EXP-002 for that evidence",
+      "evidence": "independent_reference",
+      "id": "independent_reference",
+      "kind": "numeric",
+      "status": "not_run"
+    }
+  ]
+}

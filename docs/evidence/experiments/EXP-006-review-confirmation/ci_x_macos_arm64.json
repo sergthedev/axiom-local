@@ -1,0 +1,871 @@
+{
+  "complete": true,
+  "experiment": "EXP-005 comparison script (also used by EXP-006)",
+  "git": {
+    "commit": "6074227f4c14890deeb47ea78eceeef05d00942d",
+    "dirty": false
+  },
+  "observed_environment": {
+    "code": {
+      "commit": "6074227f4c14890deeb47ea78eceeef05d00942d",
+      "dirty": false,
+      "lock_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+      "package_files_sha256": "4b904d4266ed24d7b80a51220d0a361deb1c5d2e2b33d10e7dd76d2e1e1fe19b"
+    },
+    "numerical_backend": {
+      "numpy_blas": {
+        "name": "accelerate",
+        "version": "unknown"
+      },
+      "numpy_lapack": {
+        "name": "accelerate",
+        "version": "unknown"
+      },
+      "simd": {
+        "baseline": [
+          "NEON",
+          "NEON_FP16",
+          "NEON_VFPV4",
+          "ASIMD"
+        ],
+        "found": [
+          "ASIMDHP",
+          "ASIMDDP"
+        ],
+        "not_found": [
+          "ASIMDFHM",
+          "SVE"
+        ]
+      }
+    },
+    "os": {
+      "byteorder": "little",
+      "logical_cpus": 3,
+      "machine": "arm64",
+      "platform": "macOS-26.7.2-arm64-arm-64bit",
+      "processor": "arm",
+      "release": "25.6.0",
+      "system": "Darwin",
+      "version": "Darwin Kernel Version 25.6.0: Mon Oct 12 00:39:04 PDT 2026; root:xnu-12377.161.15.701.48~2/RELEASE_ARM64_VMAPPLE"
+    },
+    "packages": {
+      "axiom-local": "0.0.0",
+      "joblib": "1.6.0",
+      "numpy": "2.5.5",
+      "pydantic": "2.14.4",
+      "pydantic-core": "2.50.5",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "threadpoolctl": "3.8.0"
+    },
+    "python": {
+      "bits": 64,
+      "build": [
+        "v3.12.10:0cc81280367",
+        "Apr  8 2025 08:46:59"
+      ],
+      "compiler": "Clang 13.0.0 (clang-1300.0.29.30)",
+      "float_repr_style": "short",
+      "implementation": "CPython",
+      "version": "3.12.10"
+    },
+    "schema_version": "axiom.environment/1",
+    "threads": {
+      "blas_thread_control": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+      "detected_pools": [
+        {
+          "internal_api": "openmp",
+          "num_threads": 1,
+          "prefix": "libomp",
+          "user_api": "openmp",
+          "version": null
+        }
+      ],
+      "environment_variables": {
+        "BLIS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "VECLIB_MAXIMUM_THREADS": "1"
+      },
+      "fit_limit_probe": "verified_single_thread"
+    }
+  },
+  "reference_environment": {
+    "code": {
+      "commit": "f163b41f437cbb7dbe40b5d42b78cea5b086fd22",
+      "dirty": false,
+      "lock_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+      "package_files_sha256": "ad7764e15416429f662b8052fd977daeba2a613c321adb44f6e389c00f81fcca"
+    },
+    "numerical_backend": {
+      "numpy_blas": {
+        "name": "accelerate",
+        "version": "unknown"
+      },
+      "numpy_lapack": {
+        "name": "accelerate",
+        "version": "unknown"
+      },
+      "simd": {
+        "baseline": [
+          "NEON",
+          "NEON_FP16",
+          "NEON_VFPV4",
+          "ASIMD"
+        ],
+        "found": [
+          "ASIMDHP",
+          "ASIMDDP"
+        ],
+        "not_found": [
+          "ASIMDFHM",
+          "SVE"
+        ]
+      }
+    },
+    "os": {
+      "byteorder": "little",
+      "logical_cpus": 10,
+      "machine": "arm64",
+      "platform": "macOS-27.0.1-arm64-arm-64bit",
+      "processor": "arm",
+      "release": "27.0.0",
+      "system": "Darwin",
+      "version": "Darwin Kernel Version 27.0.0: Tue Aug 11 21:02:59 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_T8142"
+    },
+    "packages": {
+      "axiom-local": "0.0.0",
+      "joblib": "1.6.0",
+      "numpy": "2.5.5",
+      "pydantic": "2.14.4",
+      "pydantic-core": "2.50.5",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "threadpoolctl": "3.8.0"
+    },
+    "python": {
+      "bits": 64,
+      "build": [
+        "main",
+        "Oct 25 2026 18:24:37"
+      ],
+      "compiler": "Clang 21.0.0 (clang-2100.3.34.2)",
+      "float_repr_style": "short",
+      "implementation": "CPython",
+      "version": "3.12.16"
+    },
+    "schema_version": "axiom.environment/1",
+    "threads": {
+      "blas_thread_control": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+      "detected_pools": [
+        {
+          "internal_api": "openmp",
+          "num_threads": 1,
+          "prefix": "libomp",
+          "user_api": "openmp",
+          "version": null
+        }
+      ],
+      "environment_variables": {
+        "BLIS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "VECLIB_MAXIMUM_THREADS": "1"
+      },
+      "fit_limit_probe": "verified_single_thread"
+    }
+  },
+  "scenarios": [
+    {
+      "byte_identical": true,
+      "compared": true,
+      "comparison_mode": "cross_environment_numeric",
+      "data_sha256": "4f39a4f3cac2395df392ad93d56e59ecda3fc49636dde736c0f0aa9f946fd4ad",
+      "environment_fields_differing": [
+        "python.version",
+        "python.compiler",
+        "os.release",
+        "code.commit",
+        "code.package_files_sha256"
+      ],
+      "environment_fields_unverified": [
+        "numerical_backend",
+        "threads.detected_pools",
+        "threads.blas_thread_control"
+      ],
+      "environment_status": "different",
+      "field_differences": [],
+      "max_abs_diff": 0.0,
+      "max_ulp_distance": 0,
+      "n_float_fields": 36,
+      "n_float_fields_different": 0,
+      "n_gating_failures": 0,
+      "native_threads": {
+        "observed": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        },
+        "reference": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        }
+      },
+      "non_float_differences": [],
+      "observed_code": {
+        "commit": "6074227f4c14890deeb47ea78eceeef05d00942d",
+        "dirty": false,
+        "lock_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+        "package_files_sha256": "4b904d4266ed24d7b80a51220d0a361deb1c5d2e2b33d10e7dd76d2e1e1fe19b"
+      },
+      "observed_result_sha256": "61ad38f06e55508058f3f01cb73ba2edf09f9954616ea2359d22aeb161c77875",
+      "observed_threads": {
+        "blas_thread_control": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+        "detected_pools": [
+          {
+            "internal_api": "openmp",
+            "num_threads": 1,
+            "prefix": "libomp",
+            "user_api": "openmp",
+            "version": null
+          }
+        ],
+        "environment_variables": {
+          "BLIS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "VECLIB_MAXIMUM_THREADS": "1"
+        },
+        "fit_limit_probe": "verified_single_thread"
+      },
+      "partition": null,
+      "reference_result_sha256": "61ad38f06e55508058f3f01cb73ba2edf09f9954616ea2359d22aeb161c77875",
+      "scenario": "example/inspect",
+      "verdict": "exact_match"
+    },
+    {
+      "byte_identical": true,
+      "compared": true,
+      "comparison_mode": "cross_environment_numeric",
+      "data_sha256": "4f39a4f3cac2395df392ad93d56e59ecda3fc49636dde736c0f0aa9f946fd4ad",
+      "environment_fields_differing": [
+        "python.version",
+        "python.compiler",
+        "os.release",
+        "code.commit",
+        "code.package_files_sha256"
+      ],
+      "environment_fields_unverified": [
+        "numerical_backend",
+        "threads.detected_pools",
+        "threads.blas_thread_control"
+      ],
+      "environment_status": "different",
+      "field_differences": [],
+      "max_abs_diff": 0.0,
+      "max_ulp_distance": 0,
+      "n_float_fields": 1,
+      "n_float_fields_different": 0,
+      "n_gating_failures": 0,
+      "native_threads": {
+        "observed": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        },
+        "reference": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        }
+      },
+      "non_float_differences": [],
+      "observed_code": {
+        "commit": "6074227f4c14890deeb47ea78eceeef05d00942d",
+        "dirty": false,
+        "lock_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+        "package_files_sha256": "4b904d4266ed24d7b80a51220d0a361deb1c5d2e2b33d10e7dd76d2e1e1fe19b"
+      },
+      "observed_result_sha256": "a5a3a09067e0c08bdd8a5225d323d24b0a34bc88e41d43d95f994bc63ecceaa9",
+      "observed_threads": {
+        "blas_thread_control": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+        "detected_pools": [
+          {
+            "internal_api": "openmp",
+            "num_threads": 1,
+            "prefix": "libomp",
+            "user_api": "openmp",
+            "version": null
+          }
+        ],
+        "environment_variables": {
+          "BLIS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "VECLIB_MAXIMUM_THREADS": "1"
+        },
+        "fit_limit_probe": "verified_single_thread"
+      },
+      "partition": null,
+      "reference_result_sha256": "a5a3a09067e0c08bdd8a5225d323d24b0a34bc88e41d43d95f994bc63ecceaa9",
+      "scenario": "example/relate_pearson",
+      "verdict": "exact_match"
+    },
+    {
+      "byte_identical": true,
+      "compared": true,
+      "comparison_mode": "cross_environment_numeric",
+      "data_sha256": "4f39a4f3cac2395df392ad93d56e59ecda3fc49636dde736c0f0aa9f946fd4ad",
+      "environment_fields_differing": [
+        "python.version",
+        "python.compiler",
+        "os.release",
+        "code.commit",
+        "code.package_files_sha256"
+      ],
+      "environment_fields_unverified": [
+        "numerical_backend",
+        "threads.detected_pools",
+        "threads.blas_thread_control"
+      ],
+      "environment_status": "different",
+      "field_differences": [],
+      "max_abs_diff": 0.0,
+      "max_ulp_distance": 0,
+      "n_float_fields": 1,
+      "n_float_fields_different": 0,
+      "n_gating_failures": 0,
+      "native_threads": {
+        "observed": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        },
+        "reference": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        }
+      },
+      "non_float_differences": [],
+      "observed_code": {
+        "commit": "6074227f4c14890deeb47ea78eceeef05d00942d",
+        "dirty": false,
+        "lock_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+        "package_files_sha256": "4b904d4266ed24d7b80a51220d0a361deb1c5d2e2b33d10e7dd76d2e1e1fe19b"
+      },
+      "observed_result_sha256": "7ccd02a9de6dd91ba6d89caa04274bf4a2ec97436e8c308a0a1b06fe3ea4f4c2",
+      "observed_threads": {
+        "blas_thread_control": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+        "detected_pools": [
+          {
+            "internal_api": "openmp",
+            "num_threads": 1,
+            "prefix": "libomp",
+            "user_api": "openmp",
+            "version": null
+          }
+        ],
+        "environment_variables": {
+          "BLIS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "VECLIB_MAXIMUM_THREADS": "1"
+        },
+        "fit_limit_probe": "verified_single_thread"
+      },
+      "partition": null,
+      "reference_result_sha256": "7ccd02a9de6dd91ba6d89caa04274bf4a2ec97436e8c308a0a1b06fe3ea4f4c2",
+      "scenario": "example/relate_spearman",
+      "verdict": "exact_match"
+    },
+    {
+      "byte_identical": true,
+      "compared": true,
+      "comparison_mode": "cross_environment_numeric",
+      "data_sha256": "4f39a4f3cac2395df392ad93d56e59ecda3fc49636dde736c0f0aa9f946fd4ad",
+      "environment_fields_differing": [
+        "python.version",
+        "python.compiler",
+        "os.release",
+        "code.commit",
+        "code.package_files_sha256"
+      ],
+      "environment_fields_unverified": [
+        "numerical_backend",
+        "threads.detected_pools",
+        "threads.blas_thread_control"
+      ],
+      "environment_status": "different",
+      "field_differences": [],
+      "max_abs_diff": 0.0,
+      "max_ulp_distance": 0,
+      "n_float_fields": 45,
+      "n_float_fields_different": 0,
+      "n_gating_failures": 0,
+      "native_threads": {
+        "observed": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        },
+        "reference": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        }
+      },
+      "non_float_differences": [],
+      "observed_code": {
+        "commit": "6074227f4c14890deeb47ea78eceeef05d00942d",
+        "dirty": false,
+        "lock_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+        "package_files_sha256": "4b904d4266ed24d7b80a51220d0a361deb1c5d2e2b33d10e7dd76d2e1e1fe19b"
+      },
+      "observed_result_sha256": "9c386d00e08ec4605a222e83e5fce7c3c12bc58d75875ba1bbc8ccbf833b6757",
+      "observed_threads": {
+        "blas_thread_control": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+        "detected_pools": [
+          {
+            "internal_api": "openmp",
+            "num_threads": 1,
+            "prefix": "libomp",
+            "user_api": "openmp",
+            "version": null
+          }
+        ],
+        "environment_variables": {
+          "BLIS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "VECLIB_MAXIMUM_THREADS": "1"
+        },
+        "fit_limit_probe": "verified_single_thread"
+      },
+      "partition": null,
+      "reference_result_sha256": "9c386d00e08ec4605a222e83e5fce7c3c12bc58d75875ba1bbc8ccbf833b6757",
+      "scenario": "example/compare",
+      "verdict": "exact_match"
+    },
+    {
+      "byte_identical": true,
+      "compared": true,
+      "comparison_mode": "cross_environment_numeric",
+      "data_sha256": "4f39a4f3cac2395df392ad93d56e59ecda3fc49636dde736c0f0aa9f946fd4ad",
+      "environment_fields_differing": [
+        "python.version",
+        "python.compiler",
+        "os.release",
+        "code.commit",
+        "code.package_files_sha256"
+      ],
+      "environment_fields_unverified": [
+        "numerical_backend",
+        "threads.detected_pools",
+        "threads.blas_thread_control"
+      ],
+      "environment_status": "different",
+      "field_differences": [],
+      "max_abs_diff": 0.0,
+      "max_ulp_distance": 0,
+      "n_float_fields": 45,
+      "n_float_fields_different": 0,
+      "n_gating_failures": 0,
+      "native_threads": {
+        "observed": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        },
+        "reference": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        }
+      },
+      "non_float_differences": [],
+      "observed_code": {
+        "commit": "6074227f4c14890deeb47ea78eceeef05d00942d",
+        "dirty": false,
+        "lock_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+        "package_files_sha256": "4b904d4266ed24d7b80a51220d0a361deb1c5d2e2b33d10e7dd76d2e1e1fe19b"
+      },
+      "observed_result_sha256": "b35d088c72841f5b60e59ae705905d6548a3cc54b3dd0883008d88dfe6d70459",
+      "observed_threads": {
+        "blas_thread_control": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+        "detected_pools": [
+          {
+            "internal_api": "openmp",
+            "num_threads": 1,
+            "prefix": "libomp",
+            "user_api": "openmp",
+            "version": null
+          }
+        ],
+        "environment_variables": {
+          "BLIS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "VECLIB_MAXIMUM_THREADS": "1"
+        },
+        "fit_limit_probe": "verified_single_thread"
+      },
+      "partition": {
+        "adjusted_rand_index_auxiliary": 1.0,
+        "labels_realigned": false,
+        "n_iter_observed": 8,
+        "n_iter_reference": 8,
+        "note": "membership-set equality is authoritative; no global-optimum claim",
+        "same_partition": true
+      },
+      "reference_result_sha256": "b35d088c72841f5b60e59ae705905d6548a3cc54b3dd0883008d88dfe6d70459",
+      "scenario": "example/cluster",
+      "verdict": "exact_match"
+    },
+    {
+      "byte_identical": true,
+      "compared": true,
+      "comparison_mode": "cross_environment_numeric",
+      "data_sha256": "4b9c09ab5c9c6b5be3bf1cd8c4ee66fd2bf5252e5b5795f85204a19b00f0797c",
+      "environment_fields_differing": [
+        "python.version",
+        "python.compiler",
+        "os.release",
+        "code.commit",
+        "code.package_files_sha256"
+      ],
+      "environment_fields_unverified": [
+        "numerical_backend",
+        "threads.detected_pools",
+        "threads.blas_thread_control"
+      ],
+      "environment_status": "different",
+      "field_differences": [],
+      "max_abs_diff": 0.0,
+      "max_ulp_distance": 0,
+      "n_float_fields": 36,
+      "n_float_fields_different": 0,
+      "n_gating_failures": 0,
+      "native_threads": {
+        "observed": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        },
+        "reference": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        }
+      },
+      "non_float_differences": [],
+      "observed_code": {
+        "commit": "6074227f4c14890deeb47ea78eceeef05d00942d",
+        "dirty": false,
+        "lock_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+        "package_files_sha256": "4b904d4266ed24d7b80a51220d0a361deb1c5d2e2b33d10e7dd76d2e1e1fe19b"
+      },
+      "observed_result_sha256": "53fdc5d33a925348b82fd4c8d677b403f2011775fbb65eb11e78f3f83330f973",
+      "observed_threads": {
+        "blas_thread_control": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+        "detected_pools": [
+          {
+            "internal_api": "openmp",
+            "num_threads": 1,
+            "prefix": "libomp",
+            "user_api": "openmp",
+            "version": null
+          }
+        ],
+        "environment_variables": {
+          "BLIS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "VECLIB_MAXIMUM_THREADS": "1"
+        },
+        "fit_limit_probe": "verified_single_thread"
+      },
+      "partition": null,
+      "reference_result_sha256": "53fdc5d33a925348b82fd4c8d677b403f2011775fbb65eb11e78f3f83330f973",
+      "scenario": "synthetic5000/inspect",
+      "verdict": "exact_match"
+    },
+    {
+      "byte_identical": true,
+      "compared": true,
+      "comparison_mode": "cross_environment_numeric",
+      "data_sha256": "4b9c09ab5c9c6b5be3bf1cd8c4ee66fd2bf5252e5b5795f85204a19b00f0797c",
+      "environment_fields_differing": [
+        "python.version",
+        "python.compiler",
+        "os.release",
+        "code.commit",
+        "code.package_files_sha256"
+      ],
+      "environment_fields_unverified": [
+        "numerical_backend",
+        "threads.detected_pools",
+        "threads.blas_thread_control"
+      ],
+      "environment_status": "different",
+      "field_differences": [],
+      "max_abs_diff": 0.0,
+      "max_ulp_distance": 0,
+      "n_float_fields": 1,
+      "n_float_fields_different": 0,
+      "n_gating_failures": 0,
+      "native_threads": {
+        "observed": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        },
+        "reference": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        }
+      },
+      "non_float_differences": [],
+      "observed_code": {
+        "commit": "6074227f4c14890deeb47ea78eceeef05d00942d",
+        "dirty": false,
+        "lock_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+        "package_files_sha256": "4b904d4266ed24d7b80a51220d0a361deb1c5d2e2b33d10e7dd76d2e1e1fe19b"
+      },
+      "observed_result_sha256": "0bc01672376565491121dcaf5fe253c82549410f5463065c3efb48cd5ac0126d",
+      "observed_threads": {
+        "blas_thread_control": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+        "detected_pools": [
+          {
+            "internal_api": "openmp",
+            "num_threads": 1,
+            "prefix": "libomp",
+            "user_api": "openmp",
+            "version": null
+          }
+        ],
+        "environment_variables": {
+          "BLIS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "VECLIB_MAXIMUM_THREADS": "1"
+        },
+        "fit_limit_probe": "verified_single_thread"
+      },
+      "partition": null,
+      "reference_result_sha256": "0bc01672376565491121dcaf5fe253c82549410f5463065c3efb48cd5ac0126d",
+      "scenario": "synthetic5000/relate_pearson",
+      "verdict": "exact_match"
+    },
+    {
+      "byte_identical": true,
+      "compared": true,
+      "comparison_mode": "cross_environment_numeric",
+      "data_sha256": "4b9c09ab5c9c6b5be3bf1cd8c4ee66fd2bf5252e5b5795f85204a19b00f0797c",
+      "environment_fields_differing": [
+        "python.version",
+        "python.compiler",
+        "os.release",
+        "code.commit",
+        "code.package_files_sha256"
+      ],
+      "environment_fields_unverified": [
+        "numerical_backend",
+        "threads.detected_pools",
+        "threads.blas_thread_control"
+      ],
+      "environment_status": "different",
+      "field_differences": [],
+      "max_abs_diff": 0.0,
+      "max_ulp_distance": 0,
+      "n_float_fields": 1,
+      "n_float_fields_different": 0,
+      "n_gating_failures": 0,
+      "native_threads": {
+        "observed": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        },
+        "reference": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        }
+      },
+      "non_float_differences": [],
+      "observed_code": {
+        "commit": "6074227f4c14890deeb47ea78eceeef05d00942d",
+        "dirty": false,
+        "lock_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+        "package_files_sha256": "4b904d4266ed24d7b80a51220d0a361deb1c5d2e2b33d10e7dd76d2e1e1fe19b"
+      },
+      "observed_result_sha256": "a90081d16f542e7e41625c8c233f206969d3096397e46fdcd65c84fd12342df9",
+      "observed_threads": {
+        "blas_thread_control": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+        "detected_pools": [
+          {
+            "internal_api": "openmp",
+            "num_threads": 1,
+            "prefix": "libomp",
+            "user_api": "openmp",
+            "version": null
+          }
+        ],
+        "environment_variables": {
+          "BLIS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "VECLIB_MAXIMUM_THREADS": "1"
+        },
+        "fit_limit_probe": "verified_single_thread"
+      },
+      "partition": null,
+      "reference_result_sha256": "a90081d16f542e7e41625c8c233f206969d3096397e46fdcd65c84fd12342df9",
+      "scenario": "synthetic5000/relate_spearman",
+      "verdict": "exact_match"
+    },
+    {
+      "byte_identical": true,
+      "compared": true,
+      "comparison_mode": "cross_environment_numeric",
+      "data_sha256": "4b9c09ab5c9c6b5be3bf1cd8c4ee66fd2bf5252e5b5795f85204a19b00f0797c",
+      "environment_fields_differing": [
+        "python.version",
+        "python.compiler",
+        "os.release",
+        "code.commit",
+        "code.package_files_sha256"
+      ],
+      "environment_fields_unverified": [
+        "numerical_backend",
+        "threads.detected_pools",
+        "threads.blas_thread_control"
+      ],
+      "environment_status": "different",
+      "field_differences": [],
+      "max_abs_diff": 0.0,
+      "max_ulp_distance": 0,
+      "n_float_fields": 45,
+      "n_float_fields_different": 0,
+      "n_gating_failures": 0,
+      "native_threads": {
+        "observed": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        },
+        "reference": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        }
+      },
+      "non_float_differences": [],
+      "observed_code": {
+        "commit": "6074227f4c14890deeb47ea78eceeef05d00942d",
+        "dirty": false,
+        "lock_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+        "package_files_sha256": "4b904d4266ed24d7b80a51220d0a361deb1c5d2e2b33d10e7dd76d2e1e1fe19b"
+      },
+      "observed_result_sha256": "c565c5aa67417d8c96b6b73aa7453a58770b5d3ee7926e7511fd8858dd304b5f",
+      "observed_threads": {
+        "blas_thread_control": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+        "detected_pools": [
+          {
+            "internal_api": "openmp",
+            "num_threads": 1,
+            "prefix": "libomp",
+            "user_api": "openmp",
+            "version": null
+          }
+        ],
+        "environment_variables": {
+          "BLIS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "VECLIB_MAXIMUM_THREADS": "1"
+        },
+        "fit_limit_probe": "verified_single_thread"
+      },
+      "partition": null,
+      "reference_result_sha256": "c565c5aa67417d8c96b6b73aa7453a58770b5d3ee7926e7511fd8858dd304b5f",
+      "scenario": "synthetic5000/compare",
+      "verdict": "exact_match"
+    },
+    {
+      "byte_identical": true,
+      "compared": true,
+      "comparison_mode": "cross_environment_numeric",
+      "data_sha256": "4b9c09ab5c9c6b5be3bf1cd8c4ee66fd2bf5252e5b5795f85204a19b00f0797c",
+      "environment_fields_differing": [
+        "python.version",
+        "python.compiler",
+        "os.release",
+        "code.commit",
+        "code.package_files_sha256"
+      ],
+      "environment_fields_unverified": [
+        "numerical_backend",
+        "threads.detected_pools",
+        "threads.blas_thread_control"
+      ],
+      "environment_status": "different",
+      "field_differences": [],
+      "max_abs_diff": 0.0,
+      "max_ulp_distance": 0,
+      "n_float_fields": 57,
+      "n_float_fields_different": 0,
+      "n_gating_failures": 0,
+      "native_threads": {
+        "observed": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        },
+        "reference": {
+          "reason": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+          "status": "unverified"
+        }
+      },
+      "non_float_differences": [],
+      "observed_code": {
+        "commit": "6074227f4c14890deeb47ea78eceeef05d00942d",
+        "dirty": false,
+        "lock_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+        "package_files_sha256": "4b904d4266ed24d7b80a51220d0a361deb1c5d2e2b33d10e7dd76d2e1e1fe19b"
+      },
+      "observed_result_sha256": "e8e1398f05f1d46f7592dc20a5460cf662dca81b8f5e57632cb16a7fd596581b",
+      "observed_threads": {
+        "blas_thread_control": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+        "detected_pools": [
+          {
+            "internal_api": "openmp",
+            "num_threads": 1,
+            "prefix": "libomp",
+            "user_api": "openmp",
+            "version": null
+          }
+        ],
+        "environment_variables": {
+          "BLIS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "VECLIB_MAXIMUM_THREADS": "1"
+        },
+        "fit_limit_probe": "verified_single_thread"
+      },
+      "partition": {
+        "adjusted_rand_index_auxiliary": 1.0,
+        "labels_realigned": false,
+        "n_iter_observed": 2,
+        "n_iter_reference": 2,
+        "note": "membership-set equality is authoritative; no global-optimum claim",
+        "same_partition": true
+      },
+      "reference_result_sha256": "e8e1398f05f1d46f7592dc20a5460cf662dca81b8f5e57632cb16a7fd596581b",
+      "scenario": "synthetic5000/cluster",
+      "verdict": "exact_match"
+    }
+  ],
+  "scenarios_compared": 10,
+  "scenarios_requested": 10,
+  "verdict_counts": {
+    "exact_match": 10
+  }
+}
