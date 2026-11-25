@@ -414,3 +414,10 @@ for a comprehensive final audit of AXIOM Verify.
   was one day old and was not chosen). The model lock uses `exclude-newer = 2026-11-12` (two weeks) except for the
   Core pins, which are reviewed in the main lock; the first lock without that cut-off had picked a one-day-old
   `regex` and `transformers` 5.24.1.
+
+### First PR CI run (implementer-observed)
+- Run [45704135434](https://github.com/sergthedev/axiom-local/actions/runs/45704135434) on `d47364b`: macOS passed;
+  Windows failed 1 of 599 tests: `test_seal_writes_verifiable_test_outside_repo`. Cause: `seal` wrote `test.jsonl`
+  in text mode, so Windows translated LF to CRLF and the file no longer matched the hash of the LF text in `SEAL.json`.
+  A real defect that would have made a sealed test unverifiable on Windows. Fix: `test.jsonl`, `SEAL.json` and
+  `PROVENANCE.json` are written as bytes.

@@ -116,7 +116,8 @@ def seal(
     )
     records = [e.to_record() for e in test]
     text = "".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in records)
-    (out / "test.jsonl").write_text(text, encoding="utf-8")
+    data = text.encode("utf-8")
+    (out / "test.jsonl").write_bytes(data)  # bytes: no newline translation, so the hash holds
     report = audit(
         {
             "train": [e.to_record() for e in dev["train"]],
@@ -129,7 +130,7 @@ def seal(
         "corpus_version": CORPUS_VERSION,
         "generator_version": GENERATOR_VERSION,
         "generator_commit": _commit(),
-        "test_sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
+        "test_sha256": hashlib.sha256(data).hexdigest(),
         "seed_sha256": hashlib.sha256(seed.encode("utf-8")).hexdigest(),
         "n_test": len(records),
         "owner_lineages": len(owner_lineages or []),
@@ -138,8 +139,8 @@ def seal(
         "test_distribution": report["splits"]["test"],
         "note": "Publish this file only; keep test.jsonl and the seed private until the final run.",
     }
-    (out / "SEAL.json").write_text(
-        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    (out / "SEAL.json").write_bytes(
+        (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8")
     )
     return manifest
 

@@ -118,7 +118,9 @@ def provision(model: str, out: Path, tokenizer_only: bool) -> dict:
         "files": records,
         "licence": "Apache-2.0 (LICENSE file included)",
     }
-    (out / "PROVENANCE.json").write_text(json.dumps(provenance, indent=2, sort_keys=True) + "\n")
+    (out / "PROVENANCE.json").write_bytes(
+        (json.dumps(provenance, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    )
     return provenance
 
 
