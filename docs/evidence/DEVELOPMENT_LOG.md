@@ -189,3 +189,60 @@ No experiment scripts were re-run: the change affects reporting edge cases only,
 ### CI for the numeric-range fix (implementer-observed)
 - Run [45664213878](https://github.com/sergthedev/axiom-local/actions/runs/45664213878) on head `afaabf8`: `test (macos-latest)` passed (266 tests in 16.96 s) and `test (windows-latest)` passed (266 tests in 10.57 s),
   CPython 3.12.x on both runners; locked install, lint, format check and pytest only. Observed from the run logs by the implementer, not yet re-verified by the reviewer; the entry's own commit is documentation-only with its own CI run.
+
+## 2026-11-25 — Issue #3: verification engine (Analysis Passport and replay)
+
+### Starting state and authorization
+- PR #6 (Issue #2) was accepted by the technical lead at head `0b52b44c1532ea90f69fe17f902817da32f5f7c4`
+  ([final acceptance](https://github.com/sergthedev/axiom-local/pull/6#issuecomment-7169639125)) and merged by the owner as
+  `323620d0d8fe6a989a1d9c2cb18e549fd565aa83`. Reviewer-observed CI: run
+  [45665324679](https://github.com/sergthedev/axiom-local/actions/runs/45665324679) on merge ref `12b6d69`, macOS job 139385821828
+  (266 passed, 13.84 s) and Windows job 139385822124 (266 passed, 9.38 s), CPython 3.12.10, lint and format passed; the lead also
+  reported `main` as protected with both required checks. Issue #2 is closed. (Recorded here as reported by the lead; not
+  re-inspected by the implementer.)
+- The owner authorized Issue #3 in the project thread. Branch `feat/issue-3-verification-engine` from `323620d`.
+- Read: Issue #3 body, [DR-001 note](https://github.com/sergthedev/axiom-local/issues/3#issuecomment-7166468157),
+  [DR-001 + DR-002 decision](https://github.com/sergthedev/axiom-local/issues/3#issuecomment-7167524679), the PR #6 acceptance,
+  and the [Issue #5 research positioning](https://github.com/sergthedev/axiom-local/issues/5#issuecomment-7170027058).
+- Not done on purpose: AX-01, AXBENCH, training, Studio UI, regression, forecasting, PROV/RO-Crate, offline (network-disabled)
+  rehearsal, Windows packaging. No Core contract change: the four fingerprints, `execute`, `AnalysisResult` and
+  `environment_info()` are reused unchanged.
+
+### Implementation (commit `26eb769`)
+- `environment` (manifest `axiom.environment/1`), `passport` (`axiom.passport/1`), `_worker` + `replay` (fresh-process analysis,
+  replay, classification, passport comparison), `agreement` (criteria `axiom.agreement/1`), exact rational ARI in `partition`,
+  CLI `python -m axiom env|analyze|replay|compare`, example profile JSON. ADRs 0007 and 0008.
+- Defects found while testing and fixed before commit: (1) `build_passport` aliased the plan object between `inputs` and the result
+  core, so a test edit of one changed both; fixed with independent copies. (2) The replay summary first reported `plan_identity: pass`
+  when the engine had rejected the data before reaching the plan check; it is now `not_run` when not reached.
+- Observation: on the development Mac NumPy uses Apple Accelerate, which threadpoolctl does not list; the manifest reports BLAS
+  thread control as unverified instead of single-threaded.
+
+### Pre-registration (commit `f163b41`) and experiments
+- EXP-004 and EXP-005 pre-registrations, ADR 0008 criteria and the scripts were committed before the measured runs. A one-replay
+  smoke run of the EXP-004 script preceded the pre-registration (stated in it); its output was not kept.
+- **EXP-004** at `f163b41`: 200 of 200 fresh-process replays byte-identical (ten plans x 20), every mutation and malformed-input
+  criterion met; 0 failures. See the manifest.
+- **EXP-005**: reference passports written at `f163b41` on the Mac (their result hashes equal the EXP-004 references); a local
+  self-comparison against them gave 10 of 10 `exact_match` in the same environment (a sanity check, not part of EXP-005). The
+  cross-platform result comes from the pull request CI and is recorded in the EXP-005 manifest.
+- The new CI step is report-only: it prints the comparison and exits non-zero only if a scenario cannot be run.
+
+### Documentation carry-forward from the Issue #2 acceptance
+- ADR 0006 amendment 3: representability rules are a conservative reporting policy, not exact statistics; a power-of-two round trip
+  does not make downstream floating-point operations exact. ADR statuses remain Proposed until owner acceptance.
+- The initial PR #6 summary mentioned NumPy quartiles and unverified branch protection; both are outdated (quartiles are exact
+  rationals since amendment 1 of ADR 0004; the lead later observed `main` protected). The merged PR text was not edited.
+- The README tagline ("powered by a specialized language model") may read as if a trained model exists. The lead proposed
+  owner-approved wording in the Issue #5 comment; it was **not** changed here because it needs the owner's decision.
+- Experiments index now lists EXP-002 and EXP-003, which were missing.
+
+### Local verification (measured, one run; Apple M5, macOS 27.0.1, CPython 3.12.16, locked environment)
+| Command | Exit status | Result |
+|---------|-------------|--------|
+| `uv sync --locked` | 0 | environment from `uv.lock` (unchanged; no new dependency) |
+| `uv run pytest -q` | 0 | 327 passed in about 40 s (266 existing + 61 new; the fresh-process tests start about 30 interpreters) |
+| `uv run ruff check .` | 0 | All checks passed |
+| `uv run ruff format --check .` | 0 | 95 files already formatted |
+| `uv run python benchmarks/issue3_replay_benchmark.py --runs 20` | 0 | EXP-004 |
+| `uv run python benchmarks/issue3_cross_platform.py --write-reference ...` | 0 | EXP-005 reference |

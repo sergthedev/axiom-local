@@ -6,8 +6,8 @@ and each substantive step requires its research gate (see `docs/research/README.
 | Phase | Content | Status |
 |-------|---------|--------|
 | P0 | Bootstrap repository and governance (Issue #1) | Accepted by the technical lead |
-| P1 | Deterministic statistical core: input guard, typed plans, Inspect, Relate, Compare, Cluster (Issue #2) | Implemented, under technical review (pull request) |
-| P2 | Run passport, replay, environment verification, cross-platform comparison (Issue #3) | Planned |
+| P1 | Deterministic statistical core: input guard, typed plans, Inspect, Relate, Compare, Cluster (Issue #2) | Accepted by the technical lead; merged (PR #6, merge `323620d`) |
+| P2 | Analysis Passport, replay, environment verification, cross-platform comparison (Issue #3) | Implemented, under technical review (pull request) |
 | P3 | Correlation matrix, outlier flags (deferred P1 items) | Planned |
 | P4 | Plan hardening for the router interface | Planned |
 | P5 | Evaluation harness and benchmarks | Planned |

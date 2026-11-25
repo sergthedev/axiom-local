@@ -6,6 +6,7 @@ region, person or firm and carries no licensing constraints beyond the repositor
 
 - `plans/*.json` – one example plan per operation (Inspect, Relate with Pearson and Spearman, Compare, Cluster).
 - `run_example.py` – runs a plan and prints the canonical JSON result (a library demonstration, not a CLI product).
+- `profiles/synthetic_regions.json` – the explicit CSV profile of the example table, for `python -m axiom analyze`.
 
 ```bash
 uv run python examples/run_example.py examples/plans/compare.json

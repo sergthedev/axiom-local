@@ -11,3 +11,5 @@ Statuses: Proposed, Accepted, Superseded, Rejected. Cite `REF-NNN` IDs from `REF
 | [0004](0004-statistical-kernels-and-accuracy-criteria.md) | Inspect, Relate and Compare kernels and accuracy criteria | Proposed |
 | [0005](0005-typed-plans-binding-and-result-serialization.md) | Typed plans, plan binding and result serialization v1 | Proposed |
 | [0006](0006-kmeans-contract-and-postconditions.md) | K-means contract and independent postconditions | Proposed |
+| [0007](0007-analysis-passport-and-environment-capture.md) | Analysis Passport v1 and environment capture | Proposed |
+| [0008](0008-replay-mismatch-classification-and-comparison-criteria.md) | Fresh-process replay, mismatch classification and comparison criteria | Proposed |
