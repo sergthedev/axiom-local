@@ -386,3 +386,10 @@ def test_committed_draft_corpus_matches_generator():
         data = (manifest_path.parent / name).read_bytes()
         assert hashlib.sha256(data).hexdigest() == meta["sha256"], name
     assert not (manifest_path.parent / "test.jsonl").exists()
+    # the committed bytes are what the generator produces on this platform and in this process
+    for split, examples in generate_development_corpus().items():
+        text = "".join(
+            json.dumps(e.to_record(), ensure_ascii=False, sort_keys=True) + "\n" for e in examples
+        )
+        digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
+        assert digest == manifest["files"][f"{split}.jsonl"]["sha256"], split

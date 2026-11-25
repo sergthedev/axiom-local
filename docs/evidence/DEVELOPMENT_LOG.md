@@ -367,3 +367,50 @@ for a comprehensive final audit of AXIOM Verify.
   `9391082`): 457 passed on macOS (131.73 s) and Windows (79.97 s); lint and format passed (105 files); engine digest
   `b0e2c5e4…` and lock digest `0591cb58…` on both runners; no hashed file differs from its blob; cross-platform report
   complete with 10 of 10 `exact_match` on each runner. EXP-007 part C met.
+
+## 2026-11-25/26 — Issue #4, Phase 3A: router contract, Guard, AXBENCH, rule baseline, model environment
+
+### Authorization and starting state
+- The owner authorized the start of Issue #4 and ratified ADRs 0007 and 0008 in a project-thread message on
+  2026-11-25 (not a GitHub comment). Statuses updated in both ADRs and the ADR index; their text is otherwise
+  unchanged.
+- Baseline: accepted `main` `d7c4c8e882f9d45155a118b36dface2b2366ca94` (PR #7 merged). Branch
+  `feat/issue-4-axbench-guard`. Read: Issue #4 with the DR-003, DR-004 and DR-005 reviews and the Verify acceptance
+  (REF-031), `AGENTS.md`, ADRs 0001-0008, evidence files.
+
+### Design choices (details in ADRs 0009-0012)
+- New code lives in `src/axiom_router` and `src/axbench`, not in `axiom`, because the engine digest (ADR 0007) is
+  computed over every `.py` file of `axiom`; Core identities and the Core contract are unchanged. A test checks that
+  importing `axiom` loads neither package and that neither imports an ML library.
+- The model environment is a separate uv project (`envs/model`) instead of a dependency group, so the Core `uv.lock`
+  digest recorded in passports and the Windows CI do not change.
+
+### Failures and corrections during development (kept for the record)
+- Two `.DS_Store` files were committed in the first local commit; the unpushed commit was amended to remove them and
+  `.DS_Store` was added to `.gitignore` (no pushed history was rewritten).
+- Generator: column-free templates produced duplicates (fixed by a per-split (text, instance) key and global
+  cross-split text uniqueness); mixed-language rendering was infeasible for some lineages (allowed cross-language
+  generic mentions); hierarchical rounding gave the validation split only 2 REJECT examples of one reason (replaced by
+  exact interleaved marginal allocation); a capitalization rule broke Turkish dotted/dotless i (removed).
+- Rule router contamination: an audit found 81 rule cues that occurred only in validation or test templates, plus a
+  few word-list entries; they were removed and the audit (`axbench.contamination`) is now a test that must return no
+  finding. Rule development then continued on the train split only (final train result 400 of 400). The held-out
+  template words were read by the audit; no router was scored on held-out examples before EXP-008.
+- The Wilson expectation first written in a unit test (83/100) was wrong by hand; the test now uses SciPy
+  `binomtest(...).proportion_ci(method="wilson")` as the reference. `audit` crashed on an empty split (`max()` of an
+  empty sequence); fixed.
+
+### EXP-008 (pre-registered in `409b46c`, run once on `857d4ee`)
+- All criteria met: corpus bytes regenerate exactly; audit passed with zero cross-split components and maximum
+  cross-split Jaccard 0.4833; no contamination finding; 160 of 160 valid rule outputs; 0 dispatches.
+- Rule baseline on validation: 72 of 160 semantic exact match (45.0 %; cluster bootstrap 28.5-62.5 %); 0 of 21
+  Compare requests correct (every validation Compare phrasing was unknown to the train-only cues); 26 wrong executable
+  proposals, all held at confirmation. Train (development reference): 400 of 400.
+
+### Model environment investigation (2026-11-26)
+- Hugging Face API and pinned files of Qwen3-0.6B and Qwen3-1.7B fetched with `curl` into a scratch directory
+  outside the repository (configs, tokenizer configuration, licence, model card; no weights): REF-032, REF-033.
+- PyPI metadata of `mlx`, `mlx-lm`, `mlx-metal`: REF-034. Pins: mlx 0.32.4 and mlx-lm 0.32.2 (the newest mlx, 0.32.5,
+  was one day old and was not chosen). The model lock uses `exclude-newer = 2026-11-12` (two weeks) except for the
+  Core pins, which are reviewed in the main lock; the first lock without that cut-off had picked a one-day-old
+  `regex` and `transformers` 5.24.1.
