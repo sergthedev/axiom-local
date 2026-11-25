@@ -150,10 +150,11 @@ def test_unrepresentable_results_are_reported_undefined_never_inf() -> None:
     assert undefined["iqr"] == "overflow_exceeds_float64"
     for value in stats.values():
         assert value is None or math.isfinite(value)
-    # representable SD although the variance overflows: values around +/-1e154..1e155
-    vals = [-1e155, 1e155]
-    stats, undefined = describe(vals)
-    assert undefined == {} or "sample_variance" in undefined
+    # representable SD although the variance overflows
+    stats, undefined = describe([-1e155, 1e155])
+    assert undefined["sample_variance"] == "overflow_exceeds_float64"
+    assert "sample_sd" not in undefined
+    assert math.isclose(stats["sample_sd"], 1e155 * math.sqrt(2), rel_tol=1e-15)
     stats, undefined = describe([-1e200, 1e200])
     assert undefined["sample_variance"] == "overflow_exceeds_float64"
     assert math.isclose(stats["sample_sd"], 1e200 * math.sqrt(2), rel_tol=1e-15)
