@@ -4,3 +4,7 @@ examples/*.csv -text
 # with LF on every platform, so identical repository content gives identical digests (EXP-006 part D).
 *.py text eol=lf
 uv.lock text eol=lf
+# AXBENCH corpus files are hashed in MANIFEST.json and SEAL.json: keep their bytes identical on every platform.
+data/axbench/**/*.jsonl -text
+data/axbench/**/*.json -text
+data/axbench/**/*.csv -text
