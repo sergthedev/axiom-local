@@ -1,0 +1,5 @@
+{
+  "schema_version": "axiom.plan/1",
+  "operation": "inspect",
+  "columns": ["gdp_per_capita", "unemployment_rate", "education_years", "household_income", "macro_region"]
+}

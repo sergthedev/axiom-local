@@ -1,0 +1,6 @@
+{
+  "schema_version": "axiom.plan/1",
+  "operation": "compare",
+  "group_by": "macro_region",
+  "measure": "household_income"
+}
