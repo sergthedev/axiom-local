@@ -2,7 +2,8 @@
 
 - Status: Proposed (awaiting technical review and owner approval). Revised after the
   [PR #7 review](https://github.com/sergthedev/axiom-local/pull/7#issuecomment-7171558913) (blockers B1 and B3; see
-  "Revision after technical review" below).
+  "Revision after technical review" below) and after the
+  [final review](https://github.com/sergthedev/axiom-local/pull/7#issuecomment-7172653455) (residual B1 and final audit).
 - Date: 2026-11-25
 - Issue / PR: Issue #3 ([technical lead decision](https://github.com/sergthedev/axiom-local/issues/3#issuecomment-7167524679), [DR-001 note](https://github.com/sergthedev/axiom-local/issues/3#issuecomment-7166468157)); builds on ADRs 0004-0007
 
@@ -29,10 +30,12 @@ re-parses, and recomputes. The OS page cache may serve the bytes; that is not a 
 **Trusted runtime policy (B1).** A passport is untrusted input, so the limits it records are not a resource budget.
 `replay` compares every recorded limit with `policy` (default: `DEFAULT_LIMITS`, the accepted Core caps; a caller may
 pass an explicit, trusted override) and rejects a passport asking for more with `limits_exceed_policy` before any
-worker starts. Recorded limits are never clamped: different limits can change validation and reported ordinals, so a
+integrity work and before any worker starts. `compare_passports` executes nothing and has no policy; its validation,
+integrity checks and comparison are linear in the two documents and never sized by a count they state. Recorded limits are never clamped: different limits can change validation and reported ordinals, so a
 clamped run would be a different analysis presented as the same replay. Smaller recorded limits are used as recorded.
-`runs` must be an integer in [1, 100] (100 is the release target per golden scenario) and `timeout` a finite number of
-seconds in (0, 3600]; `analyze` and `run_worker` check the timeout too, and `analyze` requires a valid `Limits`.
+`runs` must be an integer in [1, 100] (100 is the release target per golden scenario), `timeout` a finite number of
+seconds in (0, 3600] (checked without converting integers to floats) and the data path a str or path-like without NUL;
+`analyze` and `run_worker` check the timeout too, and `analyze` requires a valid `Limits`.
 Violations raise `VerifyError` (CLI exit 2). Passport text is size-bounded before parsing (ADR 0007).
 
 **Replay presents the old binding to the engine.** The worker builds a `BoundPlan` from the passport's plan and its
@@ -110,6 +113,32 @@ The policy check, argument bounds, three-status environment comparison, per-run 
 are the corrections (regression tests in `tests/test_review_regressions.py`; fresh-process confirmation in EXP-006).
 `numeric_agreement` criteria (`axiom.agreement/1`) are unchanged; differences beyond the binary64 range are reported
 with `abs_diff = null` instead of infinity and fail every tolerance.
+
+## Revision after the final technical review (2026-11-25, before acceptance)
+
+Residual B1 (claimed cluster count sizing parent allocations; ADR 0007 revision) is resolved, and `replay` now applies
+the trusted policy before `integrity_checks`. The final audit also changed, each after reproducing the failure on
+`e8a9f57`: a timeout of `10**400` raised `OverflowError`; a worker response with status `ok` but missing fields, an
+error given as text or unreadable result text raised in the parent instead of becoming a failed run (now `bad_output`,
+or `crashed` for a non-zero exit); `compare_cores` raised `KeyError` while renumbering a record with an empty cluster
+(now compared as recorded); shape differences in comparison reports copied whole lists (now sizes and differing keys);
+the CLI wrote text in the locale encoding, so on a redirected Windows console (cp1252) a non-ASCII column name made
+`analyze` fail with exit 2, and files got CRLF (now UTF-8 bytes with LF everywhere); the worker's `git status` could
+refresh the repository index (now `--no-optional-locks`). A real worker killed by the timeout is tested to have exited
+and to leave no workspace. The criteria `axiom.agreement/1` are unchanged; their boundaries are now tested to be
+inclusive as documented. Confirmation: EXP-007 (30 of 30 fresh-process replays exact for all four families; bounded
+work for claimed `k` up to 2^63 - 1 with no worker started).
+
+Limitations recorded by the audit, not changed:
+- The environment record in a passport is untrusted. Editing it to state a different environment can relax the
+  criterion from byte identity to the documented tolerances (verdict `numeric_agreement`, never `exact_match`); it
+  cannot hide a difference beyond the criteria.
+- The worker inherits the parent's environment variables apart from the thread variables it sets. Variables that can
+  change numerical paths (for example CPU-dispatch or BLAS core-type overrides) are neither cleared nor recorded.
+- The relative criterion for the scaler scale uses the reference value as denominator, so swapping reference and
+  observed can change the verdict exactly at the bound.
+- Worker output is read into memory in full; its size is bounded by the result the engine can produce under the
+  policy, not by a separate cap.
 
 ## Alternatives considered
 

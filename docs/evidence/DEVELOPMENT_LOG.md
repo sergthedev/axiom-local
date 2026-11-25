@@ -317,3 +317,50 @@ No experiment scripts were re-run: the change affects reporting edge cases only,
   384 passed on Windows (86.24 s) and macOS (103.28 s), lint and format passed. EXP-006 D2 met: no hashed file differs from
   its blob on either runner; engine digest `4b904d42…` and lock digest `0591cb58…` identical on both. Part X again 10 of 10
   `exact_match` per runner.
+
+## 2026-11-25 — PR #7 final review: residual B1 and final audit (Issue #3)
+
+Input: the [final technical review](https://github.com/sergthedev/axiom-local/pull/7#issuecomment-7172653455) of head
+`e8a9f57` (accepts B3 and the Windows fix; B2 substantially addressed; one blocker: residual B1) and the owner's request
+for a comprehensive final audit of AXIOM Verify.
+
+### Reproduction on `e8a9f57` (before any change; safe scale only, no OOM-sized allocation)
+- Residual B1: re-sealed example Cluster passports claiming `k` (result only) gave a peak traced allocation in
+  `integrity_checks` of 0.02 / 3.99 / 39.99 / 79.99 MB for `k` = 10 / 10^5 / 10^6 / 2 x 10^6. With `max_k` also raised,
+  `replay` reached 40.0 MB before returning `integrity_mismatch` (integrity ran before the policy) and
+  `compare_passports` 40.0 MB; no worker was started. Confirmed.
+- Other findings of the audit, each confirmed: `replay(timeout=10**400)` raised `OverflowError`; a passport whose text
+  contains the escape `\ud800` loaded and then raised `UnicodeEncodeError` in `integrity_checks`; integers of 5000
+  digits in API objects raised `ValueError` when hashed; a re-sealed passport with an added empty cluster passed all
+  seven integrity checks and `compare_passports` raised `KeyError` while realigning labels; error messages quoted whole
+  rejected values; with `PYTHONIOENCODING=cp1252` (the locale encoding of a redirected stdout on a Windows runner)
+  `python -m axiom analyze` with a column named `温度` exited 2 with `UnicodeEncodeError`; status `ok` worker responses
+  missing fields, worker errors given as text, and unreadable result text would raise in the parent; the worker's
+  `git status` may refresh the repository index; `None` or NUL data paths raised `TypeError`/`ValueError`.
+- Audited without a finding: the worker timeout kills the child and `subprocess.run` waits for it (now tested with a
+  real worker); plan text is already bounded and rejects surrogates (Core); environment classification never treats
+  unknown as equal; agreement tolerances are inclusive as documented (now tested at the boundaries); report sizes are
+  linear in the documents.
+
+### Corrections (commit `ab33266`)
+- `passport.py`: cluster checks enumerate existing entries, `k` against the validated plan and recorded `max_k`, labels
+  counted in a dictionary, features compared once per cluster against one set; result checks `not_run` when the plan
+  or limits are invalid; empty clusters and false postconditions are failures; problem messages bounded; passport text
+  must be str/bytes and valid Unicode.
+- `passport_schema.py`: integers in the signed 64-bit range, no unpaired surrogates in strings or keys, quoted values
+  and paths shortened to 64 characters.
+- `replay.py`: trusted policy before integrity; overflow-free timeout check; data path validation; worker response
+  shape check (`bad_output` / `crashed`); unreadable result text is a failed run.
+- `agreement.py`: realignment only if every observed cluster id is a label; compact shape differences.
+- `__main__.py`: UTF-8 bytes with LF to stdout and `--out`. `environment.py`: `git --no-optional-locks`.
+- Tests: `tests/test_final_audit.py` (73 tests; 53 failed when run against the `e8a9f57` sources, the rest are
+  boundary and termination tests that passed before too); one existing test changed (`10**30` is now outside the
+  64-bit range, so the oversized-limits test uses `2**62` and asserts that `10**30` is rejected structurally).
+- Local: `uv run pytest -q` 457 passed (47 s); ruff check and format clean (104 files).
+
+### EXP-007 (pre-registered in `ab33266`, run once on the clean commit)
+- S: 30 of 30 `exact_match`, all four families, distinct run ids, per-run evidence. B: peak traced allocation at most
+  19,698 bytes for claimed `k` up to 2^63 - 1, no worker started, policy before integrity. P: parse memory linear; at
+  most 25.2 times the text (empty objects); 1.6 GiB at the 64 MiB cap is an extrapolation and an open limitation.
+- Negative result kept: the parse amplification is not reduced by this change.
+

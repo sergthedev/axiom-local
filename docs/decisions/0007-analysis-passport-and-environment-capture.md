@@ -2,7 +2,8 @@
 
 - Status: Proposed (awaiting technical review and owner approval). Revised after the
   [PR #7 review](https://github.com/sergthedev/axiom-local/pull/7#issuecomment-7171558913) (blockers B1-B3; see
-  "Revision after technical review" below).
+  "Revision after technical review" below) and after the
+  [final review](https://github.com/sergthedev/axiom-local/pull/7#issuecomment-7172653455) (residual B1 and final audit).
 - Date: 2026-11-25
 - Issue / PR: Issue #3 ([technical lead decision](https://github.com/sergthedev/axiom-local/issues/3#issuecomment-7167524679)); builds on ADR 0005
 
@@ -40,13 +41,18 @@ the four existing fingerprints, `execute`, `AnalysisResult` and `environment_inf
   numbers outside the binary64 range (`1e999`) are rejected; then the **complete structure** is validated
   (`src/axiom/passport_schema.py`): exact keys and JSON types at every level, nesting depth at most 32, digest syntax,
   the format versions this code supports, the verification vocabulary, the environment and execution records, and the
-  full result block of each operation. Violations raise `PassportError` with a stable code and the offending field,
+  full result block of each operation; every integer within the signed 64-bit range and every string and key
+  encodable as UTF-8 (no unpaired surrogates). Violations raise `PassportError` with a stable code and the offending
+  field (values and path parts quoted in messages are shortened to 64 characters),
   at the API (`validate_passport`, `integrity_checks`, `replay`, `compare_passports`) and the CLI (exit 2).
   `build_passport` validates what it produces.
 - `integrity_checks()` recomputes, without the data: the passport digest, the result digest, the plan digest from the
   explicit plan (implicit defaults are rejected; the plan must name the result's operation), identity consistency
   (digests, versions and row count against the result core), that the profile and limits can be reconstructed,
-  **result consistency** (counts, row ordinals, plan fields, cluster ids, sizes and widths agree with each other) and
+  **result consistency** (counts, row ordinals, plan fields, cluster ids, sizes and widths agree with each other and
+  with the validated plan and recorded limits; no cluster is empty and no recorded postcondition is false; skipped as
+  `not_run` when the plan or the limits are invalid; every check is linear in the document and none is sized by a
+  count the document states) and
   that the recorded verification is exactly the creation record of `axiom.passport/1`. Recorded verification is a
   historical record: replay and comparison never report it as a check they performed.
 
@@ -125,6 +131,23 @@ validation, the added integrity checks, `compare_environments` and `native_threa
 `tests/test_review_regressions.py` holds one regression test per counterexample. The Core contract (ADR 0005) is
 unchanged. Validation is not authentication: a consistently re-sealed passport with a plausible result still passes
 and is exposed only by recomputation (EXP-006 A3).
+
+## Revision after the final technical review (2026-11-25, before acceptance)
+
+The [final review](https://github.com/sergthedev/axiom-local/pull/7#issuecomment-7172653455) of head `e8a9f57` found,
+and the implementer reproduced at a safe scale, that `result_problems` built `list(range(k))` and `[0] * k` from the
+cluster count `k` stated in the result, a natural number without an upper bound, and that `integrity_checks` ran it even
+when the plan check had failed: a re-sealed passport of a few kilobytes made the parent allocate about 40 MB per million
+claimed clusters, through `replay` and `compare_passports`. The cluster checks now enumerate the entries that exist,
+check `k` against the validated plan and the recorded `max_k`, and count labels in a dictionary; the result checks are
+skipped when the plan or limits are invalid. The final audit found further gaps in the same layer, each reproduced on
+`e8a9f57` before the fix: JSON `\ud800` escapes decode to strings that cannot be hashed (`UnicodeEncodeError` inside
+`integrity_checks`); integers above 4300 digits in API objects passed validation and could not be hashed
+(`ValueError`); error messages quoted whole rejected values; an empty cluster in a re-sealed passport passed every check
+and crashed `compare_passports` with `KeyError`. The 64-bit integer range, the surrogate rule, bounded messages and the
+empty-cluster and postcondition checks are the corrections (`tests/test_final_audit.py`; EXP-007 part B). They reject
+only documents this engine cannot issue. The memory used while parsing is linear in the text but up to about 25 times
+its size for adversarial shapes (EXP-007 part P); at the 64 MiB cap that is an extrapolated 1.6 GiB, an open limitation.
 
 ## References
 

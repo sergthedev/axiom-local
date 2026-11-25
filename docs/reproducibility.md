@@ -26,11 +26,13 @@
   for example Apple Accelerate's threads) or `different`. Byte identity is required unless a difference was observed;
   only then are the per-operation criteria `axiom.agreement/1` used (ADR 0008), with cluster partitions compared by
   membership sets independent of label numbers.
-- Passports are untrusted input: they are validated in full and size-bounded, and a passport cannot raise the resource
-  limits above the local policy (ADRs 0007, 0008).
+- Passports are untrusted input: they are validated in full and size-bounded, a passport cannot raise the resource
+  limits above the local policy, and no count stated in a passport sizes any work (ADRs 0007, 0008; EXP-007). Parsing
+  memory is linear in the text but can reach about 25 times its size for adversarial JSON shapes (EXP-007 part P).
 - Measured: 200 of 200 replays byte-identical on one Mac (EXP-004); in EXP-005, ten scenarios computed on a GitHub-hosted
   Windows x64 runner and a macOS arm64 runner were byte-identical to the Mac reference (one CI run each); after the
-  review corrections, EXP-006 repeated 200 replays with per-run evidence and the cross-platform observation.
+  review corrections, EXP-006 repeated 200 replays with per-run evidence and the cross-platform observation; after the
+  final audit, EXP-007 ran a 30-replay smoke of all four operation families.
 
 ```bash
 uv run python -m axiom analyze --data examples/synthetic_regions.csv \
