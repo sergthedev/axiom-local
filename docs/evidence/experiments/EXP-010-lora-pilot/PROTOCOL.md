@@ -7,9 +7,11 @@
 ## Fixed inputs
 
 - Base: the model chosen by EXP-009 at its pinned revision, BF16, provisioned and hash-verified.
-- Data: `python -m axbench export-mlx --out <directory outside the repository>` (400 train, 160 validation, chat
-  format: system, user JSON, assistant target = compact gold JSON). The test split is never exported. The SHA-256 of
-  both exported files is recorded.
+- Data: `python -m axbench export-mlx --corpus <frozen corpus directory> --out <directory outside the repository>`
+  from the same frozen, owner-approved corpus version as EXP-009 (sizes as in its manifest; 400 train and 160
+  validation before any owner rejection), chat format: system, user JSON, assistant target = compact gold JSON. The
+  test split is never exported. The corpus version, its manifest SHA-256 and the SHA-256 of both exported files are
+  recorded. (Revision 2, PR #8 review response: the export reads the verified frozen files, not the templates.)
 - Template: the same rendering as inference (`enable_thinking=False`); `token_lengths.py` must show that every
   training rendering starts with the inference prompt and report prompt/target/full token counts before training.
   Loss on the completion only; no chain-of-thought targets. The installed MLX-LM 0.32.2 chat dataset computes the

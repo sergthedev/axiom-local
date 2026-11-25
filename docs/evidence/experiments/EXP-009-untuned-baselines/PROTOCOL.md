@@ -5,6 +5,11 @@
 - Issue: #4 (protocol), Phase 3B (execution). Decision record: ADR 0012. This protocol is committed before any model
   prediction exists; the selection rule below may only be changed by a new, reviewed protocol version before EXP-009
   runs.
+- **Revision 2** (2026-11-26, PR #8 review response, still before any model prediction exists): scorer
+  `axbench.score/0.2`, harness `axbench.evaluate/0.2` and Guard policy 2; evaluation on a frozen corpus version whose
+  manifest hash is recorded before the first prediction; the selection rule gains a safety stop, an informativeness
+  floor, a statistical condition on the practical margin, and a pre-declared fallback. Revision 1 is in the Git
+  history of this file.
 
 ## Systems
 
@@ -18,9 +23,13 @@ Same for both models: `envs/model` lock (mlx 0.32.4, mlx-lm 0.32.2), files provi
 verified by SHA-256, offline (`HF_HUB_OFFLINE=1`), prompt `axiom.prompt/1` (system instruction + user JSON of the
 request and schema projection), the pinned chat template with `enable_thinking=False`, zero-shot, greedy decoding
 (temperature 0), at most 256 new tokens, stop at the end-of-turn token, no constrained decoding, no output repair (the
-raw text after the generation prompt is scored as is; a code fence or trailing text is invalid). Same 160 validation
-examples, same harness (`axbench.evaluate`) and scorer as EXP-008. No quantization; a quantized deployment is a
-separate later comparison.
+raw text after the generation prompt is scored as is; a code fence or trailing text is invalid). Validation examples:
+the `validation.jsonl` of the **frozen corpus version the owner approves** (`python -m axbench freeze`, ADR 0011
+revision 2), loaded through its verified manifest; its corpus version and manifest SHA-256 are committed in the EXP-009
+pre-run record before the first prediction. The draft `axbench/0.1-draft` is not used for EXP-009. Harness
+`axbench.evaluate/0.2`, scorer `axbench.score/0.2` (EXP-011), Guard policy `axiom.guard-policy/2`; the rule system is
+rerun on the same frozen file for the paired comparison. No quantization; a quantized deployment is a separate later
+comparison.
 
 ## Measurements
 
@@ -43,11 +52,31 @@ slowdown of more than 50 % against the first 30 measured requests; record the pa
 
 ## Base selection rule for the LoRA pilot (frozen here, before any prediction)
 
-A model is **eligible** if its run completed without a stop rule, peak process RSS was at most 10 GB and median warm
-latency was at most 2.0 s per request. Among eligible models, choose **Qwen3-0.6B** unless Qwen3-1.7B is higher by
-more than 5 percentage points in validation semantic exact match; if both models are below 10 % exact match, compare
-candidate-schema validity with the same 5-point margin instead. Ties go to the smaller model. If no model is eligible,
-EXP-010 does not start and the result is reported. The final test is not used for this choice.
+Untuned zero-shot scores are weak evidence about which base will train best, so the rule is conservative and decides
+in this order. All rates use the full denominator of 160 and scorer 0.2.
+
+1. **Safety stop.** If the harness observes any unauthorized dispatch for any system, no model is selected and
+   EXP-010 does not start until the cause is found and fixed under a new reviewed protocol.
+2. **Eligibility.** A model is eligible if its run completed without a stop rule, peak process RSS was at most 10 GB
+   and median warm latency was at most 2.0 s per request. If no model is eligible, EXP-010 does not start and the
+   result is reported.
+3. **Practical margin.** One model is *better* than the other on a metric only if it is higher by **more than 5
+   percentage points** (at least 9 of 160 examples) **and** the 95 % paired cluster-bootstrap interval of the
+   difference (lineages, 2000 replicates, seed 2026) excludes zero.
+4. **Primary comparison, with an informativeness floor.** If at least one eligible model reaches **20 %** semantic
+   exact match (32 of 160), choose Qwen3-1.7B only if it is better than Qwen3-0.6B on exact match by rule 3;
+   otherwise choose Qwen3-0.6B.
+5. **Secondary comparison.** If neither model reaches the exact-match floor but at least one reaches **20 %**
+   candidate-schema validity, apply rule 4 to candidate-schema validity instead.
+6. **Fallback.** If neither floor is reached, untuned scores are treated as uninformative: choose **Qwen3-0.6B** by
+   default (lower memory and latency on the 16 GB target) and record that the choice was made by default, not by
+   evidence. If only one model is eligible, it is chosen whatever its scores, and that is recorded the same way.
+7. Ties and every unresolved case go to the smaller model. The final test is not used for this choice.
+
+These floors only decide which base the LoRA pilot starts from. No untuned model is proposed for use in the
+application: the application's fallback when no router meets a reviewed quality bar is the rule router and the manual
+plan path behind the same Guard. A quality bar for using a trained model is not part of this protocol; it requires its
+own pre-registered criterion before any evaluation of a trained adapter.
 
 ## Not claimed
 
