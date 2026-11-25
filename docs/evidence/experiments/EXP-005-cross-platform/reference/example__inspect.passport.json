@@ -1,0 +1,360 @@
+{
+  "environment": {
+    "code": {
+      "commit": "f163b41f437cbb7dbe40b5d42b78cea5b086fd22",
+      "dirty": false,
+      "lock_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+      "package_files_sha256": "ad7764e15416429f662b8052fd977daeba2a613c321adb44f6e389c00f81fcca"
+    },
+    "numerical_backend": {
+      "numpy_blas": {
+        "name": "accelerate",
+        "version": "unknown"
+      },
+      "numpy_lapack": {
+        "name": "accelerate",
+        "version": "unknown"
+      },
+      "simd": {
+        "baseline": [
+          "NEON",
+          "NEON_FP16",
+          "NEON_VFPV4",
+          "ASIMD"
+        ],
+        "found": [
+          "ASIMDHP",
+          "ASIMDDP"
+        ],
+        "not_found": [
+          "ASIMDFHM",
+          "SVE"
+        ]
+      }
+    },
+    "os": {
+      "byteorder": "little",
+      "logical_cpus": 10,
+      "machine": "arm64",
+      "platform": "macOS-27.0.1-arm64-arm-64bit",
+      "processor": "arm",
+      "release": "27.0.0",
+      "system": "Darwin",
+      "version": "Darwin Kernel Version 27.0.0: Tue Aug 11 21:02:59 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_T8142"
+    },
+    "packages": {
+      "axiom-local": "0.0.0",
+      "joblib": "1.6.0",
+      "numpy": "2.5.5",
+      "pydantic": "2.14.4",
+      "pydantic-core": "2.50.5",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "threadpoolctl": "3.8.0"
+    },
+    "python": {
+      "bits": 64,
+      "build": [
+        "main",
+        "Oct 25 2026 18:24:37"
+      ],
+      "compiler": "Clang 21.0.0 (clang-2100.3.34.2)",
+      "float_repr_style": "short",
+      "implementation": "CPython",
+      "version": "3.12.16"
+    },
+    "schema_version": "axiom.environment/1",
+    "threads": {
+      "blas_thread_control": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+      "detected_pools": [
+        {
+          "internal_api": "openmp",
+          "num_threads": 1,
+          "prefix": "libomp",
+          "user_api": "openmp",
+          "version": null
+        }
+      ],
+      "environment_variables": {
+        "BLIS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "VECLIB_MAXIMUM_THREADS": "1"
+      },
+      "fit_limit_probe": "verified_single_thread"
+    }
+  },
+  "execution": {
+    "finished_utc": "2026-11-25T18:21:29.421829+00:00",
+    "mode": "fresh_process",
+    "result_cache": "none: the worker recomputes from the data file",
+    "run_id": "cbafc30dd5e840f59af4d4ef408d8394",
+    "started_utc": "2026-11-25T18:21:29.333734+00:00",
+    "thread_environment": {
+      "BLIS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    },
+    "timing_seconds": {
+      "compute_seconds": 0.0015542920446023345,
+      "import_seconds": 0.0003558750031515956,
+      "load_seconds": 0.0022830000380054116,
+      "parent_wall": 1.5937584579223767
+    },
+    "workspace": "fresh temporary directory, deleted after the run"
+  },
+  "identity": {
+    "dataset_format": "axiom.dataset/1",
+    "dataset_sha256": "44cbe8dc6374105bc24f911415697989a9a71172bdfd30683b892b2fdc5a9245",
+    "plan_schema": "axiom.plan/1",
+    "plan_sha256": "29eeb0cd852ac56dc1c0eb16c1b48147fbd9424d2be13a128b1734dde8ef528c",
+    "policy_version": "axiom.policy/1",
+    "raw_sha256": "4f39a4f3cac2395df392ad93d56e59ecda3fc49636dde736c0f0aa9f946fd4ad",
+    "result_schema": "axiom.result/1",
+    "result_sha256": "61ad38f06e55508058f3f01cb73ba2edf09f9954616ea2359d22aeb161c77875",
+    "serializer": "axiom.canonical-json/1"
+  },
+  "inputs": {
+    "csv_profile": {
+      "columns": [
+        {
+          "kind": "text",
+          "name": "region_id"
+        },
+        {
+          "kind": "text",
+          "name": "macro_region"
+        },
+        {
+          "kind": "numeric",
+          "name": "gdp_per_capita"
+        },
+        {
+          "kind": "numeric",
+          "name": "unemployment_rate"
+        },
+        {
+          "kind": "numeric",
+          "name": "education_years"
+        },
+        {
+          "kind": "numeric",
+          "name": "household_income"
+        }
+      ],
+      "decimal": ".",
+      "delimiter": ",",
+      "encoding": "utf-8"
+    },
+    "limits": {
+      "max_bytes": 33554432,
+      "max_cluster_features": 64,
+      "max_cluster_work": 100000000000,
+      "max_columns": 256,
+      "max_field_chars": 65536,
+      "max_groups": 10000,
+      "max_header_chars": 256,
+      "max_k": 64,
+      "max_plan_bytes": 65536,
+      "max_plan_depth": 8,
+      "max_plan_nodes": 4096,
+      "max_reported_ordinals": 100,
+      "max_rows": 1000000
+    },
+    "n_bytes": 6040,
+    "n_rows": 150,
+    "plan": {
+      "columns": [
+        "gdp_per_capita",
+        "unemployment_rate",
+        "education_years",
+        "household_income",
+        "macro_region"
+      ],
+      "operation": "inspect",
+      "schema_version": "axiom.plan/1"
+    }
+  },
+  "passport_sha256": "1e6b336ed3054b164f61975f3c4dc15e32a353304211f16046f0738f322f422b",
+  "passport_version": "axiom.passport/1",
+  "result": {
+    "inputs": {
+      "columns": [
+        {
+          "kind": "text",
+          "name": "region_id"
+        },
+        {
+          "kind": "text",
+          "name": "macro_region"
+        },
+        {
+          "kind": "numeric",
+          "name": "gdp_per_capita"
+        },
+        {
+          "kind": "numeric",
+          "name": "unemployment_rate"
+        },
+        {
+          "kind": "numeric",
+          "name": "education_years"
+        },
+        {
+          "kind": "numeric",
+          "name": "household_income"
+        }
+      ],
+      "dataset_sha256": "44cbe8dc6374105bc24f911415697989a9a71172bdfd30683b892b2fdc5a9245",
+      "n_rows": 150,
+      "plan_sha256": "29eeb0cd852ac56dc1c0eb16c1b48147fbd9424d2be13a128b1734dde8ef528c",
+      "raw_sha256": "4f39a4f3cac2395df392ad93d56e59ecda3fc49636dde736c0f0aa9f946fd4ad"
+    },
+    "operation": "inspect",
+    "plan": {
+      "columns": [
+        "gdp_per_capita",
+        "unemployment_rate",
+        "education_years",
+        "household_income",
+        "macro_region"
+      ],
+      "operation": "inspect",
+      "schema_version": "axiom.plan/1"
+    },
+    "policy_version": "axiom.policy/1",
+    "result": {
+      "columns": [
+        {
+          "kind": "numeric",
+          "n_missing": 0,
+          "n_total": 150,
+          "n_valid": 150,
+          "name": "gdp_per_capita",
+          "stats": {
+            "iqr": 7382.317499999999,
+            "max": 36392.5,
+            "mean": 19628.181,
+            "median": 19592.41,
+            "min": 4559.3,
+            "q1": 16224.9275,
+            "q3": 23607.245,
+            "sample_sd": 5519.215932419765,
+            "sample_variance": 30461744.508676175
+          },
+          "undefined": {}
+        },
+        {
+          "kind": "numeric",
+          "n_missing": 8,
+          "n_total": 150,
+          "n_valid": 142,
+          "name": "unemployment_rate",
+          "stats": {
+            "iqr": 2.512500000000001,
+            "max": 11.95,
+            "mean": 7.4966197183098595,
+            "median": 7.27,
+            "min": 2.07,
+            "q1": 6.2725,
+            "q3": 8.785,
+            "sample_sd": 1.8601776348197523,
+            "sample_variance": 3.460260833083608
+          },
+          "undefined": {}
+        },
+        {
+          "kind": "numeric",
+          "n_missing": 5,
+          "n_total": 150,
+          "n_valid": 145,
+          "name": "education_years",
+          "stats": {
+            "iqr": 2.6999999999999993,
+            "max": 18.02,
+            "mean": 11.392068965517241,
+            "median": 11.22,
+            "min": 6.18,
+            "q1": 9.97,
+            "q3": 12.67,
+            "sample_sd": 2.161033027329922,
+            "sample_variance": 4.670063745210728
+          },
+          "undefined": {}
+        },
+        {
+          "kind": "numeric",
+          "n_missing": 0,
+          "n_total": 150,
+          "n_valid": 150,
+          "name": "household_income",
+          "stats": {
+            "iqr": 4063.6049999999996,
+            "max": 19414.38,
+            "mean": 10786.327266666667,
+            "median": 10829.880000000001,
+            "min": 1149.12,
+            "q1": 8693.36,
+            "q3": 12756.965,
+            "sample_sd": 3159.065418803542,
+            "sample_variance": 9979694.3202804
+          },
+          "undefined": {}
+        },
+        {
+          "kind": "text",
+          "n_missing": 0,
+          "n_total": 150,
+          "n_valid": 150,
+          "name": "macro_region"
+        }
+      ],
+      "n_all_empty_records": 0,
+      "n_blank_lines": 0,
+      "n_rows": 150
+    },
+    "schema_version": "axiom.result/1",
+    "serializer": "axiom.canonical-json/1",
+    "warnings": []
+  },
+  "verification": [
+    {
+      "detail": "engine recomputed the plan digest at binding and execution",
+      "evidence": "integrity",
+      "id": "plan_digest_recomputed",
+      "kind": "exact",
+      "status": "pass"
+    },
+    {
+      "detail": "result_sha256 is the SHA-256 of the canonical result bytes",
+      "evidence": "integrity",
+      "id": "result_digest_recomputed",
+      "kind": "exact",
+      "status": "pass"
+    },
+    {
+      "detail": "use axiom replay",
+      "evidence": "repeatability",
+      "id": "fresh_process_replay",
+      "kind": "exact",
+      "status": "not_run"
+    },
+    {
+      "detail": "compare with a passport from another environment (axiom compare)",
+      "evidence": "cross_environment",
+      "id": "cross_environment_agreement",
+      "kind": "numeric",
+      "status": "not_run"
+    },
+    {
+      "detail": "a passport does not compare its result with an independent oracle; see the test suite and EXP-001/EXP-002 for that evidence",
+      "evidence": "independent_reference",
+      "id": "independent_reference",
+      "kind": "numeric",
+      "status": "not_run"
+    }
+  ]
+}

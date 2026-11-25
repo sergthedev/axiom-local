@@ -1,0 +1,317 @@
+{
+  "environment": {
+    "code": {
+      "commit": "f163b41f437cbb7dbe40b5d42b78cea5b086fd22",
+      "dirty": false,
+      "lock_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+      "package_files_sha256": "ad7764e15416429f662b8052fd977daeba2a613c321adb44f6e389c00f81fcca"
+    },
+    "numerical_backend": {
+      "numpy_blas": {
+        "name": "accelerate",
+        "version": "unknown"
+      },
+      "numpy_lapack": {
+        "name": "accelerate",
+        "version": "unknown"
+      },
+      "simd": {
+        "baseline": [
+          "NEON",
+          "NEON_FP16",
+          "NEON_VFPV4",
+          "ASIMD"
+        ],
+        "found": [
+          "ASIMDHP",
+          "ASIMDDP"
+        ],
+        "not_found": [
+          "ASIMDFHM",
+          "SVE"
+        ]
+      }
+    },
+    "os": {
+      "byteorder": "little",
+      "logical_cpus": 10,
+      "machine": "arm64",
+      "platform": "macOS-27.0.1-arm64-arm-64bit",
+      "processor": "arm",
+      "release": "27.0.0",
+      "system": "Darwin",
+      "version": "Darwin Kernel Version 27.0.0: Tue Aug 11 21:02:59 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_T8142"
+    },
+    "packages": {
+      "axiom-local": "0.0.0",
+      "joblib": "1.6.0",
+      "numpy": "2.5.5",
+      "pydantic": "2.14.4",
+      "pydantic-core": "2.50.5",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "threadpoolctl": "3.8.0"
+    },
+    "python": {
+      "bits": 64,
+      "build": [
+        "main",
+        "Oct 25 2026 18:24:37"
+      ],
+      "compiler": "Clang 21.0.0 (clang-2100.3.34.2)",
+      "float_repr_style": "short",
+      "implementation": "CPython",
+      "version": "3.12.16"
+    },
+    "schema_version": "axiom.environment/1",
+    "threads": {
+      "blas_thread_control": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+      "detected_pools": [
+        {
+          "internal_api": "openmp",
+          "num_threads": 1,
+          "prefix": "libomp",
+          "user_api": "openmp",
+          "version": null
+        }
+      ],
+      "environment_variables": {
+        "BLIS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "VECLIB_MAXIMUM_THREADS": "1"
+      },
+      "fit_limit_probe": "verified_single_thread"
+    }
+  },
+  "execution": {
+    "finished_utc": "2026-11-25T18:21:37.662405+00:00",
+    "mode": "fresh_process",
+    "result_cache": "none: the worker recomputes from the data file",
+    "run_id": "72ab46f33b2b4b8fb8439d35b04e2b43",
+    "started_utc": "2026-11-25T18:21:37.532522+00:00",
+    "thread_environment": {
+      "BLIS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    },
+    "timing_seconds": {
+      "compute_seconds": 0.00336433295160532,
+      "import_seconds": 0.00044216704554855824,
+      "load_seconds": 0.02970212500076741,
+      "parent_wall": 1.4102766660507768
+    },
+    "workspace": "fresh temporary directory, deleted after the run"
+  },
+  "identity": {
+    "dataset_format": "axiom.dataset/1",
+    "dataset_sha256": "ac560bab752b8c41061f8c8966868154d7ffd2818cf7ad4206d577bdda2b36f7",
+    "plan_schema": "axiom.plan/1",
+    "plan_sha256": "3c6b8ba306d25e3041fdb750c68b562d5745862bc36bf7886087fafd5c4a4711",
+    "policy_version": "axiom.policy/1",
+    "raw_sha256": "4b9c09ab5c9c6b5be3bf1cd8c4ee66fd2bf5252e5b5795f85204a19b00f0797c",
+    "result_schema": "axiom.result/1",
+    "result_sha256": "0bc01672376565491121dcaf5fe253c82549410f5463065c3efb48cd5ac0126d",
+    "serializer": "axiom.canonical-json/1"
+  },
+  "inputs": {
+    "csv_profile": {
+      "columns": [
+        {
+          "kind": "text",
+          "name": "id"
+        },
+        {
+          "kind": "text",
+          "name": "segment"
+        },
+        {
+          "kind": "numeric",
+          "name": "f1"
+        },
+        {
+          "kind": "numeric",
+          "name": "f2"
+        },
+        {
+          "kind": "numeric",
+          "name": "f3"
+        },
+        {
+          "kind": "numeric",
+          "name": "y"
+        }
+      ],
+      "decimal": ".",
+      "delimiter": ",",
+      "encoding": "utf-8"
+    },
+    "limits": {
+      "max_bytes": 33554432,
+      "max_cluster_features": 64,
+      "max_cluster_work": 100000000000,
+      "max_columns": 256,
+      "max_field_chars": 65536,
+      "max_groups": 10000,
+      "max_header_chars": 256,
+      "max_k": 64,
+      "max_plan_bytes": 65536,
+      "max_plan_depth": 8,
+      "max_plan_nodes": 4096,
+      "max_reported_ordinals": 100,
+      "max_rows": 1000000
+    },
+    "n_bytes": 202312,
+    "n_rows": 5000,
+    "plan": {
+      "method": "pearson",
+      "operation": "relate",
+      "schema_version": "axiom.plan/1",
+      "x": "f1",
+      "y": "y"
+    }
+  },
+  "passport_sha256": "f920a8239020a04dc34360a27d79db8fa7adc5ddf580232db828b92e88fb6321",
+  "passport_version": "axiom.passport/1",
+  "result": {
+    "inputs": {
+      "columns": [
+        {
+          "kind": "text",
+          "name": "id"
+        },
+        {
+          "kind": "text",
+          "name": "segment"
+        },
+        {
+          "kind": "numeric",
+          "name": "f1"
+        },
+        {
+          "kind": "numeric",
+          "name": "f2"
+        },
+        {
+          "kind": "numeric",
+          "name": "f3"
+        },
+        {
+          "kind": "numeric",
+          "name": "y"
+        }
+      ],
+      "dataset_sha256": "ac560bab752b8c41061f8c8966868154d7ffd2818cf7ad4206d577bdda2b36f7",
+      "n_rows": 5000,
+      "plan_sha256": "3c6b8ba306d25e3041fdb750c68b562d5745862bc36bf7886087fafd5c4a4711",
+      "raw_sha256": "4b9c09ab5c9c6b5be3bf1cd8c4ee66fd2bf5252e5b5795f85204a19b00f0797c"
+    },
+    "operation": "relate",
+    "plan": {
+      "method": "pearson",
+      "operation": "relate",
+      "schema_version": "axiom.plan/1",
+      "x": "f1",
+      "y": "y"
+    },
+    "policy_version": "axiom.policy/1",
+    "result": {
+      "coefficient": 0.9517935680184122,
+      "excluded": {
+        "row_ordinals": [
+          22,
+          65,
+          96,
+          173,
+          633,
+          683,
+          775,
+          1226,
+          1569,
+          2065,
+          2302,
+          2608,
+          2807,
+          2973,
+          3256,
+          3269,
+          3324,
+          3597,
+          3936,
+          3963,
+          4145,
+          4278,
+          4445,
+          4741,
+          4847,
+          4850,
+          4941
+        ],
+        "row_ordinals_truncated": false
+      },
+      "excluded_missing_both": 0,
+      "excluded_missing_x_only": 0,
+      "excluded_missing_y_only": 27,
+      "method": "pearson",
+      "minimum_n": 3,
+      "n_excluded": 27,
+      "n_rows_total": 5000,
+      "n_used": 4973,
+      "undefined": null,
+      "x": "f1",
+      "y": "y"
+    },
+    "schema_version": "axiom.result/1",
+    "serializer": "axiom.canonical-json/1",
+    "warnings": [
+      {
+        "code": "not_causal",
+        "detail": "a correlation coefficient does not establish causation"
+      },
+      {
+        "code": "linear_only",
+        "detail": "Pearson measures linear association only; zero does not imply independence"
+      }
+    ]
+  },
+  "verification": [
+    {
+      "detail": "engine recomputed the plan digest at binding and execution",
+      "evidence": "integrity",
+      "id": "plan_digest_recomputed",
+      "kind": "exact",
+      "status": "pass"
+    },
+    {
+      "detail": "result_sha256 is the SHA-256 of the canonical result bytes",
+      "evidence": "integrity",
+      "id": "result_digest_recomputed",
+      "kind": "exact",
+      "status": "pass"
+    },
+    {
+      "detail": "use axiom replay",
+      "evidence": "repeatability",
+      "id": "fresh_process_replay",
+      "kind": "exact",
+      "status": "not_run"
+    },
+    {
+      "detail": "compare with a passport from another environment (axiom compare)",
+      "evidence": "cross_environment",
+      "id": "cross_environment_agreement",
+      "kind": "numeric",
+      "status": "not_run"
+    },
+    {
+      "detail": "a passport does not compare its result with an independent oracle; see the test suite and EXP-001/EXP-002 for that evidence",
+      "evidence": "independent_reference",
+      "id": "independent_reference",
+      "kind": "numeric",
+      "status": "not_run"
+    }
+  ]
+}

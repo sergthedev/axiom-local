@@ -1,0 +1,718 @@
+{
+  "environment": {
+    "code": {
+      "commit": "f163b41f437cbb7dbe40b5d42b78cea5b086fd22",
+      "dirty": false,
+      "lock_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+      "package_files_sha256": "ad7764e15416429f662b8052fd977daeba2a613c321adb44f6e389c00f81fcca"
+    },
+    "numerical_backend": {
+      "numpy_blas": {
+        "name": "accelerate",
+        "version": "unknown"
+      },
+      "numpy_lapack": {
+        "name": "accelerate",
+        "version": "unknown"
+      },
+      "simd": {
+        "baseline": [
+          "NEON",
+          "NEON_FP16",
+          "NEON_VFPV4",
+          "ASIMD"
+        ],
+        "found": [
+          "ASIMDHP",
+          "ASIMDDP"
+        ],
+        "not_found": [
+          "ASIMDFHM",
+          "SVE"
+        ]
+      }
+    },
+    "os": {
+      "byteorder": "little",
+      "logical_cpus": 10,
+      "machine": "arm64",
+      "platform": "macOS-27.0.1-arm64-arm-64bit",
+      "processor": "arm",
+      "release": "27.0.0",
+      "system": "Darwin",
+      "version": "Darwin Kernel Version 27.0.0: Tue Aug 11 21:02:59 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_T8142"
+    },
+    "packages": {
+      "axiom-local": "0.0.0",
+      "joblib": "1.6.0",
+      "numpy": "2.5.5",
+      "pydantic": "2.14.4",
+      "pydantic-core": "2.50.5",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "threadpoolctl": "3.8.0"
+    },
+    "python": {
+      "bits": 64,
+      "build": [
+        "main",
+        "Oct 25 2026 18:24:37"
+      ],
+      "compiler": "Clang 21.0.0 (clang-2100.3.34.2)",
+      "float_repr_style": "short",
+      "implementation": "CPython",
+      "version": "3.12.16"
+    },
+    "schema_version": "axiom.environment/1",
+    "threads": {
+      "blas_thread_control": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+      "detected_pools": [
+        {
+          "internal_api": "openmp",
+          "num_threads": 1,
+          "prefix": "libomp",
+          "user_api": "openmp",
+          "version": null
+        }
+      ],
+      "environment_variables": {
+        "BLIS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "VECLIB_MAXIMUM_THREADS": "1"
+      },
+      "fit_limit_probe": "verified_single_thread"
+    }
+  },
+  "execution": {
+    "finished_utc": "2026-11-25T18:21:35.082368+00:00",
+    "mode": "fresh_process",
+    "result_cache": "none: the worker recomputes from the data file",
+    "run_id": "b2e8ea5c288542a79a4f875497d799e5",
+    "started_utc": "2026-11-25T18:21:34.978400+00:00",
+    "thread_environment": {
+      "BLIS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    },
+    "timing_seconds": {
+      "compute_seconds": 0.03117704193573445,
+      "import_seconds": 0.0002660420723259449,
+      "load_seconds": 0.0012073750840499997,
+      "parent_wall": 1.4363365001045167
+    },
+    "workspace": "fresh temporary directory, deleted after the run"
+  },
+  "identity": {
+    "dataset_format": "axiom.dataset/1",
+    "dataset_sha256": "44cbe8dc6374105bc24f911415697989a9a71172bdfd30683b892b2fdc5a9245",
+    "plan_schema": "axiom.plan/1",
+    "plan_sha256": "4ecbddffb1c5597b107521f484df67b607d1ccb3aa22d0e6b8362beed793585b",
+    "policy_version": "axiom.policy/1",
+    "raw_sha256": "4f39a4f3cac2395df392ad93d56e59ecda3fc49636dde736c0f0aa9f946fd4ad",
+    "result_schema": "axiom.result/1",
+    "result_sha256": "b35d088c72841f5b60e59ae705905d6548a3cc54b3dd0883008d88dfe6d70459",
+    "serializer": "axiom.canonical-json/1"
+  },
+  "inputs": {
+    "csv_profile": {
+      "columns": [
+        {
+          "kind": "text",
+          "name": "region_id"
+        },
+        {
+          "kind": "text",
+          "name": "macro_region"
+        },
+        {
+          "kind": "numeric",
+          "name": "gdp_per_capita"
+        },
+        {
+          "kind": "numeric",
+          "name": "unemployment_rate"
+        },
+        {
+          "kind": "numeric",
+          "name": "education_years"
+        },
+        {
+          "kind": "numeric",
+          "name": "household_income"
+        }
+      ],
+      "decimal": ".",
+      "delimiter": ",",
+      "encoding": "utf-8"
+    },
+    "limits": {
+      "max_bytes": 33554432,
+      "max_cluster_features": 64,
+      "max_cluster_work": 100000000000,
+      "max_columns": 256,
+      "max_field_chars": 65536,
+      "max_groups": 10000,
+      "max_header_chars": 256,
+      "max_k": 64,
+      "max_plan_bytes": 65536,
+      "max_plan_depth": 8,
+      "max_plan_nodes": 4096,
+      "max_reported_ordinals": 100,
+      "max_rows": 1000000
+    },
+    "n_bytes": 6040,
+    "n_rows": 150,
+    "plan": {
+      "algorithm": "lloyd",
+      "features": [
+        "gdp_per_capita",
+        "unemployment_rate",
+        "education_years"
+      ],
+      "init": "k-means++",
+      "k": 3,
+      "max_iter": 300,
+      "n_init": 10,
+      "operation": "cluster",
+      "scaling": "standard_ddof0",
+      "schema_version": "axiom.plan/1",
+      "seed": 42,
+      "tol": 0.0001
+    }
+  },
+  "passport_sha256": "36857ea7571067b8ccf193343ff653b22f37cb7a68e4601d4851fc62fab216a7",
+  "passport_version": "axiom.passport/1",
+  "result": {
+    "inputs": {
+      "columns": [
+        {
+          "kind": "text",
+          "name": "region_id"
+        },
+        {
+          "kind": "text",
+          "name": "macro_region"
+        },
+        {
+          "kind": "numeric",
+          "name": "gdp_per_capita"
+        },
+        {
+          "kind": "numeric",
+          "name": "unemployment_rate"
+        },
+        {
+          "kind": "numeric",
+          "name": "education_years"
+        },
+        {
+          "kind": "numeric",
+          "name": "household_income"
+        }
+      ],
+      "dataset_sha256": "44cbe8dc6374105bc24f911415697989a9a71172bdfd30683b892b2fdc5a9245",
+      "n_rows": 150,
+      "plan_sha256": "4ecbddffb1c5597b107521f484df67b607d1ccb3aa22d0e6b8362beed793585b",
+      "raw_sha256": "4f39a4f3cac2395df392ad93d56e59ecda3fc49636dde736c0f0aa9f946fd4ad"
+    },
+    "operation": "cluster",
+    "plan": {
+      "algorithm": "lloyd",
+      "features": [
+        "gdp_per_capita",
+        "unemployment_rate",
+        "education_years"
+      ],
+      "init": "k-means++",
+      "k": 3,
+      "max_iter": 300,
+      "n_init": 10,
+      "operation": "cluster",
+      "scaling": "standard_ddof0",
+      "schema_version": "axiom.plan/1",
+      "seed": 42,
+      "tol": 0.0001
+    },
+    "policy_version": "axiom.policy/1",
+    "result": {
+      "assignments": [
+        0,
+        1,
+        0,
+        1,
+        2,
+        0,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        2,
+        0,
+        2,
+        1,
+        1,
+        2,
+        1,
+        0,
+        2,
+        0,
+        2,
+        2,
+        0,
+        1,
+        2,
+        2,
+        0,
+        2,
+        0,
+        1,
+        2,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        2,
+        2,
+        0,
+        0,
+        0,
+        0,
+        2,
+        1,
+        1,
+        2,
+        0,
+        2,
+        1,
+        2,
+        0,
+        2,
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        0,
+        2,
+        0,
+        1,
+        1,
+        0,
+        2,
+        2,
+        1,
+        1,
+        2,
+        0,
+        0,
+        2,
+        2,
+        2,
+        0,
+        0,
+        2,
+        0,
+        2,
+        0,
+        1,
+        2,
+        1,
+        2,
+        0,
+        0,
+        1,
+        2,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        2,
+        1,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        1,
+        0,
+        1,
+        0,
+        1,
+        2,
+        0,
+        0,
+        1,
+        0,
+        1,
+        1,
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "clusters": [
+        {
+          "centroid_standardized": [
+            -0.05602427675418386,
+            -0.11775896382929983,
+            -0.10197903188115098
+          ],
+          "id": 0,
+          "original_units": {
+            "education_years": {
+              "max": 13.27,
+              "mean": 11.158955223880596,
+              "min": 7.77
+            },
+            "gdp_per_capita": {
+              "max": 24782.79,
+              "mean": 19254.337313432836,
+              "min": 13434.97
+            },
+            "unemployment_rate": {
+              "max": 10.1,
+              "mean": 7.313432835820896,
+              "min": 4.86
+            }
+          },
+          "size": 67
+        },
+        {
+          "centroid_standardized": [
+            1.247993998602189,
+            -0.9631841725956023,
+            1.2848263849937889
+          ],
+          "id": 1,
+          "original_units": {
+            "education_years": {
+              "max": 18.02,
+              "mean": 14.186764705882354,
+              "min": 12.25
+            },
+            "gdp_per_capita": {
+              "max": 36392.5,
+              "mean": 26622.777352941175,
+              "min": 21834.3
+            },
+            "unemployment_rate": {
+              "max": 7.57,
+              "mean": 5.740294117647059,
+              "min": 2.07
+            }
+          },
+          "size": 34
+        },
+        {
+          "centroid_standardized": [
+            -1.074393594720675,
+            1.12883645680037,
+            -1.0236528320486469
+          ],
+          "id": 2,
+          "original_units": {
+            "education_years": {
+              "max": 11.26,
+              "mean": 9.146666666666667,
+              "min": 6.18
+            },
+            "gdp_per_capita": {
+              "max": 20247.28,
+              "mean": 13499.975277777778,
+              "min": 4559.3
+            },
+            "unemployment_rate": {
+              "max": 11.95,
+              "mean": 9.633055555555556,
+              "min": 6.64
+            }
+          },
+          "size": 36
+        }
+      ],
+      "diagnostics": {
+        "lloyd_label_fixed_point": true
+      },
+      "eligible_row_ordinals": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        30,
+        31,
+        32,
+        33,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        86,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        117,
+        118,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        146,
+        147,
+        148,
+        149,
+        150
+      ],
+      "excluded_row_ordinals": [
+        17,
+        29,
+        34,
+        51,
+        58,
+        68,
+        85,
+        87,
+        102,
+        116,
+        119,
+        136,
+        145
+      ],
+      "excluded_row_ordinals_truncated": false,
+      "features": [
+        "gdp_per_capita",
+        "unemployment_rate",
+        "education_years"
+      ],
+      "inertia_standardized": 143.38760429314254,
+      "k": 3,
+      "n_eligible": 137,
+      "n_excluded": 13,
+      "n_rows_total": 150,
+      "postconditions": {
+        "centroid_consistency_approx": true,
+        "inertia_consistent": true,
+        "nearest_center": true,
+        "nonempty_clusters": true,
+        "scaler_consistent": true
+      },
+      "scaler": {
+        "kind": "standard_ddof0",
+        "mean": [
+          19570.90613138687,
+          7.532554744525551,
+          11.381605839416052
+        ],
+        "scale": [
+          5650.565010290698,
+          1.8607662769713946,
+          2.1832979920317106
+        ]
+      },
+      "solver": {
+        "algorithm": "lloyd",
+        "copy_x": true,
+        "init": "k-means++",
+        "max_iter": 300,
+        "n_init": 10,
+        "n_iter_diagnostic": 8,
+        "seed": 42,
+        "threadpool_limit": 1,
+        "tol": 0.0001
+      }
+    },
+    "schema_version": "axiom.result/1",
+    "serializer": "axiom.canonical-json/1",
+    "warnings": [
+      {
+        "code": "clusters_are_descriptive",
+        "detail": "clusters are a descriptive partition of the sample, not validated classes"
+      },
+      {
+        "code": "local_solution",
+        "detail": "result is a local K-means solution; no global-optimum claim"
+      }
+    ]
+  },
+  "verification": [
+    {
+      "detail": "engine recomputed the plan digest at binding and execution",
+      "evidence": "integrity",
+      "id": "plan_digest_recomputed",
+      "kind": "exact",
+      "status": "pass"
+    },
+    {
+      "detail": "result_sha256 is the SHA-256 of the canonical result bytes",
+      "evidence": "integrity",
+      "id": "result_digest_recomputed",
+      "kind": "exact",
+      "status": "pass"
+    },
+    {
+      "detail": "independent recomputation agreed with the solver (ADR 0006); a local solution, not a global optimum",
+      "evidence": "internal_consistency",
+      "id": "cluster_postconditions",
+      "kind": "numeric",
+      "status": "pass"
+    },
+    {
+      "detail": "use axiom replay",
+      "evidence": "repeatability",
+      "id": "fresh_process_replay",
+      "kind": "exact",
+      "status": "not_run"
+    },
+    {
+      "detail": "compare with a passport from another environment (axiom compare)",
+      "evidence": "cross_environment",
+      "id": "cross_environment_agreement",
+      "kind": "numeric",
+      "status": "not_run"
+    },
+    {
+      "detail": "a passport does not compare its result with an independent oracle; see the test suite and EXP-001/EXP-002 for that evidence",
+      "evidence": "independent_reference",
+      "id": "independent_reference",
+      "kind": "numeric",
+      "status": "not_run"
+    }
+  ]
+}

@@ -1,0 +1,369 @@
+{
+  "environment": {
+    "code": {
+      "commit": "f163b41f437cbb7dbe40b5d42b78cea5b086fd22",
+      "dirty": false,
+      "lock_sha256": "0591cb5824e57d339d94ef2b2a4510cd1bfd688193190c29dcbc961ddc79cca7",
+      "package_files_sha256": "ad7764e15416429f662b8052fd977daeba2a613c321adb44f6e389c00f81fcca"
+    },
+    "numerical_backend": {
+      "numpy_blas": {
+        "name": "accelerate",
+        "version": "unknown"
+      },
+      "numpy_lapack": {
+        "name": "accelerate",
+        "version": "unknown"
+      },
+      "simd": {
+        "baseline": [
+          "NEON",
+          "NEON_FP16",
+          "NEON_VFPV4",
+          "ASIMD"
+        ],
+        "found": [
+          "ASIMDHP",
+          "ASIMDDP"
+        ],
+        "not_found": [
+          "ASIMDFHM",
+          "SVE"
+        ]
+      }
+    },
+    "os": {
+      "byteorder": "little",
+      "logical_cpus": 10,
+      "machine": "arm64",
+      "platform": "macOS-27.0.1-arm64-arm-64bit",
+      "processor": "arm",
+      "release": "27.0.0",
+      "system": "Darwin",
+      "version": "Darwin Kernel Version 27.0.0: Tue Aug 11 21:02:59 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_T8142"
+    },
+    "packages": {
+      "axiom-local": "0.0.0",
+      "joblib": "1.6.0",
+      "numpy": "2.5.5",
+      "pydantic": "2.14.4",
+      "pydantic-core": "2.50.5",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "threadpoolctl": "3.8.0"
+    },
+    "python": {
+      "bits": 64,
+      "build": [
+        "main",
+        "Oct 25 2026 18:24:37"
+      ],
+      "compiler": "Clang 21.0.0 (clang-2100.3.34.2)",
+      "float_repr_style": "short",
+      "implementation": "CPython",
+      "version": "3.12.16"
+    },
+    "schema_version": "axiom.environment/1",
+    "threads": {
+      "blas_thread_control": "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)",
+      "detected_pools": [
+        {
+          "internal_api": "openmp",
+          "num_threads": 1,
+          "prefix": "libomp",
+          "user_api": "openmp",
+          "version": null
+        }
+      ],
+      "environment_variables": {
+        "BLIS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "VECLIB_MAXIMUM_THREADS": "1"
+      },
+      "fit_limit_probe": "verified_single_thread"
+    }
+  },
+  "execution": {
+    "finished_utc": "2026-11-25T18:21:39.732094+00:00",
+    "mode": "fresh_process",
+    "result_cache": "none: the worker recomputes from the data file",
+    "run_id": "7327ee47c8cc4c5c8a7f9cf6ece5849f",
+    "started_utc": "2026-11-25T18:21:39.593227+00:00",
+    "thread_environment": {
+      "BLIS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    },
+    "timing_seconds": {
+      "compute_seconds": 0.009757833904586732,
+      "import_seconds": 0.0003569589462131262,
+      "load_seconds": 0.026256583048962057,
+      "parent_wall": 2.06752354092896
+    },
+    "workspace": "fresh temporary directory, deleted after the run"
+  },
+  "identity": {
+    "dataset_format": "axiom.dataset/1",
+    "dataset_sha256": "ac560bab752b8c41061f8c8966868154d7ffd2818cf7ad4206d577bdda2b36f7",
+    "plan_schema": "axiom.plan/1",
+    "plan_sha256": "70ad2b676fc064b8ad15a049cc8030a446310fbdef8be5f94f6d2f1186838f81",
+    "policy_version": "axiom.policy/1",
+    "raw_sha256": "4b9c09ab5c9c6b5be3bf1cd8c4ee66fd2bf5252e5b5795f85204a19b00f0797c",
+    "result_schema": "axiom.result/1",
+    "result_sha256": "a90081d16f542e7e41625c8c233f206969d3096397e46fdcd65c84fd12342df9",
+    "serializer": "axiom.canonical-json/1"
+  },
+  "inputs": {
+    "csv_profile": {
+      "columns": [
+        {
+          "kind": "text",
+          "name": "id"
+        },
+        {
+          "kind": "text",
+          "name": "segment"
+        },
+        {
+          "kind": "numeric",
+          "name": "f1"
+        },
+        {
+          "kind": "numeric",
+          "name": "f2"
+        },
+        {
+          "kind": "numeric",
+          "name": "f3"
+        },
+        {
+          "kind": "numeric",
+          "name": "y"
+        }
+      ],
+      "decimal": ".",
+      "delimiter": ",",
+      "encoding": "utf-8"
+    },
+    "limits": {
+      "max_bytes": 33554432,
+      "max_cluster_features": 64,
+      "max_cluster_work": 100000000000,
+      "max_columns": 256,
+      "max_field_chars": 65536,
+      "max_groups": 10000,
+      "max_header_chars": 256,
+      "max_k": 64,
+      "max_plan_bytes": 65536,
+      "max_plan_depth": 8,
+      "max_plan_nodes": 4096,
+      "max_reported_ordinals": 100,
+      "max_rows": 1000000
+    },
+    "n_bytes": 202312,
+    "n_rows": 5000,
+    "plan": {
+      "method": "spearman",
+      "operation": "relate",
+      "schema_version": "axiom.plan/1",
+      "x": "f2",
+      "y": "y"
+    }
+  },
+  "passport_sha256": "294da370eab672a6610726c3bc722c57432a46ddaad5933c9d6616772c9ae388",
+  "passport_version": "axiom.passport/1",
+  "result": {
+    "inputs": {
+      "columns": [
+        {
+          "kind": "text",
+          "name": "id"
+        },
+        {
+          "kind": "text",
+          "name": "segment"
+        },
+        {
+          "kind": "numeric",
+          "name": "f1"
+        },
+        {
+          "kind": "numeric",
+          "name": "f2"
+        },
+        {
+          "kind": "numeric",
+          "name": "f3"
+        },
+        {
+          "kind": "numeric",
+          "name": "y"
+        }
+      ],
+      "dataset_sha256": "ac560bab752b8c41061f8c8966868154d7ffd2818cf7ad4206d577bdda2b36f7",
+      "n_rows": 5000,
+      "plan_sha256": "70ad2b676fc064b8ad15a049cc8030a446310fbdef8be5f94f6d2f1186838f81",
+      "raw_sha256": "4b9c09ab5c9c6b5be3bf1cd8c4ee66fd2bf5252e5b5795f85204a19b00f0797c"
+    },
+    "operation": "relate",
+    "plan": {
+      "method": "spearman",
+      "operation": "relate",
+      "schema_version": "axiom.plan/1",
+      "x": "f2",
+      "y": "y"
+    },
+    "policy_version": "axiom.policy/1",
+    "result": {
+      "coefficient": 0.5843847823984659,
+      "excluded": {
+        "row_ordinals": [
+          22,
+          65,
+          89,
+          96,
+          173,
+          609,
+          621,
+          633,
+          683,
+          689,
+          697,
+          721,
+          775,
+          810,
+          1123,
+          1226,
+          1234,
+          1313,
+          1550,
+          1569,
+          1675,
+          1769,
+          2065,
+          2146,
+          2166,
+          2231,
+          2280,
+          2302,
+          2304,
+          2436,
+          2493,
+          2506,
+          2558,
+          2608,
+          2719,
+          2784,
+          2805,
+          2807,
+          2973,
+          3085,
+          3137,
+          3182,
+          3230,
+          3256,
+          3264,
+          3269,
+          3324,
+          3325,
+          3370,
+          3435,
+          3597,
+          3671,
+          3726,
+          3782,
+          3860,
+          3923,
+          3927,
+          3936,
+          3947,
+          3963,
+          3994,
+          4087,
+          4093,
+          4115,
+          4145,
+          4180,
+          4242,
+          4278,
+          4405,
+          4445,
+          4652,
+          4730,
+          4741,
+          4749,
+          4792,
+          4847,
+          4850,
+          4922,
+          4941
+        ],
+        "row_ordinals_truncated": false
+      },
+      "excluded_missing_both": 0,
+      "excluded_missing_x_only": 52,
+      "excluded_missing_y_only": 27,
+      "method": "spearman",
+      "minimum_n": 3,
+      "n_excluded": 79,
+      "n_rows_total": 5000,
+      "n_used": 4921,
+      "undefined": null,
+      "x": "f2",
+      "y": "y"
+    },
+    "schema_version": "axiom.result/1",
+    "serializer": "axiom.canonical-json/1",
+    "warnings": [
+      {
+        "code": "not_causal",
+        "detail": "a correlation coefficient does not establish causation"
+      },
+      {
+        "code": "monotonic_only",
+        "detail": "Spearman measures monotonic association (average ranks for ties)"
+      }
+    ]
+  },
+  "verification": [
+    {
+      "detail": "engine recomputed the plan digest at binding and execution",
+      "evidence": "integrity",
+      "id": "plan_digest_recomputed",
+      "kind": "exact",
+      "status": "pass"
+    },
+    {
+      "detail": "result_sha256 is the SHA-256 of the canonical result bytes",
+      "evidence": "integrity",
+      "id": "result_digest_recomputed",
+      "kind": "exact",
+      "status": "pass"
+    },
+    {
+      "detail": "use axiom replay",
+      "evidence": "repeatability",
+      "id": "fresh_process_replay",
+      "kind": "exact",
+      "status": "not_run"
+    },
+    {
+      "detail": "compare with a passport from another environment (axiom compare)",
+      "evidence": "cross_environment",
+      "id": "cross_environment_agreement",
+      "kind": "numeric",
+      "status": "not_run"
+    },
+    {
+      "detail": "a passport does not compare its result with an independent oracle; see the test suite and EXP-001/EXP-002 for that evidence",
+      "evidence": "independent_reference",
+      "id": "independent_reference",
+      "kind": "numeric",
+      "status": "not_run"
+    }
+  ]
+}
