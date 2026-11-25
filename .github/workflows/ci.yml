@@ -30,3 +30,7 @@ jobs:
           uv run ruff format --check .
       - name: Tests
         run: uv run pytest
+      - name: Cross-platform numerical comparison (report only, EXP-005)
+        # Prints a JSON report against the committed macOS arm64 reference passports. It exits non-zero
+        # only if a scenario cannot be run; a green step is NOT evidence of numerical agreement.
+        run: uv run python benchmarks/issue3_cross_platform.py --compare docs/evidence/experiments/EXP-005-cross-platform/reference

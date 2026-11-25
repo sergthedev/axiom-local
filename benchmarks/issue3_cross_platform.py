@@ -1,0 +1,111 @@
+"""EXP-005: cross-platform numerical comparison against committed reference passports (Issue #3).
+
+Two modes, run from the repository root:
+
+* ``--write-reference DIR`` analyzes the ten scenarios of ``issue3_common`` in fresh processes and
+  writes one passport per scenario into DIR (done once, on the reference machine).
+* ``--compare DIR`` analyzes the same scenarios on *this* machine and compares each new passport
+  with the reference using ``axiom.replay.compare_passports`` (criteria ``axiom.agreement/1``,
+  fixed in ADR 0008 and the EXP-005 pre-registration before any comparison). Prints JSON.
+
+``--compare`` is report-only: it exits 0 whenever every comparison could be performed, whatever the
+verdicts, and 1 only if the script itself could not run a scenario. Verdicts must be read from the
+report; a green CI step is not numerical agreement.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+import tempfile
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from issue3_common import file_sha256, git_state, scenarios  # noqa: E402
+
+from axiom.passport import dumps_passport, loads_passport  # noqa: E402
+from axiom.replay import AnalysisFailed, analyze, compare_passports  # noqa: E402
+
+
+def _name(scenario_id: str) -> str:
+    return scenario_id.replace("/", "__") + ".passport.json"
+
+
+def write_reference(directory: Path) -> None:
+    directory.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="axiom-exp005-") as tmp:
+        for sc in scenarios(Path(tmp)):
+            passport = analyze(sc["data"], sc["profile"], sc["plan"])
+            (directory / _name(sc["id"])).write_text(dumps_passport(passport), encoding="utf-8")
+            print(sc["id"], passport["identity"]["result_sha256"], file=sys.stderr)
+
+
+def compare(directory: Path) -> int:
+    rows = []
+    failed = 0
+    with tempfile.TemporaryDirectory(prefix="axiom-exp005-") as tmp:
+        for sc in scenarios(Path(tmp)):
+            reference = loads_passport((directory / _name(sc["id"])).read_text(encoding="utf-8"))
+            row = {"scenario": sc["id"], "data_sha256": file_sha256(sc["data"])}
+            try:
+                observed = analyze(sc["data"], sc["profile"], sc["plan"])
+            except AnalysisFailed as exc:
+                failed += 1
+                row.update(verdict="execution_failure", error=exc.response.get("error"))
+                rows.append(row)
+                continue
+            report = compare_passports(reference, observed)
+            comparison = report.get("comparison", {})
+            row.update(
+                verdict=report["verdict"],
+                comparison_mode=report.get("comparison_mode"),
+                byte_identical=report.get("byte_identical"),
+                environment_fields_differing=[
+                    d["field"] for d in report.get("environment_differences") or []
+                ],
+                n_float_fields=comparison.get("n_float_fields"),
+                n_float_fields_different=comparison.get("n_float_fields_different"),
+                max_ulp_distance=comparison.get("max_ulp_distance"),
+                max_abs_diff=comparison.get("max_abs_diff"),
+                n_gating_failures=comparison.get("n_gating_failures"),
+                field_differences=comparison.get("field_differences", [])[:50],
+                non_float_differences=comparison.get("non_float_differences", [])[:50],
+                partition=comparison.get("partition"),
+                reference_result_sha256=reference["identity"]["result_sha256"],
+                observed_result_sha256=observed["identity"]["result_sha256"],
+                observed_threads=observed["environment"]["threads"],
+            )
+            rows.append(row)
+        env = observed["environment"] if rows and "observed" in locals() else None
+    report = {
+        "experiment": "EXP-005",
+        "git": git_state(),
+        "observed_environment": env,
+        "reference_environment": reference["environment"],
+        "scenarios": rows,
+        "verdict_counts": {
+            v: sum(1 for r in rows if r["verdict"] == v)
+            for v in sorted({r["verdict"] for r in rows})
+        },
+    }
+    json.dump(report, sys.stdout, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False)
+    sys.stdout.write("\n")
+    return 1 if failed else 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--write-reference", type=Path)
+    group.add_argument("--compare", type=Path)
+    args = parser.parse_args()
+    if args.write_reference:
+        write_reference(args.write_reference)
+        return 0
+    return compare(args.compare)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -79,7 +79,8 @@ def test_environment_contains_no_local_paths_or_host_name(env) -> None:
     import platform
 
     text = json.dumps(env)
-    assert str(ROOT) not in text and str(Path.home()) not in text
+    for path in (str(ROOT), str(Path.home())):
+        assert path not in text and json.dumps(path)[1:-1] not in text
     assert "filepath" not in text
     node = platform.node()
     if node:
