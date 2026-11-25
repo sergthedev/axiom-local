@@ -105,3 +105,36 @@ def ulp_error(value: float, reference: Decimal) -> float:
     """Absolute error of ``value`` against ``reference`` in units of ulp(value)."""
     err = abs(Decimal(value) - reference)
     return float(err / Decimal(math.ulp(value)))
+
+
+def exact_quantile_type7_weighted(values: list[float], k: int) -> Fraction:
+    """Exact type-7 quantile at p = k/4 in a different formulation from the engine's.
+
+    Integer position (n-1)*k over 4; value = (x[lo]*(4-r) + x[hi]*r) / 4 with r the remainder. The
+    engine interpolates as a + frac*(b - a); this form is a weighted average, so the two share the
+    definition of type 7 but not the arithmetic.
+    """
+    s = sorted(values)
+    num = (len(s) - 1) * k
+    lo, r = divmod(num, 4)
+    hi = min(lo + 1, len(s) - 1)
+    return (Fraction(s[lo]) * (4 - r) + Fraction(s[hi]) * r) / 4
+
+
+def exact_median_weighted(values: list[float]) -> Fraction:
+    s = sorted(values)
+    n = len(s)
+    if n % 2:
+        return Fraction(s[n // 2])
+    return (Fraction(s[n // 2 - 1]) + Fraction(s[n // 2])) / 2
+
+
+def classify_exact(x: Fraction) -> tuple[float | None, str]:
+    """Oracle classification of an exact value: correctly rounded float, or why it has none."""
+    try:
+        value = float(x)
+    except OverflowError:
+        return None, "overflow"
+    if value == 0.0 and x != 0:
+        return None, "underflow"
+    return value + 0.0, "defined"
