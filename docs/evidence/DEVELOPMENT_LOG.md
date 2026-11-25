@@ -185,3 +185,7 @@ Review: [technical re-review of head `cc70cfa`](https://github.com/sergthedev/ax
 | `uv run ruff format --check .` | 0 | 75 files already formatted |
 
 No experiment scripts were re-run: the change affects reporting edge cases only, and EXP-001/002/003 data are preserved unchanged. CI for the final head follows once observed.
+
+### CI for the numeric-range fix (implementer-observed)
+- Run [45664213878](https://github.com/sergthedev/axiom-local/actions/runs/45664213878) on head `afaabf8`: `test (macos-latest)` passed (266 tests in 16.96 s) and `test (windows-latest)` passed (266 tests in 10.57 s),
+  CPython 3.12.x on both runners; locked install, lint, format check and pytest only. Observed from the run logs by the implementer, not yet re-verified by the reviewer; the entry's own commit is documentation-only with its own CI run.
