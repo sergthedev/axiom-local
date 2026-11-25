@@ -20,6 +20,12 @@ class Limits:
     max_k: int = 64
     max_cluster_features: int = 64
     max_reported_ordinals: int = 100
+    max_plan_bytes: int = 65_536
+    max_plan_depth: int = 8
+    max_plan_nodes: int = 4_096
+    # n_eligible_rows * k * n_features * n_init * max_iter (distance-component evaluations, an
+    # upper bound on solver work). Provisional; rejects joint worst cases before any fit.
+    max_cluster_work: int = 50_000_000_000
 
 
 DEFAULT_LIMITS = Limits()

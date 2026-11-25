@@ -6,6 +6,7 @@ host names or timings; those belong to a separate environment manifest (:func:`e
 
 from __future__ import annotations
 
+import json
 import platform
 import sys
 from dataclasses import dataclass
@@ -30,6 +31,8 @@ from .plan import (
     bind_plan,
     plan_sha256,
     plan_to_dict,
+    revalidate_plan,
+    validate_plan_for_dataset,
 )
 
 RESULT_SCHEMA_VERSION = "axiom.result/1"
@@ -44,13 +47,21 @@ _EXECUTORS = {
 
 @dataclass(frozen=True, slots=True)
 class AnalysisResult:
-    """Deterministic result core plus its canonical serialization and hash."""
+    """Deterministic result: the canonical JSON bytes are fixed at construction.
 
-    core: dict[str, Any]
+    ``core`` returns an independent parsed copy each time, so mutating it cannot change the identity
+    (``canonical_json`` / ``result_sha256``). Use :meth:`from_core` to build one.
+    """
+
+    canonical_json: str
+
+    @classmethod
+    def from_core(cls, core: dict[str, Any]) -> AnalysisResult:
+        return cls(canonical_dumps(core))
 
     @property
-    def canonical_json(self) -> str:
-        return canonical_dumps(self.core)
+    def core(self) -> dict[str, Any]:
+        return json.loads(self.canonical_json)
 
     @property
     def result_sha256(self) -> str:
@@ -58,7 +69,15 @@ class AnalysisResult:
 
 
 def execute(dataset: Dataset, bound: BoundPlan, limits: Limits = DEFAULT_LIMITS) -> AnalysisResult:
-    """Run a bound plan. Fails if the plan is not bound to exactly this dataset snapshot."""
+    """Run a bound plan after re-checking everything that can be re-checked.
+
+    The plan is revalidated from its field values, validated again against the dataset schema and
+    the ``limits`` given *here* (so stricter limits cannot be bypassed by an earlier binding), and
+    its digest and the dataset fingerprints are compared. This is not a defense against arbitrary
+    local Python code: a ``BoundPlan`` is data, not a signature.
+    """
+    if not isinstance(dataset, Dataset) or not isinstance(bound, BoundPlan):
+        raise PlanError("invalid_plan", "execute requires a Dataset and a BoundPlan")
     if (
         bound.dataset_raw_sha256 != dataset.raw_sha256
         or bound.dataset_logical_sha256 != dataset.logical_sha256
@@ -66,14 +85,16 @@ def execute(dataset: Dataset, bound: BoundPlan, limits: Limits = DEFAULT_LIMITS)
         raise PlanError(
             "plan_not_bound_to_dataset", "bound plan does not match this dataset snapshot"
         )
-    if bound.plan_sha256 != plan_sha256(bound.plan) or bound.policy_version != POLICY_VERSION:
+    plan = revalidate_plan(bound.plan)
+    validate_plan_for_dataset(dataset, plan, limits)
+    if bound.plan_sha256 != plan_sha256(plan) or bound.policy_version != POLICY_VERSION:
         raise PlanError("plan_hash_mismatch", "bound plan was modified after binding")
-    result, warns = _EXECUTORS[type(bound.plan)](dataset, bound.plan, limits)
+    result, warns = _EXECUTORS[type(plan)](dataset, plan, limits)
     core = {
         "schema_version": RESULT_SCHEMA_VERSION,
         "serializer": SERIALIZER_VERSION,
         "policy_version": POLICY_VERSION,
-        "operation": bound.plan.operation,
+        "operation": plan.operation,
         "inputs": {
             "raw_sha256": dataset.raw_sha256,
             "dataset_sha256": dataset.logical_sha256,
@@ -84,11 +105,11 @@ def execute(dataset: Dataset, bound: BoundPlan, limits: Limits = DEFAULT_LIMITS)
                 for n, k in zip(dataset.column_names, dataset.column_kinds, strict=True)
             ],
         },
-        "plan": plan_to_dict(bound.plan),
+        "plan": plan_to_dict(plan),
         "result": result,
         "warnings": warns,
     }
-    return AnalysisResult(core=core)
+    return AnalysisResult.from_core(core)
 
 
 def run(dataset: Dataset, plan: CandidatePlan, limits: Limits = DEFAULT_LIMITS) -> AnalysisResult:

@@ -52,6 +52,11 @@ def test_valid_plans_parse(op: str) -> None:
         plan_text('"operation":"cluster","features":["x"],"k":2,"seed":-1'),
         plan_text('"operation":"cluster","features":["x"],"k":2,"seed":4294967296'),
         plan_text('"operation":"cluster","features":["x"],"k":2,"tol":0'),
+        plan_text('"operation":"cluster","features":["x"],"k":2,"tol":1e-9'),  # below v1 policy
+        plan_text('"operation":"cluster","features":["x"],"k":2,"tol":0.1'),  # above v1 policy
+        plan_text('"operation":"cluster","features":["x"],"k":2,"n_init":21'),
+        plan_text('"operation":"cluster","features":["x"],"k":2,"n_init":0'),
+        plan_text('"operation":"cluster","features":["x"],"k":2,"max_iter":1001'),
         plan_text('"operation":"cluster","features":["x"],"k":2,"tol":1e999'),
         plan_text('"operation":"cluster","features":["x"],"k":2,"algorithm":"elkan"'),
         plan_text('"operation":"cluster","features":["x","x"],"k":2'),
