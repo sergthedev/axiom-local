@@ -12,8 +12,10 @@ from _passport_helpers import DATA, PROFILE, ROOT, example_plan, reseal
 from axiom import load_csv, run
 from axiom.environment import (
     capture_environment,
+    compare_environments,
     environment_differences,
     is_unavailable,
+    native_thread_status,
     unavailable,
 )
 from axiom.limits import DEFAULT_LIMITS
@@ -44,8 +46,21 @@ def _passport(name: str, env: dict) -> dict:
         limits=DEFAULT_LIMITS,
         n_bytes=DATA.stat().st_size,
         environment=env,
-        execution={"run_id": "test", "mode": "in_process"},
+        execution=EXECUTION,
     )
+
+
+# Shape of the execution record written by ``axiom.replay.analyze`` (values are illustrative).
+EXECUTION = {
+    "run_id": "0" * 32,
+    "mode": "fresh_process",
+    "workspace": "fresh temporary directory, deleted after the run",
+    "result_cache": "none: the worker recomputes from the data file",
+    "thread_environment": {"OMP_NUM_THREADS": "1"},
+    "started_utc": None,
+    "finished_utc": None,
+    "timing_seconds": {"parent_wall": 1.0},
+}
 
 
 @pytest.fixture(scope="module")
@@ -87,16 +102,87 @@ def test_environment_contains_no_local_paths_or_host_name(env) -> None:
         assert node not in text
 
 
-def test_environment_differences_treat_unknown_as_different(env) -> None:
-    assert environment_differences(env, copy.deepcopy(env)) == []
-    other = copy.deepcopy(env)
-    other["packages"]["numpy"] = "0.0.0"
-    (diff,) = environment_differences(env, other)
-    assert diff["field"] == "packages" and diff["comparable"] is True
-    a, b = copy.deepcopy(env), copy.deepcopy(env)
-    a["code"]["commit"] = b["code"]["commit"] = unavailable("test")
+def _fully_known(env: dict) -> dict:
+    """A copy of ``env`` in which every compared field is observed (no unknown versions)."""
+    e = copy.deepcopy(env)
+    e["numerical_backend"] = {
+        "numpy_blas": {"name": "openblas", "version": "1.0"},
+        "numpy_lapack": {"name": "openblas", "version": "1.0"},
+        "simd": {"baseline": ["X"], "found": [], "not_found": []},
+    }
+    e["threads"]["detected_pools"] = [
+        {
+            "user_api": "blas",
+            "internal_api": "openblas",
+            "prefix": "libopenblas",
+            "version": "1.0",
+            "num_threads": 1,
+        }
+    ]
+    e["threads"]["fit_limit_probe"] = "verified_single_thread"
+    e["threads"]["blas_thread_control"] = "introspectable"
+    for key in ("commit", "dirty", "lock_sha256"):
+        e["code"][key] = {"commit": "a" * 40, "dirty": False, "lock_sha256": "b" * 64}[key]
+    return e
+
+
+def test_environment_classification_never_treats_unknown_as_equal(env) -> None:
+    known = _fully_known(env)
+    same = compare_environments(known, copy.deepcopy(known))
+    assert same["status"] == "verified_same" and environment_differences(known, known) == []
+    # review B3: equal unavailable markers, nested anywhere, are not equal
+    a, b = copy.deepcopy(known), copy.deepcopy(known)
+    a["packages"]["scipy"] = b["packages"]["scipy"] = unavailable("test")
+    result = compare_environments(a, b)
+    assert result["status"] == "unverified"
+    assert [u["field"] for u in result["unverified_fields"]] == ["packages"]
+    # two "unverified" thread probes, or an invisible BLAS on both sides, are not equal either
+    for field, value in (
+        ("fit_limit_probe", "unverified"),
+        ("blas_thread_control", "unverified (NumPy BLAS 'accelerate' is not visible)"),
+    ):
+        a, b = copy.deepcopy(known), copy.deepcopy(known)
+        a["threads"][field] = b["threads"][field] = value
+        assert compare_environments(a, b)["status"] == "unverified", field
+    # versions reported as unknown (Accelerate) or None (libomp) are unknown
+    a = copy.deepcopy(known)
+    a["numerical_backend"]["numpy_blas"]["version"] = "unknown"
+    a["threads"]["detected_pools"][0]["version"] = None
+    assert compare_environments(a, copy.deepcopy(a))["status"] == "unverified"
+    # effective pools and thread variables are compared
+    b = copy.deepcopy(known)
+    b["threads"]["detected_pools"][0]["num_threads"] = 8
+    assert [d["field"] for d in compare_environments(known, b)["differences"]] == [
+        "threads.detected_pools"
+    ]
+    b = copy.deepcopy(known)
+    b["threads"]["environment_variables"]["OMP_NUM_THREADS"] = "4"
+    assert compare_environments(known, b)["status"] == "different"
+    # an observed difference wins over unknowns elsewhere
+    b = copy.deepcopy(a)
+    b["packages"]["numpy"] = "0.0.0"
+    result = compare_environments(a, b)
+    assert result["status"] == "different"
+    assert [d["field"] for d in result["differences"]] == ["packages"]
     diffs = environment_differences(a, b)
-    assert [d["field"] for d in diffs] == ["code.commit"] and diffs[0]["comparable"] is False
+    assert {d["field"]: d["comparable"] for d in diffs}["packages"] is True
+    # a missing manifest is unknown, not equal
+    assert compare_environments(known, None)["status"] == "unverified"
+
+
+def test_native_thread_status_reports_invisible_blas_as_unverified(env) -> None:
+    known = _fully_known(env)
+    assert native_thread_status(known)["status"] == "verified_single_thread"
+    accelerate = copy.deepcopy(known)
+    accelerate["threads"]["blas_thread_control"] = (
+        "unverified (NumPy BLAS 'accelerate' is not visible to threadpoolctl)"
+    )
+    status = native_thread_status(accelerate)
+    assert status["status"] == "unverified" and "accelerate" in status["reason"]
+    busy = copy.deepcopy(known)
+    busy["threads"]["detected_pools"][0]["num_threads"] = 4
+    assert native_thread_status(busy)["status"] == "multi_threaded"
+    assert native_thread_status(None)["status"] == "unverified"
 
 
 # --- passport content ----------------------------------------------------------------------------

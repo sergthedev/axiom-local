@@ -22,7 +22,9 @@ numerical criteria of :mod:`axiom.agreement`. Agreement is not correctness.
 
 from __future__ import annotations
 
+import dataclasses
 import json
+import math
 import os
 import statistics
 import subprocess
@@ -36,15 +38,19 @@ from typing import Any
 
 from .agreement import CRITERIA_VERSION, compare_cores
 from .engine import AnalysisResult
-from .environment import environment_differences
+from .environment import compare_environments, native_thread_status
+from .errors import AxiomError
 from .ingest import CsvProfile
 from .limits import DEFAULT_LIMITS, Limits
 from .passport import (
     build_passport,
     check,
     integrity_checks,
+    limits_from_dict,
     limits_to_dict,
+    profile_from_dict,
     profile_to_dict,
+    validate_passport,
 )
 from .plan import CandidatePlan, plan_to_dict, revalidate_plan
 
@@ -52,6 +58,10 @@ REPORT_VERSION = "axiom.replay-report/1"
 COMPARISON_VERSION = "axiom.passport-comparison/1"
 WORKER_PROTOCOL = "axiom.worker/1"
 DEFAULT_TIMEOUT_SECONDS = 600.0
+# Bounds on caller-supplied arguments of the public entry points (review B1). 100 runs is the
+# release target per golden scenario (DR-001); one hour per run is far above any measured run.
+MAX_REPLAY_RUNS = 100
+MAX_TIMEOUT_SECONDS = 3600.0
 
 # Reference mode: one native thread, configured before the worker interpreter imports anything.
 REFERENCE_THREAD_ENV = {
@@ -76,8 +86,54 @@ _DATASET_CODES = {"plan_not_bound_to_dataset"}
 _PLAN_CODES = {"plan_hash_mismatch", "invalid_plan"}
 
 
+class VerifyError(AxiomError):
+    """A verification request was rejected before anything was executed."""
+
+
 def _now() -> str:
     return datetime.now(UTC).isoformat(timespec="microseconds")
+
+
+def _check_timeout(timeout: Any) -> float:
+    if (
+        isinstance(timeout, bool)
+        or not isinstance(timeout, (int, float))
+        or not math.isfinite(timeout)
+        or not 0 < timeout <= MAX_TIMEOUT_SECONDS
+    ):
+        raise VerifyError(
+            "invalid_timeout",
+            "timeout must be a finite number of seconds in (0, max]",
+            max=MAX_TIMEOUT_SECONDS,
+        )
+    return float(timeout)
+
+
+def _check_runs(runs: Any) -> int:
+    if type(runs) is not int or not 1 <= runs <= MAX_REPLAY_RUNS:
+        raise VerifyError(
+            "invalid_runs", "runs must be an integer in [1, max]", max=MAX_REPLAY_RUNS
+        )
+    return runs
+
+
+def _check_limits(limits: Any) -> Limits:
+    """A ``Limits`` instance whose fields are all positive integers."""
+    if not isinstance(limits, Limits):
+        raise VerifyError("invalid_limits", "limits must be an axiom Limits instance")
+    try:
+        return limits_from_dict(limits_to_dict(limits))
+    except AxiomError as exc:
+        raise VerifyError("invalid_limits", exc.message) from None
+
+
+def limits_within_policy(recorded: Limits, policy: Limits) -> list[str]:
+    """Names of the recorded limits that exceed the trusted local policy (empty if none)."""
+    return [
+        f.name
+        for f in dataclasses.fields(Limits)
+        if getattr(recorded, f.name) > getattr(policy, f.name)
+    ]
 
 
 def run_worker(
@@ -86,8 +142,10 @@ def run_worker(
     """Execute one request in a fresh interpreter and return its response plus parent timing.
 
     Never raises for worker problems: a crash, a timeout or unreadable output becomes a response
-    with ``status`` ``"crashed"``/``"timeout"``/``"bad_output"``.
+    with ``status`` ``"crashed"``/``"timeout"``/``"bad_output"``. An invalid ``timeout`` is
+    rejected (:class:`VerifyError`) before any process is started.
     """
+    timeout = _check_timeout(timeout)
     env = dict(os.environ)
     env.update(REFERENCE_THREAD_ENV)
     payload = json.dumps(dict(request, protocol=WORKER_PROTOCOL), allow_nan=False)
@@ -149,6 +207,8 @@ def analyze(
     Raises the engine's structured error (as :class:`~axiom.errors.AxiomError` data inside a
     ``RuntimeError``) if the analysis itself fails; no passport is issued for a failed analysis.
     """
+    timeout = _check_timeout(timeout)
+    limits = _check_limits(limits)  # the caller's own, trusted limits
     plan = revalidate_plan(plan)
     request = _request(data_path, profile, plan_to_dict(plan), limits, None)
     response = run_worker(request, timeout=timeout)
@@ -186,14 +246,45 @@ class AnalysisFailed(RuntimeError):
         self.response = response
 
 
+def _thread_evidence(environment: Any) -> dict[str, Any]:
+    """What this worker itself observed about native threads (stored per run; review B3)."""
+    threads = environment.get("threads") if isinstance(environment, dict) else None
+    if not isinstance(threads, dict):
+        return {"observed": False, "native_thread_status": native_thread_status(environment)}
+    pools = threads.get("detected_pools")
+    return {
+        "observed": True,
+        "environment_variables": threads.get("environment_variables"),
+        "pools": (
+            [
+                {k: p.get(k) for k in ("user_api", "internal_api", "prefix", "num_threads")}
+                for p in pools
+                if isinstance(p, dict)
+            ]
+            if isinstance(pools, list)
+            else pools
+        ),
+        "fit_limit_probe": threads.get("fit_limit_probe"),
+        "blas_thread_control": threads.get("blas_thread_control"),
+        "native_thread_status": native_thread_status(environment),
+    }
+
+
 def _classify_run(
-    passport: dict[str, Any], response: dict[str, Any], same_environment: bool
+    passport: dict[str, Any], response: dict[str, Any], environment: dict[str, Any]
 ) -> dict[str, Any]:
-    """Outcome of one replay run. Keeps integrity, execution and numerical categories apart."""
+    """Outcome of one replay run. Keeps integrity, execution and numerical categories apart.
+
+    ``environment`` is :func:`~axiom.environment.compare_environments` of the passport and this
+    worker. Byte identity is required unless the environments were *observed* to differ.
+    """
     identity = passport["identity"]
+    exact_required = environment["status"] != "different"
     run: dict[str, Any] = {
         "run_id": response.get("run_id"),
         "worker_status": response.get("status"),
+        "environment_status": environment["status"],
+        "threads": _thread_evidence(response.get("environment")),
         "timing_seconds": dict(
             response.get("timing", {}), parent_wall=response.get("parent_wall_seconds")
         ),
@@ -225,8 +316,9 @@ def _classify_run(
     run["comparison"] = _summarize(comparison)
     if run["byte_identical"]:
         run["outcome"] = "exact_match"
-    elif same_environment:
-        run["outcome"] = "numerical_discrepancy"  # exact replay failed in the same environment
+    elif exact_required:
+        # exact replay failed where no environment difference was observed (verified or unknown)
+        run["outcome"] = "numerical_discrepancy"
     elif comparison["verdict"] == "within_criteria":
         run["outcome"] = "numeric_agreement"
     else:
@@ -255,34 +347,51 @@ def _timing_stats(values: list[float]) -> dict[str, Any] | None:
     }
 
 
+_ENV_ORDER = {"verified_same": 0, "unverified": 1, "different": 2}
+_COMPARISON_MODES = {
+    "verified_same": "same_environment_exact",
+    "unverified": "exact_environment_unverified",
+    "different": "cross_environment_numeric",
+}
+
+
 def replay(
     passport: dict[str, Any],
     data_path: str | Path,
     *,
     runs: int = 1,
     timeout: float = DEFAULT_TIMEOUT_SECONDS,
+    policy: Limits = DEFAULT_LIMITS,
 ) -> dict[str, Any]:
     """Re-execute a passport's bound plan ``runs`` times, each in a fresh process, and judge it.
 
-    The passport's own digests are checked first; if any fails nothing is executed (the verdict is
-    ``integrity_mismatch``). Each run presents the *old* binding to the engine, so changed data is
-    rejected by the engine itself, and a changed plan is rejected by its digest.
+    Before anything executes: the passport's structure is validated and the arguments are bounded
+    (:class:`~axiom.passport.PassportError` / :class:`VerifyError`); the passport's digests and
+    internal consistency are checked, and if any fails nothing is executed (verdict
+    ``integrity_mismatch``); the limits the passport *records* are compared with ``policy``, the
+    trusted local caps, and a passport asking for more is rejected (``limits_exceed_policy``),
+    never clamped, since different limits can be a different analysis. Each run then presents the
+    *old* binding to the engine, so changed data is rejected by the engine itself, and a changed
+    plan by its digest.
     """
-    if runs < 1:
-        raise ValueError("runs must be >= 1")
+    validate_passport(passport)
+    runs = _check_runs(runs)
+    timeout = _check_timeout(timeout)
+    policy = _check_limits(policy)
     started = _now()
     integrity = integrity_checks(passport)
     report: dict[str, Any] = {
         "report_version": REPORT_VERSION,
         "criteria_version": CRITERIA_VERSION,
         "reference": {
-            "passport_sha256": passport.get("passport_sha256"),
-            "result_sha256": passport["identity"].get("result_sha256"),
-            "plan_sha256": passport["identity"].get("plan_sha256"),
-            "dataset_sha256": passport["identity"].get("dataset_sha256"),
-            "raw_sha256": passport["identity"].get("raw_sha256"),
-            "operation": passport["result"].get("operation"),
-            "run_id": passport["execution"].get("run_id"),
+            "passport_sha256": passport["passport_sha256"],
+            "result_sha256": passport["identity"]["result_sha256"],
+            "plan_sha256": passport["identity"]["plan_sha256"],
+            "dataset_sha256": passport["identity"]["dataset_sha256"],
+            "raw_sha256": passport["identity"]["raw_sha256"],
+            "operation": passport["result"]["operation"],
+            "run_id": passport["execution"]["run_id"],
+            "recorded_verification": "historical record from the passport; not performed again",
         },
         "started_utc": started,
         "runs_requested": runs,
@@ -295,16 +404,22 @@ def replay(
             verdict="integrity_mismatch",
             mismatch="passport",
             comparison_mode=None,
+            environment=None,
             environment_differences=None,
         )
         report["checks"] = _report_checks(report, None)
         report["finished_utc"] = _now()
         return report
 
-    from .passport import limits_from_dict, profile_from_dict
-
-    profile = profile_from_dict(passport["inputs"]["csv_profile"])
     limits = limits_from_dict(passport["inputs"]["limits"])
+    over = limits_within_policy(limits, policy)
+    if over:
+        raise VerifyError(
+            "limits_exceed_policy",
+            "the passport records resource limits above the local policy; nothing was executed",
+            fields=over,
+        )
+    profile = profile_from_dict(passport["inputs"]["csv_profile"])
     identity = passport["identity"]
     binding = {
         "plan_sha256": identity["plan_sha256"],
@@ -313,20 +428,16 @@ def replay(
         "policy_version": identity["policy_version"],
     }
     run_reports: list[dict[str, Any]] = []
-    env_diffs: list[dict[str, Any]] | None = None
+    worst_env: dict[str, Any] | None = None
     for _ in range(runs):
         request = _request(data_path, profile, passport["inputs"]["plan"], limits, binding)
         response = run_worker(request, timeout=timeout)
-        observed_env = response.get("environment")
-        diffs = (
-            environment_differences(passport["environment"], observed_env)
-            if isinstance(observed_env, dict)
-            else [{"field": "environment", "comparable": False}]
-        )
-        if env_diffs is None or (diffs and not env_diffs):
-            env_diffs = diffs
-        run_reports.append(_classify_run(passport, response, same_environment=not diffs))
-    same_env = not env_diffs
+        env = compare_environments(passport["environment"], response.get("environment"))
+        if worst_env is None or _ENV_ORDER[env["status"]] > _ENV_ORDER[worst_env["status"]]:
+            worst_env = env
+        run_reports.append(_classify_run(passport, response, env))
+    assert worst_env is not None  # runs >= 1
+    env_status = worst_env["status"]
     outcomes = [r["outcome"] for r in run_reports]
     for verdict in ("integrity_mismatch", "execution_failure", "numerical_discrepancy"):
         if verdict in outcomes:
@@ -339,15 +450,28 @@ def replay(
         runs_completed=sum(1 for r in run_reports if r["worker_status"] == "ok"),
         runs=run_reports,
         verdict=verdict,
-        comparison_mode="same_environment_exact" if same_env else "cross_environment_numeric",
-        environment_differences=env_diffs,
+        comparison_mode=_COMPARISON_MODES[env_status],
+        environment={
+            **worst_env,
+            "run_status_counts": _counts(r["environment_status"] for r in run_reports),
+        },
+        environment_differences=[dict(d, comparable=True) for d in worst_env["differences"]]
+        + [dict(d, comparable=False) for d in worst_env["unverified_fields"]],
+        native_threads=_counts(r["threads"]["native_thread_status"]["status"] for r in run_reports),
         summary=_run_summary(run_reports),
     )
     if verdict == "integrity_mismatch":
         report["mismatch"] = next(r["mismatch"] for r in run_reports if "mismatch" in r)
-    report["checks"] = _report_checks(report, same_env)
+    report["checks"] = _report_checks(report, env_status)
     report["finished_utc"] = _now()
     return report
+
+
+def _counts(values: Any) -> dict[str, int]:
+    out: dict[str, int] = {}
+    for v in values:
+        out[str(v)] = out.get(str(v), 0) + 1
+    return dict(sorted(out.items()))
 
 
 def _run_summary(runs: list[dict[str, Any]]) -> dict[str, Any]:
@@ -358,12 +482,9 @@ def _run_summary(runs: list[dict[str, Any]]) -> dict[str, Any]:
             if isinstance(r["timing_seconds"].get(key), (int, float))
         ]
 
-    outcomes: dict[str, int] = {}
-    for r in runs:
-        outcomes[r["outcome"]] = outcomes.get(r["outcome"], 0) + 1
     hashes = {r["result_sha256"] for r in runs if "result_sha256" in r}
     return {
-        "outcome_counts": outcomes,
+        "outcome_counts": _counts(r["outcome"] for r in runs),
         "distinct_result_sha256": len(hashes),
         "distinct_run_ids": len({r["run_id"] for r in runs}),
         "timing_seconds": {
@@ -374,9 +495,14 @@ def _run_summary(runs: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def _report_checks(report: dict[str, Any], same_env: bool | None) -> list[dict[str, Any]]:
-    """Summary checks in the shared vocabulary. Unperformed checks are ``not_run``, never pass."""
+def _report_checks(report: dict[str, Any], env_status: str | None) -> list[dict[str, Any]]:
+    """Summary checks in the shared vocabulary. Unperformed checks are ``not_run``, never pass.
+
+    Every check that is about "every run" passes only if *all requested* runs completed and
+    satisfied it; agreement observed on a successful subset is reported as such, not as a pass.
+    """
     runs = report.get("runs", [])
+    n_requested = report.get("runs_requested", len(runs))
     passport_ok = all(c["status"] == "pass" for c in report["integrity"])
     checks = [
         check(
@@ -384,7 +510,8 @@ def _report_checks(report: dict[str, Any], same_env: bool | None) -> list[dict[s
             "exact",
             "integrity",
             "pass" if passport_ok else "fail",
-            "all digests stated in the passport recomputed",
+            "all digests stated in the passport recomputed and its record is internally "
+            "consistent (not authentication)",
         )
     ]
     if not runs:
@@ -392,24 +519,26 @@ def _report_checks(report: dict[str, Any], same_env: bool | None) -> list[dict[s
             ("dataset_identity", "exact", "integrity"),
             ("plan_identity", "exact", "integrity"),
             ("environment_match", "exact", "environment"),
+            ("native_thread_policy", "exact", "environment"),
             ("exact_replay", "exact", "repeatability"),
             ("numerical_agreement", "numeric", "cross_environment"),
         ):
             checks.append(check(cid, kind, ev, "not_run", "no replay was executed"))
     else:
+        ok_runs = [r for r in runs if r["worker_status"] == "ok"]
+        complete = len(ok_runs) == n_requested == len(runs)
         data_bad = any(r.get("mismatch") == "dataset" for r in runs)
         data_ok = all(
             r["dataset"]["raw_bytes_match"] and r["dataset"]["logical_dataset_match"] for r in runs
         )
         plan_bad = any(r.get("mismatch") == "plan" for r in runs)
-        plan_ok = all(r["worker_status"] == "ok" for r in runs)  # engine accepted the binding
         checks.append(
             check(
                 "dataset_identity",
                 "exact",
                 "integrity",
                 "fail" if data_bad else ("pass" if data_ok else "not_run"),
-                "data file bytes and typed dataset match the passport fingerprints",
+                "data file bytes and typed dataset match the passport fingerprints in every run",
             )
         )
         checks.append(
@@ -417,32 +546,53 @@ def _report_checks(report: dict[str, Any], same_env: bool | None) -> list[dict[s
                 "plan_identity",
                 "exact",
                 "integrity",
-                "fail" if plan_bad else ("pass" if plan_ok else "not_run"),
+                "fail" if plan_bad else ("pass" if complete else "not_run"),
                 "the engine accepted the passport's bound plan digest in every run",
             )
         )
+        env = report["environment"]
         checks.append(
             check(
                 "environment_match",
                 "exact",
                 "environment",
-                "pass" if same_env else "fail",
-                "comparable environment fields equal (unknown counts as different)",
+                {"verified_same": "pass", "different": "fail"}.get(env_status or "", "not_run"),
+                "every compared environment field observed on both sides and equal; unknown "
+                "counts as not verified, never as equal",
+                unverified_fields=[u["field"] for u in env["unverified_fields"]],
+                differing_fields=[d["field"] for d in env["differences"]],
             )
         )
-        ok_runs = [r for r in runs if r["worker_status"] == "ok"]
+        thread_states = [r["threads"]["native_thread_status"]["status"] for r in runs]
+        checks.append(
+            check(
+                "native_thread_policy",
+                "exact",
+                "environment",
+                "fail"
+                if "multi_threaded" in thread_states
+                else (
+                    "pass"
+                    if all(t == "verified_single_thread" for t in thread_states)
+                    else "not_run"
+                ),
+                "every worker verified one native thread for every library, NumPy's BLAS "
+                "included (a BLAS invisible to threadpoolctl, such as Accelerate, is unverified)",
+                run_status_counts=_counts(thread_states),
+            )
+        )
+        exact_required = env_status != "different"
         if not ok_runs:
             exact_status = numeric_status = "not_run"
-        elif same_env:
-            exact_status = "pass" if all(r["byte_identical"] for r in ok_runs) else "fail"
-            if len(ok_runs) < len(runs):
-                exact_status = "fail"
+        elif exact_required:
+            identical = complete and all(r["byte_identical"] for r in ok_runs)
+            exact_status = "pass" if identical else "fail"
             numeric_status = "not_applicable"
         else:
             exact_status = "not_applicable"
             numeric_status = (
                 "pass"
-                if len(ok_runs) == len(runs)
+                if complete
                 and all(r["outcome"] in ("exact_match", "numeric_agreement") for r in ok_runs)
                 else "fail"
             )
@@ -452,8 +602,11 @@ def _report_checks(report: dict[str, Any], same_env: bool | None) -> list[dict[s
                 "exact",
                 "repeatability",
                 exact_status,
-                "canonical result bytes identical in every run (same environment only)",
-                runs=len(runs),
+                "canonical result bytes identical in every requested run (required unless the "
+                "environments were observed to differ"
+                + ("; environment not fully verified)" if env_status == "unverified" else ")"),
+                runs_requested=n_requested,
+                runs_completed=len(ok_runs),
             )
         )
         checks.append(
@@ -462,19 +615,23 @@ def _report_checks(report: dict[str, Any], same_env: bool | None) -> list[dict[s
                 "numeric",
                 "cross_environment",
                 numeric_status,
-                f"per-operation criteria {CRITERIA_VERSION} (different environment only)",
+                f"per-operation criteria {CRITERIA_VERSION} (observed different environment only)",
             )
         )
         if report["reference"]["operation"] == "cluster" and ok_runs:
             same = [r["comparison"].get("partition", {}).get("same_partition") for r in ok_runs]
+            all_same = all(s is True for s in same)
             checks.append(
                 check(
                     "partition_identity",
                     "semantic",
-                    "repeatability" if same_env else "cross_environment",
-                    "pass" if all(s is True for s in same) else "fail",
-                    "membership sets of source rows equal; label numbering ignored; no "
-                    "global-optimum claim",
+                    "cross_environment" if env_status == "different" else "repeatability",
+                    "pass" if complete and all_same else "fail",
+                    "membership sets of source rows equal in every requested run; label "
+                    "numbering ignored; no global-optimum claim",
+                    runs_requested=n_requested,
+                    runs_compared=len(ok_runs),
+                    equal_in_compared_runs=all_same,
                 )
             )
     checks.append(
@@ -492,9 +649,13 @@ def _report_checks(report: dict[str, Any], same_env: bool | None) -> list[dict[s
 def compare_passports(reference: dict[str, Any], observed: dict[str, Any]) -> dict[str, Any]:
     """Compare two passports' results (for example macOS arm64 versus Windows x64).
 
-    Both passports are integrity-checked first. The inputs (raw bytes, typed dataset, plan) must be
-    identical, otherwise the comparison is an integrity mismatch and the results are not compared.
+    Both passports are validated (raises :class:`~axiom.passport.PassportError`) and
+    integrity-checked first. The inputs (raw bytes, typed dataset, plan) must be identical,
+    otherwise the comparison is an integrity mismatch and the results are not compared. Byte
+    identity is required unless the two environments were observed to differ.
     """
+    validate_passport(reference)
+    validate_passport(observed)
     report: dict[str, Any] = {
         "report_version": COMPARISON_VERSION,
         "criteria_version": CRITERIA_VERSION,
@@ -519,17 +680,22 @@ def compare_passports(reference: dict[str, Any], observed: dict[str, Any]) -> di
         report["verdict"] = "integrity_mismatch"
         report["mismatch"] = "inputs"
         return report
-    diffs = environment_differences(reference["environment"], observed["environment"])
-    report["environment_differences"] = diffs
-    report["comparison_mode"] = (
-        "same_environment_exact" if not diffs else "cross_environment_numeric"
-    )
+    env = compare_environments(reference["environment"], observed["environment"])
+    report["environment"] = env
+    report["environment_differences"] = [dict(d, comparable=True) for d in env["differences"]] + [
+        dict(d, comparable=False) for d in env["unverified_fields"]
+    ]
+    report["comparison_mode"] = _COMPARISON_MODES[env["status"]]
+    report["native_threads"] = {
+        "reference": native_thread_status(reference["environment"]),
+        "observed": native_thread_status(observed["environment"]),
+    }
     comparison = compare_cores(reference["result"], observed["result"])
     report["comparison"] = comparison
     report["byte_identical"] = comparison["byte_identical"]
     if comparison["byte_identical"]:
         report["verdict"] = "exact_match"
-    elif not diffs or comparison["verdict"] != "within_criteria":
+    elif env["status"] != "different" or comparison["verdict"] != "within_criteria":
         report["verdict"] = "numerical_discrepancy"
     else:
         report["verdict"] = "numeric_agreement"

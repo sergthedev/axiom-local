@@ -257,7 +257,20 @@ def capture_environment() -> dict[str, Any]:
     }
 
 
-def _field(env: dict[str, Any], path: tuple[str, ...]) -> Any:
+# Fields of the thread record compared as well (review B3): the variables set, the pools actually
+# observed (with their thread counts), the probe inside the fit's thread limit, and whether NumPy's
+# BLAS is visible at all.
+THREAD_FIELDS = (
+    ("threads", "environment_variables"),
+    ("threads", "detected_pools"),
+    ("threads", "fit_limit_probe"),
+    ("threads", "blas_thread_control"),
+)
+
+EQUAL, DIFFERENT, UNKNOWN = "equal", "different", "unknown"
+
+
+def _field(env: Any, path: tuple[str, ...]) -> Any:
     cur: Any = env
     for key in path:
         if not isinstance(cur, dict) or key not in cur:
@@ -266,23 +279,103 @@ def _field(env: dict[str, Any], path: tuple[str, ...]) -> Any:
     return cur
 
 
-def environment_differences(reference: dict[str, Any], other: dict[str, Any]) -> list[dict]:
-    """Fields of :data:`COMPARABLE_FIELDS` that differ, plus the effective thread-limit probe.
+def _is_unknown_leaf(path: tuple[str, ...], value: Any) -> bool:
+    """Observations that state that something is *not* known.
 
-    A field that is unavailable on either side is reported as a difference with
-    ``comparable=False``: unknown is never treated as equal.
+    An unavailable marker anywhere; ``None`` or ``"unknown"`` reported for a version or other
+    value (NumPy reports Accelerate's version as ``"unknown"``; threadpoolctl reports libomp's as
+    ``None``); a thread status starting with ``unverified``. In the thread-control variables
+    ``None`` is an observation ("not set"), not an unknown.
     """
-    paths = [*COMPARABLE_FIELDS, ("threads", "fit_limit_probe")]
-    diffs = []
-    for path in paths:
+    if is_unavailable(value):
+        return True
+    if path[:2] == ("threads", "environment_variables"):
+        return False
+    if value is None or value == "unknown":
+        return True
+    return path[:1] == ("threads",) and isinstance(value, str) and value.startswith("unverified")
+
+
+def _compare_values(path: tuple[str, ...], a: Any, b: Any) -> str:
+    """``equal``, ``different`` (both sides observed and unequal somewhere) or ``unknown``."""
+    if _is_unknown_leaf(path, a) or _is_unknown_leaf(path, b):
+        return UNKNOWN
+    if isinstance(a, dict) and isinstance(b, dict):
+        if set(a) != set(b):
+            return DIFFERENT
+        states = [_compare_values((*path, k), a[k], b[k]) for k in sorted(a)]
+    elif isinstance(a, list) and isinstance(b, list):
+        if len(a) != len(b):
+            return DIFFERENT
+        states = [_compare_values(path, x, y) for x, y in zip(a, b, strict=True)]
+    else:
+        return EQUAL if type(a) is type(b) and a == b else DIFFERENT
+    if DIFFERENT in states:
+        return DIFFERENT
+    return UNKNOWN if UNKNOWN in states else EQUAL
+
+
+def compare_environments(reference: Any, other: Any) -> dict[str, Any]:
+    """Classify two environment manifests for replay and comparison (ADR 0008, review B3).
+
+    ``status`` is:
+
+    * ``verified_same``: every compared field was observed on both sides and is equal;
+    * ``different``: at least one compared field was observed on both sides and differs;
+    * ``unverified``: nothing observed differs, but some field is unknown on at least one side
+      (for example a BLAS whose threads threadpoolctl cannot see). Unknown is never equal.
+
+    Only ``different`` permits the cross-environment numeric criteria; in the other two cases a
+    replay must still be byte-identical, so unknown metadata cannot weaken exact replay.
+    """
+    differences: list[dict[str, Any]] = []
+    unverified: list[dict[str, Any]] = []
+    for path in (*COMPARABLE_FIELDS, *THREAD_FIELDS):
         a, b = _field(reference, path), _field(other, path)
-        if is_unavailable(a) or is_unavailable(b) or a != b:
-            diffs.append(
-                {
-                    "field": ".".join(path),
-                    "reference": a,
-                    "observed": b,
-                    "comparable": not (is_unavailable(a) or is_unavailable(b)),
-                }
-            )
-    return diffs
+        state = _compare_values(path, a, b)
+        entry = {"field": ".".join(path), "reference": a, "observed": b}
+        if state == DIFFERENT:
+            differences.append(entry)
+        elif state == UNKNOWN:
+            unverified.append(entry)
+    status = "different" if differences else ("unverified" if unverified else "verified_same")
+    return {
+        "status": status,
+        "fields_compared": [".".join(p) for p in (*COMPARABLE_FIELDS, *THREAD_FIELDS)],
+        "differences": differences,
+        "unverified_fields": unverified,
+    }
+
+
+def environment_differences(reference: dict[str, Any], other: dict[str, Any]) -> list[dict]:
+    """Compared fields that differ or cannot be verified (``comparable=False``).
+
+    Empty only when :func:`compare_environments` reports ``verified_same``.
+    """
+    result = compare_environments(reference, other)
+    return [dict(d, comparable=True) for d in result["differences"]] + [
+        dict(d, comparable=False) for d in result["unverified_fields"]
+    ]
+
+
+def native_thread_status(environment: Any) -> dict[str, Any]:
+    """Whether single-threaded native execution was verified for *every* relevant library.
+
+    ``verified_single_thread`` only if threadpoolctl saw at least one pool, every pool reported one
+    thread inside the fit's limit, and NumPy's BLAS was among the introspectable pools. Apple
+    Accelerate is invisible to threadpoolctl, so on such a build the status is ``unverified``
+    with the reason, even when the OpenMP pool is verified (review B3).
+    """
+    threads = _field(environment, ("threads",))
+    if not isinstance(threads, dict):
+        return {"status": "unverified", "reason": "no thread record"}
+    pools = threads.get("detected_pools")
+    if not isinstance(pools, list) or not pools:
+        return {"status": "unverified", "reason": "no native pools observed"}
+    if any(isinstance(p, dict) and p.get("num_threads") != 1 for p in pools):
+        return {"status": "multi_threaded", "reason": "a detected pool reported more than 1 thread"}
+    if threads.get("fit_limit_probe") != "verified_single_thread":
+        return {"status": "unverified", "reason": "thread-limit probe not verified"}
+    if threads.get("blas_thread_control") != "introspectable":
+        return {"status": "unverified", "reason": str(threads.get("blas_thread_control"))}
+    return {"status": "verified_single_thread", "reason": "all detected pools at 1 thread"}

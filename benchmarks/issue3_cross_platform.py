@@ -8,9 +8,10 @@ Two modes, run from the repository root:
   with the reference using ``axiom.replay.compare_passports`` (criteria ``axiom.agreement/1``,
   fixed in ADR 0008 and the EXP-005 pre-registration before any comparison). Prints JSON.
 
-``--compare`` is report-only: it exits 0 whenever every comparison could be performed, whatever the
-verdicts, and 1 only if the script itself could not run a scenario. Verdicts must be read from the
-report; a green CI step is not numerical agreement.
+``--compare`` is report-only: it exits 0 whenever every requested comparison was performed,
+whatever the verdicts, and 1 if any scenario could not be compared (the report then says
+``"complete": false`` and lists each scenario's state). Verdicts must be read from the report; a
+green CI step is not numerical agreement.
 """
 
 from __future__ import annotations
@@ -25,6 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from issue3_common import file_sha256, git_state, scenarios  # noqa: E402
 
+from axiom.errors import AxiomError  # noqa: E402
 from axiom.passport import dumps_passport, loads_passport  # noqa: E402
 from axiom.replay import AnalysisFailed, analyze, compare_passports  # noqa: E402
 
@@ -44,27 +46,41 @@ def write_reference(directory: Path) -> None:
 
 def compare(directory: Path) -> int:
     rows = []
-    failed = 0
+    observed_env = reference_env = None
     with tempfile.TemporaryDirectory(prefix="axiom-exp005-") as tmp:
-        for sc in scenarios(Path(tmp)):
-            reference = loads_passport((directory / _name(sc["id"])).read_text(encoding="utf-8"))
-            row = {"scenario": sc["id"], "data_sha256": file_sha256(sc["data"])}
+        all_scenarios = scenarios(Path(tmp))
+        for sc in all_scenarios:
+            row = {"scenario": sc["id"], "data_sha256": file_sha256(sc["data"]), "compared": False}
+            rows.append(row)
             try:
+                reference = loads_passport((directory / _name(sc["id"])).read_bytes())
                 observed = analyze(sc["data"], sc["profile"], sc["plan"])
+                report = compare_passports(reference, observed)
             except AnalysisFailed as exc:
-                failed += 1
                 row.update(verdict="execution_failure", error=exc.response.get("error"))
-                rows.append(row)
                 continue
-            report = compare_passports(reference, observed)
+            except (AxiomError, OSError) as exc:
+                row.update(
+                    verdict="not_compared",
+                    error={"type": type(exc).__name__, "code": getattr(exc, "code", None)},
+                )
+                continue
+            observed_env, reference_env = observed["environment"], reference["environment"]
             comparison = report.get("comparison", {})
+            environment = report.get("environment") or {}
             row.update(
+                compared=True,
                 verdict=report["verdict"],
                 comparison_mode=report.get("comparison_mode"),
                 byte_identical=report.get("byte_identical"),
+                environment_status=environment.get("status"),
                 environment_fields_differing=[
-                    d["field"] for d in report.get("environment_differences") or []
+                    d["field"] for d in environment.get("differences", [])
                 ],
+                environment_fields_unverified=[
+                    d["field"] for d in environment.get("unverified_fields", [])
+                ],
+                native_threads=report.get("native_threads"),
                 n_float_fields=comparison.get("n_float_fields"),
                 n_float_fields_different=comparison.get("n_float_fields_different"),
                 max_ulp_distance=comparison.get("max_ulp_distance"),
@@ -76,15 +92,19 @@ def compare(directory: Path) -> int:
                 reference_result_sha256=reference["identity"]["result_sha256"],
                 observed_result_sha256=observed["identity"]["result_sha256"],
                 observed_threads=observed["environment"]["threads"],
+                observed_code=observed["environment"]["code"],
             )
-            rows.append(row)
-        env = observed["environment"] if rows and "observed" in locals() else None
+    n_compared = sum(1 for r in rows if r["compared"])
     report = {
-        "experiment": "EXP-005",
+        "experiment": "EXP-005 comparison script (also used by EXP-006)",
         "git": git_state(),
-        "observed_environment": env,
-        "reference_environment": reference["environment"],
+        "observed_environment": observed_env,
+        "reference_environment": reference_env,
         "scenarios": rows,
+        # A partial run must never read as complete: counts of requested and compared scenarios.
+        "scenarios_requested": len(all_scenarios),
+        "scenarios_compared": n_compared,
+        "complete": n_compared == len(all_scenarios),
         "verdict_counts": {
             v: sum(1 for r in rows if r["verdict"] == v)
             for v in sorted({r["verdict"] for r in rows})
@@ -92,7 +112,7 @@ def compare(directory: Path) -> int:
     }
     json.dump(report, sys.stdout, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False)
     sys.stdout.write("\n")
-    return 1 if failed else 0
+    return 0 if report["complete"] else 1
 
 
 def main() -> int:

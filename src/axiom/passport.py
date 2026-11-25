@@ -18,47 +18,32 @@ from __future__ import annotations
 import copy
 import dataclasses
 import json
+import math
 from typing import Any
 
 from pydantic import ValidationError
 
 from .canonical import SERIALIZER_VERSION, canonical_dumps, canonical_sha256
 from .engine import RESULT_SCHEMA_VERSION, AnalysisResult
-from .errors import AxiomError, PlanError
+from .errors import PlanError
 from .ingest import DATASET_FORMAT_VERSION, CsvProfile
 from .limits import Limits
+from .passport_schema import (
+    CHECK_KINDS,
+    CHECK_STATUSES,
+    EVIDENCE_TYPES,
+    PassportError,
+    passport_spec,
+    validate_document,
+)
 from .plan import PLAN_SCHEMA_VERSION, POLICY_VERSION, parse_plan_object, plan_sha256, plan_to_dict
 
 PASSPORT_VERSION = "axiom.passport/1"
 
-# Verification vocabulary (Issue #3 decision): kinds and statuses. ``not_run`` is never a pass.
-CHECK_KINDS = ("exact", "numeric", "semantic")
-CHECK_STATUSES = ("pass", "fail", "not_applicable", "not_run")
-# What a passing check is evidence of. Only ``independent_reference`` compares against an
-# independent method; the others are integrity, repeatability or internal consistency.
-EVIDENCE_TYPES = (
-    "integrity",
-    "environment",
-    "repeatability",
-    "cross_environment",
-    "internal_consistency",
-    "independent_reference",
-)
-
-_TOP_LEVEL = {
-    "passport_version",
-    "identity",
-    "inputs",
-    "result",
-    "environment",
-    "execution",
-    "verification",
-    "passport_sha256",
-}
-
-
-class PassportError(AxiomError):
-    """A passport file is malformed or fails an integrity check."""
+# Upper bound on passport text read or parsed (review B1). A passport embeds the full result core;
+# the largest one the default limits allow (K-means on 1,000,000 rows: two per-row integer lists,
+# pretty-printed) is about 30 MB, so 64 MiB leaves a margin. Larger text is rejected unparsed.
+MAX_PASSPORT_BYTES = 64 * 1024 * 1024
 
 
 def check(
@@ -184,7 +169,7 @@ def build_passport(
         "verification": creation_checks(core),
     }
     passport["passport_sha256"] = passport_digest(passport)
-    return passport
+    return validate_passport(passport)  # never issue a passport that would be rejected on reading
 
 
 def passport_digest(passport: dict[str, Any]) -> str:
@@ -211,38 +196,70 @@ def _reject_constant(name: str) -> Any:
     raise PassportError("invalid_passport", f"{name} is not allowed in passport JSON")
 
 
-def loads_passport(text: str) -> dict[str, Any]:
-    """Parse passport JSON strictly (no duplicate keys, no NaN/Infinity) and check its shape."""
+def _finite_float(text: str) -> float:
+    value = float(text)
+    if not math.isfinite(value):  # e.g. 1e999, which float() turns into infinity
+        raise PassportError("invalid_passport", "number out of binary64 range in passport JSON")
+    return value
+
+
+def validate_passport(passport: Any) -> dict[str, Any]:
+    """Check the complete structure of a passport object (strict; see :mod:`.passport_schema`).
+
+    Raises :class:`PassportError` with a stable code: ``unsupported_passport_version`` or
+    ``invalid_passport`` (naming the first offending field). Shape only: cross-field consistency
+    and digests are :func:`integrity_checks`. Passing this is not authentication.
+    """
+    if isinstance(passport, dict) and "passport_version" in passport:
+        version = passport["passport_version"]
+        if version != PASSPORT_VERSION:
+            raise PassportError(
+                "unsupported_passport_version",
+                "passport version is not supported",
+                found=version if isinstance(version, str) else None,
+            )
+    validate_document(passport, passport_spec(PASSPORT_VERSION), "passport")
+    return passport
+
+
+def loads_passport(text: str | bytes, *, max_bytes: int = MAX_PASSPORT_BYTES) -> dict[str, Any]:
+    """Parse passport JSON strictly and validate its complete structure.
+
+    Text longer than ``max_bytes`` (UTF-8) is rejected before parsing. Duplicate keys, ``NaN``,
+    ``Infinity`` and numbers outside the binary64 range are rejected.
+    """
+    raw = text.encode("utf-8") if isinstance(text, str) else text
+    if len(raw) > max_bytes:
+        raise PassportError(
+            "passport_too_large", "passport exceeds the size limit", limit=max_bytes
+        )
     try:
         data = json.loads(
-            text, object_pairs_hook=_reject_duplicates, parse_constant=_reject_constant
+            raw.decode("utf-8"),
+            object_pairs_hook=_reject_duplicates,
+            parse_constant=_reject_constant,
+            parse_float=_finite_float,
         )
+    except PassportError:
+        raise
     except json.JSONDecodeError as exc:
         raise PassportError("invalid_passport", "passport is not valid JSON") from exc
-    except (RecursionError, ValueError) as exc:
+    except (RecursionError, ValueError) as exc:  # includes UnicodeDecodeError, huge integers
         raise PassportError(
             "invalid_passport", f"passport rejected ({type(exc).__name__})"
         ) from exc
-    if not isinstance(data, dict) or set(data) != _TOP_LEVEL:
-        raise PassportError("invalid_passport", "passport has missing or unknown top-level fields")
-    if data["passport_version"] != PASSPORT_VERSION:
-        raise PassportError(
-            "unsupported_passport_version",
-            "passport version is not supported",
-            found=data["passport_version"],
-        )
-    for key in ("identity", "inputs", "result", "environment", "execution"):
-        if not isinstance(data[key], dict):
-            raise PassportError("invalid_passport", f"passport field {key!r} must be an object")
-    return data
+    return validate_passport(data)
 
 
 def integrity_checks(passport: dict[str, Any]) -> list[dict[str, Any]]:
-    """Recompute every digest a passport states, without the data file.
+    """Recompute every digest a passport states and check its internal consistency, without data.
 
+    The structure is validated first (:func:`validate_passport`; raises :class:`PassportError`).
     Returns one check per item; any ``fail`` means the passport was altered or is inconsistent,
-    which is an integrity mismatch, not a numerical discrepancy.
+    which is an integrity mismatch, not a numerical discrepancy. Passing every check is not
+    authentication: a consistently re-sealed forgery passes and is exposed only by recomputation.
     """
+    validate_passport(passport)
     out: list[dict[str, Any]] = []
 
     def add(check_id: str, ok: bool, detail: str) -> None:
@@ -251,43 +268,188 @@ def integrity_checks(passport: dict[str, Any]) -> list[dict[str, Any]]:
 
     add(
         "passport_digest",
-        passport.get("passport_sha256") == passport_digest(passport),
+        passport["passport_sha256"] == passport_digest(passport),
         "passport_sha256 equals the digest of the canonical passport body",
     )
     identity, inputs, core = passport["identity"], passport["inputs"], passport["result"]
+    add(
+        "result_digest",
+        canonical_sha256(core) == identity["result_sha256"],
+        "embedded result core hashes to identity.result_sha256",
+    )
     try:
-        result_ok = canonical_sha256(core) == identity.get("result_sha256")
-    except (TypeError, ValueError):
-        result_ok = False
-    add("result_digest", result_ok, "embedded result core hashes to identity.result_sha256")
-    try:
-        plan = parse_plan_object(inputs.get("plan"))
+        plan = parse_plan_object(inputs["plan"])
         plan_ok = (
-            plan_sha256(plan) == identity.get("plan_sha256")
-            and plan_to_dict(plan) == inputs.get("plan")
-            and identity.get("policy_version") == POLICY_VERSION
+            plan_sha256(plan) == identity["plan_sha256"]
+            and plan_to_dict(plan) == inputs["plan"]
+            and plan.operation == core["operation"]
         )
     except PlanError:
         plan_ok = False
-    add("plan_digest", plan_ok, "embedded plan is valid, explicit and hashes to plan_sha256")
-    core_inputs = core.get("inputs", {}) if isinstance(core.get("inputs"), dict) else {}
-    consistent = (
-        core_inputs.get("raw_sha256") == identity.get("raw_sha256")
-        and core_inputs.get("dataset_sha256") == identity.get("dataset_sha256")
-        and core_inputs.get("plan_sha256") == identity.get("plan_sha256")
-        and core.get("plan") == inputs.get("plan")
-        and core.get("schema_version") == RESULT_SCHEMA_VERSION
-        and core.get("serializer") == SERIALIZER_VERSION
+    add(
+        "plan_digest",
+        plan_ok,
+        "embedded plan is valid, explicit, hashes to plan_sha256 and names the result's operation",
     )
-    add("identity_consistency", consistent, "identities agree with those inside the result core")
+    core_inputs = core["inputs"]
+    consistent = (
+        core_inputs["raw_sha256"] == identity["raw_sha256"]
+        and core_inputs["dataset_sha256"] == identity["dataset_sha256"]
+        and core_inputs["plan_sha256"] == identity["plan_sha256"]
+        and core_inputs["n_rows"] == inputs["n_rows"]
+        and core["plan"] == inputs["plan"]
+        and core["policy_version"] == identity["policy_version"]
+        and core["schema_version"] == identity["result_schema"] == RESULT_SCHEMA_VERSION
+        and core["serializer"] == identity["serializer"] == SERIALIZER_VERSION
+        and identity["dataset_format"] == DATASET_FORMAT_VERSION
+        and identity["plan_schema"] == PLAN_SCHEMA_VERSION
+        and identity["policy_version"] == POLICY_VERSION
+    )
+    add(
+        "identity_consistency",
+        consistent,
+        "identities, versions and row count agree with those inside the result core",
+    )
     try:
-        profile_from_dict(inputs.get("csv_profile"))
-        limits_from_dict(inputs.get("limits"))
-        inputs_ok = True
+        profile_from_dict(inputs["csv_profile"])
+        limits = limits_from_dict(inputs["limits"])
     except PassportError:
-        inputs_ok = False
-    add("replay_inputs_valid", inputs_ok, "CSV profile and limits can be reconstructed")
+        limits = None
+    add("replay_inputs_valid", limits is not None, "CSV profile and limits can be reconstructed")
+    problems = result_problems(core, limits) if limits is not None else ["limits are not valid"]
+    out.append(
+        check(
+            "result_consistency",
+            "exact",
+            "integrity",
+            "fail" if problems else "pass",
+            "counts, row ordinals, plan fields and cluster sizes in the result agree with each "
+            "other (internal consistency of the record, not correctness of the numbers)",
+            problems=problems[:10],
+        )
+    )
+    add(
+        "verification_record",
+        passport["verification"] == creation_checks(core),
+        "recorded verification is exactly what axiom.passport/1 records at creation; it is a "
+        "historical record and was not performed again here",
+    )
     return out
+
+
+def _stats_consistent(entry: dict[str, Any]) -> bool:
+    """A statistic is either a number or has an undefined reason, never both or neither."""
+    stats, undefined = entry["stats"], entry["undefined"]
+    return set(undefined) == {k for k, v in stats.items() if v is None}
+
+
+def _ordinals_consistent(ordinals: list[int], truncated: bool, n: int, cap: int) -> bool:
+    return (
+        len(ordinals) == min(n, cap)
+        and truncated == (n > cap)
+        and ordinals == sorted(set(ordinals))
+        and all(o >= 1 for o in ordinals)
+    )
+
+
+def result_problems(core: dict[str, Any], limits: Limits) -> list[str]:
+    """Internal-consistency problems of a structurally valid result core (empty if none)."""
+    op, plan, res = core["operation"], core["plan"], core["result"]
+    n_rows = core["inputs"]["n_rows"]
+    cap = limits.max_reported_ordinals
+    kinds = {c["name"]: c["kind"] for c in core["inputs"]["columns"]}
+    p: list[str] = []
+
+    def need(ok: bool, what: str) -> None:
+        if not ok:
+            p.append(what)
+
+    if op == "inspect":
+        need(res["n_rows"] == n_rows, "n_rows")
+        need([c["name"] for c in res["columns"]] == plan.get("columns"), "columns != plan")
+        for c in res["columns"]:
+            need(c["n_total"] == n_rows, f"column {c['name']!r} n_total")
+            need(c["n_valid"] + c["n_missing"] == c["n_total"], f"column {c['name']!r} counts")
+            need(kinds.get(c["name"]) == c["kind"], f"column {c['name']!r} kind")
+            if c["kind"] == "numeric":
+                need(_stats_consistent(c), f"column {c['name']!r} stats/undefined")
+    elif op == "relate":
+        for key in ("x", "y", "method"):
+            need(res[key] == plan.get(key), f"{key} != plan")
+        need(res["n_rows_total"] == n_rows, "n_rows_total")
+        need(res["n_used"] + res["n_excluded"] == n_rows, "n_used + n_excluded")
+        need(
+            res["excluded_missing_x_only"]
+            + res["excluded_missing_y_only"]
+            + res["excluded_missing_both"]
+            == res["n_excluded"],
+            "excluded counts",
+        )
+        ex = res["excluded"]
+        need(
+            _ordinals_consistent(
+                ex["row_ordinals"], ex["row_ordinals_truncated"], res["n_excluded"], cap
+            ),
+            "excluded row ordinals",
+        )
+        need((res["coefficient"] is None) != (res["undefined"] is None), "coefficient/undefined")
+        need(res["coefficient"] is None or abs(res["coefficient"]) <= 1.0, "coefficient range")
+    elif op == "compare":
+        need(res["group_by"] == plan.get("group_by"), "group_by != plan")
+        need(res["measure"] == plan.get("measure"), "measure != plan")
+        need(res["n_rows_total"] == n_rows, "n_rows_total")
+        need(res["n_groups"] == len(res["groups"]), "n_groups")
+        keys = [g["key"] for g in res["groups"]]
+        need(keys == sorted(set(keys)), "group keys not unique and ordered")
+        need(
+            sum(g["n_total"] for g in res["groups"]) + res["n_missing_group_key"] == n_rows,
+            "group totals",
+        )
+        for g in res["groups"]:
+            need(g["n_valid"] + g["n_missing"] == g["n_total"], f"group {g['key']!r} counts")
+            need(_stats_consistent(g), f"group {g['key']!r} stats/undefined")
+        mk = res["missing_group_key"]
+        need(
+            _ordinals_consistent(
+                mk["row_ordinals"], mk["row_ordinals_truncated"], res["n_missing_group_key"], cap
+            ),
+            "missing group key ordinals",
+        )
+    elif op == "cluster":
+        features, k = res["features"], res["k"]
+        need(features == plan.get("features"), "features != plan")
+        need(k == plan.get("k"), "k != plan")
+        need(res["scaler"]["kind"] == plan.get("scaling"), "scaler kind != plan")
+        solver = res["solver"]
+        for key in ("init", "algorithm", "seed", "n_init", "max_iter", "tol"):
+            need(solver[key] == plan.get(key), f"solver {key} != plan")
+        need(res["n_rows_total"] == n_rows, "n_rows_total")
+        need(res["n_eligible"] + res["n_excluded"] == n_rows, "n_eligible + n_excluded")
+        need(
+            _ordinals_consistent(
+                res["excluded_row_ordinals"],
+                res["excluded_row_ordinals_truncated"],
+                res["n_excluded"],
+                cap,
+            ),
+            "excluded row ordinals",
+        )
+        eligible, labels = res["eligible_row_ordinals"], res["assignments"]
+        need(len(eligible) == len(labels) == res["n_eligible"], "assignment count")
+        need(eligible == sorted(set(eligible)) and all(o >= 1 for o in eligible), "eligible rows")
+        need([c["id"] for c in res["clusters"]] == list(range(k)), "cluster ids")
+        need(all(0 <= label < k for label in labels), "assignment labels")
+        sizes = [0] * k
+        for label in labels:
+            if 0 <= label < k:
+                sizes[label] += 1
+        need([c["size"] for c in res["clusters"]] == sizes, "cluster sizes")
+        width = len(features)
+        need(len(res["scaler"]["mean"]) == len(res["scaler"]["scale"]) == width, "scaler width")
+        for c in res["clusters"]:
+            need(len(c["centroid_standardized"]) == width, f"cluster {c['id']} centroid width")
+            need(set(c["original_units"]) == set(features), f"cluster {c['id']} features")
+    return p
 
 
 def result_from_passport(passport: dict[str, Any]) -> AnalysisResult:

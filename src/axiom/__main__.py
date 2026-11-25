@@ -16,7 +16,13 @@ from typing import Any
 from .environment import capture_environment
 from .errors import AxiomError
 from .limits import DEFAULT_LIMITS
-from .passport import dumps_passport, loads_passport, profile_from_dict
+from .passport import (
+    MAX_PASSPORT_BYTES,
+    PassportError,
+    dumps_passport,
+    loads_passport,
+    profile_from_dict,
+)
 from .plan import parse_plan_json
 from .replay import AnalysisFailed, analyze, compare_passports, replay
 
@@ -32,7 +38,14 @@ def _write(obj: Any, out: str | None) -> None:
 
 
 def _read_passport(path: str) -> dict[str, Any]:
-    return loads_passport(Path(path).read_text(encoding="utf-8"))
+    """Read a passport file without loading more than the size limit into memory."""
+    with open(path, "rb") as handle:
+        data = handle.read(MAX_PASSPORT_BYTES + 1)
+    if len(data) > MAX_PASSPORT_BYTES:
+        raise PassportError(
+            "passport_too_large", "passport exceeds the size limit", limit=MAX_PASSPORT_BYTES
+        )
+    return loads_passport(data)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -76,8 +89,6 @@ def main(argv: list[str] | None = None) -> int:
                 sys.stdout.write(text)
             return 0
         if args.command == "replay":
-            if args.runs < 1:
-                raise ValueError("--runs must be >= 1")
             report = replay(
                 _read_passport(args.passport), args.data, runs=args.runs, timeout=args.timeout
             )

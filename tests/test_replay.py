@@ -30,6 +30,10 @@ from axiom.replay import (
     run_worker,
 )
 
+# Byte identity is required in both: environment verified equal, or nothing observed to differ but
+# some field unknown (on Apple Silicon NumPy's Accelerate BLAS is invisible to threadpoolctl).
+EXACT_MODES = ("same_environment_exact", "exact_environment_unverified")
+
 
 @pytest.fixture(scope="module")
 def passports() -> dict[str, dict]:
@@ -83,7 +87,7 @@ def test_analysis_failure_issues_no_passport(tmp_path) -> None:
 def test_replay_in_fresh_processes_is_byte_identical(passports) -> None:
     report = replay(passports["cluster"], DATA, runs=2)
     assert report["verdict"] == "exact_match"
-    assert report["comparison_mode"] == "same_environment_exact"
+    assert report["comparison_mode"] in EXACT_MODES
     assert report["summary"]["distinct_result_sha256"] == 1
     assert report["summary"]["distinct_run_ids"] == 2
     assert report["runs_completed"] == 2
@@ -200,12 +204,25 @@ def test_stale_plan_digest_stops_replay_before_any_execution(passports) -> None:
     assert all(checks[c] == "not_run" for c in ("exact_replay", "numerical_agreement"))
 
 
-def test_consistently_forged_plan_is_exposed_by_recomputation(passports) -> None:
+def test_forged_plan_with_inconsistent_result_fails_integrity_without_execution(passports) -> None:
     p = copy.deepcopy(passports["cluster"])
     p["inputs"]["plan"]["k"] = 4
     p["result"]["plan"]["k"] = 4
     forged = reseal(p, plan_too=True)  # every digest is consistent: digests are not signatures
-    assert all(c["status"] == "pass" for c in integrity_checks(forged))
+    statuses = {c["id"]: c["status"] for c in integrity_checks(forged)}
+    assert statuses["plan_digest"] == "pass" and statuses["result_consistency"] == "fail"
+    report = replay(forged, DATA)
+    assert report["verdict"] == "integrity_mismatch" and report["runs"] == []
+
+
+def test_consistently_forged_result_is_exposed_only_by_recomputation(passports) -> None:
+    p = copy.deepcopy(passports["cluster"])
+    labels = p["result"]["result"]["assignments"]
+    i = labels.index(0)
+    j = labels.index(1)
+    labels[i], labels[j] = 1, 0  # same cluster sizes: internally consistent, different partition
+    forged = reseal(p)
+    assert all(c["status"] == "pass" for c in integrity_checks(forged))  # not authentication
     report = replay(forged, DATA)
     assert report["verdict"] == "numerical_discrepancy"
     comparison = report["runs"][0]["comparison"]
@@ -223,7 +240,7 @@ def _forge_mean(passport: dict, steps: int) -> dict:
 
 def test_same_environment_requires_exact_bytes_not_tolerance(passports) -> None:
     report = replay(_forge_mean(passports["inspect"], 1), DATA)
-    assert report["comparison_mode"] == "same_environment_exact"
+    assert report["comparison_mode"] in EXACT_MODES
     assert report["verdict"] == "numerical_discrepancy"
     assert report["runs"][0]["comparison"]["verdict"] == "within_criteria"  # but not exact
     checks = _checks(report)
@@ -236,7 +253,7 @@ def test_different_environment_uses_numeric_criteria_and_reports_the_difference(
     p = reseal(p)
     report = replay(p, DATA)
     assert report["comparison_mode"] == "cross_environment_numeric"
-    assert [d["field"] for d in report["environment_differences"]] == ["packages"]
+    assert [d["field"] for d in report["environment"]["differences"]] == ["packages"]
     assert report["verdict"] == "numeric_agreement"
     checks = _checks(report)
     assert checks["environment_match"] == "fail"

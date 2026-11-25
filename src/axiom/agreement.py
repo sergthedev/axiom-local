@@ -68,6 +68,16 @@ def ulp_distance(a: float, b: float) -> int:
     return abs(key(a) - key(b))
 
 
+def abs_difference(a: float, b: float) -> float | None:
+    """``|a - b|`` as a finite float, or ``None`` when it exceeds the binary64 range.
+
+    Two finite values of opposite sign near the largest float differ by more than the largest
+    float; the difference would be infinity, which JSON reports cannot carry (review B2).
+    """
+    diff = abs(a - b)
+    return diff if math.isfinite(diff) else None
+
+
 def _is_diagnostic(operation: str, path: tuple[str, ...]) -> bool:
     """Reported but not gating: the iteration count and the Lloyd label fixed-point flag."""
     return operation == "cluster" and (
@@ -103,6 +113,8 @@ def _rule_for(operation: str, path: tuple[str, ...]) -> Rule:
 def _within(rule: Rule, a: float, b: float, ctx: dict[str, Any], index: int | None) -> bool:
     if rule is EXACT:
         return a == b
+    if abs_difference(a, b) is None:
+        return False  # beyond the float range: outside every tolerance below
     if rule is ULP2:
         return ulp_distance(a, b) <= DESCRIPTIVE_MAX_ULP
     if rule is CORR:
@@ -194,7 +206,7 @@ def compare_cores(reference: dict[str, Any], observed: dict[str, Any]) -> dict[s
                 "gating": rule.gating,
                 "reference": a,
                 "observed": b,
-                "abs_diff": abs(a - b),
+                "abs_diff": abs_difference(a, b),  # None: exceeds the binary64 range
                 "ulp_distance": ulp_distance(a, b),
                 "within": ok,
             }
@@ -216,7 +228,11 @@ def compare_cores(reference: dict[str, Any], observed: dict[str, Any]) -> dict[s
         "n_float_fields": n_float,
         "n_float_fields_different": len(fields),
         "max_ulp_distance": max((f["ulp_distance"] for f in fields), default=0),
-        "max_abs_diff": max((f["abs_diff"] for f in fields), default=0.0),
+        "max_abs_diff": (
+            None
+            if any(f["abs_diff"] is None for f in fields)
+            else max((f["abs_diff"] for f in fields), default=0.0)
+        ),
         "non_float_differences": structural,
         "field_differences": fields,
         "n_gating_failures": len(gating_failures) + len(gating_nonfloat),
