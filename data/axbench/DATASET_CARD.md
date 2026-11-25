@@ -13,7 +13,7 @@ all numbers are computed by the AXIOM Core engine after a confirmed plan.
 | Final test split | 360 examples, **not in the repository**; generated and sealed by the owner |
 | Languages per split | Turkish 40 %, English 40 %, code-switched (mixed) 20 % (test: 144/144/72) |
 | Authoring | Templates, schema families and labels written by the implementing AI tool |
-| Human review | **None so far.** A 54-example Turkish batch awaits owner review (`review/`) |
+| Human review | **None so far.** A 54-example Turkish batch awaits owner review (`review/`); an AI pre-review of that batch exists (`review/AI_PRE_REVIEW_FLAGS.md`) and is **not** a human review |
 | Licence | Same as the repository (MIT); fully synthetic, no personal data |
 | Decision record | [ADR 0011](../../docs/decisions/0011-axbench-benchmark-metrics-and-sealing.md) |
 
@@ -96,12 +96,30 @@ The primary endpoint is semantic exact match of the raw candidate against the fr
 on the full denominator (timeouts, crashes, invalid JSON and invalid candidates count as wrong).
 Equivalence: inspect column set; relate unordered pair plus method; compare by role; cluster
 ordered features plus `k`; CLARIFY/REJECT action plus reason. See `src/axbench/score.py` and
-ADR 0011 for secondary metrics and the Guard layer.
+ADR 0011 for secondary metrics and the Guard layer. Since scorer `axbench.score/0.2`, only a
+semantically valid candidate can match or earn action, operation, slot or reason credit.
+
+## Versions and freezing
+
+Every AXBENCH command except `generate` reads train and validation from a committed corpus
+directory and verifies the SHA-256 and counts in its `MANIFEST.json`; nothing else regenerates the
+splits from templates. A frozen version is made from a parent version:
+
+```bash
+python -m axbench freeze --corpus data/axbench/v0.1-draft --out data/axbench/<version> --version <version> [--decisions <filled review CSV> --reviewer owner --human-review]
+```
+
+Decisions are `approve`, `correct` (a `corrected_gold` candidate JSON and/or a `corrected_request`)
+or `reject` (the example is removed). Only a human reviewer's decisions may be applied, and only
+examples with a decision are labelled `human_review: "owner_reviewed"`; the manifest records the
+exact counts by split and decision. Labels are revalidated and the audit rerun before anything is
+written. Model experiments (EXP-009 onwards) use a frozen version, never this draft.
 
 ## Splits, leakage and audit
 
-`python -m axbench audit` regenerates all three splits in memory (the test split with the public
-development seed, never written to disk) and checks: valid gold labels; no lineage or normalized
+`python -m axbench audit` reads the committed train and validation files (verified against the
+manifest) and generates a test split in memory with the public development seed (never written to
+disk); it checks: valid gold labels; no lineage or normalized
 text shared across splits; no connected component of the lineage/text graph spanning splits;
 held-out families and novel instances absent from train; 4-gram Jaccard near-duplicates at or
 above 0.8 across splits. `AUDIT.json` holds the current report (it passes; the largest cross-split
@@ -114,15 +132,21 @@ The committed code can regenerate a *development* test split from a public seed;
 used only for the audit and for tests. The final test split is created by the owner:
 
 ```bash
-python -m axbench seal --out <directory outside the repository> --seed-file <private seed file> [--owner-lineages <file>]
+python -m axbench seal --corpus <frozen corpus directory> --out <directory outside the repository> --seed-file <private seed file> [--owner-lineages <file>]
 ```
 
-The command refuses a directory inside the repository, a non-empty directory or a seed shorter
-than 16 characters, writes `test.jsonl` and `SEAL.json`, and re-runs the audit. Only `SEAL.json`
-(hashes, counts, generator commit, audit result, no texts) is published before the final run.
+The owner runs this command personally, outside any AI tool session. It refuses a corpus that is
+not a verified frozen version, a directory inside the repository, a non-empty directory or a seed
+shorter than 16 characters. It audits all three splits **before** writing and writes nothing if the
+audit fails; otherwise it writes `test.jsonl` and `SEAL.json`. Only `SEAL.json` (test, seed and
+development-corpus hashes, counts, generator commit, owner-lineage counts, no texts) is published
+before the final run. The seed, the owner lineage file and `test.jsonl` stay outside the repository
+and outside any AI tool's context; the seed is never posted in chat, issues or pull requests.
 `--owner-lineages` adds test lineages written by the owner (a JSON list of
-`{id, frame, tr, en, mix?, hint?, method?}`); these are the only test material the implementing
-tool has not seen.
+`{id, frame, tr, en, mix?, hint?, method?}`). Examples drawn from them are labelled
+`owner_template_ai_rendered`: the owner wrote the template, the generator rendered the example, and
+no human reviewed the rendered example. `SEAL.json` counts how many owner lineages were used and how
+many examples each produced.
 
 ## Known limitations
 
@@ -130,11 +154,14 @@ tool has not seen.
   lineages, which are visible in `lineages.py`), the labeling rules and the rule baseline. The
   rule baseline was developed on train only and a mechanical audit removes vocabulary that occurs
   only in held-out templates (`contamination.py`), but the author knew the held-out phrasings.
-  Owner-authored test lineages and an owner-chosen seed are the proposed mitigation.
+  The owner's private seed hides *which* examples are drawn, not the test templates themselves:
+  test examples rendered from repository lineages are not blind to the implementing tool. Only
+  owner-written lineages that the tool never sees reduce this, and only for their own examples.
 * **Synthetic language.** Template paraphrases are less varied than real user requests; perfect
   train scores show template learnability, not language understanding.
 * **Unreviewed labels.** No human has reviewed any example yet. Owner decisions on the review
-  batch will be recorded with their actual counts; the corpus is not frozen until then.
+  batch will be applied with `freeze` and recorded with their actual counts; this draft is not
+  frozen. AI review (including the lead's AI pre-review flags) is never counted as human review.
 * **Single-turn only**; no conversation state, no data values, no mixed-type or date columns.
 * **Small held-out families** (2 validation, 3 test): family-level generalization estimates are
   coarse; examples within a lineage, instance or family are correlated, so IID intervals are

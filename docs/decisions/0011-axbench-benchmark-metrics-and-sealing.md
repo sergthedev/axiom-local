@@ -71,6 +71,52 @@ at least 95 %; false rejection on gold PLAN at most 5 %; clarify recall at least
 below 2 % of all cases; zero observed unauthorized dispatches; severe systematic errors block regardless of
 aggregates.
 
+### Revision 2 (PR #8 review response)
+
+The review of revision 1 found that a semantically invalid candidate could count as exact, that macro F1 dropped a
+supported class without predicted positives, that duplicate prediction ids silently overwrote each other, that every
+consumer regenerated the corpus from templates (so an owner correction could not reach it) and that the seal wrote
+its files after a failed audit. Each was reproduced on `51a6a3a` before the fix (development log).
+
+**Scorer `axbench.score/0.2` and harness `axbench.evaluate/0.2`.** A match requires a semantically valid candidate
+(any accepted variant still counts); action, operation, slot and reason metrics credit only semantically valid
+candidates, so an invalid prediction is wrong everywhere; `raw_action_recognition` separately reports the action of
+any schema-valid candidate. Per-class precision and F1 use zero for an undefined ratio when the class has gold
+support, so a supported class with no predicted positives enters the macro F1 as 0; a class without gold support is
+listed under `action_macro_f1_classes.excluded_no_gold_support`. Prediction files must match the examples one to
+one: duplicate, unknown or id-less predictions raise an error (missing ones still count as errors). The after-Guard
+layer opens a Guard request context per example (ADR 0010 revision 2) and counts an awaiting-confirmation preview as
+correct when it matches the gold label or an accepted variant, the same rule as the raw exact match. Tests:
+`tests/test_score_v02.py`. EXP-008 stays as recorded under 0.1 at its commit; EXP-011 rescored its 160 committed
+predictions under 0.2 and found no metric changed (all 160 outputs are semantically valid, every class was predicted
+and no example has accepted variants).
+
+**Frozen corpus versions** (`src/axbench/corpus.py`). Every command except `generate` (audit, review batch, rules,
+score, MLX export, token lengths, seal) loads train and validation from a committed corpus directory whose
+`MANIFEST.json` SHA-256 and counts are verified; nothing else regenerates them. `python -m axbench freeze` derives a
+new frozen version from a parent and can apply a human reviewer's decision ledger (the filled review CSV: `approve`,
+`correct` with a corrected gold label and/or request, or `reject`, which removes the example). The command refuses a
+ledger unless the reviewer is named and the review attested as human (`--human-review`): an AI review is not a
+decision. Only examples with a decision get `human_review: "owner_reviewed"` (with the original gold or request kept
+in provenance); all others stay `"none"`. The manifest records the parent hashes, the ledger hash, the exact counts by
+split and decision and the removed ids; reviewer notes are not copied. Labels are revalidated, the train/validation
+audit is rerun, and nothing is written unless everything passes. Gold labels and hashes are therefore fixed in a
+frozen version before any model prediction on it. Tests: `tests/test_corpus_freeze.py`, with synthetic ledgers only.
+
+**Seal `axbench.seal/0.2`.** Requires a frozen corpus directory, verifies it and records its manifest and file
+hashes in `SEAL.json`; checks unique owner lineage ids; runs the three-split audit **before** writing and writes
+nothing (the directory is not even created) when the audit fails; labels examples drawn from owner lineages
+`owner_template_ai_rendered` with `human_review: "none"` (the owner wrote the template, the generator rendered the
+example) and reports owner lineages supplied, used, examples per lineage and examples from repository lineages. The
+owner runs the seal outside any AI tool session; the seed, the owner lineage file, `test.jsonl` and the owner's
+private requests and labels stay outside the repository and outside any AI tool's context, and the seed is never
+posted in chat, issues or pull requests.
+
+**Blindness.** A private seed hides which examples are drawn, not the content of the repository test lineages: their
+templates are in the repository and were written by the implementing tool, so test examples rendered from them are
+not blind to it. Only owner-written lineages that the tool never sees are blind in that sense, and their rendered
+examples are still not human-reviewed.
+
 ## Tradeoffs and consequences
 
 - The benchmark is synthetic and was written by the same AI tool that wrote the rule baseline and will run the
@@ -79,6 +125,8 @@ aggregates.
 - Template learnability: the rule baseline scores 400 of 400 on train and 72 of 160 on validation (EXP-008).
 - With 24 validation lineages, cluster-level uncertainty is wide; small differences between systems will not be
   resolvable.
+- Owner corrections now require a new frozen version and a rerun of every experiment that should use them; results
+  on different corpus versions are not compared directly.
 - The perturbation suite (schema order and id permutations, 40-60 pairs) and shortlist recall are not implemented
   (P1).
 

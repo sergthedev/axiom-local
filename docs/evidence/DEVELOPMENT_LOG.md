@@ -431,3 +431,30 @@ for a comprehensive final audit of AXIOM Verify.
   Both are recorded in ADR 0012 and EXP-010; neither has been measured with the tokenizer yet.
 - CI run [45705966013](https://github.com/sergthedev/axiom-local/actions/runs/45705966013) on `e0c91bd`: macOS and
   Windows passed (tests, lint, format, report-only cross-platform step).
+
+### PR #8 review response (2026-11-26)
+- Review of head `51a6a3a` by the technical lead
+  ([comment](https://github.com/sergthedev/axiom-local/pull/8#issuecomment-7175525079)). Each finding was reproduced
+  on `51a6a3a` with a scratch script outside the repository before any fix. Observed: a candidate produced for one
+  dataset and reviewed after `set_dataset` to another opened `awaiting_confirmation` with the new dataset's columns
+  (`debt`, `score`); the same happened after a same-schema data change; a non-ASCII confirmation digest raised
+  `TypeError` from `hmac.compare_digest`; a CLARIFY with the right reason and a nonexistent column id scored
+  `exact_match` true with `semantic_valid` false; a duplicate prediction id silently replaced the first prediction
+  and an unknown id was ignored; a REJECT class with support 1 and no predictions had F1 `None` and was left out of the
+  macro F1.
+- Fixes: Guard policy 2 with request contexts (ADR 0010 revision 2); scorer and harness 0.2; corpus versions,
+  `freeze` and seal 0.2 (ADR 0011 revision 2). One existing Guard test assertion changed deliberately: an empty digest
+  and an over-long token are now `malformed_confirmation` instead of `digest_mismatch` / `unknown_token`.
+- During test writing: an evaluator flow-through assertion was too weak and relied on a key absent from CLARIFY
+  predictions (KeyError); replaced by scoring the corrected and the original gold directly. An owner-lineage test
+  template used the slot name `{features}` instead of `{feats}`; fixed in the test.
+- The audit command now reads the committed files; its output is byte-identical to the committed `AUDIT.json`.
+- EXP-011 (pre-registered in `5519973`, run once): the 160 EXP-008 predictions under scorer 0.2 gave identical
+  metrics; the frozen rules reproduced all 160 raw outputs. EXP-008 files were only read.
+- EXP-012 (exploratory, train only, run on `a2c50e1`): the Compare cue vocabulary of the rules is lineage-specific.
+  The earlier log line on EXP-008 ("every validation Compare phrasing was unknown to the train-only cues") was a
+  reading of validation results; EXP-012 gives the train-only mechanism and does not confirm it on validation.
+- EXP-009 protocol revision 2 (still before any model prediction): safety stop, eligibility, 5-point margin with a
+  paired cluster-bootstrap condition, 20 % informativeness floors and a default fallback to Qwen3-0.6B.
+- The lead's AI pass over the Turkish batch is recorded as AI review only; no example was changed. No model was
+  downloaded, loaded or run; nothing was trained; the final test was not generated, read or scored.
