@@ -5,11 +5,16 @@ build-backend = "hatchling.build"
 [project]
 name = "axiom-local"
 version = "0.0.0"
-description = "Local-first, deterministic and verifiable data intelligence (bootstrap placeholder)."
+description = "Local-first, deterministic and verifiable data intelligence."
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.11,<3.13"
-dependencies = []
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "numpy==2.5.5",
+    "pydantic==2.14.4",
+    "scikit-learn==1.9.1",
+    "threadpoolctl==3.8.0",
+]
 
 [dependency-groups]
 dev = [
@@ -26,7 +31,7 @@ addopts = "-ra"
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py312"
 src = ["src", "tests"]
 
 [tool.ruff.lint]

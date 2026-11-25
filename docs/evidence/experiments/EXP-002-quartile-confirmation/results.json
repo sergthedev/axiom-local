@@ -1,0 +1,349 @@
+{
+  "commit": "665d462286c5bee82cac4625f8ebfcabec3a17f6",
+  "experiment": "EXP-002",
+  "families": [
+    {
+      "c1_classification_mismatches": 0,
+      "c1_examples": [],
+      "c1_value_mismatches": 0,
+      "c3_oracle_outcomes": {
+        "iqr": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "mean": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "median": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "q1": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "q3": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        }
+      },
+      "family": "F1_gaussian_scales",
+      "numpy_evaluations": 900,
+      "numpy_examples": [],
+      "numpy_max_operand_ulp": 1.125,
+      "numpy_max_result_ulp": 1048576.0,
+      "numpy_nonfinite_where_oracle_finite": 0,
+      "numpy_operand_ulp_gt_1": 2,
+      "numpy_operand_ulp_gt_4": 0,
+      "numpy_result_ulp_gt_2": 84,
+      "numpy_value_mismatch_bitwise": 117,
+      "production_evaluations": 1500,
+      "seed": 7300001,
+      "sets": 300
+    },
+    {
+      "c1_classification_mismatches": 0,
+      "c1_examples": [],
+      "c1_value_mismatches": 0,
+      "c3_oracle_outcomes": {
+        "iqr": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "mean": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "median": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "q1": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "q3": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        }
+      },
+      "family": "F2_cancellation",
+      "numpy_evaluations": 900,
+      "numpy_examples": [],
+      "numpy_max_operand_ulp": 1.0,
+      "numpy_max_result_ulp": 1048576.0,
+      "numpy_nonfinite_where_oracle_finite": 0,
+      "numpy_operand_ulp_gt_1": 0,
+      "numpy_operand_ulp_gt_4": 0,
+      "numpy_result_ulp_gt_2": 39,
+      "numpy_value_mismatch_bitwise": 108,
+      "production_evaluations": 1500,
+      "seed": 7300002,
+      "sets": 300
+    },
+    {
+      "c1_classification_mismatches": 0,
+      "c1_examples": [],
+      "c1_value_mismatches": 0,
+      "c3_oracle_outcomes": {
+        "iqr": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "mean": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "median": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "q1": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "q3": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        }
+      },
+      "family": "F3_opposite_signs_wide",
+      "numpy_evaluations": 900,
+      "numpy_examples": [],
+      "numpy_max_operand_ulp": 1.0,
+      "numpy_max_result_ulp": 1.0,
+      "numpy_nonfinite_where_oracle_finite": 0,
+      "numpy_operand_ulp_gt_1": 0,
+      "numpy_operand_ulp_gt_4": 0,
+      "numpy_result_ulp_gt_2": 0,
+      "numpy_value_mismatch_bitwise": 71,
+      "production_evaluations": 1500,
+      "seed": 7300003,
+      "sets": 300
+    },
+    {
+      "c1_classification_mismatches": 0,
+      "c1_examples": [],
+      "c1_value_mismatches": 0,
+      "c3_oracle_outcomes": {
+        "iqr": {
+          "defined": 168,
+          "overflow": 132,
+          "underflow": 0
+        },
+        "mean": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "median": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "q1": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "q3": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        }
+      },
+      "family": "F4_extreme_magnitude",
+      "numpy_evaluations": 768,
+      "numpy_examples": [
+        {
+          "numpy": "-inf",
+          "stat": "q3",
+          "values": [
+            "-0x1.4bb1caf6a6801p+1023",
+            "0x1.fffffffffffffp+1023",
+            "-0x1.72a02736f56dcp+1023"
+          ],
+          "want": "0x1.689c6a12b2ffcp+1021"
+        },
+        {
+          "numpy": "-inf",
+          "stat": "iqr",
+          "values": [
+            "-0x1.4bb1caf6a6801p+1023",
+            "0x1.fffffffffffffp+1023",
+            "-0x1.72a02736f56dcp+1023"
+          ],
+          "want": "0x1.b950139b7ab6ep+1023"
+        },
+        {
+          "numpy": "nan",
+          "stat": "q3",
+          "values": [
+            "0x1.c8228a80afa31p+1023",
+            "0x1.fffffffffffffp+1023",
+            "-0x1.7f0538d5341d9p+1023",
+            "-0x1.f39b58ab87043p+1023",
+            "-0x1.e5c838e1b5255p+1023",
+            "-0x1.fffffffffffffp+1023",
+            "-0x1.c15a9906978f5p+1023",
+            "-0x1.4dcc250f43ce0p+1023",
+            "-0x1.fcf77f3b87c3dp+1023"
+          ],
+          "want": "-0x1.4dcc250f43ce0p+1023"
+        },
+        {
+          "numpy": "nan",
+          "stat": "iqr",
+          "values": [
+            "0x1.c8228a80afa31p+1023",
+            "0x1.fffffffffffffp+1023",
+            "-0x1.7f0538d5341d9p+1023",
+            "-0x1.f39b58ab87043p+1023",
+            "-0x1.e5c838e1b5255p+1023",
+            "-0x1.fffffffffffffp+1023",
+            "-0x1.c15a9906978f5p+1023",
+            "-0x1.4dcc250f43ce0p+1023",
+            "-0x1.fcf77f3b87c3dp+1023"
+          ],
+          "want": "0x1.4b9e6738866c6p+1022"
+        },
+        {
+          "numpy": "-inf",
+          "stat": "q1",
+          "values": [
+            "-0x1.5153f1272ca7fp+1023",
+            "0x1.cfc5b63306acbp+1023",
+            "0x1.fffffffffffffp+1023"
+          ],
+          "want": "0x1.f9c7142f68130p+1020"
+        }
+      ],
+      "numpy_max_operand_ulp": 1.0,
+      "numpy_max_result_ulp": 8.0,
+      "numpy_nonfinite_where_oracle_finite": 69,
+      "numpy_operand_ulp_gt_1": 0,
+      "numpy_operand_ulp_gt_4": 0,
+      "numpy_result_ulp_gt_2": 4,
+      "numpy_value_mismatch_bitwise": 48,
+      "production_evaluations": 1500,
+      "seed": 7300004,
+      "sets": 300
+    },
+    {
+      "c1_classification_mismatches": 0,
+      "c1_examples": [],
+      "c1_value_mismatches": 0,
+      "c3_oracle_outcomes": {
+        "iqr": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "mean": {
+          "defined": 297,
+          "overflow": 0,
+          "underflow": 3
+        },
+        "median": {
+          "defined": 294,
+          "overflow": 0,
+          "underflow": 6
+        },
+        "q1": {
+          "defined": 300,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "q3": {
+          "defined": 297,
+          "overflow": 0,
+          "underflow": 3
+        }
+      },
+      "family": "F5_subnormal",
+      "numpy_evaluations": 897,
+      "numpy_examples": [],
+      "numpy_max_operand_ulp": 1.125,
+      "numpy_max_result_ulp": 1.5,
+      "numpy_nonfinite_where_oracle_finite": 0,
+      "numpy_operand_ulp_gt_1": 1,
+      "numpy_operand_ulp_gt_4": 0,
+      "numpy_result_ulp_gt_2": 0,
+      "numpy_value_mismatch_bitwise": 155,
+      "production_evaluations": 1500,
+      "seed": 7300005,
+      "sets": 300
+    },
+    {
+      "c1_classification_mismatches": 0,
+      "c1_examples": [],
+      "c1_value_mismatches": 0,
+      "c3_oracle_outcomes": {
+        "iqr": {
+          "defined": 100,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "mean": {
+          "defined": 100,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "median": {
+          "defined": 100,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "q1": {
+          "defined": 100,
+          "overflow": 0,
+          "underflow": 0
+        },
+        "q3": {
+          "defined": 100,
+          "overflow": 0,
+          "underflow": 0
+        }
+      },
+      "family": "F6_ties_large_n",
+      "numpy_evaluations": 300,
+      "numpy_examples": [],
+      "numpy_max_operand_ulp": 0.5,
+      "numpy_max_result_ulp": 0.75,
+      "numpy_nonfinite_where_oracle_finite": 0,
+      "numpy_operand_ulp_gt_1": 0,
+      "numpy_operand_ulp_gt_4": 0,
+      "numpy_result_ulp_gt_2": 0,
+      "numpy_value_mismatch_bitwise": 1,
+      "production_evaluations": 500,
+      "seed": 7300006,
+      "sets": 100
+    }
+  ],
+  "numpy": "2.5.5",
+  "python": "3.12.16",
+  "totals": {
+    "c1_classification_mismatches": 0,
+    "c1_value_mismatches": 0,
+    "numpy_evaluations": 4665,
+    "numpy_nonfinite_where_oracle_finite": 69,
+    "production_evaluations": 8000
+  },
+  "working_tree_dirty": false
+}

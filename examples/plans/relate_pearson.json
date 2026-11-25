@@ -1,0 +1,7 @@
+{
+  "schema_version": "axiom.plan/1",
+  "operation": "relate",
+  "x": "education_years",
+  "y": "gdp_per_capita",
+  "method": "pearson"
+}

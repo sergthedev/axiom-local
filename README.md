@@ -9,44 +9,68 @@ Windows later.
 
 ## Status
 
-**Bootstrap only.** This repository currently contains governance, documentation scaffolding, CI and an empty
-Python package. **No analysis feature, model or UI is implemented yet.**
+**Early development.** The repository contains governance, CI and the first version of the deterministic
+statistical core (Issue #2, under review). **No language model, desktop UI or trained model exists yet.**
 
 | Area | Status |
 |------|--------|
 | Package skeleton, tests, lint, CI | Implemented (Issue #1) |
-| Inspect, Relate, Cluster, Compare engine | Planned |
-| Typed plans / intent router (AX-01) | Planned |
+| CSV input guard, typed plans, canonical results | Implemented (Issue #2), see [ADR 0003](docs/decisions/0003-input-guard-and-dataset-snapshot.md), [ADR 0005](docs/decisions/0005-typed-plans-binding-and-result-serialization.md) |
+| Inspect, Relate (Pearson/Spearman), Compare, Cluster (K-means) | Implemented (Issue #2); measured on one macOS arm64 machine, see [EXP-001](docs/evidence/experiments/EXP-001-issue2-numerical-validation/MANIFEST.md) |
+| Correlation matrix, outlier flags, p-values | Not implemented (deferred or out of scope) |
+| Run passport, replay, cross-platform comparison | Planned (Issue #3) |
+| Intent router (AX-01) | Planned, no model exists |
 | Desktop UI | Planned |
-| Benchmarks, model training | Planned, no results exist |
+| Model training | Planned, no results exist |
 
 See [docs/roadmap.md](docs/roadmap.md) and [docs/evidence/CLAIMS.md](docs/evidence/CLAIMS.md).
 
-## Planned architecture
+## Architecture
 
-Typed plan → deterministic engine → verifiable result with provenance. Details and unvalidated assumptions:
-[docs/architecture.md](docs/architecture.md) and [ADR 0001](docs/decisions/0001-initial-architecture.md).
+Typed plan → deterministic engine → canonical result with identities (raw-byte hash, typed dataset hash, plan hash,
+result hash). A hash shows identity and integrity, not correctness. Details and unvalidated assumptions:
+[docs/architecture.md](docs/architecture.md) and the [ADRs](docs/decisions/README.md).
 
 ## Install and test
 
-Requires Python 3.11 or 3.12 and [uv](https://docs.astral.sh/uv/).
+Requires Python 3.12 (3.11 is not supported, see [ADR 0002](docs/decisions/0002-dependency-stack-and-python-version.md))
+and [uv](https://docs.astral.sh/uv/).
 
 ```bash
-uv sync --locked      # create .venv from uv.lock (runtime: no third-party dependencies; dev: pytest, ruff)
+uv sync --locked      # create .venv from uv.lock (runtime: numpy, pydantic, scikit-learn, threadpoolctl; dev: pytest, ruff)
 uv run pytest         # tests
 uv run ruff check .   # lint
 uv run ruff format --check .
 ```
+
+## Library example
+
+```python
+from axiom import ColumnSpec, CsvProfile, load_csv, parse_plan_json, run
+
+profile = CsvProfile(
+    columns=(ColumnSpec(name="region", kind="text"), ColumnSpec(name="income", kind="numeric"))
+)
+dataset = load_csv("data.csv", profile)  # explicit schema; nothing is guessed
+plan = parse_plan_json(
+    '{"schema_version":"axiom.plan/1","operation":"compare","group_by":"region","measure":"income"}'
+)
+result = run(dataset, plan)
+print(result.canonical_json, result.result_sha256)
+```
+
+A complete synthetic example with one plan per operation is in [examples/](examples/README.md).
 
 The exact commands, environment and exit statuses of the last verified run are recorded in
 [docs/evidence/DEVELOPMENT_LOG.md](docs/evidence/DEVELOPMENT_LOG.md).
 
 ## Repository map
 
-- `src/axiom/` – package (placeholder)
-- `tests/` – tests
+- `src/axiom/` – the deterministic core (`ingest`, `plan`, `kernels`, `ops_*`, `engine`, `canonical`)
+- `tests/` – tests, exact-arithmetic oracles, vendored NIST reference data
+- `benchmarks/` – scripts that produced the numbers in `docs/evidence/experiments/`
 - `docs/` – architecture, roadmap, reproducibility, demo, ADRs, research, evidence
-- `examples/`, `training/`, `benchmarks/` – placeholders, nothing implemented
+- `examples/` – synthetic example data and plans; `training/` – placeholder, nothing implemented
 - `AGENTS.md` – canonical contribution and engineering rules
 
 ## License and third-party notices

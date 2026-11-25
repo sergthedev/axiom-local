@@ -1,0 +1,236 @@
+{
+  "commit": "f92117a4f984a029352ded9ef11cbad447371beb",
+  "environment": {
+    "implementation": "CPython",
+    "machine": "arm64",
+    "numpy": "2.5.5",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
+    "pydantic": "2.14.4",
+    "python": "3.12.16",
+    "scikit_learn": "1.9.1",
+    "scipy": "1.18.1"
+  },
+  "fresh_process_replay": {
+    "distinct_outputs": 1,
+    "fresh_processes": 20,
+    "plans_per_process": 5,
+    "result_hashes": {
+      "cluster": "07de252bae2de90f074f87c1fabda15c72de432e849959ba165eaaf8902d1500",
+      "compare": "cae67eb10bfb975e1359abc9bea675d86b06961ed7be48bf273200276d5b6955",
+      "inspect": "a48ccfcd9bf91b63b7c00a2d7a3517fb203188708b299287933a14b2d593939f",
+      "relate_pearson": "a5a3a09067e0c08bdd8a5225d323d24b0a34bc88e41d43d95f994bc63ecceaa9",
+      "relate_spearman": "7ccd02a9de6dd91ba6d89caa04274bf4a2ec97436e8c308a0a1b06fe3ea4f4c2"
+    }
+  },
+  "hardware": {
+    "machine": "arm64",
+    "processor": "arm"
+  },
+  "inspect_random": {
+    "n_datasets": 300,
+    "seed": 20261125,
+    "worst": {
+      "mean_ulp": 0.5,
+      "quantile_ulp_of_operand_scale": 0.5,
+      "quantile_ulp_of_result": 4.0,
+      "sd_ulp": 0.4995411277800658,
+      "variance_ulp": 0.4987334084024235
+    }
+  },
+  "kmeans_threads": {
+    "distinct_outputs_default_threads": 9,
+    "distinct_outputs_single_thread": 1,
+    "logical_cpus": 10,
+    "n_points": 60000,
+    "runs_each": 20
+  },
+  "nist": [
+    {
+      "abs_error_vs_certified_mean": 0.0,
+      "abs_error_vs_certified_sd": 0.0,
+      "binary64_oracle_vs_certified_mean_abs": 0.0,
+      "binary64_oracle_vs_certified_sd_abs": 0.0,
+      "certified_mean": "10000002",
+      "certified_sd": "1",
+      "dataset": "NumAcc1",
+      "difficulty": "Lower",
+      "input_conversion_bound_mean": 1.110223357692064e-09,
+      "input_conversion_bound_sd": 1.359740363432505e-09,
+      "mean": 10000002.0,
+      "n": 3,
+      "sample_sd": 1.0,
+      "ulp_error_vs_binary64_oracle_mean": 0.0,
+      "ulp_error_vs_binary64_oracle_sd": 0.0
+    },
+    {
+      "abs_error_vs_certified_mean": 4.4408920985006264e-17,
+      "abs_error_vs_certified_sd": 2.2204460492503132e-17,
+      "binary64_oracle_vs_certified_mean_abs": 6.650247008643795e-17,
+      "binary64_oracle_vs_certified_sd_abs": 2.2204460492503132e-17,
+      "certified_mean": "1.2",
+      "certified_sd": "0.1",
+      "dataset": "NumAcc2",
+      "difficulty": "Average",
+      "input_conversion_bound_mean": 1.4432899320127036e-16,
+      "input_conversion_bound_sd": 1.4440113966576176e-16,
+      "mean": 1.2,
+      "n": 1001,
+      "sample_sd": 0.09999999999999998,
+      "ulp_error_vs_binary64_oracle_mean": 0.4995004995004995,
+      "ulp_error_vs_binary64_oracle_sd": 4.436455642857769e-18
+    },
+    {
+      "abs_error_vs_certified_mean": 4.656612873077393e-11,
+      "abs_error_vs_certified_sd": 3.492459654808044e-11,
+      "binary64_oracle_vs_certified_mean_abs": 1.1583382671291415e-11,
+      "binary64_oracle_vs_certified_sd_abs": 3.492459654809737e-11,
+      "certified_mean": "1000000.2",
+      "certified_sd": "0.1",
+      "dataset": "NumAcc3",
+      "difficulty": "Average",
+      "input_conversion_bound_mean": 1.110223357692064e-10,
+      "input_conversion_bound_sd": 1.110778330662336e-10,
+      "mean": 1000000.2,
+      "n": 1001,
+      "sample_sd": 0.1000000000349246,
+      "ulp_error_vs_binary64_oracle_mean": 0.4995004995004995,
+      "ulp_error_vs_binary64_oracle_sd": 1.2194836409327415e-06
+    },
+    {
+      "abs_error_vs_certified_mean": 7.450580596923829e-10,
+      "abs_error_vs_certified_sd": 5.587935447692871e-10,
+      "binary64_oracle_vs_certified_mean_abs": 1.8533412274066265e-10,
+      "binary64_oracle_vs_certified_sd_abs": 5.587935447736196e-10,
+      "certified_mean": "10000000.2",
+      "certified_sd": "0.1",
+      "dataset": "NumAcc4",
+      "difficulty": "Higher",
+      "input_conversion_bound_mean": 1.1102230579318474e-09,
+      "input_conversion_bound_sd": 1.1107780307522766e-09,
+      "mean": 10000000.2,
+      "n": 1001,
+      "sample_sd": 0.10000000055879354,
+      "ulp_error_vs_binary64_oracle_mean": 0.4995004995004995,
+      "ulp_error_vs_binary64_oracle_sd": 0.0003121878104433269
+    },
+    {
+      "abs_error_vs_certified_mean": 2.7995383788947946e-16,
+      "abs_error_vs_certified_sd": 1.8919958701735596e-15,
+      "binary64_oracle_vs_certified_mean_abs": 0.0,
+      "binary64_oracle_vs_certified_sd_abs": 1.92753892413745e-15,
+      "certified_mean": "4.53480000000000",
+      "certified_sd": "2.86733906028871",
+      "dataset": "PiDigits",
+      "difficulty": "Lower",
+      "input_conversion_bound_mean": 9.992007221626409e-16,
+      "input_conversion_bound_sd": 9.993006572253663e-16,
+      "mean": 4.5348,
+      "n": 5000,
+      "sample_sd": 2.867339060288708,
+      "ulp_error_vs_binary64_oracle_mean": 0.3152,
+      "ulp_error_vs_binary64_oracle_sd": 0.08003584229369308
+    }
+  ],
+  "pearson_near_constant_sweep": [
+    {
+      "abs_error_if_forced_stdlib": null,
+      "flagged": true,
+      "reason": "constant_input",
+      "relative_spread_exponent": -60,
+      "stdlib_error": "at least one of the inputs is constant"
+    },
+    {
+      "abs_error_if_forced_stdlib": 0.01737963612897048,
+      "flagged": true,
+      "reason": "near_constant_input",
+      "relative_spread_exponent": -52
+    },
+    {
+      "abs_error_if_forced_stdlib": 1.0281182511349166e-16,
+      "flagged": true,
+      "reason": "near_constant_input",
+      "relative_spread_exponent": -48
+    },
+    {
+      "abs_error_if_forced_stdlib": 6.899301097720084e-17,
+      "flagged": true,
+      "reason": "near_constant_input",
+      "relative_spread_exponent": -44
+    },
+    {
+      "abs_error_vs_exact_oracle": 3.553807982322313e-17,
+      "flagged": false,
+      "relative_spread_exponent": -41
+    },
+    {
+      "abs_error_vs_exact_oracle": 5.3838853979719463e-17,
+      "flagged": false,
+      "relative_spread_exponent": -40
+    },
+    {
+      "abs_error_vs_exact_oracle": 8.220090931193883e-17,
+      "flagged": false,
+      "relative_spread_exponent": -39
+    },
+    {
+      "abs_error_vs_exact_oracle": 9.298440277067342e-17,
+      "flagged": false,
+      "relative_spread_exponent": -36
+    },
+    {
+      "abs_error_vs_exact_oracle": 4.381382253132439e-17,
+      "flagged": false,
+      "relative_spread_exponent": -30
+    },
+    {
+      "abs_error_vs_exact_oracle": 1.1505541396822642e-17,
+      "flagged": false,
+      "relative_spread_exponent": -20
+    },
+    {
+      "abs_error_vs_exact_oracle": 4.6557276345245835e-17,
+      "flagged": false,
+      "relative_spread_exponent": -10
+    }
+  ],
+  "relate_random": {
+    "counts": {
+      "pearson_defined": 300,
+      "pearson_undefined": 0,
+      "spearman_defined": 300
+    },
+    "n_pairs": 300,
+    "seed": 20261125,
+    "worst_abs_error_pearson": 1.8633059038632984e-16,
+    "worst_abs_error_spearman": 1.1136172371818303e-16
+  },
+  "timings_single_run": [
+    {
+      "bytes": 190050,
+      "cluster_s": 0.053,
+      "inspect_s": 0.026,
+      "load_s": 0.023,
+      "n_rows": 10000,
+      "pearson_s": 0.005,
+      "spearman_s": 0.014
+    },
+    {
+      "bytes": 1899952,
+      "cluster_s": 0.59,
+      "inspect_s": 0.358,
+      "load_s": 0.328,
+      "n_rows": 100000,
+      "pearson_s": 0.057,
+      "spearman_s": 0.226
+    },
+    {
+      "bytes": 19000751,
+      "inspect_s": 4.395,
+      "load_s": 3.589,
+      "n_rows": 1000000,
+      "pearson_s": 0.981,
+      "spearman_s": 5.652
+    }
+  ],
+  "working_tree_dirty": false
+}

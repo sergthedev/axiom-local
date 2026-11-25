@@ -6,4 +6,4 @@ authors:
   - alias: "sergthedev"
 repository-code: "https://github.com/sergthedev/axiom-local"
 license: MIT
-abstract: "Local-first, deterministic and verifiable data intelligence. Bootstrap stage: no analysis features are implemented yet."
+abstract: "Local-first, deterministic and verifiable data intelligence. Early development: a deterministic statistical core (Inspect, Relate, Compare, Cluster) exists; no language model or UI yet."

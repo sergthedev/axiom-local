@@ -1,0 +1,2 @@
+tests/data/nist/*.dat -text
+examples/*.csv -text

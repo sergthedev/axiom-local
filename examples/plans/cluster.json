@@ -1,0 +1,7 @@
+{
+  "schema_version": "axiom.plan/1",
+  "operation": "cluster",
+  "features": ["gdp_per_capita", "unemployment_rate", "education_years"],
+  "k": 3,
+  "seed": 42
+}
