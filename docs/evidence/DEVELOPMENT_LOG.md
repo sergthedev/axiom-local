@@ -105,3 +105,57 @@ these results; Windows numerics are not measured (see `EXP-001`).
 
 ### CI for the pull request
 - GitHub Actions run [45656746267](https://github.com/sergthedev/axiom-local/actions/runs/45656746267) on PR commit `1a8c63d`: `test (macos-latest)` passed (14 s) and `test (windows-latest)` passed (43 s). Observed by the implementer; the workflow runs `uv sync --locked`, ruff check/format check and pytest only. This is not a numerical comparison between platforms.
+
+## 2026-11-25 — Issue #2, PR #6: technical review response (four merge blockers)
+
+Review: [technical lead review of head `1a8c63d`](https://github.com/sergthedev/axiom-local/pull/6#issuecomment-7168446160) (an AI-assisted static review; not independent human
+sign-off). Addressed on the same branch with focused commits; no history was rewritten, nothing was merged, Issue #3 was not started.
+
+### CI observation record (reviewer-observed, distinct from local runs)
+- The technical lead verified run [45656746267](https://github.com/sergthedev/axiom-local/actions/runs/45656746267) directly: both jobs succeeded, 206 tests passed on
+  Windows x64 (CPython 3.12.10, 9.44 s) and on macOS arm64 (CPython 3.12.10, 6.36 s); checkout merge SHA `61f14f6588d9ce4705fa20817ec2bf76c7378d4b`; the head
+  commit was `1a8c63d24aa8681d7512241a4e949392596b3a81` and the diff from the final code commit `f92117a` was documentation/evidence only.
+- The implementer's local runs (Apple M5, macOS 27.0.1, CPython 3.12.16, locked environment) are separate and implementer-reported. CI and local runs used different
+  CPython patch versions. Neither establishes numerical agreement between platforms (not claimed).
+
+### Blocker 1: quartile and IQR extreme-range correctness
+- Finding: the first quartile implementation (NumPy `linear`) reported IQR overflow for `[-M, M]`; the exact answer is representable (q1 = -M/2, q3 = M/2, IQR = M). The test I
+  had written asserted the overflow, so it encoded the defect. The test was replaced, not the evidence: EXP-001 and its recorded quartile failure are untouched.
+- Fix: median and type-7 quartiles are exact rationals rounded once; true overflow (exact value beyond binary64) and exact-nonzero underflow are distinguished and reported as null
+  with a reason for every statistic (ADR 0004, amendment 1). New regressions: `[-M, M]` known answers, `[-M, -M, M, M]` true IQR overflow, cancellation case, subnormal cases,
+  mean/median/quantile underflow policy, NumPy as cross-check only.
+
+### Blocker 2: confirmation set for the post-hoc quartile revision
+- EXP-002 was pre-registered (criteria, seeds, families, denominators, oracle formulation, derived NumPy bound) and committed before any data were generated, then run on a clean tree.
+- Results: production 0 value and 0 classification mismatches in 8,000 evaluations. NumPy: the EXP-001 revised criterion was **falsified** on held-back data (1.125 operand-scale ulp), the
+  newly *derived* first-order bound (4 operand-scale ulp) held, the original result-ulp criterion failed again (up to 1,048,576 ulp under cancellation), and 69 representable results were non-finite.
+  The EXP-001 "<= 1 operand ulp" bound was not derived tightly; this is recorded rather than adjusted.
+
+### Blocker 3: validated-plan boundary and resource guards
+- Revalidation from field values at `bind_plan` and `execute`; limits supplied at execution are re-checked; bounded plan JSON (bytes, nesting, value count) with structured errors for
+  pathological input; BoundPlan documented as data, not a signature; result bytes fixed at construction (`core` is a copy). Tests in `tests/test_plan_boundary.py` (ADR 0005, amendment 1).
+
+### Blocker 4: K-means resource and verification contract
+- v1 solver ranges and a joint workload cap checked before any fit; solver output validation; warnings and FloatingPoint exceptions guarded across scaler, fit and checks; exact power-of-two
+  feature scaling so tiny/huge magnitudes are valid; `centroid_fixed_point` renamed `centroid_consistency_approx` with a separate Lloyd label fixed-point diagnostic; EXP-003 measured throughput for the cap
+  (ADR 0006, amendment 1). The in-process repeat test was renamed `test_twenty_in_process_repeats_are_byte_identical` (subprocess replay evidence is EXP-001 section 8 and `test_fresh_processes_...`).
+- Behavior change to note: a feature with magnitude above 2^500 was previously rejected (`unsafe_scale`); it is now valid because of the exact scaling.
+
+### Other review items
+- `REFERENCES.md` REF-009 and ADR/notice text updated so they no longer say production quartiles use NumPy; NIST attribution and EXP-001 are unchanged.
+- ADRs 0002-0006 remain Proposed until the owner decides.
+- Branch protection: the review observed `protected=false` and no rulesets. Not changed from this branch; the owner must verify/enable suitable protection and status checks before merge.
+- The PR header contains the automated project-thread attribution link required by this workflow; whether to keep the public link is the owner's decision. No history was rewritten.
+
+### Local verification after the fixes (measured, one run; Apple M5, macOS 27.0.1, CPython 3.12.16, locked environment)
+| Command | Exit status | Result |
+|---------|-------------|--------|
+| `uv sync --locked` | 0 | environment from `uv.lock` |
+| `uv run pytest -q` | 0 | 259 passed (about 17 s), including the NIST and example tests on the new code |
+| `uv run ruff check .` | 0 | All checks passed |
+| `uv run ruff format --check .` | 0 | 75 files already formatted |
+| `uv run python benchmarks/issue2_quartile_confirmation.py` | 0 | EXP-002 |
+| `uv run python benchmarks/issue2_cluster_workload.py` | 0 | EXP-003 |
+
+EXP-001 describes the code at commit `f92117a` (before these fixes) and is deliberately not re-run or edited; the NIST comparisons are re-asserted by `tests/test_nist.py` on the current code.
+The pull request CI for the fixed head is recorded below after it has run.

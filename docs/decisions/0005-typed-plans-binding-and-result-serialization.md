@@ -51,3 +51,26 @@ Implemented in `src/axiom/plan.py`, `src/axiom/canonical.py`, `src/axiom/engine.
 ## References
 
 REF-014
+
+## Amendment 1 (2026-11-25): response to the technical review of PR #6, blocker 3
+
+The original text above is preserved. Changes:
+
+- **Revalidation at both trusted boundaries.** Frozen Pydantic models still allow `model_copy(update=...)` and
+  `model_construct` to create instances that skipped validation. `bind_plan` and `execute` now re-run strict validation from
+  the field values (`revalidate_plan`), reject subclasses and foreign types, and return/use the freshly validated plan.
+- **Limits at execution.** `execute(dataset, bound, limits)` re-checks the plan against the dataset schema and the limits
+  supplied *at execution*, so stricter limits cannot be bypassed by an earlier binding (`validate_plan_for_dataset`).
+- **What a bound plan is.** `plan_sha256` identifies the canonical computation (plan plus policy version); the pair of
+  dataset fingerprints (raw bytes and typed dataset) says which snapshot it was bound to. It is **not** a signature and not an
+  authorization: any code can build a `BoundPlan`, and a forged plan that is valid and has a recomputed digest executes (a test
+  documents this). The engine makes no claim to resist arbitrary local Python code. Human authorization of plans is deferred
+  to the router work (Issue #4). `Dataset` fingerprints are not recomputed at execution (cost O(n)); a forged `Dataset` is out of
+  scope in the same way.
+- **Bounded plan input.** `parse_plan_json` enforces caps (provisional): 65,536 bytes, bracket nesting 8, 4,096 JSON values
+  (`Limits.max_plan_bytes/depth/nodes`); the nesting check is a non-recursive scan that ignores brackets inside strings; pathological
+  numbers (for example integers beyond Python's digit limit), lone surrogates, `RecursionError`, circular objects and non-text input
+  produce structured `PlanError`s instead of uncaught exceptions. `parse_plan_object` has the same behaviour. No new framework.
+- **Result identity.** `AnalysisResult` stores the canonical JSON text at construction; `core` returns an independent parsed copy,
+  so mutating it cannot change `canonical_json` or `result_sha256`. Immutable-result claims remain limited to these bytes; Issue #3
+  will test snapshot semantics for replay.

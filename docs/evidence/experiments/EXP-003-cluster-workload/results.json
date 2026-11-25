@@ -1,0 +1,72 @@
+{
+  "commit": "7d4b9213d0a30ee010632c4385bd15e75d9e6674",
+  "python": "3.12.16",
+  "runs": [
+    {
+      "data": "blobs",
+      "features": 4,
+      "k": 8,
+      "max_iter": 300,
+      "n_init": 10,
+      "n_iter_diagnostic": 7,
+      "outcome": "result",
+      "rows": 10000,
+      "seconds": 0.116,
+      "upper_bound_work_per_second": 8275862069,
+      "work_upper_bound": 960000000
+    },
+    {
+      "data": "blobs",
+      "features": 4,
+      "k": 8,
+      "max_iter": 300,
+      "n_init": 10,
+      "n_iter_diagnostic": 7,
+      "outcome": "result",
+      "rows": 100000,
+      "seconds": 0.811,
+      "upper_bound_work_per_second": 11837237978,
+      "work_upper_bound": 9600000000
+    },
+    {
+      "data": "uniform",
+      "features": 8,
+      "k": 32,
+      "max_iter": 300,
+      "n_init": 3,
+      "n_iter_diagnostic": 204,
+      "outcome": "result",
+      "rows": 100000,
+      "seconds": 7.469,
+      "upper_bound_work_per_second": 3084750301,
+      "work_upper_bound": 23040000000
+    },
+    {
+      "data": "uniform",
+      "features": 8,
+      "k": 16,
+      "max_iter": 1000,
+      "n_init": 3,
+      "n_iter_diagnostic": 76,
+      "outcome": "result",
+      "rows": 200000,
+      "seconds": 4.893,
+      "upper_bound_work_per_second": 15695892091,
+      "work_upper_bound": 76800000000
+    },
+    {
+      "data": "uniform",
+      "features": 4,
+      "k": 8,
+      "max_iter": 300,
+      "n_init": 5,
+      "n_iter_diagnostic": 43,
+      "outcome": "result",
+      "rows": 400000,
+      "seconds": 6.534,
+      "upper_bound_work_per_second": 2938475666,
+      "work_upper_bound": 19200000000
+    }
+  ],
+  "working_tree_dirty": false
+}

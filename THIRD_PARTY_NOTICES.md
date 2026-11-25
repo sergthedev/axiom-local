@@ -8,7 +8,7 @@ Pinned in `pyproject.toml`, resolved in `uv.lock`. Versions are those locked at 
 
 | Package | Version | License (from PyPI metadata) | Role |
 |---------|---------|------------------------------|------|
-| numpy | 2.5.5 | BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0 | Array numerics, quantiles |
+| numpy | 2.5.5 | BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0 | Array numerics for K-means (quartiles are exact rationals; NumPy `quantile` is a test cross-check) |
 | pydantic | 2.14.4 | MIT | Strict typed plans |
 | pydantic-core | 2.50.5 | MIT | Pydantic runtime (transitive) |
 | scikit-learn | 1.9.1 | BSD-3-Clause | K-means, standardization |

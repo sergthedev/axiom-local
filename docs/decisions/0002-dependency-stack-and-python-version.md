@@ -6,7 +6,7 @@
 
 ## Context
 
-The deterministic core needs strict typed plans, array numerics for quantiles and K-means, and a
+The deterministic core needs strict typed plans, array numerics for K-means, and a
 vetted K-means solver. ADR 0001 left numerical libraries open pending research gate DR-002.
 
 ## Alternatives considered
@@ -15,7 +15,7 @@ vetted K-means solver. ADR 0001 left numerical libraries open pending research g
 |-------|--------|---------------------|
 | Tabular engine | Python stdlib `csv` + typed tuples | pandas, Polars, Arrow, DuckDB (excluded by the lead decision; larger dependency and coercion surface than the CSV-only scope needs) |
 | Plan validation | Pydantic v2 (strict, frozen, `extra="forbid"`) | dataclasses + hand validation (more custom code for the same checks); attrs/msgspec (not evaluated) |
-| Array numerics | NumPy | pure Python only (K-means distances and quantiles would be slow and larger to maintain) |
+| Array numerics | NumPy | pure Python only (K-means distances would be slow and larger to maintain) |
 | K-means | scikit-learn `KMeans` + `StandardScaler` | custom K-means (would need its own validation; the lead decision prefers a tested solver plus independent postcondition checks) |
 | SciPy | Transitive only (pulled in by scikit-learn); no production import | Direct dependency (not needed: no production code imports it) |
 | Thread control | `threadpoolctl` as a **direct** dependency | Relying on its transitive presence (production code imports it, so it is declared) |

@@ -33,7 +33,7 @@
 | `statistics.mean/variance/stdev/median` as first candidate for Inspect | **Implemented**; measured against exact rational oracles (EXP-001). NumPy two-pass `std` was equally accurate on the five NIST datasets in the smoke comparison; the naive one-pass formula was not (0.1 absolute error on NumAcc4). |
 | `statistics.correlation` for Relate | **Implemented behind a guard**: the installed 3.12.16 function returned `0.0` near 1e200 and raised a false "constant" error near 1e-200 on test inputs, SciPy `pearsonr` handled both. Power-of-two range scaling was added instead of adding SciPy as a direct dependency (tradeoff in ADR 0004). |
 | Correlation matrix | **Deferred** (P1 in the lead decision). |
-| Quartile accuracy criterion | One pre-registered criterion **failed** and was revised with a recorded derivation (ADR 0004, development log). |
+| Quartile accuracy criterion | One pre-registered criterion **failed**, was revised post hoc, and the revised criterion was then **falsified on held-back data** (EXP-002). Quartiles and the median are now exact rationals rounded once (ADR 0004, amendment 1). |
 | K-means thread determinism | **Measured** on one machine: 9 distinct outputs in 20 default-thread fits (7 in an earlier run) versus 1 in 20 single-thread fits; the engine therefore fits single-threaded. |
 | Independent verification | NIST certified values and exact rational oracles were used. These are independent references, but the oracle code was written by the same implementer; no independent reviewer has reproduced the results yet. |
 
