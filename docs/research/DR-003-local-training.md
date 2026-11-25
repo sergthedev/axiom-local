@@ -47,5 +47,8 @@
 - The card recommends sampling and warns against greedy decoding in thinking mode; for non-thinking mode it suggests
   temperature 0.7. AXIOM uses greedy decoding for repeatability; whether that degrades this task is an open question
   for EXP-009, not an assumption.
-- An optional environment `envs/model/` (separate uv project and lock) with `mlx` 0.32.4 and `mlx-lm` 0.32.2; what
-  was installed and imported is recorded in ADR 0012.
+- An optional environment `envs/model/` (separate uv project and lock) with `mlx` 0.32.4 and `mlx-lm` 0.32.2,
+  installed on the development Mac; MLX reported the Metal GPU and the Qwen3 model module imports (ADR 0012).
+- The lead noted that the MLX-LM LoRA guide's family list did not name Qwen3; the installed 0.32.2 package contains
+  `mlx_lm.models.qwen3` (import only; loading and training remain unverified). Its trainer defaults and its prompt
+  masking with Qwen3's thinking template are recorded in ADR 0012 (REF-035).

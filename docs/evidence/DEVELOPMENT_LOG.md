@@ -421,3 +421,13 @@ for a comprehensive final audit of AXIOM Verify.
   in text mode, so Windows translated LF to CRLF and the file no longer matched the hash of the LF text in `SEAL.json`.
   A real defect that would have made a sealed test unverifiable on Windows. Fix: `test.jsonl`, `SEAL.json` and
   `PROVENANCE.json` are written as bytes.
+
+### Model environment install and source reading (2026-11-26)
+- `uv sync --locked` in `envs/model` took about 25 minutes on the home connection (the 78 MB `mlx-metal` wheel was the
+  slowest download); exit 0. Import probe: mlx 0.32.4, mlx-lm 0.32.2, transformers 5.22.2; `Device(gpu, 0)`, Metal
+  available, a 3-element computation returned 14.0; `mlx_lm.models.qwen3` present.
+- Reading the installed MLX-LM source (REF-035) found two template issues for the protocols: inference must pass
+  `enable_thinking=False` explicitly, and `--mask-prompt` puts the empty think block into the trained completion.
+  Both are recorded in ADR 0012 and EXP-010; neither has been measured with the tokenizer yet.
+- CI run [45705966013](https://github.com/sergthedev/axiom-local/actions/runs/45705966013) on `e0c91bd`: macOS and
+  Windows passed (tests, lint, format, report-only cross-platform step).

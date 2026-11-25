@@ -12,7 +12,11 @@
   both exported files is recorded.
 - Template: the same rendering as inference (`enable_thinking=False`); `token_lengths.py` must show that every
   training rendering starts with the inference prompt and report prompt/target/full token counts before training.
-  Loss on the completion only (`--mask-prompt` or the installed equivalent); no chain-of-thought targets.
+  Loss on the completion only; no chain-of-thought targets. The installed MLX-LM 0.32.2 chat dataset computes the
+  `--mask-prompt` boundary with thinking enabled, so the template's empty think block would be trained as part of the
+  completion (ADR 0012, finding 2). Before the smoke, render both boundaries with the pinned tokenizer, record the
+  token difference, and either train with an explicit prompt/completion rendering that uses `enable_thinking=False`
+  for both, or record that the empty think block is part of the target.
 - Maximum sequence length: the smallest power of two at least the measured maximum full length of train and
   validation; if that is above 1024, stop and report. No example may be truncated; an over-length example is a
   stop condition, not silently dropped.
@@ -24,6 +28,11 @@ installed MLX-LM configuration (the value is recorded; it is not assumed to equa
 1e-5 (Adam as in the installed trainer), micro-batch 1, gradient accumulation 4, gradient checkpointing only if the
 smoke shows memory pressure. Before the smoke, the exact option and configuration names are verified against the
 installed `mlx_lm` 0.32.2 source and recorded in the manifest; nothing is copied from example configurations unread.
+Read so far (REF-035): `--num-layers`, `--batch-size`, `--grad-accumulation-steps`, `--learning-rate`, `--mask-prompt`,
+`--max-seq-length`, `--grad-checkpoint`, `--seed`, `--adapter-path`, `--save-every`, `--steps-per-eval`,
+`--val-batches`; configuration `lora_parameters` with `rank`, `scale`, `dropout` and optional `keys` (without `keys`
+every linear layer of the last `num_layers` blocks is adapted, so `keys` must name the query and value projections).
+Defaults that must be overridden: 16 layers, batch 4, seed 0, maximum length 2048. `--report-to` stays unset.
 
 1. **Smoke:** 20 optimizer updates (80 micro-steps); record actual micro-steps and updates, loss finiteness, peak
    memory, steps per second; save the adapter, reload it in a fresh process, run real inference on 5 train examples.

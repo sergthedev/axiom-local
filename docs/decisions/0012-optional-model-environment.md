@@ -30,6 +30,25 @@ model-selection rule fixed before seeing validation predictions. Nothing may be 
 reviewed in the main lock and are identical in both locks). It is never imported by `axiom`, `axiom_router` or
 `axbench` and never installed in CI.
 
+**Installed and checked on the development Mac (2026-11-26, observed once):** `uv sync --locked` in `envs/model`
+installed mlx 0.32.4, mlx-metal 0.32.4, mlx-lm 0.32.2, transformers 5.22.2, tokenizers 0.23.3, huggingface-hub 2.4.0;
+`mx.default_device()` reported `Device(gpu, 0)`, `mx.metal.is_available()` was true and a small array computation
+returned the exact expected value; `mlx_lm.models.qwen3` imports. No checkpoint was loaded.
+
+**Findings from the installed MLX-LM 0.32.2 source** (REF-035), which the protocols must handle explicitly:
+
+1. The tokenizer wrapper passes `enable_thinking=True` to Qwen3's template unless the caller sets it, so every AXIOM
+   inference call must pass `enable_thinking=False` explicitly.
+2. The chat training dataset renders conversations without `enable_thinking`. With `--mask-prompt`, the prompt length
+   is taken from the conversation without the assistant turn rendered *with* thinking enabled, so the empty think block
+   that the template writes before the assistant content falls into the trained completion. The rendered training
+   text equals the inference prompt followed by the target (from the template), only the loss boundary moves by those
+   template tokens. EXP-010 must measure this with the pinned tokenizer and either accept it explicitly or render
+   prompt and completion itself; it is not left implicit.
+3. Trainer defaults differ from the DR-003 starting point (16 layers, batch 4, seed 0, maximum length 2048, LoRA on
+   every linear layer when no `keys` are given, `scale` 20, Adam); every value is set explicitly in EXP-010.
+4. `--report-to` (wandb, swanlab) is off by default and must stay unset (no remote trackers).
+
 **Checkpoints** (REF-032, REF-033), both Apache-2.0, `Qwen3ForCausalLM`, 28 layers, BF16, vocabulary 151,936, the same
 tokenizer configuration and chat template:
 
@@ -71,4 +90,4 @@ pilot with resource limits and stop rules.
 
 ## References
 
-REF-031, REF-032, REF-033, REF-034
+REF-031, REF-032, REF-033, REF-034, REF-035
