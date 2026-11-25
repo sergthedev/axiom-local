@@ -59,3 +59,16 @@
 - Accelerate's thread use could not be verified, and whether any of these computations call BLAS was not instrumented.
 - A one-replay smoke run of the script preceded the pre-registration (stated there); its output was not kept.
 - No failures occurred, so the failure paths of the classification are covered by the tests (`tests/test_replay.py`), not by this experiment.
+
+## Correction after technical review (2026-11-25; results unchanged)
+
+The [PR #7 review](https://github.com/sergthedev/axiom-local/pull/7#issuecomment-7171558913) noted that the R3 sentence
+above ("in every worker the only detected pool ... reported 1 thread") is stronger than the stored evidence. Precisely:
+`results.json` stores the **reference** passport's thread record per scenario and aggregate run-id counts; it does not
+store each worker's run id, pools or probe. What every worker's own observation supports is indirect: each run's
+environment was compared with the reference, including `threads.fit_limit_probe`, and all 200 runs were classified
+same-environment, so every worker's probe equalled the reference value `verified_single_thread`. Worker pool thread
+counts outside the probe were not compared, and Accelerate remained unverified. The R3 statement should be read in this
+narrower sense. Per-worker evidence (run ids, pools, probe, BLAS visibility, environment status for each of 200 runs)
+was recorded on the revised code in [EXP-006](../EXP-006-review-confirmation/MANIFEST.md). The EXP-004 numbers, verdicts
+and the original wording above are kept as recorded.

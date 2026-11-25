@@ -28,8 +28,8 @@ CSV bytes ──► loader/guard ──► immutable Dataset ──► bind_plan
 | Engine: Cluster | K-means with explicit solver parameters and independent postconditions | Implemented (ADR 0006) |
 | Engine: Compare | Group-level summaries | Implemented (ADR 0004) |
 | Canonical serialization | Canonical JSON v1 and SHA-256 identities | Implemented (ADR 0005) |
-| Analysis Passport (`passport`, `environment`) | Versioned record of identities, explicit inputs, full-precision result, environment and execution | Implemented (ADR 0007) |
-| Replay and comparison (`replay`, `_worker`, `agreement`, `python -m axiom`) | Fresh-process re-execution without result cache; integrity / execution / numerical classification; per-operation cross-environment criteria | Implemented (ADR 0008); measured in EXP-004 and EXP-005 |
+| Analysis Passport (`passport`, `passport_schema`, `environment`) | Versioned record of identities, explicit inputs, full-precision result, environment and execution | Implemented (ADR 0007) |
+| Replay and comparison (`replay`, `_worker`, `agreement`, `python -m axiom`) | Fresh-process re-execution without result cache; integrity / execution / numerical classification; per-operation cross-environment criteria | Implemented (ADR 0008); measured in EXP-004, EXP-005 and EXP-006 |
 | Intent router (AX-01) | Map natural language to a Plan; cannot compute | Planned |
 | Desktop UI | Present plans and results | Planned |
 

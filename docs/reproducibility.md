@@ -22,10 +22,15 @@
 - `python -m axiom replay --passport P --data D --runs N` re-executes the plan in N new interpreters (thread variables set
   before imports, fresh workspace, run nonce, no result cache) and classifies the outcome as `exact_match`,
   `numeric_agreement`, `numerical_discrepancy`, `execution_failure` or `integrity_mismatch` (ADR 0008).
-- **Same environment**: only byte identity passes. **Different environment**: per-operation criteria `axiom.agreement/1`
-  (ADR 0008), with cluster partitions compared by membership sets independent of label numbers.
+- The worker's environment is classified `verified_same`, `unverified` (nothing observed differs, something is unknown,
+  for example Apple Accelerate's threads) or `different`. Byte identity is required unless a difference was observed;
+  only then are the per-operation criteria `axiom.agreement/1` used (ADR 0008), with cluster partitions compared by
+  membership sets independent of label numbers.
+- Passports are untrusted input: they are validated in full and size-bounded, and a passport cannot raise the resource
+  limits above the local policy (ADRs 0007, 0008).
 - Measured: 200 of 200 replays byte-identical on one Mac (EXP-004); in EXP-005, ten scenarios computed on a GitHub-hosted
-  Windows x64 runner and a macOS arm64 runner were byte-identical to the Mac reference (one CI run each).
+  Windows x64 runner and a macOS arm64 runner were byte-identical to the Mac reference (one CI run each); after the
+  review corrections, EXP-006 repeated 200 replays with per-run evidence and the cross-platform observation.
 
 ```bash
 uv run python -m axiom analyze --data examples/synthetic_regions.csv \
@@ -39,7 +44,8 @@ uv run python -m axiom replay --passport passport.json --data examples/synthetic
 - Bit-for-bit equality across platforms is **not** claimed. Cross-platform results are limited to what EXP-005 measured on
   GitHub-hosted runners; that is not packaged Windows support and not independent human replication.
 - The engine file digest and the `uv.lock` digest hash checked-out bytes. On the Windows runner both differed from the Mac
-  reference for the same commit, most likely because of line-ending conversion at checkout (not verified), so identical code
-  can be reported as a different environment (EXP-005).
+  reference for the same source because Git converted LF to CRLF at checkout (`core.autocrlf=true`; confirmed in EXP-006).
+  `.gitattributes` now pins LF for `*.py` and `uv.lock`; other installation paths can still change raw digests, which is
+  reported conservatively as a different environment. A common commit never implies a common runtime.
 - Replay checks data, plan and result against a passport using the installed code; it cannot detect a modified engine or
   Python installation, and a passport digest is not a signature.

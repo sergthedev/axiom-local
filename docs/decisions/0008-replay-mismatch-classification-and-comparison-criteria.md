@@ -1,6 +1,8 @@
 # ADR 0008: Fresh-process replay, mismatch classification and comparison criteria
 
-- Status: Proposed (awaiting technical review and owner approval)
+- Status: Proposed (awaiting technical review and owner approval). Revised after the
+  [PR #7 review](https://github.com/sergthedev/axiom-local/pull/7#issuecomment-7171558913) (blockers B1 and B3; see
+  "Revision after technical review" below).
 - Date: 2026-11-25
 - Issue / PR: Issue #3 ([technical lead decision](https://github.com/sergthedev/axiom-local/issues/3#issuecomment-7167524679), [DR-001 note](https://github.com/sergthedev/axiom-local/issues/3#issuecomment-7166468157)); builds on ADRs 0004-0007
 
@@ -24,6 +26,15 @@ or scikit-learn load (REF-025); the worker records the pools it then observes. T
 profile, plan, limits and (for replay) the old binding; it is never given a reference result, re-reads the file,
 re-parses, and recomputes. The OS page cache may serve the bytes; that is not a result cache.
 
+**Trusted runtime policy (B1).** A passport is untrusted input, so the limits it records are not a resource budget.
+`replay` compares every recorded limit with `policy` (default: `DEFAULT_LIMITS`, the accepted Core caps; a caller may
+pass an explicit, trusted override) and rejects a passport asking for more with `limits_exceed_policy` before any
+worker starts. Recorded limits are never clamped: different limits can change validation and reported ordinals, so a
+clamped run would be a different analysis presented as the same replay. Smaller recorded limits are used as recorded.
+`runs` must be an integer in [1, 100] (100 is the release target per golden scenario) and `timeout` a finite number of
+seconds in (0, 3600]; `analyze` and `run_worker` check the timeout too, and `analyze` requires a valid `Limits`.
+Violations raise `VerifyError` (CLI exit 2). Passport text is size-bounded before parsing (ADR 0007).
+
 **Replay presents the old binding to the engine.** The worker builds a `BoundPlan` from the passport's plan and its
 recorded plan and dataset digests and calls the unchanged `execute`. Changed data is therefore rejected by the
 engine's own `plan_not_bound_to_dataset` check, a changed plan by `plan_hash_mismatch`. A new analysis on changed data
@@ -35,17 +46,36 @@ engine's own `plan_not_bound_to_dataset` check, a changed plan by `plan_hash_mis
 |---------|---------|
 | `integrity_mismatch` | Passport digests do not recompute (nothing is executed), or the data's raw bytes or typed dataset differ from the passport, or the plan digest is rejected. Reported with `mismatch`: `passport`, `dataset` or `plan`. |
 | `execution_failure` | The worker crashed, timed out, could not read the file, or the engine raised on unchanged inputs. |
-| `numerical_discrepancy` | The computation completed but the result is not byte-identical in the same environment, or is outside the criteria below in a different environment. |
-| `numeric_agreement` | Different environment, not byte-identical, every field within the criteria. |
+| `numerical_discrepancy` | The computation completed but the result is not byte-identical where no environment difference was observed (verified or unverified), or is outside the criteria below in an observed different environment. |
+| `numeric_agreement` | Observed different environment, not byte-identical, every field within the criteria. |
 | `exact_match` | Byte-identical canonical result in every run. |
 
-**Same environment versus cross-environment.** Two environments are "the same" only if every comparable field is
-equal (ADR 0007: Python version/implementation/compiler, OS system/release/machine, all package versions, NumPy
-backend and SIMD, engine file digest, commit, dirty flag, lock digest, and the thread-limit probe); a field that is
-unavailable on either side counts as different. In the same environment the **only** passing criterion is byte
-identity (`exact_replay`); tolerances are not applied (`numerical_agreement` is `not_applicable`). In different
-environments `exact_replay` is `not_applicable`, byte identity is still reported, and `numerical_agreement` is judged
-with the criteria below. Replay never claims `independent_reference` (always `not_run`).
+**Environment status and comparison mode.** Each run's worker environment is classified against the passport's with
+`compare_environments` (ADR 0007: Python version/implementation/compiler, OS system/release/machine, all package
+versions, NumPy backend and SIMD, engine file digest, commit, dirty flag, lock digest, thread variables, detected pools
+with thread counts, thread-limit probe, BLAS visibility):
+
+| Status | Meaning | Mode | Criterion |
+|--------|---------|------|-----------|
+| `verified_same` | every compared field observed on both sides and equal | `same_environment_exact` | byte identity only |
+| `unverified` | nothing observed differs, but some field is unknown | `exact_environment_unverified` | byte identity only |
+| `different` | some field observed on both sides and unequal | `cross_environment_numeric` | criteria below |
+
+Unknown metadata therefore never weakens exact replay to numeric agreement: tolerances apply only where a difference
+was *observed*. `environment_match` is `pass`, `not_run` (unverified; the unknown fields are listed) or `fail`. In an
+exact mode `numerical_agreement` is `not_applicable`; in the numeric mode `exact_replay` is `not_applicable`, and byte
+identity is still reported (verdict `exact_match` whenever the bytes are identical). The report gives the worst status
+over the runs, and each run keeps its own. Replay never claims `independent_reference` (always `not_run`).
+
+**Per-run evidence (B3).** Every run record stores its run id, its environment status and its worker's own thread
+observations (thread variables, pools with thread counts, probe, BLAS visibility, derived native-thread status). The
+summary check `native_thread_policy` passes only if every worker verified one native thread for every library;
+an invisible BLAS (Apple Accelerate) makes it `not_run`, never `pass`.
+
+**Partial runs.** Every check about "every run" (`exact_replay`, `numerical_agreement`, `plan_identity`,
+`partition_identity`) passes only if *all requested* runs completed and satisfied it. `partition_identity` reports
+`runs_requested`, `runs_compared` and whether the partitions were equal in the compared runs, so agreement on a
+successful subset is visible but is not a pass.
 
 **Per-operation comparison criteria `axiom.agreement/1`** (fixed here and in the EXP-004/EXP-005 pre-registrations
 before any comparison was evaluated; derived from earlier criteria, not from observed differences):
@@ -71,6 +101,16 @@ loose or the derivation's assumptions (for example equal member means) inapplica
 **Seeds.** A fixed seed and a lockfile are necessary for repeatable K-means runs (REF-030) but neither guarantees
 identical numbers across builds or machines (REF-029); the criteria above exist for that reason.
 
+## Revision after technical review (2026-11-25, before acceptance)
+
+Reproduced on head `3172cdc` before any change: a re-sealed passport recording `max_bytes` 1000 times the default was
+dispatched to a worker with that budget (B1); equal unknown environment fields and unverified probes were treated as
+equal, pool thread counts were not compared, and the per-run records of EXP-004 held no worker thread evidence (B3).
+The policy check, argument bounds, three-status environment comparison, per-run evidence and partial-run rules above
+are the corrections (regression tests in `tests/test_review_regressions.py`; fresh-process confirmation in EXP-006).
+`numeric_agreement` criteria (`axiom.agreement/1`) are unchanged; differences beyond the binary64 range are reported
+with `abs_diff = null` instead of infinity and fail every tolerance.
+
 ## Alternatives considered
 
 - **In-process repetition only** (rejected: shares imports, caches and allocator state; Issue #2 already had it).
@@ -81,6 +121,9 @@ identical numbers across builds or machines (REF-029); the criteria above exist 
 - **ARI = 1 as the partition criterion** (rejected as authoritative: exact membership-set equality is stronger and has no
   floating point; ARI is reported).
 - **Treating unavailable environment fields as equal** (rejected: unknown must never pass).
+- **Treating unknown environment fields as "different"** (the first implementation; rejected in review: on a Mac with
+  Accelerate every replay would have become cross-environment, silently replacing byte identity with tolerances).
+- **Clamping recorded limits to the local policy** (rejected: a different analysis presented as the same replay).
 
 ## Tradeoffs and consequences
 

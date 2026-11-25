@@ -8,7 +8,10 @@
 - `issue3_common.py` – the ten Issue #3 scenarios (example table and an integer-only 5,000-row synthetic table).
 - `issue3_replay_benchmark.py` – EXP-004: 20 fresh-process replays per scenario, mutations, malformed input.
 - `issue3_cross_platform.py` – EXP-005: writes reference passports or compares this machine against them (run in CI,
-  report only).
+  report only; exits 1 if any scenario could not be compared).
+- `issue3_confirmation.py` – EXP-006: replay with per-run worker evidence, the EXP-004 mutations, adversarial A1-A3.
+- `checkout_line_endings.py` – EXP-006 part D: committed Git blobs versus checked-out bytes for the hashed files
+  (run in CI, report only).
 
 Results and the environments they were measured in are in `docs/evidence/experiments/`.
 Timings are single runs on one machine, not performance claims. No model or UI benchmark exists.

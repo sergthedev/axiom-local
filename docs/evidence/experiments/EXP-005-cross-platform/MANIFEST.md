@@ -52,3 +52,17 @@
   and not independent human replication.
 - Byte identity across platforms is an observation here, not a promise; the criteria remain the contract for other inputs.
 - The step is report-only; its green status alone says nothing about agreement.
+
+## Notes added after technical review (2026-11-25; results unchanged)
+
+- **Commit versus content.** The reference passports were written at `f163b41`; CI tested the merge commit `ef0b84b`
+  (PR head `031360b` merged into `main`). `git diff f163b41 031360b -- src uv.lock pyproject.toml` is empty, so the
+  engine source and lock file content were the same; the commit field differs by construction, which alone makes every
+  comparison cross-environment.
+- **Windows digests: cause confirmed in EXP-006.** The hypothesis above was tested in
+  [EXP-006](../EXP-006-review-confirmation/MANIFEST.md) part D: the Windows runner's Git uses `core.autocrlf=true`, and
+  every hashed file differed from its committed blob only by LF -> CRLF conversion. `.gitattributes` now pins LF for
+  `*.py` and `uv.lock`.
+- The comparison in this experiment treated unknown environment fields as differences (the code under test at the time).
+  The revised classification (ADR 0008) would also have reported these environments as `different` (Python version,
+  OS and commit differ), so the verdicts are unaffected.
