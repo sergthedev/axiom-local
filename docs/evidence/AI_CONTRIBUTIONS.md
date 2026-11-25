@@ -2,9 +2,15 @@
 
 Records what AI tools actually did and what humans checked. No hidden reasoning, chats or private paths.
 The exact model identifier is not recorded in repository files (implementing-tool policy). The owner-reported
-configuration is stated in the Issue #1 report. No internal model ID is claimed.
+configuration for Issue #1 is stated in the [Issue #1 completion report](https://github.com/sergthedev/axiom-local/issues/1#issuecomment-7166754243);
+the owner-reported configuration for Issue #2 is whatever the owner states in the Issue #2 thread. No internal
+model ID is claimed.
 
 | Date | Issue/PR | Tool | Contribution | Human check |
 |------|----------|------|--------------|-------------|
 | 2026-11-25 | Issue #1 | Claude Code (implementation engineer) | Drafted governance files, docs, package skeleton, CI, skills; ran local install and tests; recorded results | Pending: technical review by ChatGPT, owner approval |
 | 2026-11-25 | Issue #1 | Automated web-fetch subagent (Claude Code) | Fetched the Claude Code skills documentation page (REF-001); report was partly model-summarized | Pending |
+| 2026-11-25 | Issue #1 review | ChatGPT (technical lead / reviewer) | Reviewed the bootstrap and independently inspected CI run 45644347806 ([review](https://github.com/sergthedev/axiom-local/issues/1#issuecomment-7166799471)) | This is an AI review, **not** a human check; owner approval pending |
+| 2026-11-25 | Issue #2 research input | AI-assisted Deep Research (DR-001, DR-002; tool not named in the lead's comments) and ChatGPT technical lead synthesis | Produced private research reports and the published lead notes/decisions ([DR-002 note](https://github.com/sergthedev/axiom-local/issues/2#issuecomment-7166467376), [decision](https://github.com/sergthedev/axiom-local/issues/2#issuecomment-7167523230)); the raw reports are private and not published. The lead recorded that DR-002 could not retrieve the repository | Lead privately reviewed the reports (AI review, not independent scientific evidence); implementer re-opened the cited primary sources (REF-007..REF-020) |
+| 2026-11-25 | Issue #2 / PR | Claude Code (implementation engineer) | Implemented the input guard, typed plans, canonical serialization, Inspect, Relate, Compare and Cluster; wrote the tests, exact-arithmetic oracles, evidence scripts, synthetic example, ADRs 0002-0006, DR-002 synthesis and references; ran the local checks and measurements recorded in EXP-001; pinned the GitHub Actions to commit SHAs | Pending: technical review by ChatGPT and owner approval. The oracles and tests were written by the same tool that wrote the code, so passing them is not independent verification by a reviewer |
+| 2026-11-25 | Issue #2 | Local `curl` fetches (no subagent) | Downloaded the five NIST StRD data files, their certified-values pages and the primary-source documentation pages that were then read and registered | Hashes of the NIST files are recorded in `tests/data/nist/MANIFEST.json`; page text was checked for the quoted claims only |

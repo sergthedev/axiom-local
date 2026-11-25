@@ -67,7 +67,7 @@ all 600 measured quartiles.
 - The near-constant rule is conservative with respect to *algorithmic* error: EXP-001 shows the stdlib kernel is
   accurate to ~1e-16 against the exact value of the *same float inputs* even in the flagged range 2^-48..2^-44. The rule
   reflects uncertainty from input representation, not an algorithm failure; it may reject data that a user knows are exact.
-- `statistics.mean/variance/stdev` each re-accumulate exactly: Inspect on 1,000,000 rows took ~2.7 s on the measured machine.
+- `statistics.mean/variance/stdev` each re-accumulate exactly: Inspect on 1,000,000 rows took 2.7 s and 4.4 s in two runs on the measured machine (EXP-001 records the second).
 - Correlation overflow/underflow protection relies on exact power-of-two scaling, which is exact except for entries that
   underflow to subnormals during down-scaling (negligible relative to max|v|).
 

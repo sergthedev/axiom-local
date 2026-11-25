@@ -16,8 +16,8 @@ Implemented in `src/axiom/ops_cluster.py`, with `src/axiom/partition.py`.
 - **Solver**: `StandardScaler` (ddof=0, REF-013) then `KMeans` with explicit k-means++ initialization, integer seed
   (default 42), `n_init=10`, `max_iter=300`, `tol=1e-4`, `algorithm="lloyd"`, `copy_x=True` (REF-012). All values are
   part of the plan and the result. They are provisional pending local validation; no global optimum is claimed.
-  The fit runs under `threadpool_limits(limits=1)`: EXP-001 measured 7 distinct outputs in 20 fits with default threads
-  versus 1 in 20 with a single thread on one machine, so the bit-level result is only reproducible single-threaded.
+  The fit runs under `threadpool_limits(limits=1)`: EXP-001 measured 9 distinct outputs in 20 fits with default threads
+  (7 in an earlier run of the same experiment) versus 1 in 20 with a single thread (both runs) on one machine, so the bit-level result is only reproducible single-threaded.
 - **Eligibility**: finite numeric features, listwise deletion with counts and ordinals; `2 <= k <= max_k`, `k` not above
   the number of eligible rows nor the number of distinct eligible points (checked both in original and standardized
   space); features that are constant, near-constant (same 2^-40 relative-spread rule as ADR 0004) or of magnitude above
@@ -48,7 +48,7 @@ Implemented in `src/axiom/ops_cluster.py`, with `src/axiom/partition.py`.
 
 - Rejecting at `n_iter == max_iter` can discard a solution that converged exactly on the last iteration.
 - The symmetric-input case (for example a rectangle) has no unique expected partition; tests accept any valid result there and check repeatability instead.
-- Single-threaded fitting is slower for large inputs (100,000 rows with k=4 took ~0.5 s on the measured machine).
+- Single-threaded fitting is slower for large inputs (100,000 rows with k=4 took 0.5-0.6 s in two runs on the measured machine).
 
 ## Unvalidated assumptions
 

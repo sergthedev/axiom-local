@@ -34,7 +34,7 @@
 | `statistics.correlation` for Relate | **Implemented behind a guard**: the installed 3.12.16 function returned `0.0` near 1e200 and raised a false "constant" error near 1e-200 on test inputs, SciPy `pearsonr` handled both. Power-of-two range scaling was added instead of adding SciPy as a direct dependency (tradeoff in ADR 0004). |
 | Correlation matrix | **Deferred** (P1 in the lead decision). |
 | Quartile accuracy criterion | One pre-registered criterion **failed** and was revised with a recorded derivation (ADR 0004, development log). |
-| K-means thread determinism | **Measured** on one machine: 7 distinct outputs in 20 default-thread fits versus 1 in 20 single-thread fits; the engine therefore fits single-threaded. |
+| K-means thread determinism | **Measured** on one machine: 9 distinct outputs in 20 default-thread fits (7 in an earlier run) versus 1 in 20 single-thread fits; the engine therefore fits single-threaded. |
 | Independent verification | NIST certified values and exact rational oracles were used. These are independent references, but the oracle code was written by the same implementer; no independent reviewer has reproduced the results yet. |
 
 ## Limitations

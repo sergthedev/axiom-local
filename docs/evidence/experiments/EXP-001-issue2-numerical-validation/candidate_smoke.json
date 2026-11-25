@@ -1,0 +1,103 @@
+{
+  "commit": "f92117a4f984a029352ded9ef11cbad447371beb",
+  "correlation_candidates": {
+    "extreme_scale_cases": [
+      {
+        "axiom_guarded": 0.997176464952738,
+        "exact": 0.997176464952738,
+        "scale": 1e-200,
+        "scipy_pearsonr": 0.9971764649527379,
+        "stdlib_raw": "StatisticsError: at least one of the inputs is constant"
+      },
+      {
+        "axiom_guarded": 0.9971764649527382,
+        "exact": 0.997176464952738,
+        "scale": 1e+200,
+        "scipy_pearsonr": 0.9971764649527379,
+        "stdlib_raw": 0.0
+      }
+    ],
+    "n_pairs": 300,
+    "seed": 20261125,
+    "worst_abs_error": {
+      "axiom_guarded_pearson": 2.2439055126979635e-16,
+      "axiom_spearman": 5.534836193145942e-17,
+      "scipy_pearsonr": 3.604785344979841e-16,
+      "scipy_spearmanr": 2.716051581721215e-16,
+      "stdlib_raw_pearson": 2.2439055126979635e-16
+    }
+  },
+  "descriptive_candidates": [
+    {
+      "abs_error_mean": {
+        "naive_sum_over_n": 0.0,
+        "numpy.mean": 0.0,
+        "statistics.mean": 0.0
+      },
+      "abs_error_sd": {
+        "naive_one_pass": 0.0,
+        "numpy.std_ddof1": 0.0,
+        "statistics.stdev": 0.0
+      },
+      "dataset": "NumAcc1"
+    },
+    {
+      "abs_error_mean": {
+        "naive_sum_over_n": 1.1091139107144421e-16,
+        "numpy.mean": 1.1091139107144421e-16,
+        "statistics.mean": 1.1091139107144421e-16
+      },
+      "abs_error_sd": {
+        "naive_one_pass": 2.7755575615628914e-17,
+        "numpy.std_ddof1": 1.3877787807814457e-17,
+        "statistics.stdev": 6.15681900303612e-35
+      },
+      "dataset": "NumAcc2"
+    },
+    {
+      "abs_error_mean": {
+        "naive_sum_over_n": 5.826581042486948e-11,
+        "numpy.mean": 5.826581042486948e-11,
+        "statistics.mean": 5.8149511402065344e-11
+      },
+      "abs_error_sd": {
+        "naive_one_pass": 3.4924590996982246e-11,
+        "numpy.std_ddof1": 1.3877770884079252e-17,
+        "statistics.stdev": 1.6923735203965583e-23
+      },
+      "dataset": "NumAcc3"
+    },
+    {
+      "abs_error_mean": {
+        "naive_sum_over_n": 9.322529667979116e-10,
+        "numpy.mean": 9.322529667979116e-10,
+        "statistics.mean": 9.303921824330455e-10
+      },
+      "abs_error_sd": {
+        "naive_one_pass": 0.10000000055879354,
+        "numpy.std_ddof1": 4.3324761895186925e-21,
+        "statistics.stdev": 4.3324761895186925e-21
+      },
+      "dataset": "NumAcc4"
+    },
+    {
+      "abs_error_mean": {
+        "naive_sum_over_n": 2.7995383788947946e-16,
+        "numpy.mean": 2.7995383788947946e-16,
+        "statistics.mean": 2.7995383788947946e-16
+      },
+      "abs_error_sd": {
+        "naive_one_pass": 3.554305396389038e-17,
+        "numpy.std_ddof1": 3.554305396389038e-17,
+        "statistics.stdev": 3.554305396389038e-17
+      },
+      "dataset": "PiDigits"
+    }
+  ],
+  "versions": {
+    "numpy": "2.5.5",
+    "python": "3.12.16",
+    "scipy": "1.18.1"
+  },
+  "working_tree_dirty": false
+}
