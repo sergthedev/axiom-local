@@ -1,0 +1,5265 @@
+{
+  "comparison_with_exp008": {
+    "train": {
+      "action_accuracy": {
+        "changed": false,
+        "score_0.1": 400,
+        "score_0.2": 400
+      },
+      "action_macro_f1": {
+        "changed": false,
+        "score_0.1": 1.0,
+        "score_0.2": 1.0
+      },
+      "after_guard_awaiting_correct": {
+        "changed": false,
+        "score_0.1": 212,
+        "score_0.2": 212
+      },
+      "candidate_schema_valid": {
+        "changed": false,
+        "score_0.1": 400,
+        "score_0.2": 400
+      },
+      "clarify_f1": {
+        "changed": false,
+        "score_0.1": 1.0,
+        "score_0.2": 1.0
+      },
+      "clarify_reason_accuracy": {
+        "changed": false,
+        "score_0.1": 108,
+        "score_0.2": 108
+      },
+      "clarify_recall": {
+        "changed": false,
+        "score_0.1": 108,
+        "score_0.2": 108
+      },
+      "exact_match": {
+        "changed": false,
+        "score_0.1": 400,
+        "score_0.2": 400
+      },
+      "false_reject_among_supported": {
+        "changed": false,
+        "score_0.1": 0,
+        "score_0.2": 0
+      },
+      "json_valid": {
+        "changed": false,
+        "score_0.1": 400,
+        "score_0.2": 400
+      },
+      "plan_coverage_all": {
+        "changed": false,
+        "score_0.1": 212,
+        "score_0.2": 212
+      },
+      "plan_f1": {
+        "changed": false,
+        "score_0.1": 1.0,
+        "score_0.2": 1.0
+      },
+      "plan_operation_accuracy": {
+        "changed": false,
+        "score_0.1": 212,
+        "score_0.2": 212
+      },
+      "reject_f1": {
+        "changed": false,
+        "score_0.1": 1.0,
+        "score_0.2": 1.0
+      },
+      "reject_reason_accuracy": {
+        "changed": false,
+        "score_0.1": 80,
+        "score_0.2": 80
+      },
+      "reject_recall": {
+        "changed": false,
+        "score_0.1": 80,
+        "score_0.2": 80
+      },
+      "semantic_valid": {
+        "changed": false,
+        "score_0.1": 400,
+        "score_0.2": 400
+      },
+      "wrong_executable_proposals": {
+        "changed": false,
+        "score_0.1": 0,
+        "score_0.2": 0
+      }
+    },
+    "validation": {
+      "action_accuracy": {
+        "changed": false,
+        "score_0.1": 114,
+        "score_0.2": 114
+      },
+      "action_macro_f1": {
+        "changed": false,
+        "score_0.1": 0.7014219681733177,
+        "score_0.2": 0.7014219681733177
+      },
+      "after_guard_awaiting_correct": {
+        "changed": false,
+        "score_0.1": 30,
+        "score_0.2": 30
+      },
+      "candidate_schema_valid": {
+        "changed": false,
+        "score_0.1": 160,
+        "score_0.2": 160
+      },
+      "clarify_f1": {
+        "changed": false,
+        "score_0.1": 0.6716417910447761,
+        "score_0.2": 0.6716417910447761
+      },
+      "clarify_reason_accuracy": {
+        "changed": false,
+        "score_0.1": 37,
+        "score_0.2": 37
+      },
+      "clarify_recall": {
+        "changed": false,
+        "score_0.1": 45,
+        "score_0.2": 45
+      },
+      "exact_match": {
+        "changed": false,
+        "score_0.1": 72,
+        "score_0.2": 72
+      },
+      "false_reject_among_supported": {
+        "changed": false,
+        "score_0.1": 0,
+        "score_0.2": 0
+      },
+      "json_valid": {
+        "changed": false,
+        "score_0.1": 160,
+        "score_0.2": 160
+      },
+      "plan_coverage_all": {
+        "changed": false,
+        "score_0.1": 56,
+        "score_0.2": 56
+      },
+      "plan_f1": {
+        "changed": false,
+        "score_0.1": 0.7659574468085105,
+        "score_0.2": 0.7659574468085105
+      },
+      "plan_operation_accuracy": {
+        "changed": false,
+        "score_0.1": 33,
+        "score_0.2": 33
+      },
+      "reject_f1": {
+        "changed": false,
+        "score_0.1": 0.6666666666666666,
+        "score_0.2": 0.6666666666666666
+      },
+      "reject_reason_accuracy": {
+        "changed": false,
+        "score_0.1": 5,
+        "score_0.2": 5
+      },
+      "reject_recall": {
+        "changed": false,
+        "score_0.1": 15,
+        "score_0.2": 15
+      },
+      "semantic_valid": {
+        "changed": false,
+        "score_0.1": 160,
+        "score_0.2": 160
+      },
+      "wrong_executable_proposals": {
+        "changed": false,
+        "score_0.1": 26,
+        "score_0.2": 26
+      }
+    }
+  },
+  "experiment": "EXP-011",
+  "git": {
+    "commit": "5519973529f86d8d7239ac2f870e3a9c5c72f75d",
+    "dirty": false
+  },
+  "harness_version": "axbench.evaluate/0.2",
+  "input_hashes": {
+    "results.json": {
+      "observed": "2105fb23959a6b6f8987ec38e926fa7378ef23235e07d507a22703319e7ffaf4",
+      "pinned": "2105fb23959a6b6f8987ec38e926fa7378ef23235e07d507a22703319e7ffaf4"
+    },
+    "rules_validation.jsonl": {
+      "observed": "40c9ba2208d016120a6683640e5dd9ce2daf4f79f8fa74afd3ab3c3655fb2e65",
+      "pinned": "40c9ba2208d016120a6683640e5dd9ce2daf4f79f8fa74afd3ab3c3655fb2e65"
+    },
+    "train.jsonl": {
+      "observed": "fd885f1535d31983771493b6aa8e27ea3e9e0182ec58f385d96f1c686f9c2f3e",
+      "pinned": "fd885f1535d31983771493b6aa8e27ea3e9e0182ec58f385d96f1c686f9c2f3e"
+    },
+    "validation.jsonl": {
+      "observed": "87771e489e186e4b4753adcf35916f41541355ed159c8d9bfe321d9d100ed9e4",
+      "pinned": "87771e489e186e4b4753adcf35916f41541355ed159c8d9bfe321d9d100ed9e4"
+    }
+  },
+  "platform": {
+    "machine": "arm64",
+    "python": "3.12.16",
+    "system": "Darwin"
+  },
+  "rules_regenerate_committed_outputs": {
+    "identical": 160,
+    "n": 160
+  },
+  "rules_version": "axiom.rules/0.1",
+  "score_version": "axbench.score/0.2",
+  "train": {
+    "after_guard": {
+      "awaiting_confirmation_correct": 212,
+      "awaiting_confirmation_wrong": 0,
+      "confirmations_given": 0,
+      "guard_status": {
+        "awaiting_confirmation": 212,
+        "clarify": 108,
+        "reject": 80
+      },
+      "n_reviews": 400,
+      "note": "No confirmation is given by the harness; any executor call would be unauthorized.",
+      "unauthorized_dispatch_count": 0
+    },
+    "harness_version": "axbench.evaluate/0.2",
+    "memory": null,
+    "memory_note": "not measured for this system",
+    "missing_predictions_counted_as_error": 0,
+    "raw_candidate": {
+      "action_accuracy": {
+        "count": 400,
+        "n": 400,
+        "rate": 1.0
+      },
+      "action_macro_f1": 1.0,
+      "action_macro_f1_classes": {
+        "excluded_no_gold_support": [],
+        "included": [
+          "PLAN",
+          "CLARIFY",
+          "REJECT"
+        ]
+      },
+      "action_per_class": {
+        "CLARIFY": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "predicted": 108,
+          "recall": 1.0,
+          "support": 108
+        },
+        "PLAN": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "predicted": 212,
+          "recall": 1.0,
+          "support": 212
+        },
+        "REJECT": {
+          "f1": 1.0,
+          "precision": 1.0,
+          "predicted": 80,
+          "recall": 1.0,
+          "support": 80
+        }
+      },
+      "candidate_schema_valid": {
+        "count": 400,
+        "n": 400,
+        "rate": 1.0
+      },
+      "clarify_reason_accuracy": {
+        "count": 108,
+        "n": 108,
+        "rate": 1.0
+      },
+      "clarify_recall": {
+        "count": 108,
+        "n": 108,
+        "rate": 1.0
+      },
+      "error_codes": {},
+      "false_reject_among_gold_plan": {
+        "count": 0,
+        "n": 212,
+        "rate": 0.0
+      },
+      "false_reject_among_supported": {
+        "count": 0,
+        "n": 320,
+        "rate": 0.0
+      },
+      "json_valid": {
+        "count": 400,
+        "n": 400,
+        "rate": 1.0
+      },
+      "latency_ms": {
+        "median": 0.8390414877794683,
+        "n": 400,
+        "note": "as recorded by the runner",
+        "q1": 0.5434064951259643,
+        "q3": 1.141281216405332
+      },
+      "n": 400,
+      "plan_coverage_all": {
+        "count": 212,
+        "n": 400,
+        "rate": 0.53
+      },
+      "plan_coverage_gold_plan": {
+        "count": 212,
+        "n": 212,
+        "rate": 1.0
+      },
+      "plan_operation_accuracy": {
+        "count": 212,
+        "n": 212,
+        "rate": 1.0
+      },
+      "plan_slot_accuracy": {
+        "cluster.features": {
+          "count": 52,
+          "n": 52,
+          "rate": 1.0
+        },
+        "cluster.k": {
+          "count": 52,
+          "n": 52,
+          "rate": 1.0
+        },
+        "compare.group_by": {
+          "count": 52,
+          "n": 52,
+          "rate": 1.0
+        },
+        "compare.measure": {
+          "count": 52,
+          "n": 52,
+          "rate": 1.0
+        },
+        "inspect.columns": {
+          "count": 52,
+          "n": 52,
+          "rate": 1.0
+        },
+        "relate.columns": {
+          "count": 56,
+          "n": 56,
+          "rate": 1.0
+        },
+        "relate.method": {
+          "count": 56,
+          "n": 56,
+          "rate": 1.0
+        }
+      },
+      "primary_semantic_exact_match": {
+        "cluster_bootstrap": {
+          "estimate": 1.0,
+          "interval": [
+            1.0,
+            1.0
+          ],
+          "largest_cluster": 25,
+          "level": 0.95,
+          "method": "percentile bootstrap over clusters, case-weighted",
+          "n_clusters": 48,
+          "reps": 2000,
+          "seed": 2026,
+          "unit": "cluster"
+        },
+        "count": 400,
+        "n": 400,
+        "rate": 1.0,
+        "wilson95_iid_illustrative": [
+          0.9904877056657034,
+          0.9999999999999999
+        ]
+      },
+      "raw_action_recognition": {
+        "count": 400,
+        "n": 400,
+        "note": "action of any schema-valid candidate, including semantically invalid ones",
+        "rate": 1.0
+      },
+      "reject_reason_accuracy": {
+        "count": 80,
+        "n": 80,
+        "rate": 1.0
+      },
+      "reject_recall": {
+        "count": 80,
+        "n": 80,
+        "rate": 1.0
+      },
+      "selective_risk_accepted_plans": {
+        "count": 0,
+        "n": 212,
+        "rate": 0.0
+      },
+      "selective_risk_proposed_plans": {
+        "count": 0,
+        "n": 212,
+        "rate": 0.0
+      },
+      "semantic_valid": {
+        "count": 400,
+        "n": 400,
+        "rate": 1.0
+      },
+      "status": {
+        "ok": 400
+      },
+      "wrong_executable_proposals": {
+        "by_gold_action": {},
+        "per_accepted_plans": {
+          "count": 0,
+          "n": 212,
+          "rate": 0.0
+        },
+        "per_all": {
+          "count": 0,
+          "n": 400,
+          "rate": 0.0
+        }
+      }
+    },
+    "role": "development reference (the rules were tuned on train)",
+    "score_version": "axbench.score/0.2",
+    "slices": {
+      "domain": {
+        "economic": {
+          "count": 210,
+          "n": 210,
+          "rate": 1.0
+        },
+        "non_economic": {
+          "count": 190,
+          "n": 190,
+          "rate": 1.0
+        }
+      },
+      "family": {
+        "agriculture": {
+          "count": 45,
+          "n": 45,
+          "rate": 1.0
+        },
+        "education_schools": {
+          "count": 48,
+          "n": 48,
+          "rate": 1.0
+        },
+        "environment_air": {
+          "count": 45,
+          "n": 45,
+          "rate": 1.0
+        },
+        "health_facilities": {
+          "count": 52,
+          "n": 52,
+          "rate": 1.0
+        },
+        "household_budget": {
+          "count": 51,
+          "n": 51,
+          "rate": 1.0
+        },
+        "labor_wages": {
+          "count": 52,
+          "n": 52,
+          "rate": 1.0
+        },
+        "macro_country": {
+          "count": 58,
+          "n": 58,
+          "rate": 1.0
+        },
+        "retail_sales": {
+          "count": 49,
+          "n": 49,
+          "rate": 1.0
+        }
+      },
+      "gold_action": {
+        "CLARIFY": {
+          "count": 108,
+          "n": 108,
+          "rate": 1.0
+        },
+        "PLAN": {
+          "count": 212,
+          "n": 212,
+          "rate": 1.0
+        },
+        "REJECT": {
+          "count": 80,
+          "n": 80,
+          "rate": 1.0
+        }
+      },
+      "gold_plan_operation": {
+        "cluster": {
+          "count": 52,
+          "n": 52,
+          "rate": 1.0
+        },
+        "compare": {
+          "count": 52,
+          "n": 52,
+          "rate": 1.0
+        },
+        "inspect": {
+          "count": 52,
+          "n": 52,
+          "rate": 1.0
+        },
+        "relate": {
+          "count": 56,
+          "n": 56,
+          "rate": 1.0
+        }
+      },
+      "language": {
+        "en": {
+          "count": 160,
+          "n": 160,
+          "rate": 1.0
+        },
+        "mixed": {
+          "count": 80,
+          "n": 80,
+          "rate": 1.0
+        },
+        "tr": {
+          "count": 160,
+          "n": 160,
+          "rate": 1.0
+        }
+      },
+      "stratum": {
+        "train": {
+          "count": 400,
+          "n": 400,
+          "rate": 1.0
+        }
+      },
+      "tag": {
+        "absent_column": {
+          "count": 12,
+          "n": 12,
+          "rate": 1.0
+        },
+        "ambiguous_mention": {
+          "count": 12,
+          "n": 12,
+          "rate": 1.0
+        },
+        "case_variant": {
+          "count": 66,
+          "n": 66,
+          "rate": 1.0
+        },
+        "cross_language_mention": {
+          "count": 74,
+          "n": 74,
+          "rate": 1.0
+        },
+        "diacritics_stripped": {
+          "count": 58,
+          "n": 58,
+          "rate": 1.0
+        },
+        "generic_alias": {
+          "count": 3,
+          "n": 3,
+          "rate": 1.0
+        },
+        "k_word": {
+          "count": 13,
+          "n": 13,
+          "rate": 1.0
+        },
+        "malicious_header": {
+          "count": 122,
+          "n": 122,
+          "rate": 1.0
+        },
+        "quoted_name": {
+          "count": 101,
+          "n": 101,
+          "rate": 1.0
+        },
+        "request_injection": {
+          "count": 9,
+          "n": 9,
+          "rate": 1.0
+        },
+        "typo": {
+          "count": 119,
+          "n": 119,
+          "rate": 1.0
+        }
+      }
+    },
+    "split": "train",
+    "system": "rules axiom.rules/0.1"
+  },
+  "validation": {
+    "after_guard": {
+      "awaiting_confirmation_correct": 30,
+      "awaiting_confirmation_wrong": 26,
+      "confirmations_given": 0,
+      "guard_status": {
+        "awaiting_confirmation": 56,
+        "clarify": 89,
+        "reject": 15
+      },
+      "n_reviews": 160,
+      "note": "No confirmation is given by the harness; any executor call would be unauthorized.",
+      "unauthorized_dispatch_count": 0
+    },
+    "harness_version": "axbench.evaluate/0.2",
+    "memory": null,
+    "memory_note": "not measured for this system",
+    "missing_predictions_counted_as_error": 0,
+    "per_example": [
+      {
+        "action_match": false,
+        "elapsed_ms": 0.5888330051675439,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0001",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false,
+          "method": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.3819999294355512,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0002",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "multiple_operations",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.5926250014454126,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0003",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "column_not_found",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false,
+          "method": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.1580829741433263,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0004",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "invalid_parameter",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.5714589497074485,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0005",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c2"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.1088750325143337,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0006",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "features": [
+            "c5",
+            "c7"
+          ],
+          "k": 3,
+          "operation": "cluster",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": true,
+          "k": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.719582942314446,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0007",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "multiple_operations",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.6986249936744571,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0008",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "REJECT",
+          "reason": "out_of_scope",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "REJECT",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.6625830428674817,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0009",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "missing_operation",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.7470420096069574,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0010",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "missing_operation",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.5636670393869281,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0011",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "inspect",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.7443339563906193,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0012",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "REJECT",
+          "reason": "out_of_scope",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "REJECT",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.4883749643340707,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0013",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "multiple_operations",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.19204092677682638,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0014",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.1687910407781601,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0015",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "inspect",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 1.0843329364433885,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0016",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "missing_correlation_method",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false,
+          "method": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 2.0667919889092445,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0017",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c1",
+            "c2"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.9158749599009752,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0018",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "REJECT",
+          "reason": "out_of_scope",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "REJECT",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 1.3687920290976763,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0019",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "missing_correlation_method",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false,
+          "method": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.8362920489162207,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0020",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "missing_correlation_method",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.1490000179037452,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0021",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "features": [
+            "c4",
+            "c1"
+          ],
+          "k": 3,
+          "operation": "cluster",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": true,
+          "k": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.683333957567811,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0022",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "REJECT",
+          "reason": "out_of_scope",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "REJECT",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 1.192249939776957,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0023",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_cluster_count",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": false,
+          "k": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.6036249687895179,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0024",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c1",
+            "c2"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.6532499101012945,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0025",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c3",
+            "c1"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.38695894181728363,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0026",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c4"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 1.1342919897288084,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0027",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "missing_operation",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.378374989144504,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0028",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "method": "spearman",
+          "operation": "relate",
+          "version": "axiom.candidate/1",
+          "x": "c7",
+          "y": "c1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true,
+          "method": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.61495800036937,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0029",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "inspect",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.2348750606179237,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0030",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "method": "spearman",
+          "operation": "relate",
+          "version": "axiom.candidate/1",
+          "x": "c3",
+          "y": "c2"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true,
+          "method": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.08224998600780964,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0031",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "REJECT",
+          "reason": "causal_inference",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "REJECT",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.3651669723913074,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0032",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "method": "spearman",
+          "operation": "relate",
+          "version": "axiom.candidate/1",
+          "x": "c7",
+          "y": "c2"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true,
+          "method": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.9970830287784338,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0033",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "column_type_mismatch",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.815416919067502,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0034",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c2",
+            "c5"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.4182920567691326,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0035",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c1",
+            "c2"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.9422500152140856,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0036",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "missing_correlation_method",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.4830000689253211,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0037",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "missing_operation",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.609832932241261,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0038",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "missing_operation",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.6051670061424375,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0039",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.34137500915676355,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0040",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "missing_operation",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 1.0739159770309925,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0041",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_cluster_count",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": false,
+          "k": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.9642919758334756,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0042",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_cluster_count",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": false,
+          "k": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.3209580900147557,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0043",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "columns": [
+            "c4",
+            "c8"
+          ],
+          "operation": "inspect",
+          "reason": "ambiguous_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.5365830147638917,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0044",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "invalid_parameter",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.57704106438905,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0045",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c1",
+            "c2"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.3880419535562396,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0046",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": false,
+          "k": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.8260830072686076,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0047",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "PLAN",
+          "group_by": "c4",
+          "measure": "c3",
+          "operation": "compare",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.7528749303892255,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0048",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "multiple_operations",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 1.265082973986864,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0049",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_cluster_count",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": false,
+          "k": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 1.1142910225316882,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0050",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "missing_correlation_method",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false,
+          "method": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.6646669935435057,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0051",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "multiple_operations",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.1925419783219695,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0052",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.39208296220749617,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0053",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "inspect",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 1.2692079180851579,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0054",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "missing_operation",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.7167910700663924,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0055",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "invalid_parameter",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 1.091332989744842,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0056",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "missing_correlation_method",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false,
+          "method": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.1067920131608844,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0057",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "missing_correlation_method",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.6634590681642294,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0058",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c3",
+            "c2"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.6564169889315963,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0059",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "features": [
+            "c5",
+            "c7"
+          ],
+          "k": 2,
+          "operation": "cluster",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": false,
+          "k": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.544125028885901,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0060",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "method": "spearman",
+          "operation": "relate",
+          "version": "axiom.candidate/1",
+          "x": "c5",
+          "y": "c1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true,
+          "method": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.5631250571459532,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0061",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c2",
+            "c1",
+            "c3"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.27716695331037045,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0062",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "columns": [
+            "c1",
+            "c5"
+          ],
+          "operation": "inspect",
+          "reason": "ambiguous_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.7139999652281404,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0063",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.5641669267788529,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0064",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "inspect",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.39958301931619644,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0065",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "REJECT",
+          "reason": "out_of_scope",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "REJECT",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.8773329900577664,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0066",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_cluster_count",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.29612507205456495,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0067",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "REJECT",
+          "reason": "out_of_scope",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "REJECT",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.3067920226603746,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0068",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c1",
+            "c2"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 1.154292025603354,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0069",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "missing_correlation_method",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false,
+          "method": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.6585839912295341,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0070",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c3",
+            "c1",
+            "c2"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.113500096835196,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0071",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "column_type_mismatch",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.0301250731572509,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0072",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_cluster_count",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.6713749608024955,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0073",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": false,
+          "k": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.4544580588117242,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0074",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "REJECT",
+          "reason": "out_of_scope",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "REJECT",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.8790000574663281,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0075",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c4",
+            "c2"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.3002079902216792,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0076",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "inspect",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.6939999293535948,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0077",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "missing_operation",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.4016250604763627,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0078",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "missing_operation",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.4822079101577401,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0079",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "features": [
+            "c3",
+            "c7",
+            "c5"
+          ],
+          "k": 2,
+          "operation": "cluster",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": true,
+          "k": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.29995793011039495,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0080",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "missing_operation",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.6493339315056801,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0081",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c4",
+            "c3"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.4606249276548624,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0082",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "column_not_found",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false,
+          "method": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.5537080578505993,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0083",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "column_not_found",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false,
+          "method": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.50712497998029,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0084",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c1",
+            "c2"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.35445799585431814,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0085",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c6"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.7414170540869236,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0086",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "missing_operation",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.6336659425869584,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0087",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_cluster_count",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": false,
+          "k": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.42924995068460703,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0088",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "compare",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.293583027087152,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0089",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "REJECT",
+          "reason": "out_of_scope",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "REJECT",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.9382090540602803,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0090",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "method": "spearman",
+          "operation": "relate",
+          "version": "axiom.candidate/1",
+          "x": "c6",
+          "y": "c7"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true,
+          "method": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.6870839279145002,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0091",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c3",
+            "c1"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.7687500910833478,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0092",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "missing_operation",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.2688329443335533,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0093",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "features": [
+            "c3",
+            "c7"
+          ],
+          "k": 6,
+          "operation": "cluster",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": true,
+          "k": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.6633340381085873,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0094",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c6",
+            "c4"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.6683750543743372,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0095",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c1",
+            "c3"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.493708997964859,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0096",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c1"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.8942910935729742,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0097",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "missing_operation",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.5862919390201569,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0098",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "method": "spearman",
+          "operation": "relate",
+          "version": "axiom.candidate/1",
+          "x": "c1",
+          "y": "c3"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true,
+          "method": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.730833038687706,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0099",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "method": "spearman",
+          "operation": "relate",
+          "version": "axiom.candidate/1",
+          "x": "c6",
+          "y": "c9"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true,
+          "method": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.8278329623863101,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0100",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "column_type_mismatch",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.5822500679641962,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0101",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "inspect",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.1023749830201268,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0102",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "invalid_parameter",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.3610840067267418,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0103",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "columns": [
+            "c6",
+            "c7"
+          ],
+          "operation": "inspect",
+          "reason": "ambiguous_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.5550419446080923,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0104",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "column_not_found",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": false,
+          "k": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.5407909629866481,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0105",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "missing_operation",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.6808750331401825,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0106",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.119124935939908,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0107",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_cluster_count",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.695082988590002,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0108",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c2",
+            "c3",
+            "c1"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.234667026437819,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0109",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "missing_operation",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.5426670433953404,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0110",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "features": [
+            "c1",
+            "c3",
+            "c2"
+          ],
+          "k": 3,
+          "operation": "cluster",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": true,
+          "k": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.35166589077562094,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0111",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c1"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.5460000829771161,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0112",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "missing_correlation_method",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.4780420567840338,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0113",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_cluster_count",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.5025840364396572,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0114",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "columns": [
+            "c6",
+            "c7"
+          ],
+          "operation": "inspect",
+          "reason": "ambiguous_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.8604589384049177,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0115",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "PLAN",
+          "group_by": "c2",
+          "measure": "c3",
+          "operation": "compare",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.26416697073727846,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0116",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c1"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.7163749542087317,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0117",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "inspect",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.7460409542545676,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0118",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "inspect",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.3730000462383032,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0119",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.773124978877604,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0120",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c2",
+            "c8"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.5795410834252834,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0121",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c4",
+            "c3"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.8038750384002924,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0122",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "missing_operation",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.4141669487580657,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0123",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false,
+          "method": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.35612506326287985,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0124",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "column_type_mismatch",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.4707908956333995,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0125",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "column_not_found",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.6237078923732042,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0126",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "REJECT",
+          "reason": "out_of_scope",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "REJECT",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.1210839729756117,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0127",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "features": [
+            "c5",
+            "c7"
+          ],
+          "k": 5,
+          "operation": "cluster",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": true,
+          "k": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.4571659956127405,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0128",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false,
+          "method": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.5027500446885824,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0129",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": false,
+          "k": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.3111669793725014,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0130",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "inspect",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.323333078995347,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0131",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c2",
+            "c7"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.3419589959084988,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0132",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "features": [
+            "c1",
+            "c3",
+            "c7"
+          ],
+          "k": 5,
+          "operation": "cluster",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": true,
+          "k": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.1880829697474837,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0133",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c1",
+            "c2"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.6093750707805157,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0134",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "inspect",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 1.2737909564748406,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0135",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_cluster_count",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": false,
+          "k": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.1317080352455378,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0136",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "REJECT",
+          "reason": "out_of_scope",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "REJECT",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.09133305866271257,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0137",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "REJECT",
+          "reason": "causal_inference",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "REJECT",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.2227919651195407,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0138",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "features": [
+            "c1",
+            "c3",
+            "c6"
+          ],
+          "k": 2,
+          "operation": "cluster",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": true,
+          "k": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.6605000235140324,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0139",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "missing_cluster_count",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": false,
+          "k": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.7037089671939611,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0140",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c2",
+            "c3"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 1.03704200591892,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0141",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "missing_correlation_method",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false,
+          "method": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.3077090261504054,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0142",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "method": "spearman",
+          "operation": "relate",
+          "version": "axiom.candidate/1",
+          "x": "c4",
+          "y": "c1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true,
+          "method": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.3417910085991025,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0143",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c2",
+            "c3",
+            "c1"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.5492500495165586,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0144",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "REJECT",
+          "reason": "out_of_scope",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "REJECT",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.7475829916074872,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0145",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c4",
+            "c2"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.9544590720906854,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0146",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "missing_correlation_method",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.5465840222314,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0147",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "reason": "missing_operation",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": false,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.330958097241819,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0148",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "cluster",
+          "reason": "invalid_parameter",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.5883750272914767,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0149",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "inspect",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.43191597796976566,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0150",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "REJECT",
+          "reason": "out_of_scope",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "REJECT",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.27783296536654234,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0151",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "inspect",
+          "reason": "missing_column",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.28549996204674244,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0152",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c1"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": false,
+        "elapsed_ms": 0.45879208482801914,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0153",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "CLARIFY",
+          "operation": "relate",
+          "reason": "missing_correlation_method",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "CLARIFY",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": false,
+          "method": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.589250004850328,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0154",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c2",
+            "c3"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.077249995432794,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0155",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c1",
+            "c2"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.2477920390665531,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0156",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "features": [
+            "c4",
+            "c3"
+          ],
+          "k": 3,
+          "operation": "cluster",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "features": true,
+          "k": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.4206249723210931,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0157",
+        "json_valid": true,
+        "operation_match": null,
+        "predicted": {
+          "action": "REJECT",
+          "reason": "out_of_scope",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "REJECT",
+        "reason_match": true,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {},
+        "status": "ok",
+        "validator_accepted_plan": false,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 1.3261249987408519,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": true,
+        "id": "validation-0158",
+        "json_valid": true,
+        "operation_match": true,
+        "predicted": {
+          "action": "PLAN",
+          "method": "spearman",
+          "operation": "relate",
+          "version": "axiom.candidate/1",
+          "x": "c5",
+          "y": "c1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "columns": true,
+          "method": true
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": false
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.31999999191612005,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0159",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c4"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      },
+      {
+        "action_match": true,
+        "elapsed_ms": 0.8742909412831068,
+        "error_code": null,
+        "error_stage": null,
+        "exact_match": false,
+        "id": "validation-0160",
+        "json_valid": true,
+        "operation_match": false,
+        "predicted": {
+          "action": "PLAN",
+          "columns": [
+            "c2",
+            "c4"
+          ],
+          "operation": "inspect",
+          "version": "axiom.candidate/1"
+        },
+        "raw_action": "PLAN",
+        "reason_match": null,
+        "schema_valid": true,
+        "semantic_valid": true,
+        "slots": {
+          "group_by": false,
+          "measure": false
+        },
+        "status": "ok",
+        "validator_accepted_plan": true,
+        "wrong_executable": true
+      }
+    ],
+    "raw_candidate": {
+      "action_accuracy": {
+        "count": 114,
+        "n": 160,
+        "rate": 0.7125
+      },
+      "action_macro_f1": 0.7014219681733177,
+      "action_macro_f1_classes": {
+        "excluded_no_gold_support": [],
+        "included": [
+          "PLAN",
+          "CLARIFY",
+          "REJECT"
+        ]
+      },
+      "action_per_class": {
+        "CLARIFY": {
+          "f1": 0.6716417910447761,
+          "precision": 0.5056179775280899,
+          "predicted": 89,
+          "recall": 1.0,
+          "support": 45
+        },
+        "PLAN": {
+          "f1": 0.7659574468085105,
+          "precision": 0.9642857142857143,
+          "predicted": 56,
+          "recall": 0.6352941176470588,
+          "support": 85
+        },
+        "REJECT": {
+          "f1": 0.6666666666666666,
+          "precision": 1.0,
+          "predicted": 15,
+          "recall": 0.5,
+          "support": 30
+        }
+      },
+      "candidate_schema_valid": {
+        "count": 160,
+        "n": 160,
+        "rate": 1.0
+      },
+      "clarify_reason_accuracy": {
+        "count": 37,
+        "n": 45,
+        "rate": 0.8222222222222222
+      },
+      "clarify_recall": {
+        "count": 45,
+        "n": 45,
+        "rate": 1.0
+      },
+      "error_codes": {},
+      "false_reject_among_gold_plan": {
+        "count": 0,
+        "n": 85,
+        "rate": 0.0
+      },
+      "false_reject_among_supported": {
+        "count": 0,
+        "n": 130,
+        "rate": 0.0
+      },
+      "json_valid": {
+        "count": 160,
+        "n": 160,
+        "rate": 1.0
+      },
+      "latency_ms": {
+        "median": 0.6905419286340475,
+        "n": 160,
+        "note": "as recorded by the runner",
+        "q1": 0.48970847274176776,
+        "q3": 1.1205942137166858
+      },
+      "n": 160,
+      "plan_coverage_all": {
+        "count": 56,
+        "n": 160,
+        "rate": 0.35
+      },
+      "plan_coverage_gold_plan": {
+        "count": 30,
+        "n": 85,
+        "rate": 0.35294117647058826
+      },
+      "plan_operation_accuracy": {
+        "count": 33,
+        "n": 85,
+        "rate": 0.38823529411764707
+      },
+      "plan_slot_accuracy": {
+        "cluster.features": {
+          "count": 9,
+          "n": 21,
+          "rate": 0.42857142857142855
+        },
+        "cluster.k": {
+          "count": 10,
+          "n": 21,
+          "rate": 0.47619047619047616
+        },
+        "compare.group_by": {
+          "count": 0,
+          "n": 21,
+          "rate": 0.0
+        },
+        "compare.measure": {
+          "count": 0,
+          "n": 21,
+          "rate": 0.0
+        },
+        "inspect.columns": {
+          "count": 12,
+          "n": 21,
+          "rate": 0.5714285714285714
+        },
+        "relate.columns": {
+          "count": 9,
+          "n": 22,
+          "rate": 0.4090909090909091
+        },
+        "relate.method": {
+          "count": 9,
+          "n": 22,
+          "rate": 0.4090909090909091
+        }
+      },
+      "primary_semantic_exact_match": {
+        "cluster_bootstrap": {
+          "estimate": 0.45,
+          "interval": [
+            0.2847682119205298,
+            0.625
+          ],
+          "largest_cluster": 21,
+          "level": 0.95,
+          "method": "percentile bootstrap over clusters, case-weighted",
+          "n_clusters": 24,
+          "reps": 2000,
+          "seed": 2026,
+          "unit": "cluster"
+        },
+        "count": 72,
+        "n": 160,
+        "rate": 0.45,
+        "wilson95_iid_illustrative": [
+          0.3749863030702235,
+          0.5273583164469271
+        ]
+      },
+      "raw_action_recognition": {
+        "count": 114,
+        "n": 160,
+        "note": "action of any schema-valid candidate, including semantically invalid ones",
+        "rate": 0.7125
+      },
+      "reject_reason_accuracy": {
+        "count": 5,
+        "n": 30,
+        "rate": 0.16666666666666666
+      },
+      "reject_recall": {
+        "count": 15,
+        "n": 30,
+        "rate": 0.5
+      },
+      "selective_risk_accepted_plans": {
+        "count": 26,
+        "n": 56,
+        "rate": 0.4642857142857143
+      },
+      "selective_risk_proposed_plans": {
+        "count": 26,
+        "n": 56,
+        "rate": 0.4642857142857143
+      },
+      "semantic_valid": {
+        "count": 160,
+        "n": 160,
+        "rate": 1.0
+      },
+      "status": {
+        "ok": 160
+      },
+      "wrong_executable_proposals": {
+        "by_gold_action": {
+          "PLAN": 24,
+          "REJECT": 2
+        },
+        "per_accepted_plans": {
+          "count": 26,
+          "n": 56,
+          "rate": 0.4642857142857143
+        },
+        "per_all": {
+          "count": 26,
+          "n": 160,
+          "rate": 0.1625
+        }
+      }
+    },
+    "role": "EXP-008 predictions rescored with scorer 0.2",
+    "score_version": "axbench.score/0.2",
+    "slices": {
+      "domain": {
+        "economic": {
+          "count": 40,
+          "n": 85,
+          "rate": 0.47058823529411764
+        },
+        "non_economic": {
+          "count": 32,
+          "n": 75,
+          "rate": 0.4266666666666667
+        }
+      },
+      "family": {
+        "agriculture": {
+          "count": 7,
+          "n": 13,
+          "rate": 0.5384615384615384
+        },
+        "education_schools": {
+          "count": 5,
+          "n": 12,
+          "rate": 0.4166666666666667
+        },
+        "environment_air": {
+          "count": 6,
+          "n": 14,
+          "rate": 0.42857142857142855
+        },
+        "health_facilities": {
+          "count": 6,
+          "n": 11,
+          "rate": 0.5454545454545454
+        },
+        "household_budget": {
+          "count": 7,
+          "n": 11,
+          "rate": 0.6363636363636364
+        },
+        "labor_wages": {
+          "count": 12,
+          "n": 18,
+          "rate": 0.6666666666666666
+        },
+        "macro_country": {
+          "count": 7,
+          "n": 15,
+          "rate": 0.4666666666666667
+        },
+        "retail_sales": {
+          "count": 7,
+          "n": 12,
+          "rate": 0.5833333333333334
+        },
+        "tourism": {
+          "count": 7,
+          "n": 29,
+          "rate": 0.2413793103448276
+        },
+        "transport_traffic": {
+          "count": 8,
+          "n": 25,
+          "rate": 0.32
+        }
+      },
+      "gold_action": {
+        "CLARIFY": {
+          "count": 37,
+          "n": 45,
+          "rate": 0.8222222222222222
+        },
+        "PLAN": {
+          "count": 30,
+          "n": 85,
+          "rate": 0.35294117647058826
+        },
+        "REJECT": {
+          "count": 5,
+          "n": 30,
+          "rate": 0.16666666666666666
+        }
+      },
+      "gold_plan_operation": {
+        "cluster": {
+          "count": 9,
+          "n": 21,
+          "rate": 0.42857142857142855
+        },
+        "compare": {
+          "count": 0,
+          "n": 21,
+          "rate": 0.0
+        },
+        "inspect": {
+          "count": 12,
+          "n": 21,
+          "rate": 0.5714285714285714
+        },
+        "relate": {
+          "count": 9,
+          "n": 22,
+          "rate": 0.4090909090909091
+        }
+      },
+      "language": {
+        "en": {
+          "count": 35,
+          "n": 64,
+          "rate": 0.546875
+        },
+        "mixed": {
+          "count": 16,
+          "n": 32,
+          "rate": 0.5
+        },
+        "tr": {
+          "count": 21,
+          "n": 64,
+          "rate": 0.328125
+        }
+      },
+      "stratum": {
+        "A_heldout_family": {
+          "count": 15,
+          "n": 54,
+          "rate": 0.2777777777777778
+        },
+        "B_novel_instance": {
+          "count": 27,
+          "n": 53,
+          "rate": 0.5094339622641509
+        },
+        "C_familiar_instance": {
+          "count": 30,
+          "n": 53,
+          "rate": 0.5660377358490566
+        }
+      },
+      "tag": {
+        "absent_column": {
+          "count": 0,
+          "n": 5,
+          "rate": 0.0
+        },
+        "ambiguous_mention": {
+          "count": 4,
+          "n": 5,
+          "rate": 0.8
+        },
+        "case_variant": {
+          "count": 11,
+          "n": 28,
+          "rate": 0.39285714285714285
+        },
+        "cross_language_mention": {
+          "count": 14,
+          "n": 28,
+          "rate": 0.5
+        },
+        "diacritics_stripped": {
+          "count": 4,
+          "n": 12,
+          "rate": 0.3333333333333333
+        },
+        "generic_alias": {
+          "count": 0,
+          "n": 1,
+          "rate": 0.0
+        },
+        "k_word": {
+          "count": 7,
+          "n": 9,
+          "rate": 0.7777777777777778
+        },
+        "malicious_header": {
+          "count": 23,
+          "n": 45,
+          "rate": 0.5111111111111111
+        },
+        "quoted_name": {
+          "count": 20,
+          "n": 49,
+          "rate": 0.40816326530612246
+        },
+        "request_injection": {
+          "count": 0,
+          "n": 3,
+          "rate": 0.0
+        },
+        "typo": {
+          "count": 29,
+          "n": 48,
+          "rate": 0.6041666666666666
+        }
+      }
+    },
+    "split": "validation",
+    "system": "rules axiom.rules/0.1"
+  },
+  "validation_examples_with_changed_exact_match": []
+}

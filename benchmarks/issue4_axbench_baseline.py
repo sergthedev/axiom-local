@@ -15,6 +15,10 @@ split is scored too, labelled as the development reference (the rules were tuned
 The final test split is not generated, read or scored.
 
 Writes JSON to stdout; no absolute paths and no test texts.
+
+This script reproduces the EXP-008 record only at commit ``857d4ee`` (scorer and harness 0.1). At
+later commits it scores with the corrected scorer 0.2; the EXP-008 predictions rescored under 0.2
+are EXP-011 (``benchmarks/issue4_rescore_v02.py``).
 """
 
 from __future__ import annotations
