@@ -15,6 +15,7 @@ from .canonical import SERIALIZER_VERSION, canonical_dumps, sha256_hex
 from .errors import PlanError
 from .ingest import Dataset
 from .limits import DEFAULT_LIMITS, Limits
+from .ops_cluster import run_cluster
 from .ops_compare import run_compare
 from .ops_inspect import run_inspect
 from .ops_relate import run_relate
@@ -22,6 +23,7 @@ from .plan import (
     POLICY_VERSION,
     BoundPlan,
     CandidatePlan,
+    ClusterPlan,
     ComparePlan,
     InspectPlan,
     RelatePlan,
@@ -36,6 +38,7 @@ _EXECUTORS = {
     InspectPlan: run_inspect,
     RelatePlan: run_relate,
     ComparePlan: run_compare,
+    ClusterPlan: run_cluster,
 }
 
 
