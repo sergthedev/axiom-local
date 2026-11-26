@@ -458,3 +458,23 @@ for a comprehensive final audit of AXIOM Verify.
   paired cluster-bootstrap condition, 20 % informativeness floors and a default fallback to Qwen3-0.6B.
 - The lead's AI pass over the Turkish batch is recorded as AI review only; no example was changed. No model was
   downloaded, loaded or run; nothing was trained; the final test was not generated, read or scored.
+
+### Annotation decision and first frozen corpus (2026-11-26)
+- PR #8 was merged by the owner (`ba05b15`) after the lead's technical acceptance of the infrastructure. The owner then
+  delegated the annotation review to the technical lead AI; its decision
+  ([comment](https://github.com/sergthedev/axiom-local/issues/4#issuecomment-7185793594)) asked for an explicit
+  AI-review provenance path instead of `--human-review`. Work continues on a new branch from `ba05b15`.
+- `freeze` 0.2 gained `--ai-review-authorization`; corrected requests now require reviewed `corrected_tags`. Existing
+  tests were adapted to the manifest key `review` (previously `human_review`).
+- Row 24 (`validation-0025`): Core Inspect returns only `n_total`, `n_valid` and `n_missing` for text columns, so the
+  decision's fallback wording without category counts was chosen before the freeze. Row 9 (`train-0235`): the new
+  mention `deneyim yılı` keeps its diacritics, so the `diacritics_stripped` tag was removed; the other tags of the
+  three corrected examples still apply.
+- The transcribed requests were compared programmatically with the decision text (exact matches; row 24 equals the
+  first wording with the fallback clause substituted).
+- Freeze passed; full audit (with the in-memory development test split) passed; a record-by-record comparison with the
+  draft found content changes only in the three corrected examples, identical gold everywhere and
+  `human_review: "none"` on all 560 records; the contamination audit returned no finding.
+- EXP-013 (pre-registered in `b9f5d2e`, run once): rules 73 / 160 on the frozen validation split; only
+  `validation-0037` changed outcome. No model was downloaded, loaded or run; nothing was trained; no test split was
+  sealed or read. Sealing is left to the owner.

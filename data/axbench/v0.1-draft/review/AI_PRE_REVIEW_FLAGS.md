@@ -30,3 +30,13 @@ uv run python -m axbench freeze --corpus data/axbench/v0.1-draft --out data/axbe
 
 The frozen manifest then records the exact number of examples with a human decision, by split and decision; every
 other example stays labelled `human_review: "none"`.
+
+## Resolution (2026-11-26, added after the decision; the text above is unchanged)
+
+The owner delegated the review of this batch to the technical lead AI. Its decision
+([comment](https://github.com/sergthedev/axiom-local/issues/4#issuecomment-7185793594)) is an owner-authorized **AI
+review**, still not human annotation: 51 rows approved as-is, rows 9, 24 and 42 corrected (request only, gold
+unchanged), 0 removed; rows 18, 21 and 46 retained as explained in the dataset card. The decisions are transcribed in
+[AI_REVIEW_DECISIONS.csv](AI_REVIEW_DECISIONS.csv) and applied in the frozen version `axbench/0.1-ai-reviewed`, where
+every example keeps `human_review: "none"`. The draft corpus files (`train.jsonl`, `validation.jsonl`, `MANIFEST.json`) are unchanged.
+

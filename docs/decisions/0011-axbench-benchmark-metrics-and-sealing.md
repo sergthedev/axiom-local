@@ -117,6 +117,24 @@ templates are in the repository and were written by the implementing tool, so te
 not blind to it. Only owner-written lineages that the tool never sees are blind in that sense, and their rendered
 examples are still not human-reviewed.
 
+### Revision 3: owner-authorized AI review and the first frozen version
+
+The owner delegated the annotation review of the 54-example batch to the technical lead AI
+([decision](https://github.com/sergthedev/axiom-local/issues/4#issuecomment-7185793594)), which asked that the delegated
+review not pass through the human path. `freeze` (`axbench.freeze/0.2`) therefore has a second, mutually exclusive
+mode, `--ai-review-authorization <reference>`: every example keeps `human_review: "none"`, each decided example records
+`reviewer_type: "ai"`, the reviewer label, the decision and the authorization reference, corrected fields keep their
+originals (`original_request`, `original_tags`, `request_source: "ai_review_corrected"`), and the manifest counts
+`examples_with_a_decision` (54) separately from `examples_with_a_human_decision` (0). A corrected request must carry its
+reviewed perturbation tags, validated against the corpus tag vocabulary.
+
+The first frozen version, `axbench/0.1-ai-reviewed` (`data/axbench/v0.1-ai-reviewed/`), keeps all 560 examples and all
+gold labels, corrects three requests, passes the audit and is rebuilt byte for byte from the committed ledger by a
+test. It is an **exploratory** corpus: not human-validated, not population-representative and not independent of the
+implementing tool. The draft stays unchanged as its parent; EXP-008/EXP-011 remain draft results, and EXP-013 is the
+rule reference on the frozen version (73 / 160). EXP-009/EXP-010 (revision 3) use this version. A genuine human review
+would produce a new frozen version.
+
 ## Tradeoffs and consequences
 
 - The benchmark is synthetic and was written by the same AI tool that wrote the rule baseline and will run the
