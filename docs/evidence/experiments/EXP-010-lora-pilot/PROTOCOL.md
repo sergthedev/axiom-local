@@ -12,7 +12,8 @@
   [PRERUN.md](PRERUN.md), proposed for technical review. The protocol text below is unchanged (revision 3); nothing
   has been trained. PRERUN revision 1 records the lead's accepted decisions and the corrected launcher, reload and
   completion checks; the separate shell monitor loop described below is implemented as the supervised monitor process
-  of PRERUN D10.
+  of PRERUN D10. The single owner-authorized smoke ran on 2026-11-26 at `680574b` and completed; see
+  [SMOKE.md](SMOKE.md). The pilot has not started.
 
 ## Fixed inputs
 

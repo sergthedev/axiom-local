@@ -580,3 +580,18 @@ for a comprehensive final audit of AXIOM Verify.
   supervisor race (a monitor ending cleanly as a step finished was accepted); the monitor's health is now checked
   before and after every step and any monitor exit before the sequence is done fails, with 7 new deterministic
   dummy regressions. Core tests: 835 passed locally on macOS.
+
+## 2026-11-26 — Issue #4, Phase 3C: EXP-010 smoke run (20 updates; executed once)
+
+- Lead's conditional clearance (PR #11 comment 7192863338) required a test-only fix: `test_shutdown_codes` used
+  `signal.SIGKILL`, which Windows Python lacks; replaced by the numeric `-9` (`680574b`). CI 45826169190 on that head:
+  Windows 813 passed, 22 skipped; macOS 835 passed. Final head, CI results and the owner's authorization were posted
+  on the PR before the start.
+- Launched detached with `exp010_launch.py start --phase smoke` at 13:26:53 UTC; sequence exit 0 at 13:27:58.
+  Training 35.0 s in-process (loop 28.7 s), 20 updates / 80 micro-steps, `optimizer.step` 20, completion checks
+  passed, adapter `9a403124…` (final = update-20 save). Loss on the first 16 train examples 1.850 → 0.390 (training
+  data; not a generalization result). MLX peak 4.64 × 10⁹ bytes training, 3.85 × 10⁹ reload; no swap growth;
+  pressure normal. Reload: provenance re-verified, 5 of 5 warm-up train requests `ok` (2 hit the 256-token limit);
+  not scored.
+- Observation: MLX-LM's progress display still writes ANSI bold codes to the console capture despite `NO_COLOR=1`
+  (cosmetic). No retry, no pilot, no validation predictions, no final-test access. Stopped for technical acceptance.

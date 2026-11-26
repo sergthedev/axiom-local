@@ -4,6 +4,8 @@
   [pre-run review](https://github.com/sergthedev/axiom-local/pull/11#issuecomment-7191912956) of draft head `ea1d343`
   (decisions 1-11 accepted with conditions; blocking corrections A-D). Section 0 lists what changed. No training is
   authorized by this record; the smoke needs the lead's acceptance of this revision **and** the owner's approval (D17).
+- Smoke: executed once on 2026-11-26 at `680574b` under the lead's conditional clearance and the owner's
+  authorization; completed, results in [SMOKE.md](SMOKE.md), pending technical acceptance.
 - Revision 0 (`ea1d343`): this record turns the EXP-010 protocol (revision 3, [PROTOCOL.md](PROTOCOL.md))
   into exact operational definitions before any training, adapter output or adapter evaluation exists. Nothing
   here changes a protocol setting; where the installed software makes the protocol's wording ambiguous, the choice
