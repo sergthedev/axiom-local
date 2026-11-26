@@ -497,3 +497,32 @@ for a comprehensive final audit of AXIOM Verify.
   slowdown window, repeatability subset, run order); they are fixed in `PRERUN.md` before any validation prediction
   and submitted for review.
 
+### Phase 3B: EXP-009 execution (2026-11-26)
+- Before any validation prediction, the lead's pre-run review
+  ([comment](https://github.com/sergthedev/axiom-local/pull/10#issuecomment-7186773178)) asked for five changes,
+  all implemented in `995ae3f` with regression tests and PRERUN revision 1:
+  - swap growth measured from one baseline per process taken before loading, with checks after load, every warm-up
+    and every request;
+  - mains power and normal pressure required before every process, and no battery override;
+  - `MemoryError` stops the run whatever its message;
+  - eligibility judged over the main and all five fresh processes;
+  - strict record validation and integrity checks before the selection rule.
+- A train-only `check` of the full process frame showed that `getrusage` RSS does not track MLX's Metal memory: the
+  1.7B had 1.09 GB RSS against a 3.44 GB MLX load peak. This is reported, not corrected, because the protocol names
+  RSS.
+- The owner restarted the Mac and closed applications. Preflight passed: mains power, 0 bytes swap, pressure level 1.
+- Attempt 1 (08:49-09:50 UTC): the 0.6B main and fresh processes completed. The 1.7B main was killed after 598 of 600
+  repeat records. No stop rule had fired and the Mac had not rebooted. The likely cause is that the background job
+  ended with the Claude Code session that owned it. The attempt was archived with file hashes and an interruption
+  record (`ATTEMPTS.md`).
+- The lead approved one full 1.7B rerun under D19
+  ([comment](https://github.com/sergthedev/axiom-local/pull/10#issuecomment-7189459615)). Attempt 2 ran detached
+  (new session, `nohup`, `caffeinate -i`), from 10:32 to 11:22 UTC, with exit status 0 and all six processes
+  completed.
+- Raw outputs were committed unscored (`6d4da72`). The analysis then gained accepted and archived attempt inputs
+  (`b2586da`, no scoring change) and ran once.
+- Results: exact match 0.6B 0, 1.7B 12, rules 73 of 160; schema-valid 2 and 53; 0 dispatches. Qwen3-1.7B was selected
+  by rule 5 (+31.9 pp schema validity, interval +20.7 to +44.9). The archived 1.7B attempt's validation outputs are
+  byte-identical to attempt 2 on all 160 requests.
+- The final test was not accessed. Nothing was trained.
+
