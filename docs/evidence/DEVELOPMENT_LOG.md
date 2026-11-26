@@ -478,3 +478,22 @@ for a comprehensive final audit of AXIOM Verify.
 - EXP-013 (pre-registered in `b9f5d2e`, run once): rules 73 / 160 on the frozen validation split; only
   `validation-0037` changed outcome. No model was downloaded, loaded or run; nothing was trained; no test split was
   sealed or read. Sealing is left to the owner.
+
+### Phase 3B: EXP-009 preparation (2026-11-26)
+- The owner sealed the final test privately ([seal record](https://github.com/sergthedev/axiom-local/issues/4#issuecomment-7186347486))
+  and authorized downloading both pinned checkpoints and executing EXP-009 only. New branch from `6d887f9`.
+- Repository, corpus hashes and the Core lock verified; `envs/model` reported outdated only because the editable
+  `axiom-local` needed reinstalling after main moved; resynced with `uv sync --locked`.
+- Both checkpoints provisioned with `provision.py` (0.6B in 1 min 16 s, 1.7B in 3 min 6 s); every published hash
+  matched and an independent re-hash agreed.
+- Wrote the runner (`envs/model/exp009_run.py`), the analysis (`benchmarks/issue4_exp009_analyze.py`), the selection
+  rule as code (`axbench.selection`) and stop-rule bookkeeping (`axbench.runwatch`), with tests.
+- Train-only smoke runs (3 train examples per model, battery power, harness check only): the untuned 0.6B wrapped
+  its JSON in a code fence and produced non-contract slots on these train examples; the 1.7B decoded at about
+  30 tokens/s on battery. These observations are not results and did not change any rule.
+- Reading the installed MLX-LM showed that generation stops on the EOS set loaded from the checkpoint
+  (`<|im_end|>` and `<|endoftext|>`), not on the end-of-turn token alone; recorded as operational definition D1.
+- The protocol leaves 16 measurement details open (stop tokens, latency, warm-ups, sampling of swap and pressure,
+  slowdown window, repeatability subset, run order); they are fixed in `PRERUN.md` before any validation prediction
+  and submitted for review.
+
