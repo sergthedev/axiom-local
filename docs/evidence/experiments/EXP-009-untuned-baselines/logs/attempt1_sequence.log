@@ -1,0 +1,13 @@
+== 2026-11-26T08:49:38Z qwen3-0.6b main
+{"phase": "main", "status": "completed", "stop_reason": null, "failure": null, "counts": {"warmup": 5, "validation": 160, "repeat": 600}}
+== 2026-11-26T09:04:04Z qwen3-0.6b fresh 1
+{"phase": "fresh_1", "status": "completed", "stop_reason": null, "failure": null, "counts": {"repeat": 30}}
+== 2026-11-26T09:04:44Z qwen3-0.6b fresh 2
+{"phase": "fresh_2", "status": "completed", "stop_reason": null, "failure": null, "counts": {"repeat": 30}}
+== 2026-11-26T09:05:25Z qwen3-0.6b fresh 3
+{"phase": "fresh_3", "status": "completed", "stop_reason": null, "failure": null, "counts": {"repeat": 30}}
+== 2026-11-26T09:06:06Z qwen3-0.6b fresh 4
+{"phase": "fresh_4", "status": "completed", "stop_reason": null, "failure": null, "counts": {"repeat": 30}}
+== 2026-11-26T09:06:49Z qwen3-0.6b fresh 5
+{"phase": "fresh_5", "status": "completed", "stop_reason": null, "failure": null, "counts": {"repeat": 30}}
+== 2026-11-26T09:07:30Z qwen3-1.7b main

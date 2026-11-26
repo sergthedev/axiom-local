@@ -1,5 +1,8 @@
 # EXP-009 protocol (proposed, not run): untuned Qwen3 baselines on AXBENCH validation and base selection
 
+> **Executed on 2026-11-26** under this revision with the pre-run definitions in [PRERUN.md](PRERUN.md); results in
+> [MANIFEST.md](MANIFEST.md). The protocol text below is unchanged.
+
 - Status: **proposed**. Requires technical review, a frozen AXBENCH corpus (see revision 3) and the owner's approval
   to download the checkpoints (about 1.5 GB and 4.1 GB). Phase 3B; nothing here has been executed.
 - Issue: #4 (protocol), Phase 3B (execution). Decision record: ADR 0012. This protocol is committed before any model

@@ -15,8 +15,11 @@ uv run --locked python -c "import mlx.core as mx; print(mx.default_device())"
   download. `--tokenizer-only` fetches the configuration and tokenizer files (about 16 MB).
 - `token_lengths.py` measures prompt and target token counts of AXBENCH train/validation under a provisioned
   tokenizer, offline.
-- Inference and training follow the EXP-009 and EXP-010 protocols in `docs/evidence/experiments/`; no inference or
-  training has been run.
+- `exp009_run.py` is the EXP-009 runner (untuned inference on AXBENCH validation with resource measurement and stop
+  rules): `verify` re-hashes the provisioned weights, `smoke` runs a few train examples, `main` and `fresh` are the
+  protocol runs (see `docs/evidence/experiments/EXP-009-untuned-baselines/PRERUN.md`). Raw outputs are scored in the
+  Core environment by `benchmarks/issue4_exp009_analyze.py`.
+- Training follows the EXP-010 protocol; nothing has been trained.
 
 Rules: no weights, adapters or caches in Git (`.gitignore` blocks common formats); offline inference only
 (`HF_HUB_OFFLINE=1`); never download on failure; no remote experiment trackers; the final AXBENCH test split is never
