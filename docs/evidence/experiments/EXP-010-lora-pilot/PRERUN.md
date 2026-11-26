@@ -1,11 +1,16 @@
-# EXP-010 pre-run record (revision 1; proposed; nothing has been trained)
+# EXP-010 pre-run record (revision 1 with the D18 analysis freeze; pilot not started)
 
 - Status: **revision 1, proposed for technical re-review** after the lead's
   [pre-run review](https://github.com/sergthedev/axiom-local/pull/11#issuecomment-7191912956) of draft head `ea1d343`
   (decisions 1-11 accepted with conditions; blocking corrections A-D). Section 0 lists what changed. No training is
   authorized by this record; the smoke needs the lead's acceptance of this revision **and** the owner's approval (D17).
 - Smoke: executed once on 2026-11-26 at `680574b` under the lead's conditional clearance and the owner's
-  authorization; completed, results in [SMOKE.md](SMOKE.md), pending technical acceptance.
+  authorization; completed, results in [SMOKE.md](SMOKE.md); accepted by the lead as a feasibility result only
+  ([smoke acceptance](https://github.com/sergthedev/axiom-local/pull/11#issuecomment-7193487897)).
+- D18 analysis freeze (after the smoke acceptance, before the pilot): the scoring, integrity, pairing, safety, D13/D14
+  and D15 analysis is implemented and tested (`exp010.analysis/1`, D18) and the exact pilot, evaluation and analysis
+  commands are fixed (section 8). The pilot is not started; it needs the lead's pilot clearance and the owner's
+  approval.
 - Revision 0 (`ea1d343`): this record turns the EXP-010 protocol (revision 3, [PROTOCOL.md](PROTOCOL.md))
   into exact operational definitions before any training, adapter output or adapter evaluation exists. Nothing
   here changes a protocol setting; where the installed software makes the protocol's wording ambiguous, the choice
@@ -295,6 +300,11 @@ requests in file order), EXP-009 decoding, stop rules and record format (`main_w
 after the pilot at the latest); the MLX peak is reset once before loading and never again, so
 `mlx_peak_bytes_load_warmup_validation` covers load, warm-up and validation and is the G12 MLX value (lead decision 9);
 SIGTERM is recorded as a stop. `evaluate` is not run before the analysis implementation is frozen and reviewed (D18).
+D18 freeze (`exp010.harness/3`): `evaluate` runs as the single supervised step of its own detached sequence
+(`exp010_launch.py start --phase evaluate`, section 8) with the common baseline (`--baseline`), the external monitor
+and the stop machinery of D10, and copies a monitor stop into its record. It is never chained to training. The
+training, reload and evaluation request paths are otherwise unchanged from the code the smoke ran; only the version
+string and the evaluation's supervision changed.
 
 ## 5. Pre-registered pilot criteria (D13) and deployment-quality gates (D14)
 
@@ -378,18 +388,85 @@ applied unfused on top of the unchanged BF16 base).
   from, or loads, the smoke adapter.
 - A stopped or failed run is reported as such with all its records; any rerun is a new run directory under D9.
 
-**D18 Analysis integrity, prepared before any adapter validation output (revision 1, correction D; decision 9).**
-The analysis implementation (scoring, D13 outcome, D14 gates, D15 reports) will be written, frozen and reviewed
-before any new validation prediction, preferably before the pilot; no endpoint is added afterwards. It will:
-- retain all 160 adapter validation records, including errors and empty outputs, in every denominator, and refuse a
-  record set that is not exactly the 160 validation IDs, unique, in file order;
-- verify the EXP-009 comparator files against the hashes of D16 and pair by example ID (`pilotgates.lineage_problems`);
-- verify the evaluation record's adapter provenance (D12) and the training record's completion checks;
-- apply `pilot_outcome` and `deployment_gates` (`exp010.pilot-gates/2`) unchanged, reporting unauthorized dispatches
-  independently of every other check and missing resource measurements as not assessable;
-- record the scorer, harness and gate versions, the commit and the input hashes with the result.
-The gate and lineage logic exists and is tested now; the remaining analysis script is not blocking for the smoke (lead
-correction D) and is reviewed separately before the pilot or the evaluation.
+**D18 Analysis integrity, frozen before the pilot (revision 1, correction D; decision 9; implemented after the smoke
+acceptance).** The analysis is `src/axbench/exp010analysis.py` (`exp010.analysis/1`, pure logic, tested) and the thin
+file and Git reader `benchmarks/issue4_exp010_analyze.py` (Core environment, no MLX). It is committed and reviewed
+before the pilot; no endpoint, threshold, metric or check is added or changed after it (any later change would be a new,
+reviewed version recorded before any adapter validation output exists). In order, it:
+1. **Checks integrity before scoring**, each failure giving `invalid_run` (no result claimed), never a repair:
+   - *preserved raw evidence*: every input record (training measurements and log, evaluation measurements, warm-up
+     and validation records, the sequence files of both runs) must be committed and byte-identical to `HEAD`, so raw
+     outputs exist in the repository before any score does;
+   - *approved code*: the training commit must be the approved (cleared) commit; the evaluation commit and the
+     analysis `HEAD` must descend from it with changes only under `docs/evidence/` (evidence, not code), and the
+     analysis tree must be clean;
+   - *comparators*: the EXP-009 files of D16 must match their SHA-256 pins before they are parsed, contain exactly the
+     160 validation IDs, unique, in file order, with their own system names; the rules are rerun on the frozen file
+     and must give the same statuses and raw outputs; rescoring both comparators with the current scorer must
+     reproduce the accepted EXP-009 per-example exact match and schema validity (EXP-009 `results.json`, pinned
+     `fe10efea2448c4c9b2d514e4ae68c2dc359c73b4de1b7288748639f7d439c4a2`);
+   - *corpus*: the pinned manifest, only the train and validation splits (the sealed final test is never read), 160
+     unique validation IDs from the validation split, 24 lineage clusters;
+   - *training provenance*: the supervised sequence ended with exit 0, its done marker and no monitor stop; the record
+     is the EXP-010 pilot with status `completed` and no stop reason, failure, finalization error or monitor stop;
+     clean tree; harness `exp010.harness/3`; the pilot schedule; `optimizer.step` = 200 and 200 updates recorded;
+     the planned configuration (C1 only as declared); 458,752 trainable parameters; the pinned base revision, export
+     and corpus hashes; validation loss on the 160 validation examples; completion checks passed; the training log
+     re-checked against the plan (every planned loss, update and save record once, in order, finite; the last update
+     at micro-step 800); exactly the planned adapter files, each save hash equal to its record and the final adapter
+     equal to the update-200 save;
+   - *evaluation provenance*: its sequence ended cleanly; status `completed` with no stop; clean tree, harness
+     `exp010.harness/3`; the common sequence baseline; 160 validation and 5 warm-up records; pinned corpus, prompt
+     `axiom.prompt/1` and the EXP-009 decoding; the same base checkpoint as training; the adapter is the trained final
+     `adapters.safetensors` (hash, size, configuration hash, phase `pilot`, training commit = the approved commit; no
+     intermediate save is ever evaluated);
+   - *records*: exactly the 160 validation IDs, unique, in file order, labelled with the adapter's system name, with
+     known statuses; errors, timeouts and empty outputs are valid records that stay in every denominator; the warm-up
+     records are exactly the 5 train warm-ups in order and are never scored.
+2. **Reports safety independently**: every adapter record whose ID is a validation ID (duplicates included) is reviewed
+   by the real Guard, whatever the run's validity, and the unauthorized-dispatch count is reported on its own for the
+   adapter and both comparators; `pilot_outcome` carries it in every outcome.
+3. **Scores** with `axbench.evaluate/0.2` and `axbench.score/0.2` (Guard policy 2) on the full denominator.
+4. **Decides** with `pilot_outcome` (D13) on exact-match vectors paired by example ID with the frozen lineage clusters,
+   and `deployment_gates` (D14) as a descriptive reading, both `exp010.pilot-gates/2`, unchanged.
+5. **Describes** (D15): adapter vs rules on exact match (the rule-3 label reported as descriptive only); JSON,
+   candidate-schema and semantic validity vs untuned (paired); every scorer metric for the three systems (action
+   accuracy and macro F1, clarify and reject recall and reason accuracy, operation and slot accuracy, wrong executable
+   proposals, Guard statuses, language, stratum, domain, family and tag slices) plus paired language and stratum slice
+   counts; latency quartiles and maximum, generated tokens, 256-token cap hits and finish reasons; evaluation MLX peaks
+   and RSS; the training- and validation-loss curves, update-time distribution, throughput windows, wall and loop
+   times, trainable parameters and training resources. Uncertainty: the cluster bootstrap (24 lineages, 2000
+   replicates, seed 2026) for the adapter's exact match and every paired difference; McNemar only as an IID
+   illustration.
+6. **Records** the analysis, gate, harness and scorer versions, the approved commit, the analysis `HEAD` and the
+   SHA-256 of every input file with the result.
+
+Choices made for the freeze (for the lead's review):
+- G12 uses the evaluation process: its lifetime peak RSS and the MLX peak since loading (load, warm-up, validation).
+  Training peaks are reported descriptively.
+- The G11 median is a gate measurement only when all 160 validation requests have a finite latency (the EXP-009
+  eligibility rule); otherwise G11 is not assessable.
+- After the approved commit only `docs/evidence/` may change before the evaluation and the analysis, so the raw
+  records can be committed between the steps without changing any code that produced or reads them.
+- With an invalid run, no gate or descriptive result is reported (comparator reports and the safety section still
+  are).
+
+Tests (`tests/test_exp010_analysis.py`, synthetic fixtures and the historical EXP-009 comparator records only; the
+"adapter" is the untuned output relabelled, with the gold label rendered for chosen IDs): the valid path with the full
+denominator and EXP-009 reproduced; the D13 margin boundary through the real scorer (+8 of 160 = 5.0 pp not
+demonstrated, +9 = 5.625 pp demonstrated); failed and empty requests retained; missing, duplicated, unexpected
+(including a scored warm-up and a test-like ID), reordered, mislabelled, unknown-status and non-list record sets;
+tampered, missing or swapped comparators; a changed EXP-009 results file; the real rules rerun and a changed rerun;
+the sealed test split or another corpus; 25 single training-provenance defects (wrong commit, dirty tree, old harness,
+smoke phase, stop, monitor stop, 199 optimizer steps, a missing loss or save record, a non-finite loss, a truncated
+log, a wrong final or save hash, an extra adapter file, a configuration, base or export change, undeclared
+checkpointing, …); defective sequence endings; 15 evaluation-provenance defects (wrong or intermediate adapter, smoke
+adapter, wrong training commit, stop, incomplete, counts, decoding, prompt, base, unsupervised, warm-up IDs, dirty
+tree); warm-up record defects; frozen-code and preserved-evidence failures; a simulated unauthorized dispatch (safety
+stop with accuracy that would otherwise pass the margin, G10 failed) and the safety count of an invalid run; missing,
+non-finite, negative and boolean resources (not assessable) and the 10 × 10⁹-byte boundary; pairing by ID rather than
+position; the frozen lineage design; the script's Git readers. The gate-level thresholds keep their existing tests in
+`tests/test_exp010_prerun.py`.
 
 ## 6. Harness self-test (software check, not a training result)
 
@@ -480,3 +557,70 @@ missing resources.
 - `evaluate` accepts a pilot adapter trained at an ancestor of the evaluating head (the frozen analysis may be
   committed after the pilot); the smoke reload requires the same head.
 - A missing or non-finite G11/G12 measurement is "not assessable" (revision 0 counted it as a failed gate).
+
+## 8. Pilot, evaluation and analysis: exact commands (D18 freeze; not started)
+
+Nothing below has run. `<H>` is the head the lead clears for the pilot (the D18 freeze); the placeholders stand for
+local directories outside the repository (the checkpoint of section 1, the export of section 2 and a new adapter
+directory), which are never named in the repository. All commands run from the repository root unless stated.
+
+**Before the start.** `git status --porcelain` is empty and `git rev-parse HEAD` is `<H>`; CI on `<H>` is green on both
+platforms; `runs/pilot` and the new adapter directory do not exist or are empty; the machine is on mains power. The
+pilot starts from the published checkpoint and a new LoRA conversion with seed 2026; the smoke adapter is never passed
+to any command, and the launcher refuses a non-empty adapter directory.
+
+**1. Pilot training** (one detached, supervised sequence; training only, no reload, no evaluation):
+
+```text
+cd envs/model
+uv run --locked python exp010_launch.py start --phase pilot \
+    --model-dir <checkpoint dir> --data-dir <export dir> \
+    --adapter-dir <new, empty pilot adapter dir outside the repository> \
+    --out ../../docs/evidence/experiments/EXP-010-lora-pilot/runs/pilot \
+    --expected-commit <H>
+```
+
+`start` prints the sequence PID and returns. Progress is read, never changed, from `runs/pilot/sequence_log.txt`,
+`monitor.jsonl` and `train/training_log.jsonl`; `exit_status.txt` is written last. Stops: the in-process rules and the
+external monitor (D8, D10) stop the run by themselves; an operator stop is `kill -TERM <sequence PID>` (the running step
+gets SIGTERM, 120 s grace, then a forced kill; exit 8). No step is killed directly and nothing is restarted or retried:
+a stopped or failed run is reported with all its records, and any rerun is a new run directory under D9 after review.
+Duration estimate from the smoke (not a measurement): about 1.05 s per update after compilation, so a few minutes of
+update compute, plus nine validation-loss evaluations over 160 examples (the smoke's 16-example evaluation took about
+3 s), the saves and the per-process loading.
+
+**2. Preserve and report.** The training records are committed unchanged in an evidence-only commit (`<H2>`; nothing
+outside `docs/evidence/` changes) and reported with their integrity checks. The pilot run stops here for review. No
+checkpoint is selected: only the final `adapters.safetensors` is ever evaluated, and the validation-loss curve is
+reported, never used to choose anything.
+
+**3. Evaluation** (only after the lead's review of step 2 and the owner's approval; one detached, supervised sequence):
+
+```text
+cd envs/model
+uv run --locked python exp010_launch.py start --phase evaluate \
+    --model-dir <checkpoint dir> --adapter-dir <the pilot adapter dir of step 1> \
+    --train-run ../../docs/evidence/experiments/EXP-010-lora-pilot/runs/pilot/train \
+    --out ../../docs/evidence/experiments/EXP-010-lora-pilot/runs/pilot_eval \
+    --expected-commit <H2>
+```
+
+The evaluation re-verifies the adapter against the training records (D12), loads the base and the final adapter, runs
+the 5 warm-ups (never scored) and the 160 validation requests in file order, with the same stop controls as step 1.
+Its raw records are written to `runs/pilot_eval/eval/` and are not scored by this step.
+
+**4. Preserve.** The evaluation records are committed unchanged in an evidence-only commit (`<H3>`) before any score
+exists. Nothing is rerun if a request failed: errors stay in the denominator.
+
+**5. Analysis** (Core environment, at `<H3>` or a later evidence-only commit, clean tree):
+
+```text
+uv run python benchmarks/issue4_exp010_analyze.py --approved-commit <H> \
+    --train-run docs/evidence/experiments/EXP-010-lora-pilot/runs/pilot \
+    --eval-run docs/evidence/experiments/EXP-010-lora-pilot/runs/pilot_eval \
+    > docs/evidence/experiments/EXP-010-lora-pilot/results.json
+```
+
+The result is reported as it comes out (`invalid_run`, `safety_stop`, `improvement_not_demonstrated` or
+`improvement_demonstrated`; the gates as a descriptive reading), with no change to the analysis, no merge and no
+final-test access.

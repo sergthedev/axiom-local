@@ -100,7 +100,7 @@ from axbench.trainwatch import (  # noqa: E402
 from axiom_router.prompt import PROMPT_VERSION, build_router_input, chat_messages  # noqa: E402
 from axiom_router.schema import project_columns  # noqa: E402
 
-HARNESS_VERSION = "exp010.harness/2"  # revision 1 of the pre-run record
+HARNESS_VERSION = "exp010.harness/3"  # D18 freeze: supervised evaluation (training path unchanged)
 MODEL = "qwen3-1.7b"
 SYSTEM = "qwen3-1.7b-lora-exp010"
 EXPERIMENT_DIR = REPO / "docs" / "evidence" / "experiments" / "EXP-010-lora-pilot"
@@ -1083,7 +1083,9 @@ def cmd_evaluate(args) -> int:
     re-hash, load, 5 train warm-ups (never scored), then the 160 validation requests in file order,
     with the EXP-009 decoding, stop rules and record format (``main_*.jsonl``).
 
-    Not run before the pilot analysis is frozen and reviewed (lead decision 10)."""
+    D18 freeze: started by ``exp010_launch.py start --phase evaluate`` as a supervised step with the
+    sequence's common baseline (``--baseline``), like training; a monitor stop is copied into the
+    record. Not run before the pilot analysis is frozen and reviewed (lead decision 10)."""
     import mlx.core as mx
 
     git = _check_commit(args)
@@ -1101,6 +1103,7 @@ def cmd_evaluate(args) -> int:
         print(json.dumps({"status": "refused", "reason": refusal}))
         return 4
     signal.signal(signal.SIGTERM, _on_sigterm)
+    baseline, baseline_rec = _baseline(args, pre)
     mpath = out / "main_measurements.json"
     meas: dict[str, Any] = {
         "experiment": "EXP-010",
@@ -1108,6 +1111,7 @@ def cmd_evaluate(args) -> int:
         "system": SYSTEM,
         "status": "running",
         "preflight": pre,
+        "stop_rule_baseline": baseline_rec,
         "environment": _environment(git),
         "corpus_version": manifest["corpus_version"],
         "corpus_manifest_sha256": MANIFEST_SHA256,
@@ -1122,7 +1126,7 @@ def cmd_evaluate(args) -> int:
         "adapter": adapter,
         "model": model,
     }
-    monitor = ProcessMonitor(baseline={k: pre[k] for k in RULE_KEYS})
+    monitor = ProcessMonitor(baseline=baseline)
     write_json(mpath, meas)
     sinks: dict[str, Sink] = {}
     try:
@@ -1165,6 +1169,9 @@ def cmd_evaluate(args) -> int:
     except (StopRun, ExternalStop) as exc:
         meas["status"] = "stopped"
         meas["stop_reason"] = str(exc)
+        external = _monitor_stop(args)
+        if external:
+            meas["external_monitor_stop"] = external
     except BaseException as exc:
         meas["status"] = "failed"
         meas["failure"] = f"{type(exc).__name__}: {exc}"
@@ -1501,8 +1508,7 @@ def main() -> int:
             p.add_argument(opt, required=True)
         if name == "evaluate":
             p.add_argument("--out", required=True)
-        else:
-            p.add_argument("--baseline", help="the sequence's common pre-load baseline")
+        p.add_argument("--baseline", help="the sequence's common pre-load baseline")
     args = parser.parse_args()
     commands = {"tokens": cmd_tokens, "params": cmd_params, "train": cmd_train,
                 "reload": cmd_reload, "evaluate": cmd_evaluate,

@@ -588,10 +588,30 @@ for a comprehensive final audit of AXIOM Verify.
   Windows 813 passed, 22 skipped; macOS 835 passed. Final head, CI results and the owner's authorization were posted
   on the PR before the start.
 - Launched detached with `exp010_launch.py start --phase smoke` at 13:26:53 UTC; sequence exit 0 at 13:27:58.
-  Training 35.0 s in-process (loop 28.7 s), 20 updates / 80 micro-steps, `optimizer.step` 20, completion checks
+  Training 35.0 s in-process (loop timer 28.7 s, which excludes the 3.50 s update-0 evaluation; see the correction
+  below), 20 updates / 80 micro-steps, `optimizer.step` 20, completion checks
   passed, adapter `9a403124…` (final = update-20 save). Loss on the first 16 train examples 1.850 → 0.390 (training
   data; not a generalization result). MLX peak 4.64 × 10⁹ bytes training, 3.85 × 10⁹ reload; no swap growth;
   pressure normal. Reload: provenance re-verified, 5 of 5 warm-up train requests `ok` (2 hit the 256-token limit);
   not scored.
 - Observation: MLX-LM's progress display still writes ANSI bold codes to the console capture despite `NO_COLOR=1`
   (cosmetic). No retry, no pilot, no validation predictions, no final-test access. Stopped for technical acceptance.
+
+## 2026-11-26 — Issue #4, Phase 3C: EXP-010 D18 analysis freeze (before the pilot)
+
+- The lead accepted the smoke as a real-checkpoint training, reload and resource-path feasibility result, not an
+  accuracy or deployment result (PR #11 comment 7193487897), and asked for the D18 analysis before the pilot.
+- **Correction.** SMOKE.md said the 28.7 s training loop included "its two evaluations". In the reviewed code the
+  update-0 evaluation (3.50 s) runs before the `train_loop_seconds` timer starts; the loop includes the update-20
+  evaluation (2.73 s) and the save; the summed update compute is 25.21 s. The write-up, this log's smoke entry and
+  C-058 were corrected; no raw record was edited and the ANSI codes in the console captures are kept.
+- Frozen analysis `axbench.exp010analysis` (`exp010.analysis/1`) and `benchmarks/issue4_exp010_analyze.py`: integrity
+  before scoring (raw records committed and unchanged, code unchanged since the approved commit except
+  `docs/evidence/`, pinned comparators and EXP-009 results reproduced, rules rerun identical, corpus with only train
+  and validation, training and evaluation provenance re-derived from the records, exactly 160 records in file order,
+  5 warm-ups never scored); Guard safety scan independent of validity; scoring on the full denominator; D13/D14
+  unchanged with ID pairing and the 24 frozen lineages; D15 descriptive reports. The pilot and evaluation commands are
+  fixed in PRERUN section 8; the evaluation is now its own supervised sequence (`--phase evaluate`,
+  `exp010.harness/3`; the training path is unchanged). Core tests: 926 passed locally on macOS (85 new analysis tests
+  and 6 new launcher tests). Model-environment self-test at `exp010.harness/3`: 15 of 15 checks passed (local check,
+  record not committed). Nothing was trained or evaluated; no validation prediction, no final-test access.

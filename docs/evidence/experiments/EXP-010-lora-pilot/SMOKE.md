@@ -1,8 +1,10 @@
-# EXP-010 smoke run (20 optimizer updates; executed 2026-11-26; pending technical acceptance)
+# EXP-010 smoke run (20 optimizer updates; executed 2026-11-26; technically accepted)
 
 - Status: **completed** (sequence exit 0). This is a code-path, resource and integrity check of the training harness on
   the real checkpoint and the corpus's train split. It is **not an accuracy result** and makes no claim about AX-01
-  quality. Pending the lead's technical acceptance; no pilot has been started.
+  quality. Accepted by the lead as a real-checkpoint training, reload and resource-path feasibility result, not an
+  accuracy or deployment result ([smoke acceptance](https://github.com/sergthedev/axiom-local/pull/11#issuecomment-7193487897)).
+  No pilot has been started.
 - Authorization: the owner authorized exactly one initial smoke in the project thread (2026-11-26 13:07 UTC,
   confirmed 13:26 UTC) under the lead's
   [conditional clearance](https://github.com/sergthedev/axiom-local/pull/11#issuecomment-7192863338). The final head,
@@ -33,9 +35,19 @@ uv run --locked python exp010_launch.py start --phase smoke --model-dir <checkpo
 | 13:27:57 | reload exited 0 (status `completed`) |
 | 13:27:58 | monitor exited 0 at shutdown; sequence exit 0 |
 
-Durations: 65 s for the whole sequence. The training process took 35.0 s: checkpoint re-hash 1.5 s, load 0.66 s, and
-the 80-micro-step loop 28.7 s, including its two evaluations and the save. The reload process took about 24 s. There
-was one run and no retry.
+Durations: 65 s for the whole sequence. The training process took 35.0 s (`wall_seconds`), including checkpoint
+re-hash 1.5 s and load 0.66 s. The measured times from the records are:
+- the update-0 evaluation, 3.50 s (`training_log.jsonl`), which runs **before** the `train_loop_seconds` timer starts;
+- the 80-micro-step loop (`train_loop_seconds`), 28.7 s. It includes the update-20 evaluation (2.73 s), the
+  update-20 save and the per-update callback work, but not the update-0 evaluation;
+- the 20 updates' trainer compute (sum of `update_seconds`, D8), 25.21 s.
+
+The reload process took about 24 s. There was one run and no retry.
+
+*Correction (2026-11-26, lead's
+[smoke acceptance](https://github.com/sergthedev/axiom-local/pull/11#issuecomment-7193487897)).* The first version of
+this record said the 28.7 s loop included "its two evaluations". That was wrong: in the reviewed code the update-0
+evaluation runs before the loop timer starts. Only this description changed; no raw record was edited.
 
 ## Configuration as executed
 
@@ -124,7 +136,8 @@ Both stay below the 10 × 10⁹-byte target, which is reported only and is not a
 - It then loaded the base with the adapter and ran greedy inference (EXP-009 decoding) on the 5 warm-up train
   examples `train-0001` … `train-0005`.
 - The record check passed: 5 unique IDs in order, all `status: ok`, all with raw outputs.
-- 3 of 5 generations stopped at `<|im_end|>`; 2 reached the 256-token limit with repeated JSON keys.
+- 3 of 5 generations stopped at `<|im_end|>`; 2 reached the 256-token limit with repeated JSON keys. As the lead
+  required, these are reported and not repaired; the decoding is unchanged (EXP-009 D1) for the pilot evaluation.
 - The outputs were not scored and are not an accuracy result. The smoke adapter was not run on validation.
 
 ## Limitations and observations
@@ -139,5 +152,5 @@ Both stay below the 10 × 10⁹-byte target, which is reported only and is not a
 - The macOS sampler ran inside the supervised sequence for the first time here: 3 regular samples and a final record,
   with no failures.
 - Not done: no pilot, no validation predictions or scoring, no final-test access, no merge. The next step (the pilot
-  from a fresh untrained base, after the analysis implementation is frozen and reviewed, D17/D18) needs technical
-  acceptance of this smoke and separate approval.
+  from a fresh untrained base, after the analysis implementation is frozen and reviewed, D17/D18) needs the lead's
+  pilot clearance and the owner's separate approval.

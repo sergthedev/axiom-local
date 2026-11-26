@@ -640,7 +640,7 @@ def _launch_args(**over):
 
     base = {"phase": "smoke", "model_dir": "m", "data_dir": "d", "adapter_dir": "a",
             "out": "o", "expected_commit": "c" * 40, "grad_checkpoint": False,
-            "declared_change": None}  # fmt: skip
+            "declared_change": None, "train_run": None}  # fmt: skip
     return argparse.Namespace(**{**base, **over})
 
 
@@ -668,9 +668,46 @@ def test_launcher_refuses_undeclared_gradient_checkpointing(tmp_path):
     assert not out.exists()
 
 
+def test_launcher_evaluate_phase_is_one_supervised_step_with_the_common_baseline(tmp_path):
+    launch = _launcher()
+    args = _launch_args(phase="evaluate", data_dir=None, train_run="runs/pilot/train")
+    [(name, argv)] = launch.steps(args, tmp_path)
+    assert name == "evaluate" and argv[2] == "evaluate"
+    assert argv[argv.index("--baseline") + 1] == str(tmp_path / "baseline.json")
+    assert argv[argv.index("--out") + 1] == str(tmp_path / "eval")
+    assert argv[argv.index("--run-dir") + 1] == "runs/pilot/train"
+    assert "--data-dir" not in argv and "--grad-checkpoint" not in argv
+
+
+@pytest.mark.parametrize("over", [
+    {"phase": "evaluate", "data_dir": None},  # no training record
+    {"phase": "evaluate", "data_dir": "d", "train_run": "x"},  # training option
+    {"phase": "pilot", "data_dir": None},  # no export
+    {"phase": "pilot", "train_run": "x"},  # evaluate-only option
+])  # fmt: skip
+def test_launcher_refuses_mixed_phase_options(tmp_path, over):
+    launch = _launcher()
+    out = launch.RUNS / "never-created-by-this-test"
+    args = _launch_args(out=str(out), adapter_dir=str(tmp_path / "adapters"), **over)
+    with pytest.raises(SystemExit):
+        launch.cmd_start(args)
+    assert not out.exists()
+
+
+def test_launcher_evaluate_needs_the_trained_adapter_outside_the_repository(tmp_path):
+    launch = _launcher()
+    out = launch.RUNS / "never-created-by-this-test"
+    train_run = EXP / "runs" / "smoke" / "train"  # an existing record directory, never written
+    args = _launch_args(phase="evaluate", data_dir=None, out=str(out),
+                        adapter_dir=str(tmp_path / "empty"), train_run=str(train_run))  # fmt: skip
+    with pytest.raises(SystemExit, match="trained adapter"):
+        launch.cmd_start(args)
+    assert not out.exists()
+
+
 def test_harness_accepts_the_launcher_options():
     text = HARNESS.read_text(encoding="utf-8")
-    assert text.count('"--baseline"') == 2  # train and reload
+    assert text.count('"--baseline"') == 2  # train; reload and evaluate (one shared definition)
     assert '"--declared-change"' in text and "optimizer.step" in text
 
 
