@@ -33,3 +33,20 @@ unchanged.
   [logs/attempt2_sequence.sh](logs/attempt2_sequence.sh) writes `logs/attempt2_sequence.log` and
   `logs/attempt2_exit_status.txt`. If attempt 2 fails it is kept and returned for review, never retried
   automatically.
+
+## Evidence packaging (after the lead's acceptance review, 2026-11-26)
+
+The review of `4416da8` ([PR #10 comment 7190881246](https://github.com/sergthedev/axiom-local/pull/10#issuecomment-7190881246))
+found that the two sequence logs linked above were not in Git. The repository's `.gitignore` ignores `*.log`.
+Both files are now force-added unchanged. They contain no absolute paths, user names or credentials; the only
+process detail is the launcher's process ID in the attempt-2 log. No redaction was needed.
+
+| File | SHA-256 | Origin |
+|---|---|---|
+| `logs/attempt1_sequence.log` | `db062cd9c7bf5101565b2a83c780f6f4c1e4de7bf578ec5de3b827c16471e9a0` | Byte copy (`cp`), made at 10:31 UTC before attempt 2 started, of the sequence log the attempt-1 launcher wrote into the session's temporary folder. That temporary original no longer exists, so the copy can no longer be compared against it. Its content matches the per-process status lines and timestamps in the attempt-1 measurement files. |
+| `logs/attempt2_sequence.log` | `0fdb229f55106d092a0ffcfe1683411aa3398b175271947a720f67341d232fda` | The original file, written directly by the detached attempt-2 launcher ([logs/attempt2_sequence.sh](logs/attempt2_sequence.sh)); its exit status is in `logs/attempt2_exit_status.txt` (`0`). |
+
+Archived-attempt check, repeated for this packaging step: all 18 attempt-1 files listed in
+`logs/attempt1_files.sha256`, the ledger written before attempt 2, still match their recorded SHA-256. That covers
+the archived 1.7B files and the accepted 0.6B files. `git diff 6d4da72 HEAD -- runs/` is empty. No prediction,
+measurement, score or threshold changed, and nothing was rerun.

@@ -1,0 +1,14 @@
+== 2026-11-26T10:32:10Z start pid 7956 head 995ae3f092aab9ac1de5b063f2d05bf1742e9212
+== 2026-11-26T10:32:10Z qwen3-1.7b main
+{"phase": "main", "status": "completed", "stop_reason": null, "failure": null, "counts": {"warmup": 5, "validation": 160, "repeat": 600}}
+== 2026-11-26T11:13:06Z qwen3-1.7b fresh 1
+{"phase": "fresh_1", "status": "completed", "stop_reason": null, "failure": null, "counts": {"repeat": 30}}
+== 2026-11-26T11:14:54Z qwen3-1.7b fresh 2
+{"phase": "fresh_2", "status": "completed", "stop_reason": null, "failure": null, "counts": {"repeat": 30}}
+== 2026-11-26T11:16:42Z qwen3-1.7b fresh 3
+{"phase": "fresh_3", "status": "completed", "stop_reason": null, "failure": null, "counts": {"repeat": 30}}
+== 2026-11-26T11:18:29Z qwen3-1.7b fresh 4
+{"phase": "fresh_4", "status": "completed", "stop_reason": null, "failure": null, "counts": {"repeat": 30}}
+== 2026-11-26T11:20:16Z qwen3-1.7b fresh 5
+{"phase": "fresh_5", "status": "completed", "stop_reason": null, "failure": null, "counts": {"repeat": 30}}
+== 2026-11-26T11:22:03Z end rc=0
