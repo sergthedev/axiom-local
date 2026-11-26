@@ -551,3 +551,26 @@ for a comprehensive final audit of AXIOM Verify.
 - Pre-registered in PRERUN D13/D14 before any adapter exists: the pilot criterion (EXP-009 rule 3 on exact match vs the
   untuned base) and the DR-005 deployment-quality gates as exact count rules, descriptive only on this corpus.
 - No training, no adapter, no adapter inference, no final-test access. Stopped for technical review.
+
+### Pre-run revision 1 (lead review of `ea1d343`, corrections A-D)
+
+- The [lead's pre-run review](https://github.com/sergthedev/axiom-local/pull/11#issuecomment-7191912956) accepted
+  decisions 1-11 with conditions and required four corrections before the smoke. No training setting, data, base
+  checkpoint or endpoint changed.
+- A: new `axbench.supervise` (common pre-load baseline and preflight, monitor-ready gate, supervision of the monitor
+  and every step, fail-closed sampling, stale heartbeat, stop marker overriding success, SIGTERM then kill after a
+  grace period, exit status written in every case); `exp010_launch.py` is now a thin wrapper and the smoke reload is
+  a supervised step. 27 dummy-process tests (`tests/test_exp010_supervise.py`), including the detached path end to end.
+- B: `reload` verifies the smoke adapter's provenance from the training records, runs exactly the 5 warm-up train
+  examples with stop rules after load and every request, re-reads the persisted records and exits non-zero on any
+  missing or error record. C: `train` sets `completed` only after the record, optimizer-step (`optimizer.step`), file,
+  hash and tensor checks and a final resource sample; finalization errors never replace a stop. D: lineage and
+  denominator checks, not-assessable semantics and independent dispatch reporting in `pilotgates`
+  (`exp010.pilot-gates/2`); G12 MLX peak over load, warm-up and validation; EXP-009 comparator hashes pinned;
+  execution authorization (D17) and the analysis integrity plan (D18) pre-registered.
+- Confirmed in the MLX-LM source and by the self-test that the trainer's update timing excludes callback work
+  (C-057).
+- Self-test revision 1 on the tiny random model and synthetic fixtures: 15 of 15 checks passed
+  (`prerun/harness_selftest_rev1.json`). Core tests: 827 passed locally on macOS before the commit (737 at revision 0).
+- Not run: real training, the real `reload` and `evaluate`, the macOS sampler inside the supervised sequence. No
+  validation predictions, no final-test access. Stopped for re-review and the owner's smoke decision.

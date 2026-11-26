@@ -1,0 +1,153 @@
+{
+  "adapter_verification_fixtures": {
+    "rejected": {
+      "adapter_modified_after_training": true,
+      "completion_checks_failed": true,
+      "data_hash_differs": true,
+      "extra_adapter_file": true,
+      "missing_eval_record": true,
+      "non_finite_loss_record": true,
+      "other_base_checkpoint": true,
+      "other_training_commit": true,
+      "status_not_completed": true,
+      "wrong_phase": true
+    },
+    "valid_fixture_accepted": true
+  },
+  "checks": {
+    "adapter_trained": true,
+    "adapter_verification_accepts_valid_and_rejects_defects": true,
+    "completion_checks_pass": true,
+    "data_order_independent_of_evaluation": true,
+    "evaluation_at_planned_updates": true,
+    "final_adapter_equals_last_save": true,
+    "finalization_never_masks_the_outcome": true,
+    "optimizer_step_count_equals_updates": true,
+    "reload_error_paths": true,
+    "reload_reproduces_outputs": true,
+    "reports_at_update_boundaries": true,
+    "saves_at_planned_updates": true,
+    "tampered_adapter_rejected": true,
+    "update_seconds_exclude_callback_time": true,
+    "updates_complete": true
+  },
+  "finalization": {
+    "completed_becomes_failed": true,
+    "stop_reason_preserved": true
+  },
+  "mask_self_check": {
+    "examples_checked": 30,
+    "mask_equals_completion_positions": true
+  },
+  "note": "tiny random model and synthetic tokens; not a training result",
+  "passed": true,
+  "reload_error_paths": {
+    "allocation_error_stops": true,
+    "clean_run_passes": true,
+    "missing_record_detected": true,
+    "request_error_fails_record_check": true
+  },
+  "runs": {
+    "a": {
+      "callback_interval_seconds": [
+        0.06601245800084143,
+        0.07466166700032772,
+        0.05606429199906415,
+        1.1633426250009506,
+        0.05215812499955064,
+        0.05458399999952235
+      ],
+      "completion_checks_passed": true,
+      "completion_problems": [],
+      "eval_updates": [
+        0,
+        3,
+        6
+      ],
+      "final_equals_last_save": true,
+      "lora_b_max_abs": 0.00029473024187609553,
+      "micro_steps": [
+        4,
+        8,
+        12,
+        16,
+        20,
+        24
+      ],
+      "optimizer_steps": 6,
+      "reload_max_abs_logit_difference": 0.0,
+      "save_updates": [
+        3,
+        6
+      ],
+      "tampered_adapter_problems": [
+        "model.layers.2.self_attn.q_proj.lora_b: lora_b is zero (adapter not trained)"
+      ],
+      "train_loss": [
+        12.586454391479492,
+        12.208903312683105,
+        12.134258270263672,
+        12.622050285339355,
+        12.775005340576172,
+        12.232881546020508
+      ],
+      "update_seconds": [
+        0.052524292999805766,
+        0.05689712599814811,
+        0.03962724999837519,
+        0.05718562699985342,
+        0.03475349999825994,
+        0.03782579299877398
+      ],
+      "updates": 6
+    },
+    "b": {
+      "callback_interval_seconds": [
+        0.05158799999844632,
+        0.0976250000003347,
+        0.07623329099988041,
+        0.07108504200004973,
+        0.059190707999732695,
+        0.05702204200133565
+      ],
+      "completion_checks_passed": true,
+      "completion_problems": [],
+      "eval_updates": [
+        0,
+        6
+      ],
+      "final_equals_last_save": true,
+      "lora_b_max_abs": 0.00029473024187609553,
+      "micro_steps": [
+        4,
+        8,
+        12,
+        16,
+        20,
+        24
+      ],
+      "optimizer_steps": 6,
+      "reload_max_abs_logit_difference": 0.0,
+      "save_updates": [
+        6
+      ],
+      "train_loss": [
+        12.586454391479492,
+        12.208903312683105,
+        12.134258270263672,
+        12.622050285339355,
+        12.775005340576172,
+        12.232881546020508
+      ],
+      "update_seconds": [
+        0.050047082999299164,
+        0.0730697910003073,
+        0.052706667001984904,
+        0.05490937500144356,
+        0.042420793000928825,
+        0.04116349999821978
+      ],
+      "updates": 6
+    }
+  }
+}

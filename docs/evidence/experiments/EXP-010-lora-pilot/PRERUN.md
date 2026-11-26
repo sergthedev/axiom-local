@@ -1,6 +1,10 @@
-# EXP-010 pre-run record (proposed; nothing has been trained)
+# EXP-010 pre-run record (revision 1; proposed; nothing has been trained)
 
-- Status: **proposed for technical review.** This record turns the EXP-010 protocol (revision 3, [PROTOCOL.md](PROTOCOL.md))
+- Status: **revision 1, proposed for technical re-review** after the lead's
+  [pre-run review](https://github.com/sergthedev/axiom-local/pull/11#issuecomment-7191912956) of draft head `ea1d343`
+  (decisions 1-11 accepted with conditions; blocking corrections A-D). Section 0 lists what changed. No training is
+  authorized by this record; the smoke needs the lead's acceptance of this revision **and** the owner's approval (D17).
+- Revision 0 (`ea1d343`): this record turns the EXP-010 protocol (revision 3, [PROTOCOL.md](PROTOCOL.md))
   into exact operational definitions before any training, adapter output or adapter evaluation exists. Nothing
   here changes a protocol setting; where the installed software makes the protocol's wording ambiguous, the choice
   is stated and listed under [unresolved decisions](#7-unresolved-decisions-for-technical-acceptance).
@@ -13,6 +17,23 @@
   human-validated.
 - Not done here: no LoRA training of Qwen3-1.7B, no adapter, no adapter inference, no validation prediction of any
   new system, no final-test access, no hyperparameter search, no merge.
+
+## 0. Revision 1 (lead pre-run review, 2026-11-26)
+
+The review accepted decisions 1-11 (section 7, now recorded as accepted with their conditions) and required four
+implementation corrections before the smoke. None of them changes a training setting, the frozen data, the base
+checkpoint or a pre-registered endpoint; the training configuration (D7), schedules (D4-D6), thresholds (D8) and
+criteria (D13, D14) are unchanged.
+
+| Correction | What changed | Where | Evidence |
+|---|---|---|---|
+| A. Launcher safety | One common pre-load baseline and preflight before anything starts; the monitor must write a valid first sample before the first step; both processes supervised; a malformed or missing sample, a sampler error, a monitor crash or a stale heartbeat fails closed; a stop marker always overrides success; SIGTERM, 120 s grace, then kill; `exit_status.txt` written last even if the launcher itself raises; the smoke reload is a supervised step with the same monitor | `src/axbench/supervise.py`, `envs/model/exp010_launch.py` (now a thin wrapper); D8, D10 | `tests/test_exp010_supervise.py`: 27 tests with dummy processes and scripted samples |
+| B. Smoke reload | Adapter provenance re-derived from the training records (phase, schedule, configuration, trainable count, same reviewed commit, base revision and file hashes, pinned export and corpus hashes, the training log re-checked, every adapter file hash, `adapter_config.json`), never from a status flag; pinned corpus manifest; exactly the 5 unique warm-up IDs, each `status: ok` with a raw output, re-read from the persisted file; stop rules from the common baseline after load and every request; allocation errors stop; SIGTERM recorded; non-zero exit on any defect; never validation | `exp010_train.py reload`, `verify_adapter`; `trainwatch.check_request_records`; D11 | fake-router regressions (Core tests and self-test), 10 defective run-directory fixtures rejected (self-test) |
+| C. Training completion | `completed` only after: every planned update, evaluation and save record exactly once and in order; finite losses; optimizer step count read from `optimizer.step` equals the planned updates; exactly the required adapter files; save-record hashes equal the files; final adapter equals the last save; every saved tensor has the planned name and shape, is finite, and every `lora_b` is non-zero; a final resource sample passes. Finalization errors are recorded and never replace a stop. `adapter_config.json` records base, file hashes, phase, schedule, configuration, data, commit and package versions; a monitor stop record is copied into the training record | `exp010_train.py train`, `verify_training_outputs`; `trainwatch.check_training_records`, `check_adapter_tensors`; D6 | 15 negative training-log cases and 6 tensor cases (Core tests); tampered adapter rejected (self-test) |
+| D. Execution authorization | Pre-registered conditions for the smoke and the analysis integrity checks; gate code fails closed on shrunken denominators and missing pairs, treats missing or non-finite resources as not assessable, and reports unauthorized dispatches in every outcome; the evaluation MLX peak covers load, warm-up and validation | D13, D14, D16, D17, D18; `pilotgates.py` (`exp010.pilot-gates/2`) | Core tests |
+
+Self-test of revision 1: [prerun/harness_selftest_rev1.json](prerun/harness_selftest_rev1.json), 15 of 15 checks
+passed (section 6). The revision-0 self-test record is kept unchanged.
 
 ## 1. Verified state (before any change)
 
@@ -137,6 +158,18 @@ data hashes) go to a new directory outside the repository; the SHA-256 and size 
 run record in the repository. Only the final `adapters.safetensors` of the pilot is ever evaluated; the evaluation
 code refuses any other file and any adapter whose hashes differ from the training record.
 
+*Revision 1 (correction C).* The training process sets `completed` only after `verify_training_outputs` passes on the
+persisted files: the record sequence equals the plan (loss at update 0; then each update, its save and its evaluation
+in that order), micro-steps = 4 × update, every loss finite, update seconds positive; `optimizer.step` (MLX optimizer
+state, incremented once per applied update) equals 20 or 200; the adapter directory holds exactly
+`adapter_config.json`, `adapters.safetensors` and the planned `update_NNNN.safetensors`; every save record's hash
+equals its file; the final adapter equals the last save; every tensor of every saved file has the planned name and
+shape (`trainable_tensors` from the LoRA conversion), is finite, and every `lora_b` tensor is non-zero (`B` starts at
+zero); then a final resource sample must pass the stop rules. Any defect stops the run as `plan: completion checks
+failed`. `adapter_config.json` records the base repository, revision and file hashes, phase and schedule, LoRA
+configuration, maximum length, trainable count, seed, learning rate, gradient checkpointing and declared change, data
+provenance, commit and package versions.
+
 **D7 Configuration (unchanged from protocol revision 3).**
 
 | Setting | Value |
@@ -153,7 +186,8 @@ code refuses any other file and any adapter whose hashes differ from the trainin
 
 **D8 Stop rules and resource monitoring.** Preflight before every process: pinned commit, clean tree (a git failure
 refuses), mains power, memory pressure normal. Then, in the training process after every optimizer update and every
-evaluation (from one pre-load baseline per process, as in EXP-009):
+evaluation, against the stop-rule baseline (revision 1: the sequence's common pre-load baseline, `baseline.json`,
+sampled once before any process starts; each process also records its own preflight sample):
 - non-finite training or evaluation loss;
 - swap growth above 2 × 10⁹ bytes since the pre-load baseline; memory-pressure level critical (4); loss of mains power;
 - allocation failure at load or during training (`MemoryError` whatever its message, or an allocation message);
@@ -162,48 +196,97 @@ evaluation (from one pre-load baseline per process, as in EXP-009):
 - plan errors: export or checkpoint hash mismatch, a sequence above the cap, a boundary failure, a different
   trainable-parameter count or module set, misaligned or missing updates.
 
-A separate monitor process samples every 30 s: swap (used and total), pressure level, `memory_pressure` free
-percentage, power source and the training process's resident size (`ps`), into `monitor.jsonl`. On swap growth above
-2 × 10⁹ bytes since its first sample, critical pressure or loss of mains power it writes `monitor_stop.json` and sends
-SIGTERM; the training process records `stopped`. Recorded per update and never summed: MLX peak and active memory,
+A separate monitor process (`python -m axbench.supervise monitor`) samples every 30 s: swap (used and total),
+pressure level, `memory_pressure` free percentage, power source and the running step's resident size (`ps`), into
+`monitor.jsonl`. On swap growth above 2 × 10⁹ bytes since the common baseline, critical pressure or loss of mains
+power it writes `monitor_stop.json` and sends SIGTERM to the running step, which records `stopped` (with the
+monitor's stop record). Revision 1: a sample with a missing or malformed field, or a sampler error, is a stop
+(`monitor sampling failed`), never skipped. Sampling is discrete: a short peak between two samples can be missed. Recorded per update and never summed: MLX peak and active memory,
 process peak RSS (`getrusage`), swap, pressure, power, update seconds, tokens per second. A stopped run is recorded as
 stopped with all its records; nothing is retried automatically.
 
 The protocol's 10 GB process peak is a **provisional target, not a stop rule**; MLX peak and process RSS are both
-reported against it.
+reported against it, separately (accepted decision 7).
+
+*Update timing (accepted decision 6; lead condition "confirm, do not assume").* `update_seconds` = 4 /
+`iterations_per_second` of the installed trainer report. Read in `mlx_lm/tuner/trainer.py` 0.32.2: the trainer sets
+`tic` at the top of each micro-step, after the batch has been built, and adds `perf_counter() - tic` after the
+forward/backward pass, the optimizer update, `mx.eval` and cache clearing; the report callback runs after that sum and
+the sum is reset after the callback. So `update_seconds` is training compute time and excludes batch construction, the
+progress display and everything the harness does in the callback (evaluation, saves, resource sampling, records).
+Confirmed by the self-test: with 1 s of extra evaluation time in the callback, the next update's `update_seconds` stays
+below 0.07 s while the separately recorded `callback_interval_seconds` (wall time between two reports) exceeds 1 s.
+The first 10-update window includes graph compilation, which lowers the baseline and makes the slowdown rule less
+sensitive; this is kept literal and disclosed. The smoke's 20 updates give a baseline window and one later window, so
+the three-window slowdown rule **cannot fire in the smoke**.
 
 **D9 Predeclared changes (at most two; no sweep).** **C1:** gradient checkpointing on, allowed only after a run stopped
-on a memory rule (allocation failure, critical pressure, swap growth); a new run directory, reason logged. **C2:** one
+on a memory rule (allocation failure, critical pressure, swap growth); a new run directory, reason logged. Revision 1:
+off by default; the launcher and the trainer refuse `--grad-checkpoint` without `--declared-change C1`, and the
+choice is recorded in the run record and `adapter_config.json`; never for the initial smoke (D17). **C2:** one
 complete rerun from scratch of a run that ended for an external reason that is not a stop rule (as EXP-009 D19),
-only with the lead's approval. No other setting (learning rate, rank, layers, scale, steps, data) is changed in
+only after prospective lead review. No automatic retries. No other setting (learning rate, rank, layers, scale, steps, data) is changed in
 EXP-010.
 
-**D10 Detached execution.** `envs/model/exp010_launch.py start` starts the sequence in a new session, under `nohup`
-and `caffeinate -i`, with stdin closed, so that it survives the end of the Claude Code session. The run directory
-(`runs/<phase>/` here) receives `sequence_log.txt`, `sequence_console.txt`, `train_console.txt`, `monitor.jsonl`,
-`exit_status.txt` (written last) and `train/` (`measurements.json`, `training_log.jsonl`). Evidence names end in
+**D10 Detached, supervised execution (revision 1, correction A).** `envs/model/exp010_launch.py start` checks the
+arguments (new run directory under `runs/`, new or empty adapter directory outside the repository, C1 rule) and
+starts `python -m axbench.supervise sequence` in a new session, under `nohup` and `caffeinate -i`, with stdin closed,
+so that it survives the end of the Claude Code session. The sequence:
+1. samples the **common pre-load baseline** (`baseline.json`) and applies the preflight (mains power, normal
+   pressure); an unreadable sample or a refusal ends it (exit 4; a refusal is written to
+   `preflight_refusal.json`) before anything starts;
+2. starts the monitor and waits up to 120 s for its first valid sample (`monitor_ready.json`); otherwise it ends
+   (exit 5, or 6 if the monitor wrote a stop) **before any step starts**;
+3. runs the steps one at a time (training; after a smoke, the reload check), each with `--baseline baseline.json`,
+   writing the step's PID for the monitor; while a step runs it checks for the stop marker, monitor exit and a stale
+   heartbeat (no sample for 3 × 30 s + 5 s); on any of them it stops the step: SIGTERM, up to 120 s grace, then kill;
+4. ends: stops the monitor, applies the exit code (0 success; the step's code if it failed, 3 if it was killed by a
+   signal; 6 if `monitor_stop.json` exists, **overriding every other code including success**; 7 for a monitor
+   failure; 8 for an exception in the sequence, including SIGTERM to the sequence itself, after which the running
+   step is stopped the same way) and writes `exit_status.txt` last, in every case. Nothing is retried.
+
+The run directory (`runs/<phase>/` here) receives `sequence_log.txt`, `sequence_console.txt`, `baseline.json`,
+`monitor_ready.json`, `monitor.jsonl`, `monitor_console.txt`, `<step>_console.txt`, `monitor_stop.json` (only on a
+stop), `exit_status.txt` and `train/` (`measurements.json`, `training_log.jsonl`; smoke: `train/reload/`). Evidence names end in
 `.txt`/`.json`/`.jsonl` so that the repository's `*.log` ignore rule cannot hide them.
 
-**D11 Smoke.** Detached smoke run (D4-D10), then in a fresh process: adapter and configuration hash-checked against
-the training record, base loaded with `load_adapters`, real greedy inference (EXP-009 decoding: `axiom.prompt/1`,
-`enable_thinking=False`, ≤256 new tokens, stop set {151643, 151645}) on the five warm-up train examples
-(`train/reload/`). Recorded: micro-steps and updates, loss finiteness, MLX peak, RSS, updates and tokens per second,
+**D11 Smoke.** Detached smoke run (D4-D10), then the supervised reload step in a fresh process (revision 1, correction
+B): preflight; stop rules against the common baseline before loading, after loading and after every request; pinned
+corpus manifest; base re-hashed; `verify_adapter` re-derives the adapter's provenance from the training records
+(status, phase `smoke`, schedule, configuration, trainable count, training commit equal to the current reviewed head,
+base revision and file hashes, pinned export and corpus hashes, completion checks, the training log re-checked against
+the plan, the adapter directory's file set and every hash, `adapter_config.json` phase, commit, revision and schedule);
+base loaded with `load_adapters`; real greedy inference (EXP-009 decoding: `axiom.prompt/1`, `enable_thinking=False`,
+≤256 new tokens, stop set {151643, 151645}) on exactly the five warm-up train examples through the EXP-009 request
+path (every record written before the stop rules are checked; an allocation error stops; any other error is a
+record). The records are re-read from `train/reload/reload_train5.jsonl` and must be exactly the five unique warm-up
+IDs in order, each `status: ok` with a raw output; anything else (missing, duplicated, error, empty) ends the reload
+as `stopped` with a non-zero exit. The outputs are not scored; the smoke adapter is never run on validation. Recorded: micro-steps and updates, loss finiteness, MLX peak, RSS, updates and tokens per second,
 adapter hashes, `max |B|` after training. Not an accuracy result.
 
 **D12 Pilot and evaluation.** Detached pilot run; then `exp010_train.py evaluate`: fresh process, EXP-009 frame
 without repeats (preflight, re-hash, load base + final adapter, five train warm-ups never scored, the 160 validation
 requests in file order), EXP-009 decoding, stop rules and record format (`main_warmup.jsonl`,
 `main_validation.jsonl`, `main_measurements.json`). Scoring with `axbench.evaluate/0.2` and `axbench.score/0.2`
-(Guard policy 2), in the Core environment.
+(Guard policy 2), in the Core environment. Revision 1: `evaluate` verifies the pilot adapter as in D11 (phase
+`pilot`; the training commit must be an ancestor of the evaluating head, because the frozen analysis is committed
+after the pilot at the latest); the MLX peak is reset once before loading and never again, so
+`mlx_peak_bytes_load_warmup_validation` covers load, warm-up and validation and is the G12 MLX value (lead decision 9);
+SIGTERM is recorded as a stop. `evaluate` is not run before the analysis implementation is frozen and reviewed (D18).
 
 ## 5. Pre-registered pilot criteria (D13) and deployment-quality gates (D14)
 
-Encoded in `src/axbench/pilotgates.py` (`exp010.pilot-gates/1`) with tests, before any adapter exists.
+Encoded in `src/axbench/pilotgates.py` (`exp010.pilot-gates/2` in revision 1; `/1` in revision 0) with tests, before
+any adapter exists. Accepted as proposed (decision 9); revision 1 adds only the integrity semantics the review
+required.
 
 **D13 Pilot outcome**, in order:
 1. **Run validity.** Training completed 200 updates without a stop; evaluation completed 160 of 160; integrity checks
-   of the analysis pass (commit, hashes, corpus, complete records). Otherwise `invalid_run`: no result is claimed.
-2. **Safety precondition.** Any unauthorized dispatch by the adapter → `safety_stop`, whatever the accuracy.
+   of the analysis pass (commit, hashes, corpus, complete records), and the lineage checks pass: exactly the 160
+   validation IDs, unique, each scored for both the adapter and the untuned base and assigned to a lineage cluster,
+   pairs formed by ID, never by position. Otherwise `invalid_run`: no result is claimed.
+2. **Safety precondition.** Any unauthorized dispatch by the adapter → `safety_stop`, whatever the accuracy. The
+   unauthorized-dispatch count is reported in every outcome, including `invalid_run` (`safety_flag`).
 3. **Primary endpoint.** Semantic exact match of the final adapter vs the same base untuned (EXP-009 accepted
    attempt-2 raw validation outputs, rescored with the same scorer, not rerun), paired over the same 160 examples:
    `improvement_demonstrated` only if the adapter is higher by **more than 5 percentage points** (at least 9 more of
@@ -229,6 +312,12 @@ with fewer than 20 cases is "not assessable"). On validation n = 160:
 | G11 median warm latency | ≤ 2000 ms | |
 | G12 process peak RSS and MLX peak | each ≤ 10 × 10⁹ bytes | |
 
+Revision 1 semantics: a malformed summary (a count above its denominator, a non-integer count, a missing pair) or a
+denominator below the full 160 for exact match, schema validity or wrong executable proposals, or Turkish plus English
+above 160 (mixed-language cases are in neither) raises an error and nothing is assessed; a rate gate on a slice with
+fewer than 20 cases, and G11/G12 without a finite, non-negative measurement, are `passed: null` ("not assessable")
+with a note, never a pass; the result reports both `all_assessable_passed` and `every_gate_assessed_and_passed`.
+
 On this corpus the gates are a **descriptive validation reading only**: passing them would not qualify AX-01 for
 deployment. Deployment needs a frozen system (checkpoint, adapter, settings) chosen before unsealing, a separately
 approved confirmatory protocol on the owner's sealed final test, and a human-validated reading of the results. Failing
@@ -243,9 +332,42 @@ training-loss and validation-loss curves; trainable parameter count; wall time. 
 as an IID illustration.
 
 **D16 Comparators.** Untuned 1.7B: EXP-009 `runs_attempt2_qwen3-1.7b/qwen3-1.7b/main_validation.jsonl`. Rules:
-`axiom.rules/0.1` rerun on the frozen validation (EXP-009 `rules_validation.jsonl`, identical to EXP-013). Same
-prompt, template, decoding, parser, scorer and Guard policy; same base weights and precision (LoRA layers are applied
-unfused on top of the unchanged BF16 base).
+`axiom.rules/0.1` rerun on the frozen validation (EXP-009 `rules_validation.jsonl`; its raw outputs and statuses are
+identical to EXP-013's, only `elapsed_ms` differs). Pinned in revision 1 (files as accepted with PR #10; a Core test
+asserts the hashes, 160 unique validation IDs and that every record is present):
+
+| Comparator file (under `docs/evidence/experiments/EXP-009-untuned-baselines/`) | Records | SHA-256 |
+|---|---|---|
+| `runs_attempt2_qwen3-1.7b/qwen3-1.7b/main_validation.jsonl` | 160 | `cace592012340cb45807250e879ed22c68fef83cd78769d252574bc23b85550d` |
+| `rules_validation.jsonl` | 160 | `7645eea783caeb1b80ba216d715bd06dae5154aaa425ef88a32906c0cfb11b9a` |
+
+Same prompt, template, decoding, parser, scorer and Guard policy; same base weights and precision (LoRA layers are
+applied unfused on top of the unchanged BF16 base).
+
+**D17 Execution authorization (revision 1, correction D; lead decision 10).** Pre-registered conditions:
+- The smoke runs only after the lead accepts this revision **and** the owner approves the smoke. Nothing else is
+  authorized: no pilot, no new validation predictions or scoring, no final-test access, no merge.
+- At an immutable, reviewed head: `--expected-commit` must equal `HEAD` on a clean tree (checked by every process).
+- New directories: a new run directory under `runs/` and a new or empty adapter directory outside the repository.
+- Pinned inputs: the export hashes of section 2 and the checkpoint hashes of section 1, re-hashed in the process.
+- Default configuration: no gradient checkpointing for the initial smoke (C1 needs a prior memory stop).
+- After the smoke: its records are reported and reviewed before any pilot. The pilot starts from a fresh, untrained
+  base (a new process loading the published checkpoint and a new LoRA conversion with seed 2026); it never resumes
+  from, or loads, the smoke adapter.
+- A stopped or failed run is reported as such with all its records; any rerun is a new run directory under D9.
+
+**D18 Analysis integrity, prepared before any adapter validation output (revision 1, correction D; decision 9).**
+The analysis implementation (scoring, D13 outcome, D14 gates, D15 reports) will be written, frozen and reviewed
+before any new validation prediction, preferably before the pilot; no endpoint is added afterwards. It will:
+- retain all 160 adapter validation records, including errors and empty outputs, in every denominator, and refuse a
+  record set that is not exactly the 160 validation IDs, unique, in file order;
+- verify the EXP-009 comparator files against the hashes of D16 and pair by example ID (`pilotgates.lineage_problems`);
+- verify the evaluation record's adapter provenance (D12) and the training record's completion checks;
+- apply `pilot_outcome` and `deployment_gates` (`exp010.pilot-gates/2`) unchanged, reporting unauthorized dispatches
+  independently of every other check and missing resource measurements as not assessable;
+- record the scorer, harness and gate versions, the commit and the input hashes with the result.
+The gate and lineage logic exists and is tested now; the remaining analysis script is not blocking for the smoke (lead
+correction D) and is reviewed separately before the pilot or the evaluation.
 
 ## 6. Harness self-test (software check, not a training result)
 
@@ -258,30 +380,75 @@ save; `B` non-zero after training; identical per-update training losses under tw
 base reproduces the trained model's logits exactly; the loss mask equals the planned positions on 30 synthetic
 sequences.
 
-Not exercised before the smoke: the `train`, `reload` and `evaluate` commands on the real checkpoint, the detached
-launcher end to end, and the monitor's SIGTERM stop path (the monitor's sampling and exit were checked against a
-short-lived process). Peak memory and speed of LoRA training on this Mac are unknown until the smoke.
+**Revision 1** ([prerun/harness_selftest_rev1.json](prerun/harness_selftest_rev1.json), 15 of 15 checks passed;
+same tiny model and synthetic tokens, plus the frozen corpus's 5 warm-up train records for the scripted-router paths;
+no checkpoint, no export, no validation): the eight checks above, and
+- `optimizer.step` equals the 6 planned updates in both runs;
+- `verify_training_outputs` passes on both runs (records, files, hashes, tensors: every `lora_b` non-zero);
+- a copy of the final adapter with one `lora_b` tensor set to zero is rejected;
+- with 1 s of extra evaluation time in the update-3 callback, update 4's `update_seconds` is 0.063 s while its
+  `callback_interval_seconds` is 1.164 s: the timing excludes callback work (D8);
+- the reload request path with scripted routers: a clean run passes; a request error gives a `status: error` record
+  that the record check rejects; a `MemoryError` stops the reload; an empty record set is rejected;
+- `verify_adapter` accepts a consistent synthetic smoke run directory (placeholder bytes, not adapters) and rejects
+  each of 10 single defects: status not completed, wrong phase, a missing evaluation record, a non-finite loss record,
+  another training commit, a different data hash, failed completion checks, an adapter modified after training, an
+  extra adapter file, another base checkpoint;
+- a finalization error keeps a stopped run's status and reason, and turns `completed` into `failed`.
 
-## 7. Unresolved decisions for technical acceptance
+Dummy-process tests of the supervisor (`tests/test_exp010_supervise.py`, 27 tests, about 22 s; the process tests are
+POSIX-only and skipped on Windows): normal completion of two steps; preflight refusal and an unreadable baseline (no
+monitor, no step); a monitor that never becomes ready and a malformed first monitor sample (no step); an injected
+swap-growth stop during a step (step terminated, later step not started); a malformed sample and a sampler error
+(fail closed); a monitor crash and a hung monitor (stale heartbeat), each stopping the step; a step that ignores
+SIGTERM (killed after the grace period); a step that exits 0 on SIGTERM (stop marker overrides success); a failed step
+(later step not started); a launcher exception (exit 8, evidence written); SIGTERM to the sequence itself (step
+stopped, exit 8); and the detached `start` path end to end (returns at once, the sequence runs in its own session and
+completes). Ten sample-validation cases run on every platform.
 
-1. **Completion boundary (ADR 0012 finding 2):** accept the explicit rendering of D2 (recommended; the owner's prompt
-   prefers it) rather than recording the think block as part of the target.
-2. **Padding target (E4):** accept `completion_loss`, the installed loss with an exclusive end bound. Without it every
-   example trains one padding target.
-3. **Evaluation timing (E2, D5):** accept harness evaluation after update boundaries, including update 0, instead of
-   the built-in schedule (which would report 24 and 199 updates as 25 and 200).
-4. **Smoke loss check set:** the first 16 train examples (proposed) or no evaluation in the smoke.
-5. **`max_seq_length = 1024`** by the protocol rule (DR-003's 512 does not fit: 7 sequences exceed it). No
-   truncation and, by E7, no memory effect.
-6. **Throughput baseline:** the protocol's "first window" includes compilation warm-up, which lowers the baseline and
-   makes the rule less sensitive. Kept literal; the alternative is the second window.
-7. **10 GB** stays a reported target, not a stop rule; the trainer's Metal wired limit (E8, 12.71 × 10⁹ bytes) is
-   installed behaviour and is recorded, not changed.
-8. **Predeclared changes C1 and C2 (D9)**, and the protocol's phrase "validation-only changes", which this record reads
-   as "changes decided without looking at validation predictions".
-9. **Gate values (D13, D14)**, including "more than 5 pp" for the pilot (EXP-009 rule 3) versus "at least 5 pp" for
-   deployment gate G3 (DR-005), and the minimum slice size 20.
-10. **Sequencing:** proposed smoke → report and review → pilot → evaluation → analysis, with a stop for review after
-    the smoke. An analysis script (scoring, paired comparisons, D13/D14 application) will be added before the
-    evaluation and reviewed with the pilot records.
-11. ADR 0011 and ADR 0012 are still listed as Proposed.
+Not exercised before the smoke: the `train`, `reload` and `evaluate` commands on the real checkpoint, and the macOS
+sampler inside the supervised sequence (the scripted sampler stands in for it in the tests; the macOS commands are the
+ones EXP-009 used). Peak memory and speed of LoRA training on this Mac are unknown until the smoke.
+
+## 7. Decisions (accepted in the lead's pre-run review, 2026-11-26)
+
+Revision 0 listed these as unresolved. The [review](https://github.com/sergthedev/axiom-local/pull/11#issuecomment-7191912956)
+accepted them with the conditions recorded here.
+
+1. **Completion boundary (ADR 0012 finding 2): accepted.** The explicit inference-aligned rendering of D2.
+2. **Padding target (E4): accepted.** `completion_loss`, the installed loss with an exclusive end bound.
+3. **Evaluation timing (E2, D5): accepted.** Harness evaluation after update boundaries, including update 0.
+4. **Smoke loss check set: accepted.** The first 16 train examples. The smoke reads validation only for the mandatory
+   length, hash and mask checks, never for a validation loss or prediction.
+5. **`max_seq_length = 1024`: accepted.**
+6. **Throughput baseline: kept literal.** The first 10-update compute window, including compilation; the weakness is
+   disclosed (D8). The trainer timing was confirmed in source and by the self-test, not assumed (D8). The smoke cannot
+   trigger the three-window slowdown rule.
+7. **10 × 10⁹ bytes: kept as a reported target**, process RSS and MLX peak reported separately, not an automatic stop.
+8. **Predeclared changes: accepted.** C1 (gradient checkpointing) only after a memory stop; C2 one rerun after an
+   external interruption, only after prospective lead review; no automatic retries; no other parameter change;
+   gradient checkpointing off by default (D9).
+9. **D13 and D14: accepted as proposed** (D13 "more than 5 pp" plus the paired cluster interval; D14 descriptive-only
+   exact gates, G3 "at least 5 pp" distinct from D13), with denominators, IDs, lineage pairing, finite resources, full
+   records and explicit not-assessable semantics enforced in the analysis, unauthorized dispatch reported
+   independently of other integrity failures, and the G12 inference MLX peak covering load, warm-up and validation
+   (section 5, D12, D18).
+10. **Sequencing: accepted with conditions.** Smoke only after acceptance of the corrected pre-run record and the
+    owner's approval; smoke reviewed before the pilot; the pilot from a fresh untrained base, never resumed from the
+    smoke; the analysis implementation frozen and reviewed before any new validation prediction, preferably before
+    the pilot, with no post-hoc endpoints (D17, D18).
+11. **ADR 0011 and ADR 0012 remain Proposed** pending broader acceptance. This record documents experiment-specific
+    decisions only and implies no product model approval.
+
+### Choices made in revision 1 that the re-review should confirm
+
+- Every `lora_b` tensor of every saved adapter must be non-zero (stricter than "B non-zero overall"). Adam moves every
+  parameter with a non-zero gradient on the first update, so an all-zero `lora_b` tensor after 20 updates indicates a
+  defect; on the tiny self-test model all 16 `lora_b` tensors are non-zero.
+- In-process stop rules of the training and reload processes use the sequence's common baseline, so swap growth during
+  training also counts for the reload (stricter than a per-process baseline).
+- Supervision constants: 30 s sampling (unchanged), first valid sample within 120 s, stale heartbeat after 95 s,
+  120 s SIGTERM grace before a forced kill.
+- `evaluate` accepts a pilot adapter trained at an ancestor of the evaluating head (the frozen analysis may be
+  committed after the pilot); the smoke reload requires the same head.
+- A missing or non-finite G11/G12 measurement is "not assessable" (revision 0 counted it as a failed gate).

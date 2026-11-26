@@ -266,3 +266,116 @@ class UpdateThroughputWatch:
             "updates_timed": len(self.seconds),
             "stopped": self.stopped,
         }
+
+
+# ------------------------------------------------------------------ completion checks (rev. 1)
+# Lead pre-run review, corrections B and C: a run is "completed" only when its persisted records
+# and adapter files pass these checks; a self-reported status flag is never sufficient.
+
+RECORD_KINDS = ("eval", "update", "save")
+
+
+def expected_record_sequence(sched: Schedule) -> list[tuple[str, int]]:
+    """The exact ``(kind, update)`` order the harness writes: the loss at update 0, then for every
+    update its record, its save (if planned) and its evaluation (if planned)."""
+    seq: list[tuple[str, int]] = [("eval", 0)] if 0 in sched.eval_updates else []
+    for u in range(1, sched.updates + 1):
+        seq.append(("update", u))
+        if u in sched.save_updates:
+            seq.append(("save", u))
+        if u in sched.eval_updates:
+            seq.append(("eval", u))
+    return seq
+
+
+def _finite(value: Any) -> bool:
+    return isinstance(value, int | float) and not isinstance(value, bool) and math.isfinite(value)
+
+
+def check_training_records(records: Sequence[dict[str, Any]], sched: Schedule) -> list[str]:
+    """Problems with a training log (empty list = complete and consistent).
+
+    Every planned update, evaluation and save record must be present exactly once and in the
+    planned order; micro-steps must equal ``update * grad_accum``; losses must be finite; every
+    save must name ``update_NNNN.safetensors`` with a SHA-256.
+    """
+    problems: list[str] = []
+    got: list[tuple[str, int]] = []
+    for i, r in enumerate(records):
+        kind, update = r.get("kind"), r.get("update")
+        if kind not in RECORD_KINDS or not isinstance(update, int) or isinstance(update, bool):
+            problems.append(f"record {i}: unexpected kind/update {kind!r}/{update!r}")
+            continue
+        got.append((kind, update))
+        if kind == "update":
+            if r.get("micro_steps") != update * sched.grad_accum:
+                problems.append(f"update {update}: micro_steps {r.get('micro_steps')!r}")
+            if not _finite(r.get("train_loss")):
+                problems.append(f"update {update}: train loss {r.get('train_loss')!r}")
+            if not (_finite(r.get("update_seconds")) and r["update_seconds"] > 0):
+                problems.append(f"update {update}: update_seconds {r.get('update_seconds')!r}")
+        elif kind == "eval" and not _finite(r.get("loss")):
+            problems.append(f"eval {update}: loss {r.get('loss')!r}")
+        elif kind == "save":
+            sha = r.get("sha256")
+            if r.get("file") != f"update_{update:04d}.safetensors":
+                problems.append(f"save {update}: file {r.get('file')!r}")
+            if not (isinstance(sha, str) and len(sha) == 64):
+                problems.append(f"save {update}: sha256 {sha!r}")
+    expected = expected_record_sequence(sched)
+    if got != expected:
+        missing = sorted(set(expected) - set(got))
+        extra = sorted(set(got) - set(expected))
+        dup = sorted({x for x in got if got.count(x) > 1})
+        problems.append(
+            f"record sequence differs from the plan: missing {missing[:5]}, unexpected "
+            f"{extra[:5]}, duplicated {dup[:5]}, {len(got)} records, {len(expected)} planned"
+        )
+    return problems
+
+
+def check_adapter_tensors(
+    tensors: dict[str, dict[str, Any]], expected_shapes: dict[str, list[int]]
+) -> list[str]:
+    """Problems with saved LoRA tensors: ``{name: {"shape", "finite", "max_abs"}}``.
+
+    Names and shapes must equal the planned trainable tensors, every value must be finite and
+    every ``lora_b`` tensor must be non-zero (``lora_b`` starts at zero, so an all-zero ``lora_b``
+    means the adapter was not trained).
+    """
+    problems: list[str] = []
+    if set(tensors) != set(expected_shapes):
+        diff = sorted(set(tensors) ^ set(expected_shapes))
+        problems.append(f"tensor names differ from the plan: {diff[:6]}")
+    for name in sorted(set(tensors) & set(expected_shapes)):
+        t = tensors[name]
+        if list(t.get("shape", [])) != list(expected_shapes[name]):
+            problems.append(f"{name}: shape {t.get('shape')} != {expected_shapes[name]}")
+        if t.get("finite") is not True:
+            problems.append(f"{name}: non-finite values")
+        if name.endswith("lora_b") and not (_finite(t.get("max_abs")) and t["max_abs"] > 0):
+            problems.append(f"{name}: lora_b is zero (adapter not trained)")
+    return problems
+
+
+def check_request_records(
+    records: Sequence[dict[str, Any]], expected_ids: Sequence[str]
+) -> list[str]:
+    """Problems with inference records (the smoke reload check, correction B).
+
+    Exactly the expected example IDs, once each and in order; every record ``status == "ok"`` with
+    a string ``raw_output``. A missing, duplicated, failed or empty record is a problem.
+    """
+    problems: list[str] = []
+    ids = [r.get("example_id") for r in records]
+    if len(set(expected_ids)) != len(expected_ids):
+        problems.append("expected IDs are not unique")
+    if ids != list(expected_ids):
+        problems.append(f"record IDs {ids} differ from the expected {list(expected_ids)}")
+    for r in records:
+        if r.get("status") != "ok":
+            problems.append(f"{r.get('example_id')}: status {r.get('status')!r} "
+                            f"({r.get('error')!r})")  # fmt: skip
+        elif not isinstance(r.get("raw_output"), str):
+            problems.append(f"{r.get('example_id')}: no raw output")
+    return problems

@@ -20,7 +20,8 @@ uv run --locked python -c "import mlx.core as mx; print(mx.default_device())"
   protocol runs (see `docs/evidence/experiments/EXP-009-untuned-baselines/PRERUN.md`). Raw outputs are scored in the
   Core environment by `benchmarks/issue4_exp009_analyze.py`.
 - `exp010_train.py` is the EXP-010 LoRA harness (`tokens`, `params`, `train`, `reload`, `evaluate`, `selftest`) and
-  `exp010_launch.py` its detached launcher and 30-second resource monitor. Operational definitions, the installed
+  `exp010_launch.py` its detached launcher, a thin wrapper over the Core module `axbench.supervise` (common pre-load
+  baseline, 30-second resource monitor, supervised steps that fail closed). Operational definitions, the installed
   MLX-LM behaviour they work around, and the pre-registered criteria are in
   `docs/evidence/experiments/EXP-010-lora-pilot/PRERUN.md`. Nothing has been trained; training starts only after that
   record is accepted and the owner starts it.
