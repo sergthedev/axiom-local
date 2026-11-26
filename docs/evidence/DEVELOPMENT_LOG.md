@@ -526,3 +526,28 @@ for a comprehensive final audit of AXIOM Verify.
   byte-identical to attempt 2 on all 160 requests.
 - The final test was not accessed. Nothing was trained.
 
+## 2026-11-26 — Issue #4, Phase 3C: EXP-010 LoRA training preparation (nothing trained)
+
+- Started from accepted main `fbd4adc` (PR #10 merged). Branch `feat/issue-4-exp010-lora-prerun`.
+- Verified: clean tree, 698 Core tests, model environment versions (mlx 0.32.4, mlx-lm 0.32.2), the Qwen3-1.7B
+  checkpoint (10 files re-hashed against pinned and recorded hashes), the frozen corpus manifest and split hashes.
+- Exported train and validation outside the repository and recorded their hashes; a second export was
+  byte-identical, and a new Core test re-exports and checks the hashes on every platform.
+- Read the installed MLX-LM training path (REF-036) and measured it with the pinned tokenizer. Findings: micro-step
+  counting, built-in evaluation between updates (it would report 24 and 199 updates as 25 and 200), an inclusive
+  loss-mask end bound that trains one padding target, a chat mask boundary that trains the empty think block and the
+  template newline (6 extra targets per example on all 560), a shared NumPy RNG between evaluation and data order,
+  silent truncation.
+- Measured token lengths (longest 529, so `max_seq_length` 1024 by the rule) and the trainable parameter count
+  (458,752, lazy load, no weights evaluated).
+- Wrote the harness (`envs/model/exp010_train.py`: tokens, params, train, reload, evaluate, selftest), the detached
+  launcher and 30-second monitor (`envs/model/exp010_launch.py`), and the pure logic with tests
+  (`axbench.trainwatch`, `axbench.pilotgates`, `tests/test_exp010_prerun.py`). The harness renders the completion
+  boundary itself (`enable_thinking=False`), uses the installed loss with an exclusive end bound, evaluates and saves at
+  update boundaries, protects the data-order RNG, and pins export hashes, `max_seq_length` and the parameter count.
+- Harness self-test on a tiny random Qwen3-architecture model with synthetic tokens (no checkpoint, no corpus): all
+  checks passed. The monitor's sampling and exit were checked against a short-lived process. The real `train`,
+  `reload`, `evaluate` and the detached launcher were not run.
+- Pre-registered in PRERUN D13/D14 before any adapter exists: the pilot criterion (EXP-009 rule 3 on exact match vs the
+  untuned base) and the DR-005 deployment-quality gates as exact count rules, descriptive only on this corpus.
+- No training, no adapter, no adapter inference, no final-test access. Stopped for technical review.

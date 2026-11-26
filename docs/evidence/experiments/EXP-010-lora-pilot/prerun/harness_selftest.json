@@ -1,0 +1,80 @@
+{
+  "checks": {
+    "adapter_trained": true,
+    "data_order_independent_of_evaluation": true,
+    "evaluation_at_planned_updates": true,
+    "final_adapter_equals_last_save": true,
+    "reload_reproduces_outputs": true,
+    "reports_at_update_boundaries": true,
+    "saves_at_planned_updates": true,
+    "updates_complete": true
+  },
+  "mask_self_check": {
+    "examples_checked": 30,
+    "mask_equals_completion_positions": true
+  },
+  "note": "tiny random model and synthetic tokens; not a training result",
+  "passed": true,
+  "runs": {
+    "a": {
+      "eval_updates": [
+        0,
+        3,
+        6
+      ],
+      "final_equals_last_save": true,
+      "lora_b_max_abs": 0.00029473024187609553,
+      "micro_steps": [
+        4,
+        8,
+        12,
+        16,
+        20,
+        24
+      ],
+      "reload_max_abs_logit_difference": 0.0,
+      "save_updates": [
+        3,
+        6
+      ],
+      "train_loss": [
+        12.586454391479492,
+        12.208903312683105,
+        12.134258270263672,
+        12.622050285339355,
+        12.775005340576172,
+        12.232881546020508
+      ],
+      "updates": 6
+    },
+    "b": {
+      "eval_updates": [
+        0,
+        6
+      ],
+      "final_equals_last_save": true,
+      "lora_b_max_abs": 0.00029473024187609553,
+      "micro_steps": [
+        4,
+        8,
+        12,
+        16,
+        20,
+        24
+      ],
+      "reload_max_abs_logit_difference": 0.0,
+      "save_updates": [
+        6
+      ],
+      "train_loss": [
+        12.586454391479492,
+        12.208903312683105,
+        12.134258270263672,
+        12.622050285339355,
+        12.775005340576172,
+        12.232881546020508
+      ],
+      "updates": 6
+    }
+  }
+}
