@@ -368,5 +368,5 @@ def test_expected_shutdown_of_a_healthy_monitor_is_success(tmp_path):
 def test_shutdown_codes():
     assert sv.shutdown_problem(Path("."), 0) is None
     assert sv.shutdown_problem(Path("."), -signal.SIGTERM) is None
-    for code in (1, 2, 3, -signal.SIGKILL, None):
+    for code in (1, 2, 3, -9, None):  # -9: killed (numeric; Windows Python has no SIGKILL)
         assert sv.shutdown_problem(Path("/nonexistent-run-dir"), code)
