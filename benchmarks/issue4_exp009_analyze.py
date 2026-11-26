@@ -335,10 +335,63 @@ def model_section(
     return section, issues, raw
 
 
+def _rel(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(ROOT))
+    except ValueError:
+        return path.name
+
+
+def archived_summary(model: str, d: Path, val, rep_ids) -> dict[str, Any]:
+    """Completeness of an archived attempt (no scoring, never used for selection)."""
+    system = {v: k for k, v in MODELS.items()}[model]
+    m = _read_json(d / "main_measurements.json") or {}
+    return {
+        "directory": _rel(d),
+        "main_status": m.get("status"),
+        "validation": check_records(
+            _read_jsonl(d / "main_validation.jsonl"), [(e["id"],) for e in val],
+            ("example_id",), system,
+        ),
+        "repeat": check_records(
+            _read_jsonl(d / "main_repeat.jsonl"),
+            [(i, r) for r in REPEATS for i in rep_ids], ("example_id", "repeat"), system,
+        ),
+        "fresh_processes_present": [
+            f for f in FRESH if (d / f"fresh_{f}_measurements.json").exists()
+        ],
+    }  # fmt: skip
+
+
+def _same_raw(accepted: Path, archived: Path) -> dict[str, Any] | None:
+    """Validation raw outputs of the accepted attempt vs an archived one (reproducibility only)."""
+    a = _read_jsonl(accepted / "main_validation.jsonl")
+    b = _read_jsonl(archived / "main_validation.jsonl")
+    if a is None or b is None:
+        return None
+    rb = {p["example_id"]: p.get("raw_output") for p in b}
+    same = sum(rb.get(p["example_id"]) == p.get("raw_output") for p in a)
+    return {"identical": same, "compared": len(a)}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--runs", required=True)
+    parser.add_argument("--runs", required=True, help="directory with one folder per model")
     parser.add_argument("--rules-predictions", required=True)
+    parser.add_argument(
+        "--attempt",
+        action="append",
+        default=[],
+        metavar="MODEL=DIR",
+        help="accepted attempt directory of one model, overriding <runs>/<model> (D19)",
+    )
+    parser.add_argument(
+        "--archived",
+        action="append",
+        default=[],
+        metavar="MODEL=DIR",
+        help="archived, incomplete attempt: described, never used for selection",
+    )
     args = parser.parse_args()
     observed = hashlib.sha256((CORPUS / "MANIFEST.json").read_bytes()).hexdigest()
     if observed != MANIFEST_SHA256:
@@ -348,6 +401,16 @@ def main() -> int:
     clusters = [e["lineage_id"] for e in val]
     rep_ids = repeat_subset(val)
     runs = Path(args.runs)
+    dirs = {folder: runs / folder for folder in MODELS.values()}
+    for item in args.attempt:
+        model, _, path = item.partition("=")
+        if model not in dirs:
+            raise SystemExit(f"unknown model {model!r}")
+        dirs[model] = Path(path)
+    archived = {}
+    for item in args.archived:
+        model, _, path = item.partition("=")
+        archived[model] = Path(path)
     pins = _pinned_revisions()
     issues: list[str] = []
 
@@ -369,9 +432,7 @@ def main() -> int:
     model_runs: dict[str, ModelRun] = {}
     commits: set = set()
     for system, folder in MODELS.items():
-        section, model_issues, raw = model_section(
-            system, runs / folder, val, rep_ids, pins[folder]
-        )
+        section, model_issues, raw = model_section(system, dirs[folder], val, rep_ids, pins[folder])
         issues += model_issues
         commits |= raw["commits"]
         report = evaluate(val, raw["preds"], system=system, split="validation")
@@ -449,6 +510,15 @@ def main() -> int:
         "without a stop; maximum process-lifetime peak RSS across them; median warm latency "
         "over the 160 validation requests",
         "repeat_ids": rep_ids,
+        "attempts": {
+            "accepted": {m: _rel(d) for m, d in dirs.items()},
+            "archived": {m: archived_summary(m, d, val, rep_ids) for m, d in archived.items()},
+            "accepted_attempt_validation_raw_identical_to_archived": {
+                m: _same_raw(dirs[m], d) for m, d in archived.items()
+            },
+            "note": "accepted attempts were fixed by completeness before scoring "
+            "(ATTEMPTS.md, D19)",
+        },
         "rules_rerun_consistency": {
             "compared_with": "EXP-013 rules_validation.jsonl (same rules, same frozen file)",
             "raw_output_differs": rules_diff,

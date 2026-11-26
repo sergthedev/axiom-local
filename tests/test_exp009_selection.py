@@ -339,11 +339,11 @@ def _fake_runs(tmp_path: Path, good=(True, False)) -> Path:
     return runs
 
 
-def _analyze(tmp_path, runs, monkeypatch) -> dict:
+def _analyze(tmp_path, runs, monkeypatch, extra=()) -> dict:
     mod = _load_analyzer()
     rules_out = tmp_path / "rules.jsonl"
     monkeypatch.setattr(
-        sys, "argv", ["x", "--runs", str(runs), "--rules-predictions", str(rules_out)]
+        sys, "argv", ["x", "--runs", str(runs), "--rules-predictions", str(rules_out), *extra]
     )
     buf = io.StringIO()
     with redirect_stdout(buf):
@@ -467,3 +467,23 @@ def test_integrity_issues_block_the_selection(tmp_path, monkeypatch, defect):
     out = _analyze(tmp_path, runs, monkeypatch)
     assert out["selection"]["selected"] is None
     assert out["selection"]["basis"] == "integrity_failure" and out["selection"]["issues"]
+
+
+def test_accepted_attempt_overrides_and_archived_attempt_is_only_described(tmp_path, monkeypatch):
+    runs = _fake_runs(tmp_path / "a1", good=(True, True))
+    attempt2 = _fake_runs(tmp_path / "a2", good=(True, False)) / "qwen3-1.7b"
+    archived = runs / "qwen3-1.7b"
+    _edit_jsonl(archived / "main_repeat.jsonl", lambda r: r[:-2])
+    _edit_json(archived / "main_measurements.json", status="running")
+    for f in range(1, 6):
+        (archived / f"fresh_{f}_measurements.json").unlink()
+    extra = ["--attempt", f"qwen3-1.7b={attempt2}", "--archived", f"qwen3-1.7b={archived}"]
+    out = _analyze(tmp_path, runs, monkeypatch, extra)
+    # Scores come from attempt 2 (never schema-valid), not from the archived attempt (all correct).
+    assert out["systems"][LARGE]["raw_candidate"]["primary_semantic_exact_match"]["count"] == 0
+    arch = out["attempts"]["archived"]["qwen3-1.7b"]
+    assert arch["main_status"] == "running" and arch["repeat"]["missing"] == 2
+    assert arch["fresh_processes_present"] == []
+    same = out["attempts"]["accepted_attempt_validation_raw_identical_to_archived"]["qwen3-1.7b"]
+    assert same == {"identical": 0, "compared": 160}
+    assert out["selection"]["selected"] == SMALL
