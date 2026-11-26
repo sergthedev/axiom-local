@@ -6,8 +6,9 @@ Every command except ``generate`` reads the development splits from a committed 
 regenerates them from templates.
 
 * ``generate --out DIR``: write a draft development corpus from the templates;
-* ``freeze --corpus DIR --out DIR --version V [--decisions CSV --reviewer R --human-review]``:
-  a frozen corpus version, applying a human reviewer's decisions (an AI review is not one);
+* ``freeze --corpus DIR --out DIR --version V [--decisions CSV --reviewer R (--human-review |
+  --ai-review-authorization REF)]``: a frozen corpus version, applying a human review or an
+  owner-authorized AI review (recorded as AI, never as human review);
 * ``audit --out FILE``: audit the corpus plus a test split generated in memory (development seed);
 * ``review-batch --out DIR``: the Turkish annotation batch for the owner (train/validation only);
 * ``rules --split S --out FILE``: run the rule baseline and write raw predictions;
@@ -94,10 +95,11 @@ def cmd_freeze(args) -> int:
             decisions_csv=decisions,
             reviewer=args.reviewer,
             human_review_attested=args.human_review,
+            ai_review_authorization=args.ai_review_authorization,
         )
     except CorpusError as exc:
         raise SystemExit(f"freeze refused: {exc}") from exc
-    print(json.dumps({k: manifest[k] for k in ("corpus_version", "files", "human_review")}))
+    print(json.dumps({k: manifest[k] for k in ("corpus_version", "files", "review")}))
     return 0
 
 
@@ -323,6 +325,11 @@ def main(argv: list[str] | None = None) -> int:
         "--human-review",
         action="store_true",
         help="attest that every decision in the CSV was made by the named human reviewer",
+    )
+    p.add_argument(
+        "--ai-review-authorization",
+        help="record the CSV as an owner-authorized AI review (never human review); the value "
+        "references the owner's authorization and the published decisions",
     )
     p.set_defaults(fn=cmd_freeze)
     p = sub.add_parser("audit")
