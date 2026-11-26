@@ -1,0 +1,79 @@
+{
+  "audit_passed": true,
+  "corpus_version": "axbench/0.1-ai-reviewed",
+  "files": {
+    "train.jsonl": {
+      "n": 400,
+      "sha256": "cf56e6da454331a6278109c89c0d687efb5852d3cba7cbd7f26daabe0f01bd9a"
+    },
+    "validation.jsonl": {
+      "n": 160,
+      "sha256": "80457d95a63ef2da96771add7275c4378a9fe0a58de80bc7c1301688f0eed3b8"
+    }
+  },
+  "freeze_version": "axbench.freeze/0.2",
+  "parent": {
+    "corpus_version": "axbench/0.1-draft",
+    "files": {
+      "train.jsonl": {
+        "n": 400,
+        "sha256": "fd885f1535d31983771493b6aa8e27ea3e9e0182ec58f385d96f1c686f9c2f3e"
+      },
+      "validation.jsonl": {
+        "n": 160,
+        "sha256": "87771e489e186e4b4753adcf35916f41541355ed159c8d9bfe321d9d100ed9e4"
+      }
+    },
+    "manifest_sha256": "20d0067f2eeff333701f82e64727857de281768bc1b46dc96a66081ddff7aa39"
+  },
+  "review": {
+    "attested_human": false,
+    "authorization": "https://github.com/sergthedev/axiom-local/issues/4#issuecomment-7185793594",
+    "by_split": {
+      "train": {
+        "approve": 28,
+        "correct": 1,
+        "unreviewed": 371
+      },
+      "validation": {
+        "approve": 23,
+        "correct": 2,
+        "unreviewed": 135
+      }
+    },
+    "corrections": [
+      {
+        "changed": [
+          "request",
+          "tags"
+        ],
+        "id": "train-0235",
+        "split": "train"
+      },
+      {
+        "changed": [
+          "request"
+        ],
+        "id": "validation-0025",
+        "split": "validation"
+      },
+      {
+        "changed": [
+          "request"
+        ],
+        "id": "validation-0037",
+        "split": "validation"
+      }
+    ],
+    "decision_ledger_sha256": "70f01710e21563b3239da914bafc674cc2691f6d107e6ea15ab726c84f62b4a0",
+    "examples_with_a_decision": 54,
+    "examples_with_a_human_decision": 0,
+    "note": "Decisions are an owner-authorized AI review, not human annotation or independent human validation. No example has been reviewed by a human.",
+    "removed_ids": [],
+    "reviewer": "technical lead AI (owner-delegated review)",
+    "reviewer_type": "ai",
+    "source_csv_sha256": "f9ca839af40b10245e32e68fd634a4e917745ee6586cdc74b536bf47fb57737c"
+  },
+  "status": "frozen",
+  "test": "not in the repository; sealed by the owner against this version"
+}

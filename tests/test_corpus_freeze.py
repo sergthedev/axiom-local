@@ -460,3 +460,49 @@ def test_cli_records_ai_review_and_never_human(tmp_path, draft):
                 AUTH,
             ]
         )
+
+
+# --- the committed AI-reviewed frozen corpus -------------------------------------------------
+
+FROZEN = REPO / "data" / "axbench" / "v0.1-ai-reviewed"
+LEDGER = DRAFT / "review" / "AI_REVIEW_DECISIONS.csv"
+DECISION_URL = "https://github.com/sergthedev/axiom-local/issues/4#issuecomment-7185793594"
+
+
+def test_committed_frozen_corpus_is_ai_reviewed_and_never_human():
+    manifest, splits = load_corpus(FROZEN)
+    assert (
+        manifest["status"] == "frozen" and manifest["corpus_version"] == "axbench/0.1-ai-reviewed"
+    )
+    assert {s: len(r) for s, r in splits.items()} == {"train": 400, "validation": 160}
+    review = manifest["review"]
+    assert review["reviewer_type"] == "ai" and review["authorization"] == DECISION_URL
+    assert review["examples_with_a_decision"] == 54
+    assert review["examples_with_a_human_decision"] == 0 and not review["attested_human"]
+    assert review["removed_ids"] == []
+    assert [c["id"] for c in review["corrections"]] == [
+        "train-0235",
+        "validation-0025",
+        "validation-0037",
+    ]
+    draft_manifest = json.loads((DRAFT / "MANIFEST.json").read_text(encoding="utf-8"))
+    assert manifest["parent"]["files"] == draft_manifest["files"]
+    records = [r for s in splits.values() for r in s]
+    assert all(r["provenance"]["human_review"] == "none" for r in records)
+    _, draft = load_corpus(DRAFT)
+    gold = {r["id"]: r["gold"] for s in draft.values() for r in s}
+    assert all(r["gold"] == gold[r["id"]] for r in records)  # gold unchanged everywhere
+
+
+def test_committed_frozen_corpus_is_reproducible_from_the_committed_ledger(tmp_path):
+    out = tmp_path / "again"
+    freeze(
+        DRAFT,
+        out,
+        version="axbench/0.1-ai-reviewed",
+        decisions_csv=LEDGER.read_bytes(),
+        reviewer="technical lead AI (owner-delegated review)",
+        ai_review_authorization=DECISION_URL,
+    )
+    for name in ("train.jsonl", "validation.jsonl", "DECISIONS.jsonl", "MANIFEST.json"):
+        assert (out / name).read_bytes() == (FROZEN / name).read_bytes(), name
