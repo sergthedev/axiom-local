@@ -15,7 +15,11 @@ Lifecycle of one sequence (PRERUN D10, revision 1 after the lead's pre-run revie
    written to ``current_pid.txt`` so that the monitor can signal it. The sequence supervises both
    processes: if the monitor writes ``monitor_stop.json`` (a stop rule, or a sampling failure,
    which fails closed), exits, or stops writing samples (stale heartbeat), the running step is
-   terminated: SIGTERM, a bounded grace period, then a forced kill.
+   terminated: SIGTERM, a bounded grace period, then a forced kill. The monitor's health is also
+   checked immediately before every step and after every step exits (a step can finish between
+   two polls): until the sequence writes ``sequence_done.txt``, any monitor exit is premature and
+   a failure, exit code 0 included. After it, the monitor must end with 0 (or the sequence's
+   SIGTERM); code 2 is accepted only with ``monitor_stop.json``.
 4. A stop marker always overrides success: the sequence exit code is 6 if ``monitor_stop.json``
    exists, whatever the steps returned; 7 for a monitor failure; the first non-zero step code
    otherwise; 8 for an exception in the sequence itself. ``exit_status.txt`` is written last, in
@@ -45,7 +49,7 @@ from typing import Any
 
 from .runwatch import ProcessMonitor, parse_free_percentage, parse_swapusage, preflight
 
-SUPERVISE_VERSION = "exp010.supervise/1"
+SUPERVISE_VERSION = "exp010.supervise/2"
 INTERVAL_SECONDS = 30.0
 READY_TIMEOUT_SECONDS = 120.0
 GRACE_SECONDS = 120.0
@@ -268,6 +272,34 @@ def _heartbeat_age(out: Path) -> float | None:
         return None
 
 
+def monitor_problem(out: Path, monitor: subprocess.Popen, stale_after: float) -> str | None:
+    """Why the monitor cannot be trusted right now, or ``None`` if it is healthy.
+
+    Before the sequence writes ``sequence_done.txt``, the monitor must be running: any exit is
+    premature, whatever its code (0 included). A stop marker is reported first. The heartbeat
+    (the age of ``monitor.jsonl``) must be younger than ``stale_after``."""
+    if (out / STOP).exists():
+        return "monitor stop marker"
+    if monitor.poll() is not None:
+        return f"monitor exited prematurely rc={monitor.returncode}"
+    age = _heartbeat_age(out)
+    if age is None or age > stale_after:
+        return f"monitor heartbeat stale ({age})"
+    return None
+
+
+def shutdown_problem(out: Path, returncode: int | None) -> str | None:
+    """Was the monitor's end, after ``sequence_done.txt``, the expected shutdown?
+
+    Expected: exit 0 (it saw the done marker or the SIGTERM) or death by the sequence's SIGTERM.
+    Code 2 is a stop and needs ``monitor_stop.json``; anything else is a monitor failure."""
+    if returncode in (0, -signal.SIGTERM):
+        return None
+    if returncode == 2 and (out / STOP).exists():
+        return None
+    return f"unexpected monitor exit rc={returncode} at shutdown"
+
+
 def run_sequence(
     out: Path,
     steps: Sequence[tuple[str, list[str]]],
@@ -279,15 +311,31 @@ def run_sequence(
     ready_timeout: float = READY_TIMEOUT_SECONDS,
     stale_after: float | None = None,
     env: dict[str, str] | None = None,
+    checkpoint: Callable[[str, subprocess.Popen], None] | None = None,
 ) -> int:
     """Run ``steps`` under the monitor; returns the exit code, also written to ``exit_status.txt``.
 
     ``stale_after`` (default three sampling intervals plus 5 s) is the heartbeat age at which a
-    silent monitor counts as failed.
+    silent monitor counts as failed. The monitor's health is checked before every step, while a
+    step runs, and after every step exits; a monitor that ends before the sequence is done is a
+    failure even with exit code 0 (revision 1 re-review). ``checkpoint`` is a test hook called with
+    ``"before_step:<name>"`` / ``"after_step:<name>"`` and the monitor process, immediately before
+    the corresponding health check; it makes the step-transition regressions deterministic.
     """
     seq = _SequenceLog(out)
     procs: dict[str, subprocess.Popen] = {}
     stale_after = 3 * interval + 5.0 if stale_after is None else stale_after
+
+    def health(event: str, monitor: subprocess.Popen) -> str | None:
+        if checkpoint is not None:
+            checkpoint(event, monitor)
+        problem = monitor_problem(out, monitor, stale_after)
+        if problem:
+            seq.log(f"{event}: {problem}")
+        return problem
+
+    def failure_code() -> int:
+        return RC_MONITOR_STOP if (out / STOP).exists() else RC_MONITOR_FAILURE
 
     def body() -> int:
         seq.log(f"start {SUPERVISE_VERSION} pid {os.getpid()} steps {[s for s, _ in steps]}")
@@ -315,8 +363,10 @@ def run_sequence(
             time.sleep(POLL_SECONDS)
         seq.log("monitor ready")
         for name, argv in steps:
-            if (out / STOP).exists():
-                return RC_MONITOR_STOP
+            problem = health(f"before_step:{name}", monitor)
+            if problem:
+                seq.log(f"{name} not started")
+                return failure_code()
             console = open(out / f"{name}_console.txt", "ab")  # noqa: SIM115
             child = procs["step"] = subprocess.Popen(
                 argv, stdin=subprocess.DEVNULL, stdout=console, stderr=subprocess.STDOUT,
@@ -325,14 +375,7 @@ def run_sequence(
             seq.log(f"{name} started pid {child.pid}")
             failure = None
             while child.poll() is None:
-                if (out / STOP).exists():
-                    failure = "monitor stop marker"
-                elif monitor.poll() is not None:
-                    failure = f"monitor exited rc={monitor.returncode}"
-                else:
-                    age = _heartbeat_age(out)
-                    if age is None or age > stale_after:
-                        failure = f"monitor heartbeat stale ({age})"
+                failure = monitor_problem(out, monitor, stale_after)
                 if failure:
                     seq.log(f"{name}: {failure}")
                     terminate(child, grace, seq.log, name)
@@ -342,10 +385,11 @@ def run_sequence(
             console.close()
             (out / PID).unlink(missing_ok=True)
             seq.log(f"{name} exited rc={child.returncode}")
-            if (out / STOP).exists():
-                return RC_MONITOR_STOP
+            # The child may have finished between two polls while the monitor ended or stopped:
+            # recheck before accepting the step, whatever its exit code.
+            failure = failure or health(f"after_step:{name}", monitor)
             if failure:
-                return RC_MONITOR_FAILURE
+                return failure_code()
             if child.returncode != 0:
                 return child.returncode if child.returncode > 0 else RC_STEP_FAILED
         return RC_OK
@@ -360,12 +404,22 @@ def run_sequence(
         if "step" in procs:
             terminate(procs["step"], grace, seq.log, "step")
     finally:
-        (out / DONE).write_text(f"{_utc()}\n")
         monitor = procs.get("monitor")
+        premature = monitor.poll() if monitor is not None else None
+        (out / DONE).write_text(f"{_utc()}\n")
         if monitor is not None:
-            terminate(monitor, min(grace, 3 * interval + 5.0), seq.log, "monitor")
+            if premature is not None:
+                seq.log(f"monitor had exited before the sequence was done rc={premature}")
+            try:  # the monitor ends by itself once it sees the done marker (one interval + 5 s)
+                monitor.wait(timeout=interval + 5.0)
+            except subprocess.TimeoutExpired:
+                terminate(monitor, min(grace, 3 * interval + 5.0), seq.log, "monitor")
             seq.log(f"monitor rc={monitor.returncode}")
-            if monitor.returncode not in (0, 2, -signal.SIGTERM) and rc == RC_OK:
+            problem = shutdown_problem(out, monitor.returncode)
+            if premature is not None and not (out / STOP).exists():
+                problem = problem or f"monitor exited before the sequence was done rc={premature}"
+            if problem and rc == RC_OK:
+                seq.log(problem)
                 rc = RC_MONITOR_FAILURE
         if (out / STOP).exists():
             rc = RC_MONITOR_STOP  # a stop marker always overrides success

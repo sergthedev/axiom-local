@@ -35,6 +35,23 @@ criteria (D13, D14) are unchanged.
 Self-test of revision 1: [prerun/harness_selftest_rev1.json](prerun/harness_selftest_rev1.json), 15 of 15 checks
 passed (section 6). The revision-0 self-test record is kept unchanged.
 
+**Revision 1 follow-up** (lead's [re-review](https://github.com/sergthedev/axiom-local/pull/11#issuecomment-7192557224)
+of `c4387a1`, which accepted the five revision-1 choices of section 7 and found two defects):
+- *Windows CI hash failures.* Windows checked out the EXP-009 comparator files with CRLF, so their SHA-256 differed
+  from D16 (the lead verified the CRLF hashes). `.gitattributes` now marks byte-hashed experiment evidence
+  (`docs/evidence/experiments/**/*.{jsonl,json,sha256,txt,log,sh}`) `-text`, as already done for the corpus. No
+  evidence byte, pinned hash or assertion changed; every Git blob ID under `docs/evidence/experiments` is unchanged.
+  A Core test checks the attribute on the comparator files.
+- *Supervisor race.* The monitor's liveness and heartbeat were checked only while a step ran, and a clean monitor exit
+  (code 0, or 2 without a stop marker) was accepted at the end. Now (`exp010.supervise/2`) the monitor's health is
+  checked immediately before every step and after every step exits, before the done marker; any monitor exit before
+  the done marker is a failure (exit 7), whatever its code; after the done marker the monitor is given one interval
+  plus 5 s to end by itself, then SIGTERM; it must end with 0 or the sequence's SIGTERM, and code 2 is accepted only
+  with `monitor_stop.json`. Deterministic dummy regressions with a scripted stand-in monitor and a test hook that
+  waits for its exit: a monitor ending (0 or 2) as the step finishes, a monitor gone at the step transition (the next
+  step does not start), a monitor not live before the first step, code 2 without a stop marker at shutdown, and the
+  expected shutdown of a healthy monitor. Thresholds and the 30 s sampling are unchanged.
+
 ## 1. Verified state (before any change)
 
 | Item | Observed |
@@ -238,9 +255,12 @@ so that it survives the end of the Claude Code session. The sequence:
 2. starts the monitor and waits up to 120 s for its first valid sample (`monitor_ready.json`); otherwise it ends
    (exit 5, or 6 if the monitor wrote a stop) **before any step starts**;
 3. runs the steps one at a time (training; after a smoke, the reload check), each with `--baseline baseline.json`,
-   writing the step's PID for the monitor; while a step runs it checks for the stop marker, monitor exit and a stale
-   heartbeat (no sample for 3 × 30 s + 5 s); on any of them it stops the step: SIGTERM, up to 120 s grace, then kill;
-4. ends: stops the monitor, applies the exit code (0 success; the step's code if it failed, 3 if it was killed by a
+   writing the step's PID for the monitor; immediately before each step, while it runs and after it exits it checks
+   for the stop marker, a monitor exit (any exit before the sequence is done is premature, code 0 included) and a
+   stale heartbeat (no sample for 3 × 30 s + 5 s); a running step is then stopped (SIGTERM, up to 120 s grace, then
+   kill) and no further step starts;
+4. ends: writes the done marker, lets the monitor end by itself (up to 35 s, then SIGTERM; it must end with 0 or
+   the SIGTERM, and 2 only with a stop marker), applies the exit code (0 success; the step's code if it failed, 3 if it was killed by a
    signal; 6 if `monitor_stop.json` exists, **overriding every other code including success**; 7 for a monitor
    failure; 8 for an exception in the sequence, including SIGTERM to the sequence itself, after which the running
    step is stopped the same way) and writes `exit_status.txt` last, in every case. Nothing is retried.
@@ -396,15 +416,16 @@ no checkpoint, no export, no validation): the eight checks above, and
   extra adapter file, another base checkpoint;
 - a finalization error keeps a stopped run's status and reason, and turns `completed` into `failed`.
 
-Dummy-process tests of the supervisor (`tests/test_exp010_supervise.py`, 27 tests, about 22 s; the process tests are
-POSIX-only and skipped on Windows): normal completion of two steps; preflight refusal and an unreadable baseline (no
+Dummy-process tests of the supervisor (`tests/test_exp010_supervise.py`, 27 tests at revision 1 and 34 after the
+follow-up, about 40 s; the process tests are POSIX-only and skipped on Windows): normal completion of two steps; preflight refusal and an unreadable baseline (no
 monitor, no step); a monitor that never becomes ready and a malformed first monitor sample (no step); an injected
 swap-growth stop during a step (step terminated, later step not started); a malformed sample and a sampler error
 (fail closed); a monitor crash and a hung monitor (stale heartbeat), each stopping the step; a step that ignores
 SIGTERM (killed after the grace period); a step that exits 0 on SIGTERM (stop marker overrides success); a failed step
 (later step not started); a launcher exception (exit 8, evidence written); SIGTERM to the sequence itself (step
 stopped, exit 8); and the detached `start` path end to end (returns at once, the sequence runs in its own session and
-completes). Ten sample-validation cases run on every platform.
+completes). Ten sample-validation cases run on every platform. The follow-up adds the monitor-exit race regressions
+listed in section 0 and a check of the expected shutdown codes.
 
 Not exercised before the smoke: the `train`, `reload` and `evaluate` commands on the real checkpoint, and the macOS
 sampler inside the supervised sequence (the scripted sampler stands in for it in the tests; the macOS commands are the
@@ -440,7 +461,12 @@ accepted them with the conditions recorded here.
 11. **ADR 0011 and ADR 0012 remain Proposed** pending broader acceptance. This record documents experiment-specific
     decisions only and implies no product model approval.
 
-### Choices made in revision 1 that the re-review should confirm
+### Choices made in revision 1, accepted in the re-review
+
+The re-review accepted all five: the per-tensor non-zero `lora_b` rule as an operational acceptance gate for the smoke
+(not proof that a zero tensor necessarily means a training bug), the common baseline, the supervision constants, the
+ancestor-commit provenance for `evaluate` (subject to review when the evaluation is prepared) and not-assessable
+missing resources.
 
 - Every `lora_b` tensor of every saved adapter must be non-zero (stricter than "B non-zero overall"). Adam moves every
   parameter with a non-zero gradient on the first update, so an all-zero `lora_b` tensor after 20 updates indicates a

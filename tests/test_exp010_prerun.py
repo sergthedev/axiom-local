@@ -696,3 +696,17 @@ def test_exp009_comparators_are_the_pinned_files_with_every_validation_record(na
     ]
     assert len(ids) == len(set(ids)) == VALIDATION_N
     assert ids == validation
+
+
+def test_pinned_evidence_is_checked_out_byte_for_byte():
+    """The comparator files are hashed, so Git must not convert their line endings (Windows CI
+    checked them out as CRLF before the scoped ``-text`` rule; revision 1 re-review)."""
+    import shutil
+    import subprocess
+
+    if shutil.which("git") is None or not (ROOT / ".git").exists():
+        pytest.skip("not a Git checkout")
+    base = "docs/evidence/experiments/EXP-009-untuned-baselines/"
+    out = subprocess.run(["git", "check-attr", "text", "--", *(base + n for n in COMPARATORS)],
+                         cwd=ROOT, capture_output=True, text=True, check=True).stdout  # fmt: skip
+    assert out.count(": text: unset") == len(COMPARATORS), out

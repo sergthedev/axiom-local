@@ -8,3 +8,11 @@ uv.lock text eol=lf
 data/axbench/**/*.jsonl -text
 data/axbench/**/*.json -text
 data/axbench/**/*.csv -text
+# Experiment evidence whose bytes are pinned by SHA-256 (comparator outputs, run records, hash ledgers):
+# keep the committed LF bytes on every platform. Original evidence is never rewritten (EXP-010 rev. 1).
+docs/evidence/experiments/**/*.jsonl -text
+docs/evidence/experiments/**/*.json -text
+docs/evidence/experiments/**/*.sha256 -text
+docs/evidence/experiments/**/*.txt -text
+docs/evidence/experiments/**/*.log -text
+docs/evidence/experiments/**/*.sh -text

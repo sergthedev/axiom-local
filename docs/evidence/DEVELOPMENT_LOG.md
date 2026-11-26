@@ -574,3 +574,9 @@ for a comprehensive final audit of AXIOM Verify.
   (`prerun/harness_selftest_rev1.json`). Core tests: 827 passed locally on macOS before the commit (737 at revision 0).
 - Not run: real training, the real `reload` and `evaluate`, the macOS sampler inside the supervised sequence. No
   validation predictions, no final-test access. Stopped for re-review and the owner's smoke decision.
+- Re-review of `c4387a1`: Windows CI failed the two new comparator-hash tests (809 passed, 2 failed) because Git
+  converted the comparator files to CRLF on checkout; fixed with a scoped `-text` rule for byte-hashed experiment
+  evidence, Git blob IDs verified unchanged, no evidence or pinned hash touched. The lead also found a narrow
+  supervisor race (a monitor ending cleanly as a step finished was accepted); the monitor's health is now checked
+  before and after every step and any monitor exit before the sequence is done fails, with 7 new deterministic
+  dummy regressions. Core tests: 835 passed locally on macOS.

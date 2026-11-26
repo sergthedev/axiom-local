@@ -181,7 +181,7 @@ def test_monitor_crash_stops_the_step(tmp_path):
     rc, out = _run(tmp_path, [OK, OK, {"exit": 9}], [("train", LONG), ("reload", SLEEP)])
     assert rc == sv.RC_MONITOR_FAILURE == _exit_code(out)
     log = _log(out)
-    assert "train: monitor exited rc=9" in log and "reload started" not in log
+    assert "train: monitor exited prematurely rc=9" in log and "reload started" not in log
 
 
 @posix
@@ -263,3 +263,110 @@ def test_detached_start_survives_its_parent_and_completes(tmp_path):
         time.sleep(0.1)
     assert _exit_code(out) == 0
     assert "train exited rc=0" in _log(out)
+
+
+# ------------------------------------------------------------------ monitor exit races (rev. 1)
+
+# A scripted stand-in for the monitor process: one valid sample, the ready marker, then it waits.
+# It exits with ``code`` as soon as ``<out>/<trigger>`` exists, or with ``done_code`` once the
+# sequence writes its done marker. No resources are sampled.
+FAKE_MONITOR = """
+import json, os, sys, time
+out, trigger, code, done_code = sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4])
+with open(os.path.join(out, "monitor.jsonl"), "a") as fh:
+    fh.write(json.dumps({"sample": 0, "stop": None}) + "\\n")
+with open(os.path.join(out, "monitor_ready.json"), "w") as fh:
+    fh.write("{}")
+time.sleep(0.3)  # the sequence sees the ready marker while this process is still alive
+while True:
+    if trigger != "-" and os.path.exists(os.path.join(out, trigger)):
+        os._exit(code)
+    if os.path.exists(os.path.join(out, "sequence_done.txt")):
+        os._exit(done_code)
+    time.sleep(0.01)
+"""
+
+
+def _fake_monitor(tmp: Path, trigger: str = "-", code: int = 0, done_code: int = 0) -> list[str]:
+    return [sys.executable, "-c", FAKE_MONITOR, str(tmp / "run"), trigger, str(code),
+            str(done_code)]  # fmt: skip
+
+
+def _wait_for_monitor_exit(event: str, monitor) -> None:
+    """Checkpoint hook: let the monitor finish exiting before the sequence's health check."""
+    if monitor.poll() is None:
+        try:
+            monitor.wait(timeout=2 if event.startswith("before_step") else 10)
+        except subprocess.TimeoutExpired:
+            pass
+
+
+def _touch_then_exit(marker: str, rc: int = 0) -> list[str]:
+    return _py(f"import pathlib, sys; pathlib.Path(sys.argv[1], {marker!r}).touch(); "
+               f"sys.exit({rc})") + ["RUNDIR"]  # fmt: skip
+
+
+def _steps_in(out: Path, steps):
+    return [(n, [str(out) if a == "RUNDIR" else a for a in argv]) for n, argv in steps]
+
+
+@posix
+@pytest.mark.parametrize("monitor_code", [0, 2])
+def test_monitor_ending_as_the_step_finishes_is_not_success(tmp_path, monitor_code):
+    """The step finishes and the monitor exits (cleanly, or with 2 but no stop marker) between two
+    polls; before revision 1's re-review this sequence returned 0."""
+    out = tmp_path / "run"
+    steps = _steps_in(out, [("train", _touch_then_exit("child_done"))])
+    rc, out = _run(tmp_path, [OK], steps,
+                   monitor_argv=_fake_monitor(tmp_path, "child_done", monitor_code),
+                   checkpoint=_wait_for_monitor_exit)  # fmt: skip
+    assert rc == sv.RC_MONITOR_FAILURE == _exit_code(out)
+    log = _log(out)
+    assert "train exited rc=0" in log
+    assert f"after_step:train: monitor exited prematurely rc={monitor_code}" in log
+    assert not (out / sv.STOP).exists()
+
+
+@posix
+def test_monitor_gone_at_the_step_transition_starts_no_further_step(tmp_path):
+    out = tmp_path / "run"
+    steps = _steps_in(out, [("train", _touch_then_exit("train_done")), ("reload", SLEEP)])
+    rc, out = _run(tmp_path, [OK], steps, monitor_argv=_fake_monitor(tmp_path, "train_done", 0),
+                   checkpoint=_wait_for_monitor_exit)  # fmt: skip
+    assert rc == sv.RC_MONITOR_FAILURE == _exit_code(out)
+    assert "reload started" not in _log(out)
+
+
+@posix
+def test_monitor_not_live_before_the_first_step(tmp_path):
+    """The monitor becomes ready and then exits 0 before the first step: nothing starts."""
+    out = tmp_path / "run"
+    argv = _fake_monitor(tmp_path, "monitor_ready.json", 0)
+    rc, out = _run(tmp_path, [OK], [("train", SLEEP)], monitor_argv=argv,
+                   checkpoint=_wait_for_monitor_exit)  # fmt: skip
+    assert rc == sv.RC_MONITOR_FAILURE == _exit_code(out)
+    log = _log(out)
+    assert "before_step:train: monitor exited prematurely rc=0" in log
+    assert "train started" not in log
+
+
+@posix
+def test_monitor_exit_2_without_stop_marker_at_shutdown_is_a_failure(tmp_path):
+    rc, out = _run(tmp_path, [OK], [("train", SLEEP)],
+                   monitor_argv=_fake_monitor(tmp_path, done_code=2))  # fmt: skip
+    assert rc == sv.RC_MONITOR_FAILURE == _exit_code(out)
+    assert "unexpected monitor exit rc=2 at shutdown" in _log(out)
+
+
+@posix
+def test_expected_shutdown_of_a_healthy_monitor_is_success(tmp_path):
+    rc, out = _run(tmp_path, [OK], [("train", SLEEP), ("reload", SLEEP)],
+                   monitor_argv=_fake_monitor(tmp_path))  # fmt: skip
+    assert rc == 0 == _exit_code(out)
+
+
+def test_shutdown_codes():
+    assert sv.shutdown_problem(Path("."), 0) is None
+    assert sv.shutdown_problem(Path("."), -signal.SIGTERM) is None
+    for code in (1, 2, 3, -signal.SIGKILL, None):
+        assert sv.shutdown_problem(Path("/nonexistent-run-dir"), code)
