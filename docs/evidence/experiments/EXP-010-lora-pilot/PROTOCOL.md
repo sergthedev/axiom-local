@@ -1,15 +1,18 @@
 # EXP-010 protocol (proposed, not run): LoRA smoke and pilot for AX-01
 
-- Status: **proposed**. Starts only after EXP-009 has selected a base under its frozen rule, the owner has approved
-  the AXBENCH annotation review, and the technical lead has reviewed this protocol. Phase 3B; nothing has been run.
+- Status: **proposed**. Starts only after EXP-009 has selected a base under its frozen rule, the frozen corpus exists
+  (revision 3: the owner-authorized AI-reviewed exploratory corpus `axbench/0.1-ai-reviewed`, not human-validated),
+  the owner has approved the checkpoint download, and the technical lead has reviewed this protocol. Phase 3B; nothing
+  has been run. Pilot results on this corpus are exploratory and are not presented as human-validated or
+  population-representative.
 - Issue: #4 (protocol). Decision record: ADR 0012. Lead starting point: DR-003 review (REF-031).
 
 ## Fixed inputs
 
 - Base: the model chosen by EXP-009 at its pinned revision, BF16, provisioned and hash-verified.
 - Data: `python -m axbench export-mlx --corpus <frozen corpus directory> --out <directory outside the repository>`
-  from the same frozen, owner-approved corpus version as EXP-009 (sizes as in its manifest; 400 train and 160
-  validation before any owner rejection), chat format: system, user JSON, assistant target = compact gold JSON. The
+  from the same frozen corpus as EXP-009, `axbench/0.1-ai-reviewed` (owner-authorized AI review, exploratory, 0 human
+  decisions; 400 train and 160 validation; revision 3), chat format: system, user JSON, assistant target = compact gold JSON. The
   test split is never exported. The corpus version, its manifest SHA-256 and the SHA-256 of both exported files are
   recorded. (Revision 2, PR #8 review response: the export reads the verified frozen files, not the templates.)
 - Template: the same rendering as inference (`enable_thinking=False`); `token_lengths.py` must show that every

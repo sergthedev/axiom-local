@@ -28,7 +28,7 @@ DRAFT = REPO / "data" / "axbench" / "v0.1-draft"
 
 def _ledger(rows: list[dict[str, str]]) -> bytes:
     buf = io.StringIO(newline="")
-    fields = ["id", "decision", "corrected_gold", "corrected_request", "note"]
+    fields = ["id", "decision", "corrected_gold", "corrected_request", "corrected_tags", "note"]
     writer = csv.DictWriter(buf, fieldnames=fields, lineterminator="\n")
     writer.writeheader()
     for row in rows:
@@ -82,7 +82,7 @@ def test_freeze_without_decisions_records_zero_human_review(frozen_plain):
     manifest, splits = load_corpus(frozen_plain)
     assert manifest["status"] == "frozen"
     assert manifest["parent"]["corpus_version"] == "axbench/0.1-draft"
-    review = manifest["human_review"]
+    review = manifest["review"]
     assert review["examples_with_a_human_decision"] == 0 and not review["attested_human"]
     assert review["by_split"] == {"train": {"unreviewed": 400}, "validation": {"unreviewed": 160}}
     assert all(r["provenance"]["human_review"] == "none" for s in splits.values() for r in s)
@@ -91,9 +91,9 @@ def test_freeze_without_decisions_records_zero_human_review(frozen_plain):
 
 def test_ai_review_cannot_be_recorded_as_human(tmp_path):
     ledger = _ledger([{"id": "train-0001", "decision": "approve"}])
-    with pytest.raises(CorpusError, match="human reviewer"):
+    with pytest.raises(CorpusError, match="attested as a human review"):
         freeze(DRAFT, tmp_path / "o", version="v-x", decisions_csv=ledger, reviewer="owner")
-    with pytest.raises(CorpusError, match="name the human reviewer"):
+    with pytest.raises(CorpusError, match="name the reviewer"):
         freeze(
             DRAFT, tmp_path / "o", version="v-x", decisions_csv=ledger, human_review_attested=True
         )
@@ -115,6 +115,7 @@ def test_decisions_flow_into_the_frozen_version(tmp_path, draft):
                 "id": retext["id"],
                 "decision": "correct",
                 "corrected_request": retext["request"] + " .",
+                "corrected_tags": ";".join(retext["tags"]) or "none",
             },
             {"id": reject, "decision": "Reject"},
             {"id": draft["train"][3]["id"], "decision": ""},  # left blank: not a decision
@@ -129,7 +130,7 @@ def test_decisions_flow_into_the_frozen_version(tmp_path, draft):
         reviewer="owner",
         human_review_attested=True,
     )
-    review = manifest["human_review"]
+    review = manifest["review"]
     assert review["examples_with_a_human_decision"] == 4
     assert review["by_split"]["train"] == {
         "approve": 1,
@@ -239,7 +240,14 @@ def test_invalid_correction_or_failed_audit_writes_nothing(tmp_path, draft):
             DRAFT,
             tmp_path / "o",
             decisions_csv=_ledger(
-                [{"id": target["id"], "decision": "correct", "corrected_request": dup}]
+                [
+                    {
+                        "id": target["id"],
+                        "decision": "correct",
+                        "corrected_request": dup,
+                        "corrected_tags": "none",
+                    }
+                ]
             ),
             **kwargs,
         )
@@ -330,3 +338,171 @@ def test_owner_lineage_examples_are_labelled_and_counted(tmp_path, frozen_plain)
     assert all(r["provenance"]["human_review"] == "none" for r in from_owner)
     others = [r for r in records if not r["lineage_id"].startswith("O-")]
     assert all(r["provenance"]["authoring"] == "ai_generated_from_templates" for r in others)
+
+
+# --- owner-authorized AI review (revision 3) -------------------------------------------------
+
+AUTH = "https://github.com/sergthedev/axiom-local/issues/4#issuecomment-0000000000"
+
+
+def test_ai_review_keeps_every_example_unreviewed_by_humans(tmp_path, draft):
+    target = draft["validation"][0]
+    approve = draft["train"][0]["id"]
+    ledger = _ledger(
+        [
+            {"id": approve, "decision": "approve"},
+            {
+                "id": target["id"],
+                "decision": "correct",
+                "corrected_request": target["request"] + " lütfen.",
+                "corrected_tags": ";".join(target["tags"]) or "none",
+            },
+        ]
+    )
+    out = tmp_path / "ai"
+    manifest = freeze(
+        DRAFT,
+        out,
+        version="axbench/0.1-ai-test",
+        decisions_csv=ledger,
+        reviewer="technical lead AI",
+        ai_review_authorization=AUTH,
+    )
+    review = manifest["review"]
+    assert review["reviewer_type"] == "ai" and not review["attested_human"]
+    assert review["authorization"] == AUTH
+    assert review["examples_with_a_decision"] == 2
+    assert review["examples_with_a_human_decision"] == 0
+    assert review["corrections"] == [
+        {"id": target["id"], "split": "validation", "changed": ["request"]}
+    ]
+    assert "not human annotation" in review["note"]
+    _, splits = load_corpus(out)
+    records = [r for s in splits.values() for r in s]
+    assert len(records) == 560
+    assert all(r["provenance"]["human_review"] == "none" for r in records)
+    by_id = {r["id"]: r for r in records}
+    fixed = by_id[target["id"]]["provenance"]
+    assert fixed["request_source"] == "ai_review_corrected"
+    assert fixed["original_request"] == target["request"]
+    assert fixed["review"] == {
+        "decision": "correct",
+        "reviewer": "technical lead AI",
+        "reviewer_type": "ai",
+        "authorization": AUTH,
+    }
+    assert by_id[approve]["provenance"]["review"]["reviewer_type"] == "ai"
+
+
+def test_review_types_are_exclusive_and_need_a_ledger(tmp_path):
+    ledger = _ledger([{"id": "train-0001", "decision": "approve"}])
+    with pytest.raises(CorpusError, match="not both"):
+        freeze(
+            DRAFT,
+            tmp_path / "o",
+            version="v-x",
+            decisions_csv=ledger,
+            reviewer="r",
+            human_review_attested=True,
+            ai_review_authorization=AUTH,
+        )
+    with pytest.raises(CorpusError, match="without a decision ledger"):
+        freeze(DRAFT, tmp_path / "o", version="v-x", ai_review_authorization=AUTH)
+    with pytest.raises(CorpusError, match="attested as a human review"):
+        freeze(
+            DRAFT,
+            tmp_path / "o",
+            version="v-x",
+            decisions_csv=ledger,
+            reviewer="r",
+            ai_review_authorization="  ",
+        )
+    assert not (tmp_path / "o").exists()
+
+
+def test_corrected_tags_are_required_with_a_request_and_must_be_known(tmp_path, draft):
+    rid = draft["train"][0]["id"]
+    kwargs = {"version": "v-x", "reviewer": "r", "ai_review_authorization": AUTH}
+    cases = [
+        ({"corrected_request": "x y z"}, "reviewed tags"),
+        ({"corrected_request": "x y z", "corrected_tags": "not_a_tag"}, "unknown tags"),
+        ({"corrected_gold": "{}", "corrected_tags": "typo"}, "without a corrected request"),
+    ]
+    for extra, message in cases:
+        with pytest.raises(CorpusError, match=message):
+            freeze(
+                DRAFT,
+                tmp_path / "o",
+                decisions_csv=_ledger([{"id": rid, "decision": "correct", **extra}]),
+                **kwargs,
+            )
+    assert not (tmp_path / "o").exists()
+
+
+def test_cli_records_ai_review_and_never_human(tmp_path, draft):
+    csv_path = tmp_path / "ledger.csv"
+    csv_path.write_bytes(_ledger([{"id": draft["train"][0]["id"], "decision": "approve"}]))
+    out = tmp_path / "cli"
+    args = ["freeze", "--corpus", str(DRAFT), "--out", str(out), "--version", "v-cli"]
+    args += ["--decisions", str(csv_path), "--reviewer", "technical lead AI"]
+    assert cli([*args, "--ai-review-authorization", AUTH]) == 0
+    manifest = json.loads((out / "MANIFEST.json").read_text(encoding="utf-8"))
+    assert manifest["review"]["reviewer_type"] == "ai"
+    assert manifest["review"]["examples_with_a_human_decision"] == 0
+    with pytest.raises(SystemExit, match="not both"):
+        cli(
+            [
+                *args[:4],
+                str(tmp_path / "x"),
+                *args[5:],
+                "--human-review",
+                "--ai-review-authorization",
+                AUTH,
+            ]
+        )
+
+
+# --- the committed AI-reviewed frozen corpus -------------------------------------------------
+
+FROZEN = REPO / "data" / "axbench" / "v0.1-ai-reviewed"
+LEDGER = DRAFT / "review" / "AI_REVIEW_DECISIONS.csv"
+DECISION_URL = "https://github.com/sergthedev/axiom-local/issues/4#issuecomment-7185793594"
+
+
+def test_committed_frozen_corpus_is_ai_reviewed_and_never_human():
+    manifest, splits = load_corpus(FROZEN)
+    assert (
+        manifest["status"] == "frozen" and manifest["corpus_version"] == "axbench/0.1-ai-reviewed"
+    )
+    assert {s: len(r) for s, r in splits.items()} == {"train": 400, "validation": 160}
+    review = manifest["review"]
+    assert review["reviewer_type"] == "ai" and review["authorization"] == DECISION_URL
+    assert review["examples_with_a_decision"] == 54
+    assert review["examples_with_a_human_decision"] == 0 and not review["attested_human"]
+    assert review["removed_ids"] == []
+    assert [c["id"] for c in review["corrections"]] == [
+        "train-0235",
+        "validation-0025",
+        "validation-0037",
+    ]
+    draft_manifest = json.loads((DRAFT / "MANIFEST.json").read_text(encoding="utf-8"))
+    assert manifest["parent"]["files"] == draft_manifest["files"]
+    records = [r for s in splits.values() for r in s]
+    assert all(r["provenance"]["human_review"] == "none" for r in records)
+    _, draft = load_corpus(DRAFT)
+    gold = {r["id"]: r["gold"] for s in draft.values() for r in s}
+    assert all(r["gold"] == gold[r["id"]] for r in records)  # gold unchanged everywhere
+
+
+def test_committed_frozen_corpus_is_reproducible_from_the_committed_ledger(tmp_path):
+    out = tmp_path / "again"
+    freeze(
+        DRAFT,
+        out,
+        version="axbench/0.1-ai-reviewed",
+        decisions_csv=LEDGER.read_bytes(),
+        reviewer="technical lead AI (owner-delegated review)",
+        ai_review_authorization=DECISION_URL,
+    )
+    for name in ("train.jsonl", "validation.jsonl", "DECISIONS.jsonl", "MANIFEST.json"):
+        assert (out / name).read_bytes() == (FROZEN / name).read_bytes(), name

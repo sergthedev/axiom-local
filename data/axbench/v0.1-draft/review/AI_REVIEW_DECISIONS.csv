@@ -1,0 +1,55 @@
+n,id,split,decision,corrected_gold,corrected_request,corrected_tags,note
+1,train-0187,train,approve,,,,retain as-is
+2,validation-0103,validation,approve,,,,retain as-is
+3,train-0181,train,approve,,,,retain as-is
+4,validation-0101,validation,approve,,,,retain as-is
+5,train-0064,train,approve,,,,retain as-is
+6,validation-0124,validation,approve,,,,retain as-is
+7,train-0052,train,approve,,,,retain as-is
+8,validation-0102,validation,approve,,,,retain as-is
+9,train-0235,train,correct,,"deneyim yılı ve ""Monthly Wage"" değişkenleriyle k-means uygula.",malicious_header;quoted_name,kıdem is not necessarily total experience; the intended column is named in the request; gold missing_cluster_count unchanged; diacritics_stripped removed because the new mention keeps its diacritics
+10,validation-0072,validation,approve,,,,retain as-is
+11,train-0063,train,approve,,,,retain as-is
+12,validation-0014,validation,approve,,,,retain as-is
+13,train-0075,train,approve,,,,retain as-is
+14,validation-0057,validation,approve,,,,retain as-is
+15,train-0179,train,approve,,,,retain as-is
+16,validation-0092,validation,approve,,,,retain as-is
+17,train-0266,train,approve,,,,retain as-is
+18,validation-0051,validation,approve,,,,retain: multiple_operations takes precedence over individual column ambiguity (documented precedence)
+19,train-0082,train,approve,,,,retain as-is
+20,validation-0023,validation,approve,,,,retain as-is
+21,train-0269,train,approve,,,,retain: plausible single adjacent-character transposition with a unique contextual column match; intentional typo test
+22,validation-0026,validation,approve,,,,retain as-is
+23,train-0010,train,approve,,,,retain as-is
+24,validation-0025,validation,correct,,"""Total Tourism Spending"", ""Season"" ve turistik bolge kolonlarını özetle: sayısal sütun için ortalama ve medyan, metin sütunları için mevcut betimsel özetleri ve eksik değer sayılarını göster.",diacritics_stripped;quoted_name,"type-appropriate summary made explicit; Core Inspect reports only total, valid and missing counts for text columns, so the lead's fallback wording without category counts was chosen; gold inspect c3,c1,c2 unchanged"
+25,train-0374,train,approve,,,,retain as-is
+26,validation-0064,validation,approve,,,,retain as-is
+27,train-0042,train,approve,,,,retain as-is
+28,validation-0031,validation,approve,,,,retain as-is
+29,train-0349,train,approve,,,,retain as-is
+30,validation-0008,validation,approve,,,,retain as-is
+31,train-0085,train,approve,,,,retain as-is
+32,validation-0089,validation,approve,,,,retain as-is
+33,train-0193,train,approve,,,,retain as-is
+34,validation-0074,validation,approve,,,,retain as-is
+35,train-0017,train,approve,,,,retain as-is
+36,validation-0115,validation,approve,,,,retain as-is
+37,train-0138,train,approve,,,,retain as-is
+38,validation-0018,validation,approve,,,,retain as-is
+39,train-0009,train,approve,,,,retain as-is
+40,validation-0157,validation,approve,,,,retain as-is
+41,train-0049,train,approve,,,,retain as-is
+42,validation-0037,validation,correct,,"""Visitor Count"" kullanarak ""Hotel Occupancy"" değerini tahmin eden bir doğrusal regresyon modeli kur.",quoted_name,unsupported regression made explicit; gold REJECT regression unchanged
+43,train-0204,train,approve,,,,retain as-is
+44,validation-0080,validation,approve,,,,retain as-is
+45,train-0196,train,approve,,,,retain as-is
+46,validation-0083,validation,approve,,,,retain: plausible single adjacent-character transposition with a unique contextual column match; intentional typo test
+47,train-0004,train,approve,,,,retain as-is
+48,train-0066,train,approve,,,,retain as-is
+49,train-0126,train,approve,,,,retain as-is
+50,train-0185,train,approve,,,,retain as-is
+51,train-0283,train,approve,,,,retain as-is
+52,train-0359,train,approve,,,,retain as-is
+53,validation-0012,validation,approve,,,,retain as-is
+54,validation-0106,validation,approve,,,,retain as-is
