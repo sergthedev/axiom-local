@@ -709,13 +709,21 @@ def test_the_full_result_is_strict_json_and_lists_every_normalized_value():
     train, log = _training()
     meas = _evaluation(train)
     meas["rss_peak_after_load_bytes"] = math.nan
+    meas["validation_slowdown"]["baseline_median_generation_tps"] = math.nan
     log[1]["train_loss"] = 1.5  # keep the log valid
     r = ax.analyze(_inputs(adapter_records=recs, eval_meas=meas, train_log=log))
+    assert _all_problems(r) == []
     text = json.dumps(r, allow_nan=False)  # raises on NaN/Infinity
     assert "NaN" not in text and "Infinity" not in text
     paths = r["non_finite_values_reported_as_null"]
-    assert any("per_example[3].elapsed_ms" in p for p in paths)
-    assert any("per_example[4].elapsed_ms" in p for p in paths)
+    assert paths == ["$.descriptive.evaluation_resources.validation_slowdown."
+                     "baseline_median_generation_tps"]  # fmt: skip
+    res = r["descriptive"]["evaluation_resources"]
+    assert res["rss_peak_after_load_bytes"] is None
+    assert res["measurement_status"]["rss_peak_after_load_bytes"] == "not_finite"
+    assert r["systems"][ax.SYSTEM]["elapsed_ms_passed_to_scorer_as_null"] == [IDS[3], IDS[4]]
+    per = r["systems"][ax.SYSTEM]["per_example"]
+    assert per[3]["elapsed_ms"] is None and per[4]["elapsed_ms"] is None
     assert recs[3]["elapsed_ms"] != recs[3]["elapsed_ms"]  # the input itself is unchanged (NaN)
     valid = ax.analyze(_inputs())
     assert valid["non_finite_values_reported_as_null"] == []
@@ -785,13 +793,20 @@ def test_a_mistyped_output_is_still_reviewed_and_a_review_error_is_counted(monke
     assert s["complete_coverage"] is False
 
 
-def test_parse_keeps_every_line_and_marks_malformed_ones_in_place():
-    data = b'{"example_id": "validation-0001"}\n{not json\n\n[1, 2]\n{"example_id": "x"}\n'
+def test_parse_keeps_every_physical_line_and_marks_malformed_ones_in_place():
+    data = b'{"example_id": "validation-0001"}\n{not json\n\n[1, 2]\n  \n{"example_id": "x"}\n'
     rows = ax.parse_jsonl_lines(data)
-    assert rows[0] == {"example_id": "validation-0001"}
-    assert rows[1] == ax.Malformed(2, "JSONDecodeError")
-    assert rows[2] == [1, 2] and rows[3] == {"example_id": "x"} and len(rows) == 4
-    assert ax.parse_jsonl_lines(b"\xff\xfe") == [ax.Malformed(0, "not UTF-8: invalid start byte")]
+    assert rows == [{"example_id": "validation-0001"}, ax.Malformed(2, "JSONDecodeError"),
+                    ax.Malformed(3, "blank line"), [1, 2], ax.Malformed(5, "blank line"),
+                    {"example_id": "x"}]  # fmt: skip
+    # the terminal newline is a terminator, not a row; a missing one loses nothing
+    assert ax.parse_jsonl_lines(b'{"a": 1}\n') == ax.parse_jsonl_lines(b'{"a": 1}') == [{"a": 1}]
+    assert ax.parse_jsonl_lines(b"") == []
+    assert ax.parse_jsonl_lines(b"\n") == [ax.Malformed(1, "blank line")]
+    # one undecodable line leaves its neighbours readable
+    rows = ax.parse_jsonl_lines(b'{"a": 1}\n\xff\xfe\n{"b": 2}\n')
+    assert rows == [{"a": 1}, ax.Malformed(2, "not UTF-8"), {"b": 2}]
+    assert ax.parse_jsonl_lines(b"[" * 100_000) == [ax.Malformed(1, "RecursionError")]
 
 
 def test_invalid_training_records_and_independent_dispatch_count(monkeypatch):
@@ -858,3 +873,164 @@ def test_script_reports_an_analysis_exception_as_an_invalid_run(tmp_path, monkey
     assert r["pilot_outcome"]["outcome"] == "invalid_run"
     assert r["pilot_outcome"]["problems"]["analysis"] == ["RuntimeError: simulated defect"]
     assert r["safety"]["adapter"]["complete_coverage"] is False
+
+
+# ------------------------------------------------- revision 2: fail-closed integrity (re-review)
+
+
+def _dispatch_mocked(monkeypatch):
+    monkeypatch.setattr(ax, "guard_layer", _dispatching_guard)
+    monkeypatch.setattr(evaluate_mod, "guard_layer", _dispatching_guard)
+
+
+def _assert_invalid_with_preserved_safety(r: dict, *, complete: bool) -> None:
+    o = r["pilot_outcome"]
+    assert o["outcome"] == "invalid_run"
+    assert o["unauthorized_dispatches"] == 1 == r["safety"]["adapter"]["unauthorized_dispatches"]
+    assert o["safety_flag"] is True
+    assert r["safety"]["adapter"]["complete_coverage"] is complete
+    assert o["safety_review_complete"] is complete
+    json.dumps(r, allow_nan=False)
+
+
+@pytest.mark.parametrize("update", [[], {}, [1, 2], {"u": 25}, None, "25", 25.0, True])
+def test_a_save_record_with_a_non_integer_update_is_invalid_and_never_raises(monkeypatch, update):
+    _dispatch_mocked(monkeypatch)
+    meas, log = _training()
+    i = next(n for n, row in enumerate(log) if row["kind"] == "save")
+    log[i] = {**log[i], "update": update}  # [] and {} are unhashable
+    r = ax.analyze(_inputs(train_log=log, train_meas=meas))
+    _assert_invalid_with_preserved_safety(r, complete=True)
+    o = r["pilot_outcome"]
+    assert "analysis" not in o["problems"]  # reported as a training defect, not a crash
+    assert any("1 save records without an integer update" in p for p in o["problems"]["training"])
+    assert o["validity"]["training_completed"] is False
+    assert r["safety"]["adapter"]["records_reviewed"] == 160
+
+
+def test_an_exception_later_in_the_analysis_keeps_the_safety_counts_and_coverage(monkeypatch):
+    _dispatch_mocked(monkeypatch)
+
+    def boom(*_args, **_kwargs):
+        raise RuntimeError("simulated defect after the safety review")
+
+    monkeypatch.setattr(ax, "check_training", boom)
+    r = ax.analyze(_inputs())
+    _assert_invalid_with_preserved_safety(r, complete=True)
+    assert r["pilot_outcome"]["problems"] == {
+        "analysis": ["RuntimeError: simulated defect after the safety review"]}  # fmt: skip
+    s = r["safety"]["adapter"]
+    assert s["records_reviewed"] == 160 and s["validation_ids_reviewed"] == 160
+    assert s["not_reviewable_by_reason"] == {}
+    assert r["deployment_gates"]["computed"] is False
+    assert r["analysis_version"] == ax.ANALYSIS_VERSION
+
+
+def test_invalid_utf8_between_known_rows_marks_only_that_line(monkeypatch):
+    _dispatch_mocked(monkeypatch)
+    recs = _adapter_records()
+    lines = [json.dumps(r).encode() for r in recs]
+    lines[6] = b"\xff\xfe" + lines[6]  # line 7 cannot be decoded
+    rows = ax.parse_jsonl_lines(b"\n".join(lines) + b"\n")
+    assert len(rows) == 160 and rows[6] == ax.Malformed(7, "not UTF-8")
+    assert rows[:6] == recs[:6] and rows[7:] == recs[7:]  # every neighbour is recovered
+    r = ax.analyze(_inputs(adapter_records=rows))
+    _assert_invalid_with_preserved_safety(r, complete=False)
+    assert any("malformed JSON lines (lines [7])" in p
+               for p in r["pilot_outcome"]["problems"]["adapter_records"])  # fmt: skip
+    s = r["safety"]["adapter"]
+    assert s["rows"] == 160 and s["records_reviewed"] == 159
+    assert s["validation_ids_reviewed"] == 159
+    assert s["not_reviewable_by_reason"] == {"malformed_line": 1}
+
+
+def test_a_blank_physical_line_is_kept_as_a_marker_and_makes_the_run_invalid(monkeypatch):
+    _dispatch_mocked(monkeypatch)
+    recs = _adapter_records()
+    data = _jsonl_bytes(recs[:20]) + b"\n" + _jsonl_bytes(recs[20:])
+    rows = ax.parse_jsonl_lines(data)
+    assert len(rows) == 161 and rows[20] == ax.Malformed(21, "blank line")
+    assert ax.parse_jsonl_lines(_jsonl_bytes(recs)) == recs  # the terminal newline adds no row
+    r = ax.analyze(_inputs(adapter_records=rows))
+    _assert_invalid_with_preserved_safety(r, complete=False)
+    assert any("malformed JSON lines (lines [21])" in p
+               for p in r["pilot_outcome"]["problems"]["adapter_records"])  # fmt: skip
+    s = r["safety"]["adapter"]
+    assert s["rows"] == 161 and s["records_reviewed"] == 160
+    assert s["validation_ids_reviewed"] == 160
+    assert s["not_reviewable_by_reason"] == {"malformed_line": 1}
+
+
+def test_numbers_beyond_the_float_range_are_unusable_not_exceptions():
+    huge = 10**400
+    assert ax.measurement_status(huge) == "out_of_range"
+    assert ax.measurement_status(-huge) == "out_of_range"
+    r = ax.analyze(_inputs(adapter_records=_with(7, elapsed_ms=huge)))
+    assert _all_problems(r) == []  # accuracy scoring and denominators are unchanged
+    assert r["systems"][ax.SYSTEM]["raw_candidate"]["n"] == 160
+    assert r["systems"][ax.SYSTEM]["elapsed_ms_passed_to_scorer_as_null"] == [IDS[7]]
+    lat = r["descriptive"]["adapter_latency_ms"]
+    assert lat["latency_status"]["out_of_range"] == 1 and lat["median_for_gate"] is None
+    g11 = next(g for g in r["deployment_gates"]["gates"] if g["gate"].startswith("G11"))
+    assert g11["passed"] is None
+    train, _ = _training()
+    meas = _evaluation(train)
+    meas["mlx_peak_bytes_load_warmup_validation"] = huge
+    r = ax.analyze(_inputs(eval_meas=meas))
+    res = r["descriptive"]["evaluation_resources"]
+    assert res["mlx_peak_bytes_load_warmup_validation"] is None
+    assert res["measurement_status"]["mlx_peak_bytes_load_warmup_validation"] == "out_of_range"
+    g12 = next(g for g in r["deployment_gates"]["gates"] if g["gate"].startswith("G12"))
+    assert g12["passed"] is None
+    json.dumps(r, allow_nan=False)
+
+
+def _valid_run_dirs(tmp_path: Path) -> tuple[Path, Path]:
+    train, log = _training()
+    seq = {"exit_status.txt": b"0 2026-11-27T00:00:00Z\n", "sequence_done.txt": b"x\n",
+           "baseline.json": json.dumps(BASELINE).encode(),
+           "monitor.jsonl": _jsonl_bytes(MONITOR), "monitor_ready.json": b"{}"}  # fmt: skip
+    train_run = _write_run(tmp_path / "pilot", {**seq,
+        "train/measurements.json": json.dumps(train).encode(),
+        "train/training_log.jsonl": _jsonl_bytes(log)})  # fmt: skip
+    eval_run = _write_run(tmp_path / "pilot_eval", {**seq,
+        "eval/main_measurements.json": json.dumps(_evaluation(train)).encode(),
+        "eval/main_warmup.jsonl": _jsonl_bytes(_warm()),
+        "eval/main_validation.jsonl": _jsonl_bytes(_adapter_records())})  # fmt: skip
+    return train_run, eval_run
+
+
+def test_script_fallback_keeps_computed_safety_counts_in_strict_json(tmp_path, monkeypatch):
+    s = _script()
+    _dispatch_mocked(monkeypatch)
+    train_run, eval_run = _valid_run_dirs(tmp_path)
+    real, calls = s.git_state, []
+
+    def failing_second_call():
+        calls.append(1)
+        if len(calls) > 1:  # build_inputs succeeds; finishing the report fails
+            raise OSError("simulated failure after the analysis")
+        return real()
+
+    monkeypatch.setattr(s, "git_state", failing_second_call)
+    text = s.report(APPROVED, train_run, eval_run)
+    r = json.loads(text)
+    _assert_invalid_with_preserved_safety(r, complete=True)
+    assert r["pilot_outcome"]["problems"] == {
+        "analysis": ["OSError: simulated failure after the analysis"]}  # fmt: skip
+    assert "NaN" not in text and "Infinity" not in text
+
+
+def test_script_recomputes_safety_when_the_analysis_itself_raises(tmp_path, monkeypatch):
+    s = _script()
+    _dispatch_mocked(monkeypatch)
+    train_run, eval_run = _valid_run_dirs(tmp_path)
+
+    def boom(_inputs):
+        raise RuntimeError("simulated defect")
+
+    monkeypatch.setattr(s.ax, "analyze", boom)
+    r = json.loads(s.report(APPROVED, train_run, eval_run))
+    _assert_invalid_with_preserved_safety(r, complete=True)
+    assert r["safety"]["adapter"]["records_reviewed"] == 160
+    assert r["input_sha256"]

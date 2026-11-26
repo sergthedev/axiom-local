@@ -8,7 +8,7 @@
   authorization; completed, results in [SMOKE.md](SMOKE.md); accepted by the lead as a feasibility result only
   ([smoke acceptance](https://github.com/sergthedev/axiom-local/pull/11#issuecomment-7193487897)).
 - D18 analysis freeze (after the smoke acceptance, before the pilot): the scoring, integrity, pairing, safety, D13/D14
-  and D15 analysis is implemented and tested (`exp010.analysis/2` after the lead's D18 review; D18) and the exact pilot, evaluation and analysis
+  and D15 analysis is implemented and tested (`exp010.analysis/3` after the lead's D18 review and re-review; D18) and the exact pilot, evaluation and analysis
   commands are fixed (section 8). The pilot is not started; it needs the lead's pilot clearance and the owner's
   approval.
 - Revision 0 (`ea1d343`): this record turns the EXP-010 protocol (revision 3, [PROTOCOL.md](PROTOCOL.md))
@@ -389,7 +389,7 @@ applied unfused on top of the unchanged BF16 base).
 - A stopped or failed run is reported as such with all its records; any rerun is a new run directory under D9.
 
 **D18 Analysis integrity, frozen before the pilot (revision 1, correction D; decision 9; implemented after the smoke
-acceptance).** The analysis is `src/axbench/exp010analysis.py` (`exp010.analysis/2`, pure logic, tested) and the thin
+acceptance).** The analysis is `src/axbench/exp010analysis.py` (`exp010.analysis/3`, pure logic, tested) and the thin
 file and Git reader `benchmarks/issue4_exp010_analyze.py` (Core environment, no MLX). It is committed and reviewed
 before the pilot; no endpoint, threshold, metric or check is added or changed after it (any later change would be a new,
 reviewed version recorded before any adapter validation output exists). In order, it:
@@ -515,6 +515,31 @@ evaluation label, monitor and throughput stops, non-finite monitor maxima, adapt
 and malformed log rows, a string update number), 6 further evaluation-provenance defects, 13 sequence and monitor
 cases, 12 warm-up record defects and an allowed failed warm-up, and the base pins equal to the accepted checkpoint
 record.
+
+**Freeze revision 2** (lead's [D18 revision 1 re-review](https://github.com/sergthedev/axiom-local/pull/11#issuecomment-7194380611)
+of `ac444cf`; `exp010.analysis/2` → `/3`). The remaining fail-closed integrity corrections only, with no change to an
+endpoint, threshold, training setting, frozen input, comparator pin or raw evidence:
+1. *Save records*: the training log's save rows are type-checked before their update number is used as a key; a save
+   row whose update is not an integer (for example `[]` or `{}`, which are unhashable) is a training problem
+   (`N save records without an integer update`), never an exception.
+2. *Safety first and kept*: the Guard safety review runs before, and independently of, every provenance and scoring
+   step. If a later step raises, the result is a structured `invalid_run` (`problems.analysis`) that keeps the
+   already computed unauthorized-dispatch count, rows reviewed and coverage; gates and descriptive results are marked
+   `computed: false`. The script's fallback keeps the safety counts of a partial result or recomputes them from the
+   parsed records, and stays strict JSON.
+3. *Physical lines*: JSONL is split on newline bytes and each line is decoded on its own, so one line that is not
+   UTF-8 is a `Malformed` marker and every neighbouring known-ID row is still reviewed; a blank line is a marker too
+   (never skipped); a normal terminal newline is a terminator, not an extra row.
+4. *Out-of-range numbers*: an integer beyond the float range is `out_of_range` (unusable, like a non-finite value), not
+   an exception; an unusable `elapsed_ms` is passed to the scorer as `null` (listed in
+   `elapsed_ms_passed_to_scorer_as_null`), so accuracy scoring is unchanged and G11 is not assessable.
+
+Regressions added: non-integer save updates (`[]`, `{}`, lists, objects, `null`, strings, floats, booleans) with an
+independent mocked dispatch count; an exception after the safety review; invalid UTF-8 between recoverable known-ID
+rows (159 reviewed, the other 159 rows recovered); a blank physical line and the terminal newline; integers beyond the
+float range for a latency and a memory value; the script fallback after the analysis and when the analysis itself
+raises. Each shows a structured `invalid_run` (or a not-assessable gate) with explicit coverage and the dispatch count
+preserved.
 
 ## 6. Harness self-test (software check, not a training result)
 

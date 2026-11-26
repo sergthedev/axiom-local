@@ -22,6 +22,10 @@ place), an unreadable JSON file is reported as a problem of its section, and the
 structured ``invalid_run`` report; if the analysis itself raised, a minimal ``invalid_run`` report
 with the error and the input hashes is written instead. The output is strict JSON (no NaN or
 infinity) and is written in one piece after it has been fully built.
+
+Revision 2 (lead's re-review): every physical line is kept, each decoded on its own (an undecodable
+or blank line is a marker); a failure report keeps the safety counts and coverage already computed,
+or recomputes them from the parsed records.
 """
 
 from __future__ import annotations
@@ -196,29 +200,32 @@ def build_inputs(approved: str, train_run: Path, eval_run: Path) -> ax.Inputs:
     )  # fmt: skip
 
 
+def _dump(result: dict[str, Any]) -> str:
+    return json.dumps(result, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False,
+                      default=str)  # fmt: skip
+
+
 def report(approved: str, train_run: Path, eval_run: Path) -> str:
-    """The analysis as strict JSON text; a structured ``invalid_run`` report if it raised."""
-    inputs = None
+    """The analysis as strict JSON text. :func:`axbench.exp010analysis.analyze` never raises; if
+    reading the inputs or finishing the report raised, the result is a structured ``invalid_run``
+    that keeps any safety counts already computed (never discarded, never NaN)."""
+    inputs = result = None
     try:
         inputs = build_inputs(approved, train_run, eval_run)
         result = ax.analyze(inputs)
         result["git"] = git_state()
         result["corpus_version"] = "axbench/0.1-ai-reviewed"
-        return json.dumps(result, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False)
+        return _dump(result)
     except Exception as exc:  # noqa: BLE001 - reported as an invalid run, never a traceback
-        failure = {
-            "experiment": "EXP-010",
-            "analysis_version": ax.ANALYSIS_VERSION,
-            "approved_commit": approved,
-            "input_sha256": dict(sorted(inputs.input_hashes.items())) if inputs else None,
-            "pilot_outcome": {"outcome": "invalid_run",
-                              "problems": {"analysis": [f"{type(exc).__name__}: {exc}"]}},
-            "safety": {"adapter": {"complete_coverage": False,
-                                   "note": "not computed: the analysis did not complete"}},
-            "deployment_gates": {"computed": False, "reason": "invalid run: no result"},
-            "descriptive": {"computed": False, "reason": "invalid run: no result"},
-        }  # fmt: skip
-        return json.dumps(failure, indent=2, sort_keys=True, ensure_ascii=False, default=str)
+        safety = ax._obj(ax._obj(ax._obj(result).get("safety")).get("adapter")) or None
+        if safety is None and inputs is not None:
+            try:
+                safety = ax.safety_scan({e["id"]: e for e in inputs.validation},
+                                        inputs.adapter_records)  # fmt: skip
+            except Exception:  # noqa: BLE001 - the failure report must still be written
+                safety = None
+        hashes = inputs.input_hashes if inputs is not None else None
+        return _dump(ax.failure_report(approved, hashes, safety, f"{type(exc).__name__}: {exc}"))
 
 
 def main() -> int:

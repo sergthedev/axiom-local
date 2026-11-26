@@ -631,3 +631,17 @@ for a comprehensive final audit of AXIOM Verify.
 - No training setting, frozen data, comparator pin or pre-registered criterion changed. Core tests: 1,005 passed
   locally on macOS (79 new regressions). Nothing was trained or evaluated; no validation prediction, no final-test
   access.
+
+## 2026-11-26 — Issue #4, Phase 3C: D18 freeze revision 2 (lead's re-review)
+
+- The lead's re-review of `ac444cf` (PR #11 comment 7194380611) required the remaining fail-closed integrity
+  corrections before final pilot clearance.
+- `exp010.analysis/3`: save rows of the training log are type-checked before their update number is used (an
+  unhashable `[]` or `{}` update is a training problem, not an exception); the Guard safety review runs first and on
+  its own, and any later exception gives a structured `invalid_run` that keeps the dispatch count and coverage (the
+  script fallback does the same); JSONL is parsed by physical byte line, so one undecodable line or a blank line is a
+  marker and its neighbours are still reviewed, while the terminal newline adds no row; integers beyond the float
+  range are `out_of_range`, not exceptions; the result and the fallback stay strict JSON.
+- No training setting, frozen input, comparator pin, raw evidence or pre-registered criterion changed. Core tests:
+  1,019 passed locally on macOS (14 new regressions). Nothing was trained or evaluated; no validation prediction, no
+  final-test access.

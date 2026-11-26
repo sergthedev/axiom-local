@@ -60,7 +60,7 @@ from .trainwatch import (
     schedule,
 )
 
-ANALYSIS_VERSION = "exp010.analysis/2"  # /1 was the first freeze (6b10882), revised before use
+ANALYSIS_VERSION = "exp010.analysis/3"  # /1 6b10882, /2 ac444cf; revised before any use
 SYSTEM = "qwen3-1.7b-lora-exp010"
 UNTUNED = "qwen3-1.7b-untuned"
 RULES = "rules"
@@ -143,18 +143,26 @@ def parse_jsonl(data: bytes) -> list[Any]:
 
 
 def parse_jsonl_lines(data: bytes) -> list[Any]:
-    """Every non-empty line, in order: its JSON value, or :class:`Malformed` (never an error)."""
-    try:
-        text = data.decode("utf-8")
-    except UnicodeDecodeError as exc:
-        return [Malformed(0, f"not UTF-8: {exc.reason}")]
+    """Every physical line (split on ``\\n``), in order: its JSON value, or :class:`Malformed`
+    for a line that is blank, not UTF-8 or not JSON. Never raises. The newline ending the last line
+    is a terminator, not an extra row; each line is decoded on its own, so one undecodable line
+    leaves every other line readable (freeze revision 2)."""
+    lines = data.split(b"\n")
+    if lines and lines[-1] == b"":
+        lines.pop()  # the normal terminal newline
     out: list[Any] = []
-    for n, line in enumerate(text.splitlines(), start=1):
+    for n, raw in enumerate(lines, start=1):
+        try:
+            line = raw.decode("utf-8")
+        except UnicodeDecodeError:
+            out.append(Malformed(n, "not UTF-8"))
+            continue
         if not line.strip():
+            out.append(Malformed(n, "blank line"))
             continue
         try:
             out.append(json.loads(line))
-        except ValueError as exc:
+        except (ValueError, RecursionError) as exc:
             out.append(Malformed(n, type(exc).__name__))
     return out
 
@@ -181,9 +189,13 @@ def measurement_status(value: Any) -> str:
         return "missing"
     if isinstance(value, bool) or not isinstance(value, int | float):
         return "not_a_number"
-    if not math.isfinite(value):
+    try:
+        number = float(value)
+    except OverflowError:  # an integer beyond the float range (freeze revision 2)
+        return "out_of_range"
+    if not math.isfinite(number):
         return "not_finite"
-    return "negative" if value < 0 else "ok"
+    return "negative" if number < 0 else "ok"
 
 
 def measurement(value: Any) -> Any:
@@ -491,15 +503,24 @@ def check_training(meas: Any, log: Any, approved: str, baseline: Any = None) -> 
     evals = [r for r in rows if r.get("kind") == "eval"]
     if any(r.get("set") != "validation" for r in evals):
         p.append("training log: an evaluation record is not labelled 'validation'")
-    saves = {r.get("update"): r.get("sha256") for r in rows if r.get("kind") == "save"}
+    save_rows = [r for r in rows if r.get("kind") == "save"]
+    bad_updates = [
+        r.get("update")
+        for r in save_rows
+        if not isinstance(r.get("update"), int) or isinstance(r.get("update"), bool)
+    ]
+    if bad_updates:  # freeze revision 2: never hash or format an unvalidated value
+        p.append(f"training log: {len(bad_updates)} save records without an integer update")
+    saves = {
+        r["update"]: r.get("sha256")
+        for r in save_rows
+        if isinstance(r.get("update"), int) and not isinstance(r.get("update"), bool)
+    }
     final = _obj(files.get("adapters.safetensors")).get("sha256")
     if not _is_sha(final) or final != saves.get(sched.updates):
         p.append("training: final adapter hash differs from the update-200 save record")
     for u, sha in saves.items():
-        if (
-            not isinstance(u, int)
-            or _obj(files.get(f"update_{u:04d}.safetensors")).get("sha256") != sha
-        ):
+        if _obj(files.get(f"update_{u:04d}.safetensors")).get("sha256") != sha:
             p.append(f"training: update-{u} save hash differs from its file record")
     updates = [r for r in rows if r.get("kind") == "update"]
     if not updates or updates[-1].get("micro_steps") != sched.micro_steps:
@@ -808,7 +829,63 @@ SECTIONS = ("corpus", "frozen_code", "raw_evidence_preserved", "training", "eval
 
 
 def analyze(x: Inputs) -> dict[str, Any]:
-    """The frozen analysis. Never raises on malformed run inputs; the result is strict JSON."""
+    """The frozen analysis. Never raises on malformed run inputs; the result is strict JSON.
+
+    The safety review runs first, on its own; if any later step raises, the result is a
+    structured ``invalid_run`` that keeps the safety counts and coverage (freeze revision 2)."""
+    examples = {e["id"]: e for e in x.validation}
+    safety = safety_scan(examples, x.adapter_records)
+    try:
+        return _analyze(x, safety)
+    except Exception as exc:  # noqa: BLE001 - reported as an invalid run, never raised
+        return failure_report(x.approved_commit, x.input_hashes, safety,
+                              f"{type(exc).__name__}: {exc}")  # fmt: skip
+
+
+def failure_report(approved: str, input_hashes: Mapping[str, Any] | None,
+                   safety: Mapping[str, Any] | None, error: str) -> dict[str, Any]:  # fmt: skip
+    """A structured ``invalid_run`` when the analysis could not complete; already computed
+    safety counts and coverage are kept, never discarded."""
+    adapter = (
+        dict(safety)
+        if safety
+        else {"complete_coverage": False, "note": "not computed: the analysis did not reach it"}
+    )
+    dispatches = adapter.get("unauthorized_dispatches")
+    return _finish({
+        "experiment": "EXP-010",
+        "analysis_version": ANALYSIS_VERSION,
+        "approved_commit": approved,
+        "input_sha256": dict(sorted(input_hashes.items())) if input_hashes else None,
+        "pilot_outcome": {
+            "outcome": "invalid_run",
+            "problems": {"analysis": [error]},
+            "unauthorized_dispatches": dispatches,
+            "safety_flag": bool(dispatches),
+            "safety_review_complete": bool(adapter.get("complete_coverage")),
+        },
+        "safety": {"adapter": adapter},
+        "deployment_gates": {"computed": False, "reason": "invalid run: no result"},
+        "descriptive": {"computed": False, "reason": "invalid run: no result"},
+    })  # fmt: skip
+
+
+def _scoring_copy(records: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[str]]:
+    """The adapter records as passed to the scorer: an unusable ``elapsed_ms`` (for example an
+    integer beyond the float range, which the scorer cannot convert) is passed as ``None``. Only
+    this reported latency field is normalized; accuracy fields are untouched and raw evidence is
+    never changed (freeze revision 2)."""
+    out, ids = [], []
+    for r in records:
+        if r.get("elapsed_ms") is not None and measurement_status(r.get("elapsed_ms")) != "ok":
+            out.append({**r, "elapsed_ms": None})
+            ids.append(r["example_id"])
+        else:
+            out.append(r)
+    return out, ids
+
+
+def _analyze(x: Inputs, safety: dict[str, Any]) -> dict[str, Any]:
     val = list(x.validation)
     ids = [e["id"] for e in val]
     examples = {e["id"]: e for e in val}
@@ -850,15 +927,14 @@ def analyze(x: Inputs) -> dict[str, Any]:
     elif x.rules_rerun is None:
         problems["comparators"].append("no rules rerun was supplied")
 
-    # Safety first and independently of every other check.
-    safety = safety_scan(examples, x.adapter_records)
-
     reports: dict[str, Any] = {}
     for name, recs in comparators.items():
         reports[name] = evaluate(val, recs, system=name, split="validation")
     problems["comparators"] += _exp009_reproduced(x.exp009_results_bytes, reports)
     if not problems["adapter_records"]:
-        reports[SYSTEM] = evaluate(val, x.adapter_records, system=SYSTEM, split="validation")
+        scoring, normalized = _scoring_copy(x.adapter_records)
+        reports[SYSTEM] = evaluate(val, scoring, system=SYSTEM, split="validation")
+        reports[SYSTEM]["elapsed_ms_passed_to_scorer_as_null"] = normalized
         if (
             reports[SYSTEM]["after_guard"]["unauthorized_dispatch_count"]
             != safety["unauthorized_dispatches"]
