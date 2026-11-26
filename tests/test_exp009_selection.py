@@ -1,7 +1,10 @@
 """EXP-009 (Issue #4, Phase 3B): the frozen base-selection rule, stop rules and analysis pipeline.
 
 The selection rule and stop rules were fixed in the protocol (revision 3) and the pre-run record
-before any validation prediction; these tests pin the encoded logic to the written rule.
+before any validation prediction; these tests pin the encoded logic to the written rule. The
+regression tests for the lead's pre-run review (PRERUN revision 1) cover the pre-load resource
+baseline, load and warm-up checks, MemoryError, partial repeatability, failed fresh processes,
+eligibility over all required processes and the integrity checks of the analysis.
 """
 
 from __future__ import annotations
@@ -18,10 +21,16 @@ import pytest
 from axbench.corpus import load_corpus
 from axbench.runwatch import (
     SWAP_GROWTH_LIMIT_BYTES,
-    StopWatch,
+    AllocationStop,
+    ProcessMonitor,
+    SlowdownWatch,
+    is_allocation_error,
     parse_free_percentage,
     parse_swapusage,
+    preflight,
     repeat_subset,
+    run_requests,
+    timed_call,
     warmup_ids,
 )
 from axbench.selection import LARGE, SMALL, ModelRun, better, select_base
@@ -124,7 +133,13 @@ def test_rule_requires_full_denominator_and_fixed_names():
         select_base(_run(LARGE), _run(SMALL), CLUSTERS, 0)
 
 
-# ------------------------------------------------------------------ stop rules and sampling
+# ------------------------------------------------------------------ preflight and resources
+
+AC = "AC Power"
+
+
+def _s(swap=0, level=1, power=AC):
+    return {"swap_used": swap, "pressure_level": level, "power_source": power}
 
 
 def test_parse_swapusage_and_free_percentage():
@@ -137,32 +152,100 @@ def test_parse_swapusage_and_free_percentage():
         parse_swapusage("garbage")
 
 
-def test_stopwatch_swap_and_pressure():
-    w = StopWatch(swap_used_before=1000)
-    assert (
-        w.check(throughput=50, swap_used=1000 + SWAP_GROWTH_LIMIT_BYTES, pressure_level=2) is None
-    )
-    assert "swap" in w.check(
-        throughput=50, swap_used=1001 + SWAP_GROWTH_LIMIT_BYTES, pressure_level=1
-    )
-    w = StopWatch(swap_used_before=0)
-    assert "critical" in w.check(throughput=50, swap_used=0, pressure_level=4)
+def test_preflight_requires_mains_power_and_normal_pressure():
+    assert preflight(_s()) is None
+    assert "mains" in preflight(_s(power="Battery Power"))
+    assert "not normal" in preflight(_s(level=2))
+    assert "not normal" in preflight(_s(level=4))
 
 
-def test_stopwatch_sustained_slowdown_needs_three_consecutive_windows():
-    w = StopWatch(swap_used_before=0)
+def test_swap_growth_is_cumulative_from_the_pre_load_baseline():
+    # Growth during load and warm-up counts; it is not hidden by a later re-baseline.
+    m = ProcessMonitor(baseline=_s(swap=1000))
+    assert m.check("load", _s(swap=1000 + 1_500_000_000)) is None
+    assert m.check("warmup", _s(swap=1000 + 1_900_000_000)) is None
+    assert m.check("validation", _s(swap=1000 + SWAP_GROWTH_LIMIT_BYTES)) is None
+    reason = m.check("validation", _s(swap=1001 + SWAP_GROWTH_LIMIT_BYTES))
+    assert reason.startswith("validation: swap growth")
+    assert m.check("repeat", _s()) == reason  # stays stopped
+    summary = m.summary()
+    assert summary["max_cumulative_swap_growth_bytes"] == 1 + SWAP_GROWTH_LIMIT_BYTES
+    assert set(summary["phases"]) == {"load", "warmup", "validation"}
+    assert summary["phases"]["load"]["first_swap_used"] == 1000 + 1_500_000_000
+
+
+def test_load_and_warmup_checks_stop_on_pressure_and_power():
+    m = ProcessMonitor(baseline=_s())
+    assert m.check("load", _s(level=4)) == "load: memory pressure level 4 (critical)"
+    m = ProcessMonitor(baseline=_s())
+    assert m.check("load", _s(level=2)) is None  # warning is recorded, not a stop
+    assert "mains power interrupted" in m.check("warmup", _s(power="Battery Power"))
+    assert m.summary()["max_pressure_level"] == 2
+
+
+def test_slowdown_needs_three_consecutive_windows_below_half():
+    w = SlowdownWatch()
     for _ in range(30):
-        assert w.check(throughput=80.0, swap_used=0, pressure_level=1) is None
-    # Two slow windows, one recovered window, then two slow windows: no stop.
+        assert w.check(80.0) is None
     for tps in [30.0] * 20 + [80.0] * 10 + [30.0] * 20:
-        assert w.check(throughput=tps, swap_used=0, pressure_level=1) is None
-    # Exactly half is not "below half".
+        assert w.check(tps) is None
     for _ in range(10):
-        assert w.check(throughput=40.0, swap_used=0, pressure_level=1) is None
-    w2 = StopWatch(swap_used_before=0)
+        assert w.check(40.0) is None  # exactly half is not below half
+    w2 = SlowdownWatch()
     for tps in [80.0] * 30 + [39.9] * 29:
-        assert w2.check(throughput=tps, swap_used=0, pressure_level=1) is None
-    assert "sustained slowdown" in w2.check(throughput=39.9, swap_used=0, pressure_level=1)
+        assert w2.check(tps) is None
+    assert "sustained slowdown" in w2.check(39.9)
+
+
+def test_memory_error_stops_regardless_of_message():
+    assert is_allocation_error(MemoryError())
+    assert is_allocation_error(RuntimeError("[metal::malloc] Attempting to allocate 9 GB"))
+    assert not is_allocation_error(ValueError("bad token"))
+
+    def boom():
+        raise MemoryError
+
+    with pytest.raises(AllocationStop) as info:
+        timed_call({"example_id": "v1"}, boom)
+    assert info.value.record["status"] == "error"
+    assert info.value.record["error"] == "allocation:MemoryError"
+
+
+def test_other_exceptions_are_request_errors_in_the_denominator():
+    def bad():
+        raise ValueError("decode")
+
+    rec = timed_call({"example_id": "v1"}, bad)
+    assert rec["status"] == "error" and rec["error"] == "ValueError" and rec["raw_output"] is None
+    rec = timed_call({"example_id": "v2"}, lambda: {"raw_output": "x", "generation_tps": 5.0})
+    assert rec["status"] == "ok" and rec["raw_output"] == "x"
+
+
+def test_run_requests_emits_before_checking_and_keeps_the_failed_record():
+    emitted, samples = [], []
+
+    def request(i):
+        if i == 3:
+            return timed_call({"example_id": i}, lambda: (_ for _ in ()).throw(MemoryError()))
+        return timed_call({"example_id": i}, lambda: {"raw_output": "{}", "generation_tps": 9.0})
+
+    def sample():
+        samples.append(1)
+        return _s()
+
+    m = ProcessMonitor(baseline=_s())
+    reason = run_requests(range(6), request, sample, m, "validation", emitted.append)
+    assert reason.startswith("validation: allocation error: MemoryError")
+    assert [r["example_id"] for r in emitted] == [0, 1, 2, 3]
+    assert emitted[-1]["error"] == "allocation:MemoryError"
+    assert len(samples) == 3  # one resource sample after every completed request
+
+    emitted.clear()
+    m = ProcessMonitor(baseline=_s())
+    values = iter([_s(), _s(level=4), _s()])
+    reason = run_requests(range(5), lambda i: {"example_id": i}, lambda: next(values), m,
+                          "fresh", emitted.append)  # fmt: skip
+    assert "critical" in reason and len(emitted) == 2
 
 
 def test_fixed_subsets_on_the_frozen_corpus():
@@ -180,7 +263,14 @@ def test_fixed_subsets_on_the_frozen_corpus():
     assert warmup_ids(corpus["train"]) == [f"train-{i:04d}" for i in range(1, 6)]
 
 
-# ------------------------------------------------------------------ analysis end to end (fake runs)
+# ------------------------------------------------------------------ analysis (fake runs)
+
+COMMIT = "a" * 40
+REVISIONS = {
+    "qwen3-0.6b": "c1899de289a04d12100db370d81485cdf75e47ca",
+    "qwen3-1.7b": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+}
+MANIFEST = "b8b6d39f8cf942629d4abeff8e7d96f4b876c37ebf13f4082f7f5d47f516239c"
 
 
 def _load_analyzer():
@@ -191,58 +281,66 @@ def _load_analyzer():
     return mod
 
 
-def _fake_runs(tmp_path: Path) -> Path:
+def _write_jsonl(path: Path, records) -> None:
+    path.write_text("".join(json.dumps(r) + "\n" for r in records), encoding="utf-8")
+
+
+def _meas(folder, system, phase, **extra):
+    return {
+        "experiment": "EXP-009",
+        "phase": phase,
+        "system": system,
+        "status": "completed",
+        "corpus_manifest_sha256": MANIFEST,
+        "model": {"revision": REVISIONS[folder]},
+        "environment": {
+            "runner_version": "exp009.runner/2",
+            "git": {"commit": COMMIT, "dirty": False},
+        },  # fmt: skip
+        "preflight": {"power_source": AC},
+        "rss_peak_process_bytes": 2 * 10**9,
+        "cold_load_seconds": 1.0,
+        **extra,
+    }
+
+
+def _fake_runs(tmp_path: Path, good=(True, False)) -> Path:
     _, corpus = load_corpus(CORPUS)
     val = corpus["validation"]
     rep = repeat_subset(val)
     by_id = {e["id"]: e for e in val}
     runs = tmp_path / "runs"
-    for folder, system, good in (
-        ("qwen3-0.6b", SMALL, True),
-        ("qwen3-1.7b", LARGE, False),
+    for (folder, system), ok in zip(
+        (("qwen3-0.6b", SMALL), ("qwen3-1.7b", LARGE)), good, strict=True
     ):
         d = runs / folder
         d.mkdir(parents=True)
 
-        def rec(e, system=system, good=good, **extra):
-            raw = json.dumps(e["gold"]) if good else "```json\n{}\n```"
-            return {
-                "example_id": e["id"],
-                "system": system,
-                "status": "ok",
-                "raw_output": raw,
-                "elapsed_ms": 800.0,
-                "generation_tokens": 40,
-                "finish_reason": "stop",
-                "prompt_tokens": 430,
-                **extra,
-            }
+        def rec(e, system=system, ok=ok, **extra):
+            raw = json.dumps(e["gold"]) if ok else "```json\n{}\n```"
+            return {"example_id": e["id"], "system": system, "status": "ok", "raw_output": raw,
+                    "elapsed_ms": 800.0, "generation_tokens": 40, "finish_reason": "stop",
+                    "prompt_tokens": 430, **extra}  # fmt: skip
 
-        lines = [rec(e) for e in val]
-        (d / "main_validation.jsonl").write_text("".join(json.dumps(r) + "\n" for r in lines))
-        reps = [rec(by_id[i], repeat=r) for r in (1, 2) for i in rep]
-        (d / "main_repeat.jsonl").write_text("".join(json.dumps(r) + "\n" for r in reps))
-        snap = {"power_source": "AC Power"}
-        meas = {
-            "status": "completed",
-            "before": snap,
-            "rss_peak_process_bytes": 2 * 10**9,
-            "rss_peak_after_validation_bytes": 2 * 10**9,
-            "validation_completed": True,
-            "environment": {},
-            "model": {},
-            "cold_load_seconds": 1.0,
-        }
-        (d / "main_measurements.json").write_text(json.dumps(meas))
-        fresh = [rec(by_id[i], fresh_process=1) for i in rep]
-        (d / "fresh_1.jsonl").write_text("".join(json.dumps(r) + "\n" for r in fresh))
-        (d / "fresh_1_measurements.json").write_text(json.dumps({"status": "completed"}))
+        _write_jsonl(d / "main_validation.jsonl", [rec(e) for e in val])
+        _write_jsonl(
+            d / "main_repeat.jsonl", [rec(by_id[i], repeat=r) for r in range(1, 21) for i in rep]
+        )
+        main = _meas(folder, system, "main", validation_completed=True,
+                     rss_peak_after_validation_bytes=2 * 10**9)  # fmt: skip
+        (d / "main_measurements.json").write_text(json.dumps(main))
+        for f in range(1, 6):
+            _write_jsonl(
+                d / f"fresh_{f}_repeat.jsonl", [rec(by_id[i], fresh_process=f) for i in rep]
+            )
+            (d / f"fresh_{f}_measurements.json").write_text(
+                json.dumps(_meas(folder, system, f"fresh_{f}"))
+            )
     return runs
 
 
-def test_analysis_pipeline_on_fake_runs(tmp_path, monkeypatch):
+def _analyze(tmp_path, runs, monkeypatch) -> dict:
     mod = _load_analyzer()
-    runs = _fake_runs(tmp_path)
     rules_out = tmp_path / "rules.jsonl"
     monkeypatch.setattr(
         sys, "argv", ["x", "--runs", str(runs), "--rules-predictions", str(rules_out)]
@@ -250,18 +348,122 @@ def test_analysis_pipeline_on_fake_runs(tmp_path, monkeypatch):
     buf = io.StringIO()
     with redirect_stdout(buf):
         assert mod.main() == 0
-    out = json.loads(buf.getvalue())
+    assert len(rules_out.read_text().splitlines()) == 160
+    return json.loads(buf.getvalue())
+
+
+def _edit_jsonl(path: Path, fn) -> None:
+    records = [json.loads(line) for line in path.read_text().splitlines()]
+    _write_jsonl(path, fn(records))
+
+
+def _edit_json(path: Path, **changes) -> None:
+    obj = json.loads(path.read_text())
+    obj.update(changes)
+    path.write_text(json.dumps(obj))
+
+
+def test_analysis_complete_runs(tmp_path, monkeypatch):
+    out = _analyze(tmp_path, _fake_runs(tmp_path), monkeypatch)
     em = {
         k: v["raw_candidate"]["primary_semantic_exact_match"]["count"]
         for k, v in out["systems"].items()
     }
     assert em[SMALL] == 160 and em[LARGE] == 0 and em["rules"] == 73
-    assert out["selection"]["selected"] == SMALL and out["selection"]["basis"] == "primary"
-    rep = out["models"][SMALL]["repeatability"]
-    assert rep["requests_identical"]["in_process_text_identical"] == 30
-    assert rep["requests_identical"]["fresh_candidate_identical"] == 30
-    large = out["models"][LARGE]["repeatability"]["per_request"]
-    assert all(v["distinct_texts_all"] == 1 for v in large.values())
-    assert len(rules_out.read_text().splitlines()) == 160
     assert out["rules_rerun_consistency"]["raw_output_differs"] == []
-    assert out["selection"]["eligibility"][SMALL]["peak_rss_at_most_10GB"]
+    sel = out["selection"]
+    assert sel["selected"] == SMALL and sel["basis"] == "primary" and sel["issues"] == []
+    assert all(sel["eligibility"][m]["completed_without_stop_rule"] for m in (SMALL, LARGE))
+    rep = out["models"][SMALL]["repeatability"]["summary"]
+    assert rep["in_process_text"] == {"identical": 30, "differs": 0, "not_assessable": 0,
+                                      "n_requests": 30}  # fmt: skip
+    assert rep["fresh_candidate"]["identical"] == 30
+    assert rep["in_process_observations"] == {"observed": 600, "expected": 600}
+    # The 1.7B outputs are never schema-valid: candidate stability is not claimed.
+    large = out["models"][LARGE]["repeatability"]["summary"]
+    assert large["in_process_candidate"]["not_assessable"] == 30
+    assert large["in_process_text"]["identical"] == 30
+
+
+def test_partial_repeat_is_not_assessable_and_makes_the_model_ineligible(tmp_path, monkeypatch):
+    runs = _fake_runs(tmp_path)
+    _edit_jsonl(runs / "qwen3-0.6b" / "main_repeat.jsonl", lambda r: r[:-35])
+    out = _analyze(tmp_path, runs, monkeypatch)
+    rep = out["models"][SMALL]["repeatability"]["summary"]
+    assert rep["in_process_observations"] == {"observed": 565, "expected": 600}
+    assert rep["in_process_text"]["not_assessable"] == 30  # last repeat incomplete everywhere
+    assert out["models"][SMALL]["record_checks"]["repeat"]["missing"] == 35
+    assert not out["models"][SMALL]["all_required_processes_completed"]
+    assert out["models"][SMALL]["validation_only"]["completed"]
+    assert out["selection"]["selected"] == LARGE
+    assert out["selection"]["basis"] == "single_eligible"
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"status": "stopped", "stop_reason": "fresh_3: memory pressure level 4 (critical)"},
+        {"status": "failed", "failure": "RuntimeError: x"},
+        {"status": "running"},
+        {"rss_peak_process_bytes": 10 * 10**9 + 1},
+    ],
+)
+def test_a_failed_or_oversized_fresh_process_makes_the_model_ineligible(
+    tmp_path, monkeypatch, change
+):
+    runs = _fake_runs(tmp_path)
+    _edit_json(runs / "qwen3-0.6b" / "fresh_3_measurements.json", **change)
+    out = _analyze(tmp_path, runs, monkeypatch)
+    elig = out["selection"]["eligibility"][SMALL]
+    assert not (elig["completed_without_stop_rule"] and elig["peak_rss_at_most_10GB"])
+    assert out["selection"]["selected"] == LARGE
+    fresh3 = out["models"][SMALL]["fresh_processes"]["3"]
+    assert fresh3["status"] == change.get("status", "completed")
+
+
+def test_missing_fresh_output_is_incomplete_not_assumed(tmp_path, monkeypatch):
+    runs = _fake_runs(tmp_path)
+    (runs / "qwen3-0.6b" / "fresh_5_repeat.jsonl").unlink()
+    out = _analyze(tmp_path, runs, monkeypatch)
+    assert out["models"][SMALL]["record_checks"]["fresh_5"]["present"] is False
+    assert out["models"][SMALL]["repeatability"]["summary"]["fresh_text"]["not_assessable"] == 30
+    assert not out["selection"]["eligibility"][SMALL]["completed_without_stop_rule"]
+
+
+def test_failed_repeat_requests_are_counted_separately(tmp_path, monkeypatch):
+    runs = _fake_runs(tmp_path)
+
+    def fail_one(records):
+        records[0] = {**records[0], "status": "error", "raw_output": None}
+        return records
+
+    _edit_jsonl(runs / "qwen3-0.6b" / "fresh_2_repeat.jsonl", fail_one)
+    out = _analyze(tmp_path, runs, monkeypatch)
+    rep = out["models"][SMALL]["repeatability"]["summary"]
+    assert rep["fresh_failed_requests"] == 1
+    assert rep["fresh_text"]["not_assessable"] == 1 and rep["fresh_text"]["identical"] == 29
+
+
+@pytest.mark.parametrize("defect", ["duplicate", "commit", "revision", "dirty", "system"])
+def test_integrity_issues_block_the_selection(tmp_path, monkeypatch, defect):
+    runs = _fake_runs(tmp_path)
+    d = runs / "qwen3-1.7b"
+    if defect == "duplicate":
+        _edit_jsonl(d / "main_validation.jsonl", lambda r: [*r, r[0]])
+    elif defect == "commit":
+        env = {"runner_version": "exp009.runner/2", "git": {"commit": "b" * 40, "dirty": False}}
+        _edit_json(d / "fresh_1_measurements.json", environment=env)
+    elif defect == "revision":
+        _edit_json(d / "main_measurements.json", model={"revision": "0" * 40})
+    elif defect == "dirty":
+        env = {"runner_version": "exp009.runner/2", "git": {"commit": COMMIT, "dirty": True}}
+        _edit_json(d / "main_measurements.json", environment=env)
+    else:
+        _edit_jsonl(d / "main_repeat.jsonl", lambda r: [{**r[0], "system": "other"}, *r[1:]])
+    if defect == "duplicate":
+        with pytest.raises(ValueError):  # the harness refuses duplicate prediction ids
+            _analyze(tmp_path, runs, monkeypatch)
+        return
+    out = _analyze(tmp_path, runs, monkeypatch)
+    assert out["selection"]["selected"] is None
+    assert out["selection"]["basis"] == "integrity_failure" and out["selection"]["issues"]

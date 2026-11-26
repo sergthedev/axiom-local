@@ -1,27 +1,37 @@
 """EXP-009 model runner: untuned Qwen3 inference on AXBENCH validation with resource measurement.
 
-Model environment only (ADR 0012). Run from ``envs/model`` on a clean checkout of the commit that
-contains the EXP-009 pre-run record, on mains power with other applications closed:
+Model environment only (ADR 0012). Run from ``envs/model`` on a clean checkout of the reviewed
+commit that contains the EXP-009 pre-run record, on mains power with other applications closed:
 
     uv run --locked python exp009_run.py verify --model qwen3-0.6b --model-dir <dir>
-    uv run --locked python exp009_run.py main   --model qwen3-0.6b --model-dir <dir> --out <run dir>
-    uv run --locked python exp009_run.py fresh  --model qwen3-0.6b --model-dir <dir> \
-        --out <run dir> --index 1
+    uv run --locked python exp009_run.py main   --model qwen3-0.6b --model-dir <dir> \\
+        --out <run dir> --expected-commit <sha>
+    uv run --locked python exp009_run.py fresh  --model qwen3-0.6b --model-dir <dir> \\
+        --out <run dir> --expected-commit <sha> --index 1
 
-* ``verify``: SHA-256 of every provisioned weight file against the pinned published hashes.
-* ``main``: one fresh process: cold load, five train warm-ups (never scored), the 160 validation
-  requests in file order (timed, stop rules checked after every request), then the 30 stratified
+* ``verify``: SHA-256 of every provisioned file against the pinned and recorded hashes.
+* ``smoke``: harness check on the first train examples only; prints, writes nothing.
+* ``check``: the full ``main`` process frame on a few train examples, written outside the
+  repository (harness check only; never validation).
+* ``main``: one fresh process: preflight, re-hash of every provisioned file, cold load, five train
+  warm-ups (never scored), the 160 validation requests in file order, then the 30 stratified
   repeatability requests 20 times in the same process.
-* ``fresh``: one fresh process: cold load, then the 30 repeatability requests once.
+* ``fresh``: one fresh process: preflight, re-hash, cold load, the 30 repeatability requests once.
 
 Inference: ``HF_HUB_OFFLINE=1`` (never downloads), prompt ``axiom.prompt/1``, the pinned chat
 template with ``enable_thinking=False`` and the generation prompt, greedy decoding (the MLX-LM
-default sampler is argmax), at most 256 new tokens, stop at the end-of-turn token (the tokenizer's
-EOS set as loaded from the checkpoint ``config.json``), batch size 1, no constrained decoding, no
-output repair: the raw generated text is written as is. Raw outputs are scored later, in the Core
-environment, by ``benchmarks/issue4_exp009_analyze.py``.
+default sampler is argmax), at most 256 new tokens, generation stops on the checkpoint's EOS set,
+asserted to be exactly {151643, 151645} (D1), batch size 1, no constrained decoding, no output
+repair: the raw generated text is written as is. Every record is appended and flushed to disk as
+soon as it exists, and the measurement file is rewritten at every phase boundary, so a crash
+leaves its partial evidence with status ``running`` (never ``completed``).
 
-Never reads, generates or scores the final test split. Writes no absolute paths.
+Safeguards (pre-run review, PRERUN revision 1): pinned commit and clean tree (a git failure
+refuses), mains power and normal memory pressure before every process (no battery override for
+protocol runs), one swap baseline per process sampled before the model loads, resource checks
+after loading, after every warm-up and after every request, ``MemoryError`` and allocation
+failures stop the run (at load or generation), any other unexpected failure marks the process
+``failed``. Never reads, generates or scores the final test split. Writes no absolute paths.
 """
 
 from __future__ import annotations
@@ -48,14 +58,19 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 
-from provision import CHECKPOINTS  # noqa: E402
+from provision import CHECKPOINTS, CONFIG_SHA256, KNOWN_SHA256  # noqa: E402
 
 from axbench.corpus import load_corpus  # noqa: E402
 from axbench.runwatch import (  # noqa: E402
-    StopWatch,
+    ProcessMonitor,
+    SlowdownWatch,
+    is_allocation_error,
     parse_free_percentage,
     parse_swapusage,
+    preflight,
     repeat_subset,
+    run_requests,
+    timed_call,
     warmup_ids,
 )
 from axiom_router.prompt import (  # noqa: E402
@@ -66,13 +81,13 @@ from axiom_router.prompt import (  # noqa: E402
 )
 from axiom_router.schema import project_columns  # noqa: E402
 
-RUNNER_VERSION = "exp009.runner/1"
+RUNNER_VERSION = "exp009.runner/2"
 CORPUS = REPO / "data" / "axbench" / "v0.1-ai-reviewed"
 MANIFEST_SHA256 = "b8b6d39f8cf942629d4abeff8e7d96f4b876c37ebf13f4082f7f5d47f516239c"
 MAX_NEW_TOKENS = 256
 REPEATS_IN_PROCESS = 20
+EXPECTED_EOS = [151643, 151645]  # <|endoftext|>, <|im_end|> (D1)
 SYSTEM_NAMES = {"qwen3-0.6b": "qwen3-0.6b-untuned", "qwen3-1.7b": "qwen3-1.7b-untuned"}
-ALLOCATION_ERROR = re.compile(r"malloc|alloc|out of memory|insufficient memory", re.I)
 
 
 class StopRun(Exception):
@@ -86,30 +101,30 @@ def _run(*cmd: str) -> str:
     return subprocess.run(cmd, capture_output=True, text=True, check=True).stdout
 
 
-def swap_used() -> int:
-    return parse_swapusage(_run("sysctl", "-n", "vm.swapusage"))["used_bytes"]
-
-
-def pressure_level() -> int:
-    return int(_run("sysctl", "-n", "kern.memorystatus_vm_pressure_level").strip())
-
-
-def system_snapshot() -> dict[str, Any]:
-    swap = parse_swapusage(_run("sysctl", "-n", "vm.swapusage"))
-    mp = subprocess.run(["memory_pressure"], capture_output=True, text=True, check=False).stdout
-    return {
-        "time_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "swap": swap,
-        "pressure_level": pressure_level(),
-        "memory_free_percentage": parse_free_percentage(mp),
-        "power_source": _power_source(),
-    }
-
-
-def _power_source() -> str:
+def power_source() -> str:
     first = _run("pmset", "-g", "batt").splitlines()[0]
     m = re.search(r"'([^']+)'", first)
     return m.group(1) if m else first.strip()
+
+
+def sample() -> dict[str, Any]:
+    """The values the stop rules need (cheap; taken after every request)."""
+    return {
+        "swap_used": parse_swapusage(_run("sysctl", "-n", "vm.swapusage"))["used_bytes"],
+        "pressure_level": int(_run("sysctl", "-n", "kern.memorystatus_vm_pressure_level")),
+        "power_source": power_source(),
+    }
+
+
+def snapshot() -> dict[str, Any]:
+    """A fuller reading for phase boundaries (adds swap totals and the free percentage)."""
+    mp = subprocess.run(["memory_pressure"], capture_output=True, text=True, check=False).stdout
+    return {
+        "time_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        **sample(),
+        "swap": parse_swapusage(_run("sysctl", "-n", "vm.swapusage")),
+        "memory_free_percentage": parse_free_percentage(mp),
+    }
 
 
 def rss_peak_bytes() -> int:
@@ -117,20 +132,22 @@ def rss_peak_bytes() -> int:
 
 
 def git_state() -> dict[str, Any]:
-    def git(*args: str) -> str | None:
+    def git(*args: str) -> str:
         proc = subprocess.run(["git", *args], cwd=REPO, capture_output=True, text=True)
-        return proc.stdout.strip() if proc.returncode == 0 else None
+        if proc.returncode != 0:
+            raise SystemExit(f"git {args[0]} failed; refusing to run")
+        return proc.stdout.strip()
 
     status = git("status", "--porcelain", "--untracked-files=no")
-    return {"commit": git("rev-parse", "HEAD"), "dirty": None if status is None else bool(status)}
+    return {"commit": git("rev-parse", "HEAD"), "dirty": bool(status)}
 
 
-def environment() -> dict[str, Any]:
+def environment(git: dict[str, Any]) -> dict[str, Any]:
     import mlx.core as mx
 
     return {
         "runner_version": RUNNER_VERSION,
-        "git": git_state(),
+        "git": git,
         "python": platform.python_version(),
         "macos": platform.mac_ver()[0],
         "machine": platform.machine(),
@@ -150,56 +167,63 @@ def environment() -> dict[str, Any]:
     }
 
 
-# ---------------------------------------------------------------- model
+# ---------------------------------------------------------------- provisioned files
 
 
-def check_model_dir(model: str, model_dir: Path) -> dict[str, Any]:
-    """Provenance and sizes must match the pinned checkpoint (hashes: ``verify``)."""
+def _sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for block in iter(lambda: fh.read(1 << 22), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
+def verify_model_dir(model: str, model_dir: Path) -> dict[str, Any]:
+    """Provenance must name the pinned checkpoint; every file is re-hashed now.
+
+    Each file must equal its ``PROVENANCE.json`` hash, and the pinned hash where one exists
+    (weights, ``config.json``, tokenizer files). Refuses on any difference.
+    """
     spec = CHECKPOINTS[model]
     prov = json.loads((model_dir / "PROVENANCE.json").read_text(encoding="utf-8"))
     if prov["repo_id"] != spec["repo_id"] or prov["revision"] != spec["revision"]:
         raise SystemExit("provisioned directory is not the pinned checkpoint")
     if prov["tokenizer_only"]:
         raise SystemExit("provisioned directory has no weights")
-    for name, (size, sha) in spec["weights"].items():
-        rec = prov["files"][name]
-        if rec["bytes"] != size or (sha and rec["sha256"] != sha):
-            raise SystemExit(f"provenance mismatch for {name}")
-        if (model_dir / name).stat().st_size != size:
-            raise SystemExit(f"size mismatch on disk for {name}")
-    return {
-        "repo_id": spec["repo_id"],
-        "revision": spec["revision"],
-        "files": {
-            k: {"bytes": v["bytes"], "sha256": v["sha256"]} for k, v in prov["files"].items()
-        },
-    }
+    pinned = {**KNOWN_SHA256, "config.json": CONFIG_SHA256[model]}
+    pinned |= {name: sha for name, (_, sha) in spec["weights"].items() if sha}
+    missing = [n for n in [*spec["weights"], *pinned] if n not in prov["files"]]
+    if missing:
+        raise SystemExit(f"provenance lacks {missing}")
+    files = {}
+    for name, rec in sorted(prov["files"].items()):
+        path = model_dir / name
+        digest = _sha256(path)
+        size = path.stat().st_size
+        if digest != rec["sha256"] or size != rec["bytes"]:
+            raise SystemExit(f"{name} differs from its provenance record")
+        if name in pinned and digest != pinned[name]:
+            raise SystemExit(f"{name} differs from the pinned hash")
+        if name in spec["weights"] and size != spec["weights"][name][0]:
+            raise SystemExit(f"{name} differs from the pinned size")
+        files[name] = {
+            "bytes": size,
+            "sha256": digest,
+            "checked_against": "pinned and provenance" if name in pinned else "provenance",
+        }
+    return {"repo_id": spec["repo_id"], "revision": spec["revision"], "files": files}
 
 
 def cmd_verify(args) -> int:
-    spec = CHECKPOINTS[args.model]
-    model_dir = Path(args.model_dir)
-    check_model_dir(args.model, model_dir)
-    out = {}
-    for name, (_size, sha) in spec["weights"].items():
-        h = hashlib.sha256()
-        with open(model_dir / name, "rb") as fh:
-            for block in iter(lambda: fh.read(1 << 22), b""):
-                h.update(block)
-        digest = h.hexdigest()
-        ok = sha is None or digest == sha
-        out[name] = {"sha256": digest, "expected": sha, "match": ok}
-        if not ok:
-            json.dump(out, sys.stdout, indent=2)
-            raise SystemExit(f"SHA-256 mismatch for {name}")
-    json.dump(
-        {"model": args.model, "revision": spec["revision"], "files": out},
-        sys.stdout,
-        indent=2,
-        sort_keys=True,
-    )
+    t0 = time.perf_counter()
+    info = verify_model_dir(args.model, Path(args.model_dir))
+    info["seconds"] = time.perf_counter() - t0
+    json.dump(info, sys.stdout, indent=2, sort_keys=True)
     sys.stdout.write("\n")
     return 0
+
+
+# ---------------------------------------------------------------- model
 
 
 class Router:
@@ -207,28 +231,23 @@ class Router:
         import mlx.core as mx
         from mlx_lm import load
 
-        self.mx = mx
         mx.reset_peak_memory()
         t0 = time.perf_counter()
         self.model, self.tokenizer = load(str(model_dir))
         mx.synchronize()
         self.load_seconds = time.perf_counter() - t0
         self.load_mlx_peak_bytes = mx.get_peak_memory()
-        im_end = self.tokenizer.convert_tokens_to_ids("<|im_end|>")
         self.eos_token_ids = sorted(self.tokenizer.eos_token_ids)
-        if im_end not in self.eos_token_ids:
-            raise SystemExit("the end-of-turn token is not a stop token")
-        self.end_of_turn_id = im_end
-
-    def prompt_ids(self, router_input) -> list[int]:
-        return self.tokenizer.apply_chat_template(
-            chat_messages(router_input), add_generation_prompt=True, enable_thinking=False
-        )
+        self.end_of_turn_id = self.tokenizer.convert_tokens_to_ids("<|im_end|>")
+        if self.eos_token_ids != EXPECTED_EOS or self.end_of_turn_id != 151645:
+            raise SystemExit(f"stop-token set {self.eos_token_ids} is not the reviewed D1 set")
 
     def generate(self, router_input) -> dict[str, Any]:
         from mlx_lm import stream_generate
 
-        ids = self.prompt_ids(router_input)
+        ids = self.tokenizer.apply_chat_template(
+            chat_messages(router_input), add_generation_prompt=True, enable_thinking=False
+        )
         text, last = "", None
         for resp in stream_generate(self.model, self.tokenizer, ids, max_tokens=MAX_NEW_TOKENS):
             text += resp.text
@@ -243,96 +262,88 @@ class Router:
         }
 
 
-def one_request(router: Router, example: dict[str, Any], system: str) -> dict[str, Any]:
-    """Mirror of ``axbench.evaluate.run_router`` plus generation metadata.
+def make_request(router: Router, system: str, extra: dict[str, Any] | None = None):
+    def request(example: dict[str, Any]) -> dict[str, Any]:
+        view = project_columns([(c["name"], c["type"]) for c in example["schema"]["columns"]])
+        record: dict[str, Any] = {"example_id": example["id"], "system": system, **(extra or {})}
+        try:
+            router_input = build_router_input(example["request"], view)
+        except RouterInputError as exc:
+            return {**record, "status": "error", "raw_output": None, "elapsed_ms": None,
+                    "error": exc.code}  # fmt: skip
+        return timed_call(record, lambda: router.generate(router_input))
 
-    An allocation error stops the run (protocol stop rule); other exceptions become ``error``.
-    """
-    view = project_columns([(c["name"], c["type"]) for c in example["schema"]["columns"]])
-    record: dict[str, Any] = {"example_id": example["id"], "system": system}
-    try:
-        router_input = build_router_input(example["request"], view)
-    except RouterInputError as exc:
-        return {
-            **record,
-            "status": "error",
-            "raw_output": None,
-            "elapsed_ms": None,
-            "error": exc.code,
-        }
-    start = time.perf_counter()
-    try:
-        meta = router.generate(router_input)
-        status = "ok"
-    except Exception as exc:  # noqa: BLE001
-        if ALLOCATION_ERROR.search(str(exc)):
-            raise StopRun(f"allocation error: {type(exc).__name__}: {exc}") from exc
-        meta, status = {"raw_output": None}, "error"
-        record["error"] = type(exc).__name__
-    record.update(status=status, elapsed_ms=(time.perf_counter() - start) * 1000.0, **meta)
-    return record
+    return request
 
 
-def _jsonl(records) -> bytes:
-    return "".join(
-        json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in records
-    ).encode("utf-8")
+# ---------------------------------------------------------------- output
 
 
-def _write_json(path: Path, obj) -> None:
-    path.write_bytes(
-        (json.dumps(obj, indent=2, sort_keys=True, ensure_ascii=False) + "\n").encode()
-    )
+class Sink:
+    """Append-only JSONL, created exclusively, flushed and synced after every record."""
+
+    def __init__(self, path: Path) -> None:
+        self.fh = open(path, "xb")  # noqa: SIM115 - closed in close()
+        self.count = 0
+
+    def emit(self, record: dict[str, Any]) -> None:
+        self.fh.write((json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n").encode())
+        self.fh.flush()
+        os.fsync(self.fh.fileno())
+        self.count += 1
+
+    def close(self) -> None:
+        self.fh.close()
 
 
-def run_phase(router, examples, system, watch: StopWatch, sink: list, extra=None) -> str | None:
-    for e in examples:
-        rec = one_request(router, e, system)
-        if extra:
-            rec.update(extra)
-        sink.append(rec)
-        tps = rec.get("generation_tps") or 0.0
-        reason = watch.check(throughput=tps, swap_used=swap_used(), pressure_level=pressure_level())
-        if reason:
-            return reason
-    return None
+def write_json(path: Path, obj) -> None:
+    tmp = path.with_suffix(".tmp")
+    tmp.write_bytes((json.dumps(obj, indent=2, sort_keys=True, ensure_ascii=False) + "\n").encode())
+    os.replace(tmp, path)
 
 
-def _prepare(args, make_out: bool = True):
-    if git_state()["dirty"]:
+# ---------------------------------------------------------------- processes
+
+
+def _prepare(args, stem: str):
+    """Commit, corpus, output directory and preflight. Returns None after a refusal."""
+    git = git_state()
+    if git["dirty"]:
         raise SystemExit("refusing to run on a dirty tree (tracked files modified)")
-    power = _power_source()
-    if power != "AC Power" and not args.allow_battery:
-        raise SystemExit(f"protocol requires mains power; power source is {power!r}")
+    if git["commit"] != args.expected_commit:
+        raise SystemExit("HEAD is not the reviewed commit given with --expected-commit")
     observed = hashlib.sha256((CORPUS / "MANIFEST.json").read_bytes()).hexdigest()
     if observed != MANIFEST_SHA256:
         raise SystemExit("frozen corpus manifest does not match the pinned hash")
     manifest, corpus = load_corpus(CORPUS)
-    if not make_out:
-        return manifest, corpus, None
     out = Path(args.out) / args.model
     out.mkdir(parents=True, exist_ok=True)
-    return manifest, corpus, out
+    if any(out.glob(f"{stem}*")):
+        raise SystemExit(f"{stem} outputs already exist; a rerun needs a new run directory")
+    pre = snapshot()
+    refusal = preflight(pre)
+    if refusal:
+        with open(out / "preflight_refusals.jsonl", "ab") as fh:
+            line = {"process": stem, "reason": refusal, "snapshot": pre, "commit": git["commit"]}
+            fh.write((json.dumps(line, sort_keys=True) + "\n").encode())
+        print(json.dumps({"status": "refused", "reason": refusal}))
+        return None
+    return git, manifest, corpus, out, pre
 
 
-def cmd_main(args) -> int:
-    manifest, corpus, out = _prepare(args)
-    if any(out.glob("main_*")):
-        raise SystemExit("main run outputs already exist; a rerun needs a new run directory")
-    system = SYSTEM_NAMES[args.model]
-    model_info = check_model_dir(args.model, Path(args.model_dir))
-    val = corpus["validation"]
-    train_by_id = {e["id"]: e for e in corpus["train"]}
-    warm = [train_by_id[i] for i in warmup_ids(corpus["train"])]
-    rep_ids = repeat_subset(val)
-    val_by_id = {e["id"]: e for e in val}
-
+def run_process(args, stem: str, body) -> int:
+    """Common frame for ``main`` and ``fresh``: measurements, statuses and failure handling."""
+    prepared = _prepare(args, stem)
+    if prepared is None:
+        return 4
+    git, manifest, corpus, out, pre = prepared
     meas: dict[str, Any] = {
         "experiment": "EXP-009",
-        "phase": "main",
-        "system": system,
-        "model": model_info,
-        "environment": environment(),
+        "phase": stem,
+        "system": SYSTEM_NAMES[args.model],
+        "status": "running",
+        "preflight": pre,
+        "environment": environment(git),
         "corpus_version": manifest["corpus_version"],
         "corpus_manifest_sha256": MANIFEST_SHA256,
         "prompt_version": PROMPT_VERSION,
@@ -341,144 +352,161 @@ def cmd_main(args) -> int:
             "max_new_tokens": MAX_NEW_TOKENS,
             "enable_thinking": False,
             "batch_size": 1,
+            "stop_token_ids": EXPECTED_EOS,
         },
-        "warmup_ids": [e["id"] for e in warm],
-        "repeat_ids": rep_ids,
-        "before": system_snapshot(),
-        "status": "running",
-        "validation_completed": False,
     }
-    if meas["before"]["power_source"] != "AC Power":
-        meas["deviation_power"] = meas["before"]["power_source"]
-    warm_recs: list = []
-    val_recs: list = []
-    rep_recs: list = []
-    import mlx.core as mx
-
+    mpath = out / f"{stem}_measurements.json"
+    t0 = time.perf_counter()
+    meas["model"] = verify_model_dir(args.model, Path(args.model_dir))
+    meas["model_rehash_seconds"] = time.perf_counter() - t0
+    # One swap baseline per process, before the model loads (D8 revision 1).
+    monitor = ProcessMonitor(baseline={k: pre[k] for k in ("swap_used", "pressure_level",
+                                                            "power_source")})  # fmt: skip
+    write_json(mpath, meas)
+    sinks: dict[str, Sink] = {}
     try:
-        router = Router(Path(args.model_dir))
-        meas["cold_load_seconds"] = router.load_seconds
-        meas["load_mlx_peak_bytes"] = router.load_mlx_peak_bytes
-        meas["eos_token_ids"] = router.eos_token_ids
-        meas["end_of_turn_id"] = router.end_of_turn_id
-        meas["rss_peak_after_load_bytes"] = rss_peak_bytes()
-        for e in warm:
-            warm_recs.append(one_request(router, e, system))
-        meas["after_warmup"] = system_snapshot()
-
-        mx.reset_peak_memory()
-        watch = StopWatch(swap_used_before=swap_used())
-        reason = run_phase(router, val, system, watch, val_recs)
-        meas["validation_watch"] = watch.summary()
-        meas["validation_mlx_peak_bytes"] = mx.get_peak_memory()
-        meas["rss_peak_after_validation_bytes"] = rss_peak_bytes()
-        meas["after_validation"] = system_snapshot()
+        try:
+            router = Router(Path(args.model_dir))
+        except Exception as exc:
+            if is_allocation_error(exc):
+                raise StopRun(f"load: allocation error: {type(exc).__name__}: {exc}") from exc
+            raise
+        meas.update(
+            cold_load_seconds=router.load_seconds,
+            load_mlx_peak_bytes=router.load_mlx_peak_bytes,
+            eos_token_ids=router.eos_token_ids,
+            end_of_turn_id=router.end_of_turn_id,
+            rss_peak_after_load_bytes=rss_peak_bytes(),
+        )
+        reason = monitor.check("load", sample())
+        write_json(mpath, meas)
         if reason:
-            raise StopRun(f"validation run: {reason}")
-        meas["validation_completed"] = len(val_recs) == len(val)
-
-        mx.reset_peak_memory()
-        watch = StopWatch(swap_used_before=swap_used())
-        reps = [val_by_id[i] for i in rep_ids]
-        for r in range(1, REPEATS_IN_PROCESS + 1):
-            reason = run_phase(router, reps, system, watch, rep_recs, {"repeat": r})
-            if reason:
-                break
-        meas["repeat_watch"] = watch.summary()
-        meas["repeat_mlx_peak_bytes"] = mx.get_peak_memory()
-        if reason:
-            raise StopRun(f"in-process repeatability: {reason}")
+            raise StopRun(reason)
+        body(router, corpus, out, meas, mpath, monitor, sinks)
         meas["status"] = "completed"
     except StopRun as exc:
         meas["status"] = "stopped"
         meas["stop_reason"] = str(exc)
+    except BaseException as exc:
+        meas["status"] = "failed"
+        meas["failure"] = f"{type(exc).__name__}: {exc}"
+        if not isinstance(exc, Exception):
+            raise
     finally:
+        for s in sinks.values():
+            s.close()
+        meas["counts"] = {k: s.count for k, s in sinks.items()}
+        meas["resource_monitor"] = monitor.summary()
         meas["rss_peak_process_bytes"] = rss_peak_bytes()
-        meas["after"] = system_snapshot()
-        (out / "main_warmup.jsonl").write_bytes(_jsonl(warm_recs))
-        (out / "main_validation.jsonl").write_bytes(_jsonl(val_recs))
-        (out / "main_repeat.jsonl").write_bytes(_jsonl(rep_recs))
-        meas["counts"] = {
-            "warmup": len(warm_recs),
-            "validation": len(val_recs),
-            "repeat": len(rep_recs),
-        }
-        _write_json(out / "main_measurements.json", meas)
-    print(
-        json.dumps(
-            {
-                "status": meas["status"],
-                "stop_reason": meas.get("stop_reason"),
-                "counts": meas["counts"],
-            }
-        )
-    )
+        meas["after"] = snapshot()
+        write_json(mpath, meas)
+    print(json.dumps({k: meas.get(k) for k in ("phase", "status", "stop_reason", "failure",
+                                               "counts")}))  # fmt: skip
     return 0 if meas["status"] == "completed" else 3
+
+
+def _phase(name, items, request, out, stem, monitor, sinks, slowdown=None) -> None:
+    if name not in sinks:
+        sinks[name] = Sink(out / f"{stem}_{name}.jsonl")
+    sink = sinks[name]
+    reason = run_requests(items, request, sample, monitor, name, sink.emit, slowdown)
+    if reason:
+        raise StopRun(reason)
+
+
+def cmd_main(args) -> int:
+    def body(router, corpus, out, meas, mpath, monitor, sinks):
+        import mlx.core as mx
+
+        system = SYSTEM_NAMES[args.model]
+        val = corpus["validation"]
+        train_by_id = {e["id"]: e for e in corpus["train"]}
+        warm = [train_by_id[i] for i in warmup_ids(corpus["train"])]
+        rep_ids = repeat_subset(val)
+        val_by_id = {e["id"]: e for e in val}
+        meas["warmup_ids"] = [e["id"] for e in warm]
+        meas["repeat_ids"] = rep_ids
+        meas["validation_completed"] = False
+
+        _phase("warmup", warm, make_request(router, system), out, "main", monitor, sinks)
+        meas["after_warmup"] = snapshot()
+        write_json(mpath, meas)
+
+        mx.reset_peak_memory()
+        slow = SlowdownWatch()
+        try:
+            _phase("validation", val, make_request(router, system), out, "main", monitor, sinks,
+                   slow)  # fmt: skip
+        finally:
+            meas["validation_slowdown"] = slow.summary()
+            meas["validation_mlx_peak_bytes"] = mx.get_peak_memory()
+            meas["rss_peak_after_validation_bytes"] = rss_peak_bytes()
+            meas["after_validation"] = snapshot()
+            write_json(mpath, meas)
+        meas["validation_completed"] = sinks["validation"].count == len(val)
+
+        mx.reset_peak_memory()
+        slow = SlowdownWatch()
+        reps = [val_by_id[i] for i in rep_ids]
+        try:
+            for r in range(1, REPEATS_IN_PROCESS + 1):
+                _phase("repeat", reps, make_request(router, system, {"repeat": r}), out, "main",
+                       monitor, sinks, slow)  # fmt: skip
+        finally:
+            meas["repeat_slowdown"] = slow.summary()
+            meas["repeat_mlx_peak_bytes"] = mx.get_peak_memory()
+            write_json(mpath, meas)
+
+    return run_process(args, "main", body)
 
 
 def cmd_fresh(args) -> int:
-    manifest, corpus, out = _prepare(args)
     stem = f"fresh_{args.index}"
-    if (out / f"{stem}.jsonl").exists():
-        raise SystemExit("fresh run output already exists")
-    system = SYSTEM_NAMES[args.model]
-    check_model_dir(args.model, Path(args.model_dir))
-    val_by_id = {e["id"]: e for e in corpus["validation"]}
-    reps = [val_by_id[i] for i in repeat_subset(corpus["validation"])]
-    meas: dict[str, Any] = {
-        "experiment": "EXP-009",
-        "phase": stem,
-        "system": system,
-        "environment": environment(),
-        "before": system_snapshot(),
-        "status": "running",
-    }
-    recs: list = []
-    try:
-        router = Router(Path(args.model_dir))
-        meas["cold_load_seconds"] = router.load_seconds
-        watch = StopWatch(swap_used_before=swap_used())
-        reason = run_phase(router, reps, system, watch, recs, {"fresh_process": args.index})
-        meas["watch"] = watch.summary()
-        if reason:
-            raise StopRun(reason)
-        meas["status"] = "completed"
-    except StopRun as exc:
-        meas["status"] = "stopped"
-        meas["stop_reason"] = str(exc)
-    finally:
-        meas["rss_peak_process_bytes"] = rss_peak_bytes()
-        meas["after"] = system_snapshot()
-        (out / f"{stem}.jsonl").write_bytes(_jsonl(recs))
-        _write_json(out / f"{stem}_measurements.json", meas)
-    print(json.dumps({"status": meas["status"], "n": len(recs)}))
-    return 0 if meas["status"] == "completed" else 3
+
+    def body(router, corpus, out, meas, mpath, monitor, sinks):
+        system = SYSTEM_NAMES[args.model]
+        val_by_id = {e["id"]: e for e in corpus["validation"]}
+        rep_ids = repeat_subset(corpus["validation"])
+        meas["repeat_ids"] = rep_ids
+        reps = [val_by_id[i] for i in rep_ids]
+        request = make_request(router, system, {"fresh_process": args.index})
+        _phase("repeat", reps, request, out, stem, monitor, sinks)
+
+    return run_process(args, stem, body)
+
+
+def cmd_check(args) -> int:
+    """Harness check of the full process frame on train examples only, into a directory outside
+    the repository: preflight, re-hash, load, resource checks, sinks, measurement file. Never
+    touches validation; not evidence of any result."""
+    if REPO in Path(args.out).resolve().parents:
+        raise SystemExit("check outputs must be outside the repository")
+
+    def body(router, corpus, out, meas, mpath, monitor, sinks):
+        train = corpus["train"]
+        request = make_request(router, "check")
+        _phase("warmup", train[:2], request, out, "check", monitor, sinks)
+        _phase("validation", train[2:6], request, out, "check", monitor, sinks, SlowdownWatch())
+        for r in (1, 2):
+            req = make_request(router, "check", {"repeat": r})
+            _phase("repeat", train[2:4], req, out, "check", monitor, sinks, SlowdownWatch())
+
+    return run_process(args, "check", body)
 
 
 def cmd_smoke(args) -> int:
     """Harness check on the first train examples only (never validation); prints, writes nothing."""
-    _, corpus, _ = _prepare(args, make_out=False)
+    _, corpus = load_corpus(CORPUS)
     router = Router(Path(args.model_dir))
-    recs = [one_request(router, e, "smoke") for e in corpus["train"][: args.n]]
+    request = make_request(router, "smoke")
+    recs = [request(e) for e in corpus["train"][: args.n]]
+    keys = ("example_id", "status", "elapsed_ms", "prompt_tokens", "generation_tokens",
+            "finish_reason", "generation_tps")  # fmt: skip
     summary = {
+        "power_source": power_source(),
         "cold_load_seconds": router.load_seconds,
         "eos_token_ids": router.eos_token_ids,
-        "end_of_turn_id": router.end_of_turn_id,
-        "requests": [
-            {
-                k: r.get(k)
-                for k in (
-                    "example_id",
-                    "status",
-                    "elapsed_ms",
-                    "prompt_tokens",
-                    "generation_tokens",
-                    "finish_reason",
-                    "generation_tps",
-                )
-            }
-            for r in recs
-        ],
+        "requests": [{k: r.get(k) for k in keys} for r in recs],
     }
     if args.show_text:
         summary["raw_outputs"] = [r.get("raw_output") for r in recs]
@@ -489,25 +517,26 @@ def cmd_smoke(args) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     sub = parser.add_subparsers(dest="cmd", required=True)
-    for name in ("verify", "smoke", "main", "fresh"):
+    for name in ("verify", "smoke", "check", "main", "fresh"):
         p = sub.add_parser(name)
         p.add_argument("--model", required=True, choices=sorted(CHECKPOINTS))
         p.add_argument("--model-dir", required=True)
-        if name in ("main", "fresh"):
+        if name in ("check", "main", "fresh"):
             p.add_argument("--out", required=True)
-        if name != "verify":
-            p.add_argument(
-                "--allow-battery",
-                action="store_true",
-                help="harness checks only; a protocol run requires mains power",
-            )
+            p.add_argument("--expected-commit", required=True)
         if name == "smoke":
             p.add_argument("--n", type=int, default=3)
             p.add_argument("--show-text", action="store_true")
         if name == "fresh":
             p.add_argument("--index", type=int, required=True, choices=range(1, 6))
     args = parser.parse_args()
-    commands = {"verify": cmd_verify, "smoke": cmd_smoke, "main": cmd_main, "fresh": cmd_fresh}
+    commands = {
+        "verify": cmd_verify,
+        "smoke": cmd_smoke,
+        "check": cmd_check,
+        "main": cmd_main,
+        "fresh": cmd_fresh,
+    }
     return commands[args.cmd](args)
 
 

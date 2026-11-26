@@ -94,3 +94,34 @@ uv run python benchmarks/issue4_exp009_analyze.py --runs docs/evidence/experimen
 On 2026-11-26 at 08:18 UTC, the MacBook Air (Mac17,3, Apple M5, 16 GB, macOS 27.0.1) was on battery power with
 2.9 GB of its 4 GB swap in use and a memory-pressure level of 2 (warning). The runs need mains power, and the starting
 values are recorded in each run's measurements; stop rule D8 measures growth from that starting point.
+
+## Revision 1: technical lead's pre-run review (2026-11-26, still before any validation prediction)
+
+Review: [PR #10 comment 7186773178](https://github.com/sergthedev/axiom-local/pull/10#issuecomment-7186773178)
+of `e405efa`. D1 is approved as an explicit pre-validation clarification. D2-D7, D11-D13 and D15-D16 are accepted with
+the safeguards below. The text above is kept as written; the following entries **supersede** D1, D6, D8, D9, D10, D14
+and D16 where they differ. No selection threshold, denominator or rule changed (`axbench.selection` is unchanged).
+
+| ID | Revised operational definition |
+|---|---|
+| D1' | The runner asserts that the loaded stop-token set is exactly `{151643, 151645}` and that `<\|im_end\|>` is `151645` for each model. If either check fails, the process fails before any request runs. Only the terminal stop token is excluded, by MLX-LM's native generation loop. The text is not trimmed or repaired. |
+| D6' | Before every protocol process, the runner re-hashes every provisioned file and compares it with its `PROVENANCE.json` record and with the pinned hash where one exists (weights, `config.json`, tokenizer files). On any mismatch it refuses to run. This re-hash happens immediately before loading, so the measured cold load reads files from the operating system cache. The cold-load figure is an in-process load and evaluation time, not a disk-read time. |
+| D8' | Each process (main and every fresh process) takes one swap baseline immediately before the model loads. Swap is then sampled after loading, after every warm-up and after every request in every phase. The run stops when growth since that baseline exceeds 2 × 10⁹ bytes. Per-phase readings (first, last and maximum swap, maximum pressure, power sources) are kept alongside cumulative growth. Sampling is discrete and gives no guarantee of catching a peak between samples. |
+| D9' | A process starts only when the memory pressure level is 1 (normal) and the Mac is on mains power. A refusal is appended to `preflight_refusals.jsonl` and no model is loaded. During the run, level 4 (critical) at any sample stops the run. Level 2 (warning) is recorded but does not stop the run. |
+| D10' | **Eligibility scope (conservative, frozen now).** "Completed without a stop rule" means the main process (160 validation requests plus 20 in-process repeats) and all five fresh processes completed without a stop or failure, and every output file holds exactly its expected records. "Peak process RSS" means the maximum of the process-lifetime `ru_maxrss` across those six processes, compared with 10 × 10⁹ bytes. Median warm latency is still computed over the 160 validation requests and compared with ≤ 2000 ms. Completion and RSS for the validation run alone are reported separately. A partial experiment is not evidence of eligibility. |
+| D14' | `MemoryError` always stops the run, whatever its message. So does any exception whose message matches the allocation pattern, at load or during generation. The failed request is written as a record with `status: error` and `error: allocation:<type>`. Any other unexpected exception in a process marks it `failed`, never `completed`. Records are appended and flushed one by one, and the measurement file is rewritten at every phase boundary, so a crashed process leaves partial evidence with status `running`. |
+| D16' | `main` and `fresh` have no battery override. The `--allow-battery` switch exists only for `smoke`. Power, pressure and swap are rechecked before every process, and power is also checked after every request. A loss of mains power stops the run as a "mains power interrupted" stop. The runner requires `--expected-commit` equal to `HEAD` and a clean tree, and refuses if git fails. |
+| D17 | **Integrity checks before the rule** (analysis). The checks: one commit across all twelve model processes; clean trees; runner version `exp009.runner/2`; the pinned corpus hash and model revisions; exactly the expected record keys in every output file (`example_id`, and `repeat` or `fresh_process` for repeatability records), with no duplicate, missing, unexpected or mislabelled records; a rules rerun identical to EXP-013. Any issue blocks the selection (`basis: integrity_failure`). Issues are reported, not repaired. Errors stay in every denominator. |
+| D18 | **Repeatability reporting.** The reference for each request is its output in the 160-request run. A comparison is "not assessable" when the reference failed, an expected observation is missing, or an observation failed. Failed requests are counted separately. Candidate identity is not assessed when the reference is not a schema-valid candidate. No 30/30 statement is made from missing repeats. |
+| D19 | **External disturbance.** If a run must be repeated because of an external disturbance, the failed attempt is kept in its own run directory, the reason is logged and a technical review is requested before the new attempt counts. Attempts are not chosen after the fact. |
+
+Regression tests for these safeguards are in `tests/test_exp009_selection.py`. They cover the pre-load baseline and the
+load and warm-up checks, `MemoryError` with any message, a failed record that is kept, partial repeatability, failed,
+running, oversized and missing fresh processes, eligibility across all processes, and integrity failures. The runner's
+`check` command runs the full process frame on train examples only, writing outside the repository. It is a harness
+check, not evidence.
+
+**Resource preflight (owner housekeeping).** The owner reports that the Mac was restarted, connected to mains power and
+cleared of unrelated applications. Measured at 08:41 UTC, about four minutes after the restart: `AC Power`, swap
+0 bytes used (0 MB total), pressure level 1 (normal), `memory_pressure` free percentage 81 %. The runner repeats this
+check before every process. The reviewer and the runner cannot attest which applications are closed.
