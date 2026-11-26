@@ -1,6 +1,6 @@
 # EXP-009 protocol (proposed, not run): untuned Qwen3 baselines on AXBENCH validation and base selection
 
-- Status: **proposed**. Requires technical review, the owner's annotation approval of AXBENCH and the owner's approval
+- Status: **proposed**. Requires technical review, a frozen AXBENCH corpus (see revision 3) and the owner's approval
   to download the checkpoints (about 1.5 GB and 4.1 GB). Phase 3B; nothing here has been executed.
 - Issue: #4 (protocol), Phase 3B (execution). Decision record: ADR 0012. This protocol is committed before any model
   prediction exists; the selection rule below may only be changed by a new, reviewed protocol version before EXP-009
@@ -10,6 +10,11 @@
   manifest hash is recorded before the first prediction; the selection rule gains a safety stop, an informativeness
   floor, a statistical condition on the practical margin, and a pre-declared fallback. Revision 1 is in the Git
   history of this file.
+- **Revision 3** (2026-11-26, after the owner delegated the annotation review to the technical lead AI; still before
+  any model prediction exists): the pre-run gate accepts the owner-authorized **AI-reviewed exploratory** corpus
+  `axbench/0.1-ai-reviewed` (manifest SHA-256 `b8b6d39f8cf942629d4abeff8e7d96f4b876c37ebf13f4082f7f5d47f516239c`,
+  400 train / 160 validation, 0 examples reviewed by a human). No example was removed, so every denominator (160) and
+  threshold below is unchanged. The rule reference on this corpus is EXP-013 (73 / 160), not the draft's 72 / 160.
 
 ## Systems
 
@@ -24,9 +29,13 @@ verified by SHA-256, offline (`HF_HUB_OFFLINE=1`), prompt `axiom.prompt/1` (syst
 request and schema projection), the pinned chat template with `enable_thinking=False`, zero-shot, greedy decoding
 (temperature 0), at most 256 new tokens, stop at the end-of-turn token, no constrained decoding, no output repair (the
 raw text after the generation prompt is scored as is; a code fence or trailing text is invalid). Validation examples:
-the `validation.jsonl` of the **frozen corpus version the owner approves** (`python -m axbench freeze`, ADR 0011
-revision 2), loaded through its verified manifest; its corpus version and manifest SHA-256 are committed in the EXP-009
-pre-run record before the first prediction. The draft `axbench/0.1-draft` is not used for EXP-009. Harness
+the `validation.jsonl` of the frozen corpus `axbench/0.1-ai-reviewed` (`data/axbench/v0.1-ai-reviewed/`, manifest
+SHA-256 above), loaded through its verified manifest; the EXP-009 pre-run record restates this hash before the first
+prediction. The draft `axbench/0.1-draft` is not used for EXP-009. **Corpus status for every EXP-009 claim:** synthetic,
+AI-generated, reviewed only by an owner-authorized AI review (`reviewer_type: ai`, 54 decisions, 3 request
+corrections, 0 human decisions). Results on it are exploratory: they are not human-validated, not representative of
+any population of real requests and not independent of the implementing tool. A later genuine human review would
+create a new frozen version, and stronger claims would need a new run on it. Harness
 `axbench.evaluate/0.2`, scorer `axbench.score/0.2` (EXP-011), Guard policy `axiom.guard-policy/2`; the rule system is
 rerun on the same frozen file for the paired comparison. No quantization; a quantized deployment is a separate later
 comparison.
