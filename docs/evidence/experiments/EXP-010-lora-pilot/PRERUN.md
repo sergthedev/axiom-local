@@ -8,7 +8,7 @@
   authorization; completed, results in [SMOKE.md](SMOKE.md); accepted by the lead as a feasibility result only
   ([smoke acceptance](https://github.com/sergthedev/axiom-local/pull/11#issuecomment-7193487897)).
 - D18 analysis freeze (after the smoke acceptance, before the pilot): the scoring, integrity, pairing, safety, D13/D14
-  and D15 analysis is implemented and tested (`exp010.analysis/1`, D18) and the exact pilot, evaluation and analysis
+  and D15 analysis is implemented and tested (`exp010.analysis/2` after the lead's D18 review; D18) and the exact pilot, evaluation and analysis
   commands are fixed (section 8). The pilot is not started; it needs the lead's pilot clearance and the owner's
   approval.
 - Revision 0 (`ea1d343`): this record turns the EXP-010 protocol (revision 3, [PROTOCOL.md](PROTOCOL.md))
@@ -389,7 +389,7 @@ applied unfused on top of the unchanged BF16 base).
 - A stopped or failed run is reported as such with all its records; any rerun is a new run directory under D9.
 
 **D18 Analysis integrity, frozen before the pilot (revision 1, correction D; decision 9; implemented after the smoke
-acceptance).** The analysis is `src/axbench/exp010analysis.py` (`exp010.analysis/1`, pure logic, tested) and the thin
+acceptance).** The analysis is `src/axbench/exp010analysis.py` (`exp010.analysis/2`, pure logic, tested) and the thin
 file and Git reader `benchmarks/issue4_exp010_analyze.py` (Core environment, no MLX). It is committed and reviewed
 before the pilot; no endpoint, threshold, metric or check is added or changed after it (any later change would be a new,
 reviewed version recorded before any adapter validation output exists). In order, it:
@@ -410,22 +410,36 @@ reviewed version recorded before any adapter validation output exists). In order
    - *training provenance*: the supervised sequence ended with exit 0, its done marker and no monitor stop; the record
      is the EXP-010 pilot with status `completed` and no stop reason, failure, finalization error or monitor stop;
      clean tree; harness `exp010.harness/3`; the pilot schedule; `optimizer.step` = 200 and 200 updates recorded;
-     the planned configuration (C1 only as declared); 458,752 trainable parameters; the pinned base revision, export
-     and corpus hashes; validation loss on the 160 validation examples; completion checks passed; the training log
-     re-checked against the plan (every planned loss, update and save record once, in order, finite; the last update
-     at micro-step 800); exactly the planned adapter files, each save hash equal to its record and the final adapter
-     equal to the update-200 save;
+     the planned configuration with no predeclared change (gradient checkpointing off, no C1 or C2); 458,752
+     trainable parameters; the pinned base revision and all ten checkpoint files (size and SHA-256) against the
+     accepted checkpoint record (EXP-009 `provenance/qwen3-1.7b.json`); the pinned export and corpus hashes; the stop
+     rules taken from the sequence's `baseline.json` (identical values); validation loss on the 160 validation
+     examples and every evaluation record labelled `validation`; completion checks passed; resource-monitor and
+     throughput summaries present with no stop and usable maxima; the training log re-checked against the plan (every
+     planned loss, update and save record once, in order, finite; the last update at micro-step 800); exactly the
+     planned adapter files, each with a SHA-256 string and a size, each save hash equal to its record and the final
+     adapter equal to the update-200 save; the sequence's monitor records (valid samples, none with a stop, one final
+     record at the end) and its monitor-ready and baseline records;
    - *evaluation provenance*: its sequence ended cleanly; status `completed` with no stop; clean tree, harness
      `exp010.harness/3`; the common sequence baseline; 160 validation and 5 warm-up records; pinned corpus, prompt
-     `axiom.prompt/1` and the EXP-009 decoding; the same base checkpoint as training; the adapter is the trained final
+     `axiom.prompt/1` and the EXP-009 decoding; the same base checkpoint as training, and its ten files equal to the
+     accepted record; resource-monitor and slowdown summaries with no stop; the adapter is the trained final
      `adapters.safetensors` (hash, size, configuration hash, phase `pilot`, training commit = the approved commit; no
      intermediate save is ever evaluated);
    - *records*: exactly the 160 validation IDs, unique, in file order, labelled with the adapter's system name, with
      known statuses; errors, timeouts and empty outputs are valid records that stay in every denominator; the warm-up
-     records are exactly the 5 train warm-ups in order and are never scored.
-2. **Reports safety independently**: every adapter record whose ID is a validation ID (duplicates included) is reviewed
-   by the real Guard, whatever the run's validity, and the unauthorized-dispatch count is reported on its own for the
-   adapter and both comparators; `pilot_outcome` carries it in every outcome.
+     records are exactly the 5 train warm-ups in order, well-formed records of the adapter's system with a known
+     status (a failed warm-up is allowed: warm-ups are never scored);
+   - *malformed input* (revision 1 of the freeze): every JSONL line is kept in place; a malformed line, a row that is
+     not an object, a non-string ID, an unreadable JSON file or a missing file is a problem of its section and gives
+     `invalid_run`, never an exception, a repaired record or a smaller denominator; the script writes a structured
+     report in every case (a minimal `invalid_run` report with the error if the analysis itself raised).
+2. **Reports safety independently**: every recoverable adapter row whose ID is a validation ID (duplicates included)
+   is reviewed by the real Guard, one row at a time, whatever the run's validity and even next to malformed rows; the
+   unauthorized-dispatch count is reported on its own for the adapter and both comparators, and `pilot_outcome`
+   carries it in every outcome. Rows that cannot be reviewed (malformed line, not an object, non-string or unknown
+   ID, a review error) are counted by reason, and `complete_coverage` states whether every row and every validation
+   ID was reviewed; a zero count never implies complete coverage, and incomplete coverage is itself `invalid_run`.
 3. **Scores** with `axbench.evaluate/0.2` and `axbench.score/0.2` (Guard policy 2) on the full denominator.
 4. **Decides** with `pilot_outcome` (D13) on exact-match vectors paired by example ID with the frozen lineage clusters,
    and `deployment_gates` (D14) as a descriptive reading, both `exp010.pilot-gates/2`, unchanged.
@@ -439,13 +453,21 @@ reviewed version recorded before any adapter validation output exists). In order
    replicates, seed 2026) for the adapter's exact match and every paired difference; McNemar only as an IID
    illustration.
 6. **Records** the analysis, gate, harness and scorer versions, the approved commit, the analysis `HEAD` and the
-   SHA-256 of every input file with the result.
+   SHA-256 of every input file with the result (paths relative to the repository; never an absolute local path).
+7. **Reports measurements strictly** (revision 1 of the freeze): a resource or latency value is usable only if it is a
+   finite, non-negative, non-boolean number; G11 needs all 160 latencies usable and G12 both memory peaks usable,
+   otherwise the gate is not assessable. Unusable values are reported as `null` with their status (`missing`,
+   `not_a_number`, `not_finite`, `negative`); every NaN or infinity anywhere in the result is reported as `null` and
+   its location listed (`non_finite_values_reported_as_null`); the output is strict JSON (`allow_nan=False`). Raw
+   evidence is never changed, and accuracy scoring and denominators are unaffected.
 
 Choices made for the freeze (for the lead's review):
 - G12 uses the evaluation process: its lifetime peak RSS and the MLX peak since loading (load, warm-up, validation).
   Training peaks are reported descriptively.
-- The G11 median is a gate measurement only when all 160 validation requests have a finite latency (the EXP-009
-  eligibility rule); otherwise G11 is not assessable.
+- The G11 median is a gate measurement only when all 160 validation requests have a finite, non-negative,
+  non-boolean latency (the EXP-009 eligibility rule, as the lead specified); otherwise G11 is not assessable.
+- No predeclared change is accepted by this analysis version: C1 or C2 would need its own prospective approval, a
+  recorded authorization and a new, reviewed analysis version before it could be analysed.
 - After the approved commit only `docs/evidence/` may change before the evaluation and the analysis, so the raw
   records can be committed between the steps without changing any code that produced or reads them.
 - With an invalid run, no gate or descriptive result is reported (comparator reports and the safety section still
@@ -467,6 +489,32 @@ stop with accuracy that would otherwise pass the margin, G10 failed) and the saf
 non-finite, negative and boolean resources (not assessable) and the 10 × 10⁹-byte boundary; pairing by ID rather than
 position; the frozen lineage design; the script's Git readers. The gate-level thresholds keep their existing tests in
 `tests/test_exp010_prerun.py`.
+
+**Freeze revision 1** (lead's [D18 review](https://github.com/sergthedev/axiom-local/pull/11#issuecomment-7193914924)
+of `6b10882`; `exp010.analysis/1` → `/2`). Three integrity and reporting corrections, with no change to an endpoint,
+threshold, training setting, frozen data or comparator pin:
+1. *Measurements*: one negative, boolean, non-numeric, NaN or infinite latency now makes G11 not assessable (revision 0
+   of the freeze accepted negative finite latencies); unusable resource values are reported as `null` with their
+   status; the result is strict JSON (item 7 above).
+2. *Fail-closed input handling*: typed checks before indexing everywhere (rows, IDs, training-log rows, nested
+   measurement fields); malformed lines kept in place; the Guard reviews every recoverable known-ID row next to
+   malformed ones, with unreviewable rows counted and coverage stated; the script never ends with a traceback or an
+   empty file (item 1, *malformed input*, and item 2 above).
+3. *Provenance*: no gradient checkpointing or declared change for this pilot; the ten checkpoint files against the
+   accepted record, not only train/evaluation equality; the common baseline's values; the `validation` label on every
+   evaluation record; monitor, throughput and slowdown summaries without a stop; the external monitor records;
+   SHA-256 strings and sizes for every adapter file record; the warm-up records' structure, system and status.
+
+Regressions added in `tests/test_exp010_analysis.py`: each unusable latency kind, unusable memory values, strict
+serialization of the full result and the list of normalized values; a malformed line next to known records (159
+reviewed, coverage incomplete, the dispatch count still reported), non-object rows and array, object and integer IDs,
+an unknown ID, a review error, an unreadable training record with an independent dispatch count, the script's
+structured report for malformed run files (no absolute path in it) and for an analysis exception; 19 further
+training-provenance defects (declared C1, base file hash, size, missing or extra file, own or differing baseline,
+evaluation label, monitor and throughput stops, non-finite monitor maxima, adapter hash strings and sizes, non-object
+and malformed log rows, a string update number), 6 further evaluation-provenance defects, 13 sequence and monitor
+cases, 12 warm-up record defects and an allowed failed warm-up, and the base pins equal to the accepted checkpoint
+record.
 
 ## 6. Harness self-test (software check, not a training result)
 

@@ -615,3 +615,19 @@ for a comprehensive final audit of AXIOM Verify.
   `exp010.harness/3`; the training path is unchanged). Core tests: 926 passed locally on macOS (85 new analysis tests
   and 6 new launcher tests). Model-environment self-test at `exp010.harness/3`: 15 of 15 checks passed (local check,
   record not committed). Nothing was trained or evaluated; no validation prediction, no final-test access.
+
+## 2026-11-26 — Issue #4, Phase 3C: D18 freeze revision 1 (lead's focused corrections)
+
+- The lead's D18 review of `6b10882` (PR #11 comment 7193914924) accepted the thresholds, ID pairing, the full
+  denominator, the pinned comparator rescore, the G12 and G11 choices, the evidence-only rule and the separate
+  evaluation approval, and required three integrity corrections before pilot clearance.
+- `exp010.analysis/2`: (1) a latency or resource value counts only if finite, non-negative and not a boolean, so one
+  negative latency now makes G11 not assessable; unusable values are reported as `null` with their status, and the
+  result is strict JSON with every normalized location listed; (2) malformed or mistyped inputs give a structured
+  `invalid_run`, never a traceback: lines are kept in place, the Guard reviews every recoverable known-ID row, and
+  unreviewable rows and coverage are reported; (3) provenance: no C1/C2 for this pilot, the ten checkpoint files
+  against the accepted record, the common baseline's values, the `validation` label on evaluation records, monitor
+  and stop summaries, adapter hash strings, and warm-up record structure.
+- No training setting, frozen data, comparator pin or pre-registered criterion changed. Core tests: 1,005 passed
+  locally on macOS (79 new regressions). Nothing was trained or evaluated; no validation prediction, no final-test
+  access.

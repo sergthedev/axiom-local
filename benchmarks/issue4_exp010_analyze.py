@@ -15,6 +15,13 @@ This script only reads files and Git facts and passes them to :func:`axbench.exp
 pinned EXP-009 comparators and results, and the frozen corpus (train and validation only; the
 sealed final test is never read). No MLX is needed. Integrity failures are reported in the result
 and give ``invalid_run``; nothing is repaired, dropped or retried.
+
+Revision 1 of the freeze (lead's D18 review): an unreadable or malformed input never ends the
+script with a traceback or an empty file. Every JSONL line is kept (a malformed line is recorded in
+place), an unreadable JSON file is reported as a problem of its section, and the result is a
+structured ``invalid_run`` report; if the analysis itself raised, a minimal ``invalid_run`` report
+with the error and the input hashes is written instead. The output is strict JSON (no NaN or
+infinity) and is written in one piece after it has been fully built.
 """
 
 from __future__ import annotations
@@ -39,19 +46,30 @@ from axbench.runwatch import warmup_ids  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 CORPUS = ROOT / "data" / "axbench" / "v0.1-ai-reviewed"
 SEQUENCE_FILES = ("exit_status.txt", "sequence_done.txt", "sequence_log.txt", "baseline.json",
-                  "monitor.jsonl")  # fmt: skip
+                  "monitor.jsonl", "monitor_ready.json")  # fmt: skip
 
 
 def _git(*args: str) -> subprocess.CompletedProcess:
     return subprocess.run(["git", *args], cwd=ROOT, capture_output=True, check=False)
 
 
-def _rel(path: Path) -> str:
-    return path.resolve().relative_to(ROOT).as_posix()
+def _rel(path: Path) -> str | None:
+    """Repository-relative path, or ``None`` outside the repository (never an absolute path)."""
+    try:
+        return path.resolve().relative_to(ROOT).as_posix()
+    except ValueError:
+        return None
+
+
+def _label(path: Path) -> str:
+    return _rel(path) or f"<outside the repository>/{path.parent.name}/{path.name}"
 
 
 def _read(path: Path) -> bytes | None:
-    return path.read_bytes() if path.is_file() else None
+    try:
+        return path.read_bytes() if path.is_file() else None
+    except OSError:
+        return None
 
 
 def _sha(data: bytes | None) -> str | None:
@@ -60,40 +78,65 @@ def _sha(data: bytes | None) -> str | None:
 
 def committed_sha(path: Path) -> str | None:
     """SHA-256 of the file's bytes in ``HEAD``, or ``None`` if it is not committed."""
-    proc = _git("show", f"HEAD:{_rel(path)}")
+    rel = _rel(path)
+    if rel is None:
+        return None
+    proc = _git("show", f"HEAD:{rel}")
     return _sha(proc.stdout) if proc.returncode == 0 else None
 
 
-def changed_since(approved: str, commit: str | None) -> list[str] | None:
+def changed_since(approved: str, commit: Any) -> list[str] | None:
     """Paths changed from the approved commit to ``commit``; ``None`` if it is not an ancestor."""
-    if not commit or _git("merge-base", "--is-ancestor", approved, commit).returncode != 0:
+    if not isinstance(commit, str) or not commit:
+        return None
+    if _git("merge-base", "--is-ancestor", approved, commit).returncode != 0:
         return None
     proc = _git("diff", "--name-only", approved, commit)
     return proc.stdout.decode().split() if proc.returncode == 0 else None
 
 
-def _json(data: bytes | None) -> Any:
-    return {} if data is None else json.loads(data.decode("utf-8"))
+def read_json(data: bytes | None, label: str, problems: list[str]) -> Any:
+    """The parsed file, or ``None`` with a problem (missing, not UTF-8 or not JSON)."""
+    if data is None:
+        problems.append(f"{label}: missing")
+        return None
+    try:
+        return json.loads(data.decode("utf-8"))
+    except (UnicodeDecodeError, ValueError) as exc:
+        problems.append(f"{label}: unreadable JSON ({type(exc).__name__})")
+        return None
 
 
-def _jsonl(data: bytes | None) -> Any:
-    return None if data is None else ax.parse_jsonl(data)
+def read_jsonl(data: bytes | None, label: str, problems: list[str]) -> list[Any] | None:
+    """Every line kept in order (malformed lines as ``Malformed``), or ``None`` if missing."""
+    if data is None:
+        problems.append(f"{label}: missing")
+        return None
+    return ax.parse_jsonl_lines(data)
 
 
-def _sequence(run: Path) -> tuple[str | None, bool, bool]:
+def read_sequence(run: Path, problems: list[str]) -> ax.SequenceRecord:
     status = _read(run / "exit_status.txt")
-    text = None if status is None else status.decode().strip()
-    return text, (run / "monitor_stop.json").exists(), (run / "sequence_done.txt").is_file()
+    try:
+        text = None if status is None else status.decode("utf-8").strip()
+    except UnicodeDecodeError:
+        text = None
+    return ax.SequenceRecord(
+        exit_status=text,
+        monitor_stop=(run / "monitor_stop.json").exists(),
+        done=(run / "sequence_done.txt").is_file(),
+        baseline=read_json(_read(run / "baseline.json"), _label(run / "baseline.json"), problems),
+        monitor=read_jsonl(_read(run / "monitor.jsonl"), _label(run / "monitor.jsonl"), problems),
+        monitor_ready=read_json(_read(run / "monitor_ready.json"),
+                                _label(run / "monitor_ready.json"), problems),
+    )  # fmt: skip
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--approved-commit", required=True, help="the head cleared for the pilot")
-    parser.add_argument("--train-run", required=True, help="the pilot's sequence directory")
-    parser.add_argument("--eval-run", required=True, help="the evaluation's sequence directory")
-    args = parser.parse_args()
-    train_run, eval_run = Path(args.train_run).resolve(), Path(args.eval_run).resolve()
+def _commit(meas: Any) -> Any:
+    return ax._obj(ax._obj(ax._obj(meas).get("environment")).get("git")).get("commit")
 
+
+def build_inputs(approved: str, train_run: Path, eval_run: Path) -> ax.Inputs:
     raw = {
         "train_meas": train_run / "train" / "measurements.json",
         "train_log": train_run / "train" / "training_log.jsonl",
@@ -103,40 +146,42 @@ def main() -> int:
     }
     data = {k: _read(p) for k, p in raw.items()}
     evidence = [*raw.values(), *(r / f for r in (train_run, eval_run) for f in SEQUENCE_FILES)]
-    preserved = {_rel(p): (_sha(_read(p)), committed_sha(p)) for p in evidence}
+    preserved = {_label(p): (_sha(_read(p)), committed_sha(p)) for p in evidence}
+    found: dict[str, list[str]] = {"training": [], "evaluation": [], "adapter_records": []}
+    train_meas = read_json(data["train_meas"], _label(raw["train_meas"]), found["training"])
+    train_log = read_jsonl(data["train_log"], _label(raw["train_log"]), found["training"])
+    eval_meas = read_json(data["eval_meas"], _label(raw["eval_meas"]), found["evaluation"])
+    warmup = read_jsonl(data["warmup"], _label(raw["warmup"]), found["evaluation"])
+    records = read_jsonl(data["validation"], _label(raw["validation"]), found["adapter_records"])
+    train_seq = read_sequence(train_run, found["training"])
+    eval_seq = read_sequence(eval_run, found["evaluation"])
 
     manifest_bytes = (CORPUS / "MANIFEST.json").read_bytes()
-    manifest, corpus = load_corpus(CORPUS)
+    _, corpus = load_corpus(CORPUS)
     val = corpus["validation"]
     comparator_bytes = {name: _read(ROOT / path) for name, (path, _) in ax.COMPARATORS.items()}
     results_bytes = _read(ROOT / ax.EXP009_RESULTS[0])
-    eval_meas = _json(data["eval_meas"])
-
     head = git_state()
     changed = {
-        "training commit": changed_since(args.approved_commit, ((_json(data["train_meas"])
-                                         .get("environment") or {}).get("git") or {})
-                                         .get("commit")),
-        "evaluation commit": changed_since(args.approved_commit, ((eval_meas.get("environment")
-                                           or {}).get("git") or {}).get("commit")),
-        "analysis HEAD": changed_since(args.approved_commit, head["commit"]),
-    }  # fmt: skip
+        "training commit": changed_since(approved, _commit(train_meas)),
+        "evaluation commit": changed_since(approved, _commit(eval_meas)),
+        "analysis HEAD": changed_since(approved, head["commit"]),
+    }
     if head["dirty"] is not False:
         changed["analysis HEAD"] = None  # tracked files modified: not the committed code
-
-    inputs = ax.Inputs(
-        approved_commit=args.approved_commit,
+    return ax.Inputs(
+        approved_commit=approved,
         corpus_splits=sorted(corpus),
         corpus_manifest_sha256=hashlib.sha256(manifest_bytes).hexdigest(),
         validation=val,
         warmup_ids=warmup_ids(corpus["train"]),
-        train_meas=_json(data["train_meas"]),
-        train_log=_jsonl(data["train_log"]) or [],
-        train_sequence=_sequence(train_run),
+        train_meas=train_meas,
+        train_log=train_log,
+        train_sequence=train_seq,
         eval_meas=eval_meas,
-        eval_sequence=_sequence(eval_run),
-        warmup_records=_jsonl(data["warmup"]),
-        adapter_records=_jsonl(data["validation"]),
+        eval_sequence=eval_seq,
+        warmup_records=warmup,
+        adapter_records=records,
         comparator_bytes=comparator_bytes,
         exp009_results_bytes=results_bytes,
         rules_rerun=run_router(rule_router(), val, system=ax.RULES),
@@ -147,12 +192,43 @@ def main() -> int:
                          ax.COMPARATORS.items()},
                       ax.EXP009_RESULTS[0]: _sha(results_bytes),
                       "data/axbench/v0.1-ai-reviewed/MANIFEST.json": _sha(manifest_bytes)},
+        input_problems=found,
     )  # fmt: skip
-    result = ax.analyze(inputs)
-    result["git"] = head
-    result["corpus_version"] = manifest["corpus_version"]
-    json.dump(result, sys.stdout, indent=2, sort_keys=True, ensure_ascii=False)
-    sys.stdout.write("\n")
+
+
+def report(approved: str, train_run: Path, eval_run: Path) -> str:
+    """The analysis as strict JSON text; a structured ``invalid_run`` report if it raised."""
+    inputs = None
+    try:
+        inputs = build_inputs(approved, train_run, eval_run)
+        result = ax.analyze(inputs)
+        result["git"] = git_state()
+        result["corpus_version"] = "axbench/0.1-ai-reviewed"
+        return json.dumps(result, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False)
+    except Exception as exc:  # noqa: BLE001 - reported as an invalid run, never a traceback
+        failure = {
+            "experiment": "EXP-010",
+            "analysis_version": ax.ANALYSIS_VERSION,
+            "approved_commit": approved,
+            "input_sha256": dict(sorted(inputs.input_hashes.items())) if inputs else None,
+            "pilot_outcome": {"outcome": "invalid_run",
+                              "problems": {"analysis": [f"{type(exc).__name__}: {exc}"]}},
+            "safety": {"adapter": {"complete_coverage": False,
+                                   "note": "not computed: the analysis did not complete"}},
+            "deployment_gates": {"computed": False, "reason": "invalid run: no result"},
+            "descriptive": {"computed": False, "reason": "invalid run: no result"},
+        }  # fmt: skip
+        return json.dumps(failure, indent=2, sort_keys=True, ensure_ascii=False, default=str)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--approved-commit", required=True, help="the head cleared for the pilot")
+    parser.add_argument("--train-run", required=True, help="the pilot's sequence directory")
+    parser.add_argument("--eval-run", required=True, help="the evaluation's sequence directory")
+    args = parser.parse_args()
+    text = report(args.approved_commit, Path(args.train_run), Path(args.eval_run))
+    sys.stdout.write(text + "\n")
     return 0
 
 

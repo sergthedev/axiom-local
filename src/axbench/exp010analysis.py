@@ -11,13 +11,14 @@ Order of work:
    (later commits may only add evidence under ``docs/evidence/``); the EXP-009 comparators and the
    accepted EXP-009 results must match their pinned SHA-256; the training record must show the
    approved pilot (200 optimizer updates, 800 micro-steps, every planned loss and save record, no
-   stop, the final adapter equal to the update-200 save); the evaluation record must name that
-   adapter and its training commit and contain exactly the 5 warm-ups (never scored) and the 160
-   validation records, unique and in file order; the corpus must hold only the train and
-   validation splits (the sealed final test is never read).
-2. **Safety, independently of validity.** Every adapter record with a known validation ID is
-   reviewed by the Guard (``axbench.evaluate/0.2``), even when the run is invalid, and the
-   unauthorized-dispatch count is reported on its own.
+   stop, the final adapter equal to the update-200 save, the pinned base files, the sequence's
+   common baseline, no gradient checkpointing); the evaluation record must name that adapter and
+   its training commit and contain exactly the 5 warm-ups (never scored) and the 160 validation
+   records, unique and in file order; the corpus must hold only the train and validation splits
+   (the sealed final test is never read).
+2. **Safety, independently of validity.** Every recoverable adapter row with a known validation ID
+   (duplicates included) is reviewed by the Guard (``axbench.evaluate/0.2``), even when the run is
+   invalid or other rows are malformed; unreviewable rows are counted, and the coverage is stated.
 3. **Scoring** with ``axbench.score/0.2`` and ``axbench.evaluate/0.2`` (Guard policy 2): every
    record, errors and empty outputs included, stays in every denominator. The comparators are
    rescored with the same code and must reproduce the accepted EXP-009 per-example results.
@@ -26,6 +27,12 @@ Order of work:
    :func:`axbench.pilotgates.deployment_gates` (D14) as a descriptive reading.
 5. **Descriptive reports** (D15): paired comparisons, slices, losses, resources, latency and
    uncertainty. No population inference; McNemar only as an IID illustration.
+
+Revision 1 of the freeze (lead's D18 review): malformed or mistyped inputs give a structured
+``invalid_run`` and never an exception; a measurement is usable only if it is a finite,
+non-negative, non-boolean number, and an unusable one is reported as ``null`` with its status;
+the result contains no NaN or infinity (strict JSON); provenance is checked against the pinned
+checkpoint files, the common baseline, the monitor records and the adapter hash records.
 """
 
 from __future__ import annotations
@@ -53,7 +60,7 @@ from .trainwatch import (
     schedule,
 )
 
-ANALYSIS_VERSION = "exp010.analysis/1"
+ANALYSIS_VERSION = "exp010.analysis/2"  # /1 was the first freeze (6b10882), revised before use
 SYSTEM = "qwen3-1.7b-lora-exp010"
 UNTUNED = "qwen3-1.7b-untuned"
 RULES = "rules"
@@ -67,6 +74,25 @@ EXPORT_SHA256 = {
     "valid.jsonl": "40f83a3ca85a1802d6877c4d09d6d620dcb416b4ee9169b1417239d1e85d4361",
 }
 BASE_REVISION = "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e"
+# The accepted checkpoint record (EXP-009 provenance/qwen3-1.7b.json): (bytes, SHA-256) per file.
+BASE_FILES = {
+    "LICENSE": (11343, "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"),
+    "config.json": (726, "1ddb5b89ebc90dcb417a45c213d818577e65976454d29385c8f6140771d95197"),
+    "generation_config.json": (
+        239, "2325da0f15bb848e018c5ae071b7943332e9f871d6b60e2ed22ca97d4cb993d2"),
+    "merges.txt": (1671853, "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5"),
+    "model-00001-of-00002.safetensors": (
+        3441185608, "169ad53ec313c3a34b06c0809216e4fc072cce444a5d4ff2b59690d064130ed5"),
+    "model-00002-of-00002.safetensors": (
+        622329984, "912becff8d60672aa8628ef08c05898d9adf17c2ad4ae3caf99b065622fdeff9"),
+    "model.safetensors.index.json": (
+        25605, "0d660e94b165eb912669a5249dff44b83188c4777a07ddb9611fb78d91b0578d"),
+    "tokenizer.json": (
+        11422654, "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"),
+    "tokenizer_config.json": (
+        9732, "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"),
+    "vocab.json": (2776833, "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"),
+}  # fmt: skip
 PINNED_TRAINABLE_PARAMETERS = 458_752
 PROMPT_VERSION = "axiom.prompt/1"
 DECODING = {
@@ -85,6 +111,7 @@ COMPARATORS = {
 }  # fmt: skip
 EXP009_RESULTS = (f"{EXP009}/results.json",
                   "fe10efea2448c4c9b2d514e4ae68c2dc359c73b4de1b7288748639f7d439c4a2")  # fmt: skip
+CHECKPOINT_RECORD = f"{EXP009}/provenance/qwen3-1.7b.json"
 # After the approved commit, only evidence may change (raw records, write-ups, logs).
 EVIDENCE_ONLY_PREFIXES = ("docs/evidence/",)
 ADAPTER_FILES = ("adapter_config.json", "adapters.safetensors",
@@ -92,6 +119,18 @@ ADAPTER_FILES = ("adapter_config.json", "adapters.safetensors",
                    for u in schedule("pilot").save_updates))  # fmt: skip
 BOOTSTRAP_REPS = 2000
 BOOTSTRAP_SEED = 2026
+LIST_LIMIT = 5  # problems name at most this many examples of one kind
+
+
+# ------------------------------------------------------------------ raw input parsing
+
+
+@dataclass(frozen=True)
+class Malformed:
+    """A raw JSONL line that is not JSON (kept in place, never dropped or repaired)."""
+
+    line: int
+    error: str
 
 
 def sha256(data: bytes) -> str:
@@ -99,46 +138,113 @@ def sha256(data: bytes) -> str:
 
 
 def parse_jsonl(data: bytes) -> list[Any]:
-    """Every non-empty line must be JSON; a malformed line raises ``ValueError``."""
+    """Strict parse of a pinned file: a malformed line raises ``ValueError``."""
     return [json.loads(line) for line in data.decode("utf-8").splitlines() if line.strip()]
 
 
+def parse_jsonl_lines(data: bytes) -> list[Any]:
+    """Every non-empty line, in order: its JSON value, or :class:`Malformed` (never an error)."""
+    try:
+        text = data.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        return [Malformed(0, f"not UTF-8: {exc.reason}")]
+    out: list[Any] = []
+    for n, line in enumerate(text.splitlines(), start=1):
+        if not line.strip():
+            continue
+        try:
+            out.append(json.loads(line))
+        except ValueError as exc:
+            out.append(Malformed(n, type(exc).__name__))
+    return out
+
+
+def _obj(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
 def _same_json(a: Any, b: Any) -> bool:
-    return json.dumps(a, sort_keys=True) == json.dumps(b, sort_keys=True)
+    try:
+        return json.dumps(a, sort_keys=True) == json.dumps(b, sort_keys=True)
+    except (TypeError, ValueError):
+        return False
+
+
+def _is_sha(value: Any) -> bool:
+    return (isinstance(value, str) and len(value) == 64
+            and all(c in "0123456789abcdef" for c in value))  # fmt: skip
+
+
+def measurement_status(value: Any) -> str:
+    """``ok`` only for a finite, non-negative, non-boolean number."""
+    if value is None:
+        return "missing"
+    if isinstance(value, bool) or not isinstance(value, int | float):
+        return "not_a_number"
+    if not math.isfinite(value):
+        return "not_finite"
+    return "negative" if value < 0 else "ok"
+
+
+def measurement(value: Any) -> Any:
+    """The value if it is a usable measurement, otherwise ``None`` (reported as null)."""
+    return value if measurement_status(value) == "ok" else None
+
+
+def _first(items: Sequence[Any]) -> list[Any]:
+    return list(items[:LIST_LIMIT])
 
 
 # ------------------------------------------------------------------ record checks
+
+
+def _row_problems(rows: list[Any]) -> list[str]:
+    malformed = [r.line for r in rows if isinstance(r, Malformed)]
+    not_object = [i for i, r in enumerate(rows, 1)
+                  if not isinstance(r, dict | Malformed)]  # fmt: skip
+    bad_id = [i for i, r in enumerate(rows, 1)
+              if isinstance(r, dict) and not isinstance(r.get("example_id"), str)]  # fmt: skip
+    problems = []
+    if malformed:
+        problems.append(f"{len(malformed)} malformed JSON lines (lines {_first(malformed)})")
+    if not_object:
+        problems.append(f"{len(not_object)} rows are not objects (rows {_first(not_object)})")
+    if bad_id:
+        problems.append(f"{len(bad_id)} rows without a string example_id (rows {_first(bad_id)})")
+    return problems
 
 
 def check_records(records: Any, expected_ids: Sequence[str], system: str) -> list[str]:
     """Exactly the expected IDs, unique, in the expected (file) order, one system, known statuses.
 
     Errors, timeouts and empty outputs are valid records (they are scored as wrong and stay in
-    every denominator); a missing, duplicated, unexpected or reordered record is not.
+    every denominator); a missing, duplicated, unexpected, reordered, malformed or mistyped record
+    is not. Never raises on malformed input.
     """
-    if not isinstance(records, list) or any(not isinstance(r, dict) for r in records):
-        return ["records are not a list of objects"]
-    problems: list[str] = []
-    ids = [r.get("example_id") for r in records]
+    if not isinstance(records, list):
+        return ["records are missing or not a list"]
+    problems = _row_problems(records)
+    rows = [r for r in records if isinstance(r, dict)]
+    ids = [r["example_id"] for r in rows if isinstance(r.get("example_id"), str)]
     counts = Counter(ids)
     expected = set(expected_ids)
     missing = [i for i in expected_ids if i not in counts]
-    duplicated = sorted(str(i) for i, c in counts.items() if c > 1)
-    unexpected = sorted(str(i) for i in counts if i not in expected)
+    duplicated = sorted(i for i, c in counts.items() if c > 1)
+    unexpected = sorted(i for i in counts if i not in expected)
     if missing:
-        problems.append(f"{len(missing)} missing records (first {missing[:3]})")
+        problems.append(f"{len(missing)} missing records (first {_first(missing)})")
     if duplicated:
-        problems.append(f"duplicated IDs {duplicated[:3]}")
+        problems.append(f"duplicated IDs {_first(duplicated)}")
     if unexpected:
-        problems.append(f"unexpected IDs {unexpected[:3]}")
-    if not (missing or duplicated or unexpected) and ids != list(expected_ids):
+        problems.append(f"unexpected IDs {_first(unexpected)}")
+    if not problems and ids != list(expected_ids):
         problems.append("records are not in file order")
-    if any(r.get("system") != system for r in records):
+    if any(r.get("system") != system for r in rows):
         problems.append(f"records not labelled {system!r}")
-    bad_status = sorted({str(r.get("status")) for r in records} - set(STATUSES))
-    if bad_status:
-        problems.append(f"unknown statuses {bad_status}")
-    if any(r.get("status") == "ok" and not isinstance(r.get("raw_output"), str) for r in records):
+    statuses = {r.get("status") for r in rows if isinstance(r.get("status"), str)}
+    if any(not isinstance(r.get("status"), str) for r in rows) or statuses - set(STATUSES):
+        problems.append(f"unknown statuses {_first(sorted(statuses - set(STATUSES)))}")
+    if any(r.get("status") == "ok" and not isinstance(r.get("raw_output"), str) for r in rows):
         problems.append("an ok record without a raw output string")
     return problems
 
@@ -151,7 +257,7 @@ def check_comparator(name: str, data: bytes | None, expected_ids: Sequence[str]
         return None, [f"comparator {name}: {path} is missing"]
     if sha256(data) != pinned:
         return None, [f"comparator {name}: SHA-256 differs from the pin (tampered or replaced)"]
-    records = parse_jsonl(data)
+    records = parse_jsonl_lines(data)
     problems = [f"comparator {name}: {p}" for p in check_records(records, expected_ids, name)]
     return (None if problems else records), problems
 
@@ -203,17 +309,56 @@ def check_preserved(inputs: Mapping[str, tuple[str | None, str | None]]) -> list
 # ------------------------------------------------------------------ provenance checks
 
 
-def check_sequence(label: str, exit_status: str | None, monitor_stop: bool, done: bool
-                   ) -> list[str]:  # fmt: skip
-    """The supervised sequence ended with exit 0, its done marker and no monitor stop."""
-    problems = []
-    if exit_status is None or exit_status.split()[:1] != ["0"]:
-        problems.append(f"{label} sequence: exit status {exit_status!r}, not 0")
-    if monitor_stop:
-        problems.append(f"{label} sequence: the external monitor wrote a stop record")
-    if not done:
-        problems.append(f"{label} sequence: no done marker")
+@dataclass(frozen=True)
+class SequenceRecord:
+    """What the analysis reads from one supervised sequence directory."""
+
+    exit_status: str | None
+    monitor_stop: bool
+    done: bool
+    baseline: Any = None  # baseline.json
+    monitor: Any = None  # monitor.jsonl rows (parse_jsonl_lines)
+    monitor_ready: Any = None  # monitor_ready.json
+
+
+def check_monitor(label: str, rows: Any) -> list[str]:
+    """The external monitor's records agree with a clean exit: valid samples, none with a stop,
+    and one final record at the end."""
+    if not isinstance(rows, list) or not rows:
+        return [f"{label} monitor: no records"]
+    problems = [f"{label} monitor: {p}" for p in _row_problems(rows) if "example_id" not in p]
+    samples = [r for r in rows if isinstance(r, dict) and not r.get("final")]
+    finals = [i for i, r in enumerate(rows) if isinstance(r, dict) and r.get("final") is True]
+    if finals != [len(rows) - 1]:
+        problems.append(f"{label} monitor: not exactly one final record at the end")
+    if not samples:
+        problems.append(f"{label} monitor: no sample")
+    for r in samples:
+        if r.get("stop") is not None:
+            problems.append(f"{label} monitor: a sample recorded a stop")
+            break
+    for key in ("swap_used", "pressure_level"):  # the stop-rule fields (supervise.RULE_KEYS)
+        if any(measurement_status(r.get(key)) != "ok" for r in samples):
+            problems.append(f"{label} monitor: a sample has no usable {key}")
     return problems
+
+
+def check_sequence(label: str, seq: SequenceRecord) -> list[str]:
+    """The supervised sequence ended with exit 0, its done marker, no monitor stop, a ready
+    monitor and monitor records consistent with that."""
+    problems = []
+    status = seq.exit_status if isinstance(seq.exit_status, str) else None
+    if status is None or status.split()[:1] != ["0"]:
+        problems.append(f"{label} sequence: exit status {seq.exit_status!r}, not 0")
+    if seq.monitor_stop:
+        problems.append(f"{label} sequence: the external monitor wrote a stop record")
+    if not seq.done:
+        problems.append(f"{label} sequence: no done marker")
+    if not isinstance(seq.monitor_ready, dict):
+        problems.append(f"{label} sequence: no monitor-ready record")
+    if not isinstance(seq.baseline, dict) or not seq.baseline:
+        problems.append(f"{label} sequence: no common baseline record")
+    return problems + check_monitor(label, seq.monitor)
 
 
 def _not_stopped(meas: Mapping[str, Any], label: str) -> list[str]:
@@ -227,25 +372,85 @@ def _not_stopped(meas: Mapping[str, Any], label: str) -> list[str]:
 
 
 def _environment(meas: Mapping[str, Any], label: str) -> list[str]:
-    env = meas.get("environment") or {}
+    env = _obj(meas.get("environment"))
     problems = []
-    if (env.get("git") or {}).get("dirty") is not False:
+    if _obj(env.get("git")).get("dirty") is not False:
         problems.append(f"{label}: tree not recorded as clean")
     if env.get("runner_version") != HARNESS:
         problems.append(f"{label}: harness {env.get('runner_version')!r}, expected {HARNESS!r}")
     return problems
 
 
-def check_training(meas: Mapping[str, Any], log: Sequence[dict[str, Any]], approved: str
-                   ) -> list[str]:  # fmt: skip
-    """The approved pilot, completed as planned (D4-D8): re-derived from the records."""
+def _base_files(model: Any, label: str) -> list[str]:
+    """Revision and every one of the ten checkpoint files against the accepted record."""
+    m = _obj(model)
+    files = _obj(m.get("files"))
+    got = {k: (_obj(v).get("bytes"), _obj(v).get("sha256")) for k, v in files.items()}
+    problems = []
+    if m.get("revision") != BASE_REVISION:
+        problems.append(f"{label}: base revision differs from the pin")
+    if got != BASE_FILES:
+        bad = sorted(k for k in set(got) | set(BASE_FILES) if got.get(k) != BASE_FILES.get(k))
+        problems.append(f"{label}: base files differ from the pinned checkpoint record {bad[:5]}")
+    return problems
+
+
+def _common_baseline(meas: Mapping[str, Any], baseline: Any, label: str) -> list[str]:
+    rec = _obj(meas.get("stop_rule_baseline"))
+    if rec.get("source") != "sequence baseline.json":
+        return [f"{label}: not run under the supervised sequence baseline"]
+    if (
+        not isinstance(baseline, dict)
+        or not baseline
+        or any(not _same_json(rec.get(k), v) for k, v in baseline.items())
+    ):
+        return [f"{label}: stop-rule baseline differs from the sequence's baseline.json"]
+    return []
+
+
+def _resource_summaries(meas: Mapping[str, Any], label: str, keys: Sequence[str]) -> list[str]:
+    problems = []
+    for key in keys:
+        summary = meas.get(key)
+        if not isinstance(summary, dict) or summary.get("stopped") is not None:
+            problems.append(f"{label}: {key} summary missing or records a stop")
+    mon = _obj(meas.get("resource_monitor"))
+    for key in ("max_cumulative_swap_growth_bytes", "max_pressure_level"):
+        if measurement_status(mon.get(key)) != "ok":
+            problems.append(f"{label}: resource monitor has no usable {key}")
+    return problems
+
+
+def _adapter_file_records(files: Mapping[str, Any], label: str) -> list[str]:
+    bad = sorted(k for k, v in files.items()
+                 if not _is_sha(_obj(v).get("sha256"))
+                 or measurement_status(_obj(v).get("bytes")) != "ok"
+                 or not _obj(v).get("bytes"))  # fmt: skip
+    return [f"{label}: adapter file records without a SHA-256 string or size {bad[:5]}"
+            ] if bad else []  # fmt: skip
+
+
+def check_training(meas: Any, log: Any, approved: str, baseline: Any = None) -> list[str]:
+    """The approved pilot, completed as planned (D4-D8): re-derived from the records.
+
+    Never raises: a missing, malformed or mistyped record is a problem, not an exception."""
     sched = schedule("pilot")
-    p = [*_not_stopped(meas, "training"), *_environment(meas, "training")]
+    p: list[str] = []
+    if not isinstance(meas, dict):
+        p.append("training: measurements missing or not an object")
+        meas = {}
+    if not isinstance(log, list):
+        p.append("training log: missing or not a list")
+        log = []
+    p += [f"training log: {x}" for x in _row_problems(log) if "example_id" not in x]
+    rows = [r for r in log if isinstance(r, dict)]
+    p += [*_not_stopped(meas, "training"), *_environment(meas, "training")]
+    p += _common_baseline(meas, baseline, "training")
     if meas.get("experiment") != "EXP-010" or meas.get("phase") != "pilot":
         p.append("training: not the EXP-010 pilot phase")
     if meas.get("system") != SYSTEM:
         p.append("training: system name differs")
-    if (meas.get("environment") or {}).get("git", {}).get("commit") != approved:
+    if _obj(_obj(meas.get("environment")).get("git")).get("commit") != approved:
         p.append("training: commit differs from the approved commit")
     if not _same_json(meas.get("schedule"), sched.as_dict()):
         p.append("training: schedule differs from the pilot plan")
@@ -253,59 +458,81 @@ def check_training(meas: Mapping[str, Any], log: Sequence[dict[str, Any]], appro
         p.append(f"training: optimizer steps {meas.get('optimizer_steps')!r}, planned 200")
     if meas.get("updates_recorded") != sched.updates:
         p.append(f"training: {meas.get('updates_recorded')!r} updates recorded, planned 200")
-    cfg = meas.get("configuration") or {}
+    cfg = _obj(meas.get("configuration"))
     planned = {"base": "qwen3-1.7b", "lora_parameters": LORA_PARAMETERS,
                "num_layers": NUM_LAYERS, "learning_rate": LEARNING_RATE, "seed": SEED}  # fmt: skip
     if any(not _same_json(cfg.get(k), v) for k, v in planned.items()):
         p.append("training: configuration differs from the plan")
-    if (cfg.get("grad_checkpoint"), cfg.get("declared_change")) not in ((False, None),
-                                                                        (True, "C1")):  # fmt: skip
-        p.append("training: gradient checkpointing without declared change C1")
-    if (meas.get("lora") or {}).get("trainable_parameters") != PINNED_TRAINABLE_PARAMETERS:
+    if cfg.get("grad_checkpoint") is not False or cfg.get("declared_change") is not None:
+        p.append("training: a predeclared change (C1/C2) needs its own prospective approval and "
+                 "a new analysis version; the initial pilot runs without one")  # fmt: skip
+    if _obj(meas.get("lora")).get("trainable_parameters") != PINNED_TRAINABLE_PARAMETERS:
         p.append("training: trainable parameter count differs from the pin")
-    if (meas.get("model") or {}).get("revision") != BASE_REVISION:
-        p.append("training: base revision differs from the pin")
-    data = meas.get("data") or {}
+    p += _base_files(meas.get("model"), "training")
+    data = _obj(meas.get("data"))
     if (
         data.get("corpus_manifest_sha256") != MANIFEST_SHA256
-        or {k: (v or {}).get("sha256") for k, v in (data.get("files") or {}).items()}
-        != EXPORT_SHA256
+        or {k: _obj(v).get("sha256") for k, v in _obj(data.get("files")).items()} != EXPORT_SHA256
     ):
         p.append("training: data hashes differ from the pinned export")
-    eval_set = meas.get("eval_set") or {}
+    eval_set = _obj(meas.get("eval_set"))
     if eval_set.get("name") != "validation" or eval_set.get("examples") != VALIDATION_N:
         p.append("training: the loss curve was not evaluated on the 160 validation examples")
-    if not (meas.get("completion_checks") or {}).get("passed"):
+    if not _obj(meas.get("completion_checks")).get("passed"):
         p.append("training: completion checks did not pass")
     if meas.get("final_adapter_equals_last_update_save") is not True:
         p.append("training: final adapter is not the update-200 save")
-    files = meas.get("adapter_files") or {}
+    p += _resource_summaries(meas, "training", ("resource_monitor", "throughput"))
+    files = _obj(meas.get("adapter_files"))
     if sorted(files) != sorted(ADAPTER_FILES):
         p.append(f"training: adapter files {sorted(files)} differ from the plan")
-    p += [f"training log: {x}" for x in check_training_records(log, sched)]
-    saves = {r.get("update"): r.get("sha256") for r in log if r.get("kind") == "save"}
-    final = (files.get("adapters.safetensors") or {}).get("sha256")
-    if final is None or final != saves.get(sched.updates):
+    p += _adapter_file_records(files, "training")
+    p += [f"training log: {x}" for x in check_training_records(rows, sched)]
+    evals = [r for r in rows if r.get("kind") == "eval"]
+    if any(r.get("set") != "validation" for r in evals):
+        p.append("training log: an evaluation record is not labelled 'validation'")
+    saves = {r.get("update"): r.get("sha256") for r in rows if r.get("kind") == "save"}
+    final = _obj(files.get("adapters.safetensors")).get("sha256")
+    if not _is_sha(final) or final != saves.get(sched.updates):
         p.append("training: final adapter hash differs from the update-200 save record")
     for u, sha in saves.items():
-        if (files.get(f"update_{u:04d}.safetensors") or {}).get("sha256") != sha:
+        if (
+            not isinstance(u, int)
+            or _obj(files.get(f"update_{u:04d}.safetensors")).get("sha256") != sha
+        ):
             p.append(f"training: update-{u} save hash differs from its file record")
-    updates = [r for r in log if r.get("kind") == "update"]
+    updates = [r for r in rows if r.get("kind") == "update"]
     if not updates or updates[-1].get("micro_steps") != sched.micro_steps:
         p.append("training: the last update is not at micro-step 800")
     return p
 
 
+def check_warmups(records: Any, warmup_ids: Sequence[str]) -> list[str]:
+    """Exactly the 5 warm-ups in order, as well-formed records of this system with a known
+    status. They are never scored, so a failed warm-up is not itself a problem."""
+    if not isinstance(records, list):
+        return ["warm-up records missing or not a list"]
+    problems = [f"warm-up {x}" for x in check_records(records, warmup_ids, SYSTEM)]
+    return problems
+
+
 def check_evaluation(
-    meas: Mapping[str, Any],
-    train_meas: Mapping[str, Any],
+    meas: Any,
+    train_meas: Any,
     approved: str,
     warmup_records: Any,
     warmup_ids: Sequence[str],
     validation_ids: Sequence[str],
+    baseline: Any = None,
 ) -> list[str]:
-    """The fresh-process evaluation of exactly the trained final adapter (D12)."""
-    p = [*_not_stopped(meas, "evaluation"), *_environment(meas, "evaluation")]
+    """The fresh-process evaluation of exactly the trained final adapter (D12). Never raises."""
+    p: list[str] = []
+    if not isinstance(meas, dict):
+        p.append("evaluation: measurements missing or not an object")
+        meas = {}
+    train_meas = _obj(train_meas)
+    p += [*_not_stopped(meas, "evaluation"), *_environment(meas, "evaluation")]
+    p += _common_baseline(meas, baseline, "evaluation")
     if meas.get("experiment") != "EXP-010" or meas.get("phase") != "main":
         p.append("evaluation: not the EXP-010 evaluation")
     if meas.get("system") != SYSTEM:
@@ -319,30 +546,29 @@ def check_evaluation(
     if meas.get("prompt_version") != PROMPT_VERSION or not _same_json(meas.get("decoding"),
                                                                        DECODING):  # fmt: skip
         p.append("evaluation: prompt or decoding differs from EXP-009")
+    p += _base_files(meas.get("model"), "evaluation")
     if not _same_json(meas.get("model"), train_meas.get("model")):
         p.append("evaluation: base checkpoint differs from the one trained")
-    ad = meas.get("adapter") or {}
-    files = train_meas.get("adapter_files") or {}
-    final = files.get("adapters.safetensors") or {}
+    p += _resource_summaries(meas, "evaluation", ("resource_monitor", "validation_slowdown"))
+    ad = _obj(meas.get("adapter"))
+    files = _obj(train_meas.get("adapter_files"))
+    final = _obj(files.get("adapters.safetensors"))
+    config = _obj(files.get("adapter_config.json"))
     if (
         ad.get("phase") != "pilot"
         or ad.get("file") != "adapters.safetensors"
+        or not _is_sha(ad.get("sha256"))
         or ad.get("sha256") != final.get("sha256")
         or ad.get("bytes") != final.get("bytes")
     ):
-        p.append("evaluation: adapter is not the trained final pilot adapter")  # fmt: skip
-    if ad.get("config_sha256") != (files.get("adapter_config.json") or {}).get("sha256"):
+        p.append("evaluation: adapter is not the trained final pilot adapter")
+    if not _is_sha(ad.get("config_sha256")) or ad.get("config_sha256") != config.get("sha256"):
         p.append("evaluation: adapter configuration differs from the trained one")
     if ad.get("training_commit") != approved:
         p.append("evaluation: adapter training commit is not the approved commit")
-    if (meas.get("stop_rule_baseline") or {}).get("source") != "sequence baseline.json":
-        p.append("evaluation: not run under the supervised sequence baseline")
     if meas.get("warmup_ids") != list(warmup_ids) or len(warmup_ids) != WARMUP_COUNT:
         p.append("evaluation: warm-up IDs are not the 5 pinned train warm-ups")
-    if not isinstance(warmup_records, list) or [
-        r.get("example_id") for r in warmup_records if isinstance(r, dict)
-    ] != list(warmup_ids):
-        p.append("evaluation: warm-up records are not exactly the 5 warm-ups in order")
+    p += [f"evaluation: {x}" for x in check_warmups(warmup_records, warmup_ids)]
     if set(warmup_ids) & set(validation_ids):
         p.append("evaluation: a warm-up ID is a validation ID")
     return p
@@ -359,21 +585,22 @@ def _quartiles(values: Sequence[float]) -> dict[str, Any] | None:
             "min": min(values), "max": max(values)}  # fmt: skip
 
 
-def _finite(v: Any) -> bool:
-    return isinstance(v, int | float) and not isinstance(v, bool) and math.isfinite(v)
-
-
-def latency(records: Sequence[dict[str, Any]]) -> dict[str, Any]:
+def latency(records: Sequence[Any]) -> dict[str, Any]:
     """Warm latency over the validation requests. The median is a G11 measurement only when every
-    one of the 160 requests has a finite latency (as in EXP-009); otherwise it is ``None``."""
-    vals = [float(r["elapsed_ms"]) for r in records if _finite(r.get("elapsed_ms"))]
+    one of the 160 requests has a usable latency (finite, non-negative, not a boolean; the EXP-009
+    rule); otherwise it is ``None`` and G11 is not assessable."""
+    rows = [r for r in records if isinstance(r, dict)]
+    status = Counter(measurement_status(r.get("elapsed_ms")) for r in rows)
+    vals = [float(r["elapsed_ms"]) for r in rows if measurement_status(r.get("elapsed_ms")) == "ok"]
     complete = len(vals) == len(records) == VALIDATION_N
     return {"ms": _quartiles(vals), "requests_with_latency": len(vals),
+            "latency_status": dict(sorted(status.items())),
             "median_for_gate": statistics.median(vals) if complete else None}  # fmt: skip
 
 
 def generation(records: Sequence[dict[str, Any]]) -> dict[str, Any]:
-    gen = [float(r["generation_tokens"]) for r in records if _finite(r.get("generation_tokens"))]
+    gen = [float(r["generation_tokens"]) for r in records
+           if measurement_status(r.get("generation_tokens")) == "ok"]  # fmt: skip
     return {
         "generated_tokens": _quartiles(gen),
         "requests_hitting_256_token_cap": sum(r.get("finish_reason") == "length" for r in records),
@@ -386,50 +613,90 @@ def generation(records: Sequence[dict[str, Any]]) -> dict[str, Any]:
 def training_report(meas: Mapping[str, Any], log: Sequence[dict[str, Any]]) -> dict[str, Any]:
     updates = [r for r in log if r.get("kind") == "update"]
     evals = [r for r in log if r.get("kind") == "eval"]
-    secs = [r["update_seconds"] for r in updates if _finite(r.get("update_seconds"))]
+    secs = [r["update_seconds"] for r in updates if measurement_status(r.get("update_seconds"))
+            == "ok"]  # fmt: skip
     return {
         "train_loss_per_update": [[r["update"], r.get("train_loss")] for r in updates],
         "validation_loss": [[r["update"], r.get("loss"), r.get("seconds")] for r in evals],
         "loss_note": "validation loss is token-weighted over completion tokens; it is not an "
         "endpoint and no checkpoint is selected by it",
-        "trainable_parameters": (meas.get("lora") or {}).get("trainable_parameters"),
-        "wall_seconds": meas.get("wall_seconds"),
-        "train_loop_seconds": meas.get("train_loop_seconds"),
+        "trainable_parameters": _obj(meas.get("lora")).get("trainable_parameters"),
+        "wall_seconds": measurement(meas.get("wall_seconds")),
+        "train_loop_seconds": measurement(meas.get("train_loop_seconds")),
         "train_loop_note": "train_loop_seconds starts after the update-0 evaluation; it includes "
         "the later evaluations, the saves and the callbacks",
         "sum_update_seconds": sum(secs) if secs else None,
         "update_seconds": _quartiles(secs),
         "throughput": meas.get("throughput"),
         "trained_completion_tokens": updates[-1].get("trained_tokens") if updates else None,
-        "mlx_peak_bytes": meas.get("mlx_peak_bytes"),
-        "process_peak_rss_bytes": meas.get("rss_peak_process_bytes"),
+        "mlx_peak_bytes": measurement(meas.get("mlx_peak_bytes")),
+        "process_peak_rss_bytes": measurement(meas.get("rss_peak_process_bytes")),
         "resource_monitor": meas.get("resource_monitor"),
         "adapter_files": meas.get("adapter_files"),
     }
 
 
+EVAL_MEASUREMENTS = ("cold_load_seconds", "load_mlx_peak_bytes", "mlx_peak_bytes_load_and_warmup",
+                     "mlx_peak_bytes_load_warmup_validation", "rss_peak_after_load_bytes",
+                     "rss_peak_after_validation_bytes", "rss_peak_process_bytes")  # fmt: skip
+
+
 def evaluation_resources(meas: Mapping[str, Any]) -> dict[str, Any]:
-    return {k: meas.get(k) for k in (
-        "cold_load_seconds", "load_mlx_peak_bytes", "mlx_peak_bytes_load_and_warmup",
-        "mlx_peak_bytes_load_warmup_validation", "rss_peak_after_load_bytes",
-        "rss_peak_after_validation_bytes", "rss_peak_process_bytes", "validation_slowdown",
-        "resource_monitor")} | {"note": "RSS, MLX peak, swap and pressure are separate "
-                                "measurements and are never summed"}  # fmt: skip
+    """Usable measurements as numbers; anything else as ``null`` with its status."""
+    out: dict[str, Any] = {k: measurement(meas.get(k)) for k in EVAL_MEASUREMENTS}
+    out["measurement_status"] = {k: measurement_status(meas.get(k)) for k in EVAL_MEASUREMENTS}
+    out["validation_slowdown"] = meas.get("validation_slowdown")
+    out["resource_monitor"] = meas.get("resource_monitor")
+    out["note"] = "RSS, MLX peak, swap and pressure are separate measurements, never summed"
+    return out
 
 
 def safety_scan(by_id: Mapping[str, dict[str, Any]], records: Any) -> dict[str, Any]:
-    """Guard review of every adapter record whose ID is a validation ID, duplicates included,
-    whatever the validity of the run: the unauthorized-dispatch count never depends on it."""
-    recs = [r for r in records if isinstance(r, dict)] if isinstance(records, list) else []
-    known = [r for r in recs if r.get("example_id") in by_id]
-    review = guard_layer([by_id[r["example_id"]] for r in known], known)
+    """Guard review of every recoverable adapter row whose ID is a validation ID, duplicates
+    included, whatever the validity of the run: the unauthorized-dispatch count never depends on
+    it. Rows that cannot be reviewed are counted by reason and the coverage is stated."""
+    rows = records if isinstance(records, list) else []
+    reasons: Counter[str] = Counter()
+    statuses: Counter[str] = Counter()
+    reviewed_ids: set[str] = set()
+    reviewed = dispatches = 0
+    for r in rows:
+        if isinstance(r, Malformed):
+            reasons["malformed_line"] += 1
+            continue
+        if not isinstance(r, dict):
+            reasons["not_an_object"] += 1
+            continue
+        i = r.get("example_id")
+        if not isinstance(i, str):
+            reasons["example_id_not_a_string"] += 1
+            continue
+        if i not in by_id:
+            reasons["unknown_id"] += 1
+            continue
+        try:
+            review = guard_layer([by_id[i]], [r])
+        except Exception:  # noqa: BLE001 - an unreviewable row is counted, never dropped
+            reasons["review_error"] += 1
+            continue
+        reviewed += 1
+        reviewed_ids.add(i)
+        dispatches += review["unauthorized_dispatch_count"]
+        statuses.update(review["guard_status"])
     return {
-        "records_reviewed": len(known),
-        "records_not_reviewable": len(recs) - len(known),
-        "unauthorized_dispatches": review["unauthorized_dispatch_count"],
-        "guard_status": review["guard_status"],
+        "records_present": isinstance(records, list),
+        "rows": len(rows),
+        "records_reviewed": reviewed,
+        "records_not_reviewable": sum(reasons.values()),
+        "not_reviewable_by_reason": dict(sorted(reasons.items())),
+        "validation_ids_reviewed": len(reviewed_ids),
+        "complete_coverage": isinstance(records, list) and not reasons
+        and reviewed_ids == set(by_id),
+        "unauthorized_dispatches": dispatches,
+        "guard_status": dict(sorted(statuses.items())),
         "confirmations_given": 0,
-    }
+        "note": "a zero count covers only the reviewed rows; see complete_coverage",
+    }  # fmt: skip
 
 
 def by_id(report: Mapping[str, Any], field: str) -> dict[str, bool]:
@@ -447,7 +714,8 @@ def d14_summary(adapter: Mapping[str, Any], untuned_exact: int, dispatches: int,
                 lat: Mapping[str, Any], eval_meas: Mapping[str, Any]
                 ) -> dict[str, Any]:  # fmt: skip
     """The D14 count summary. G12 uses the evaluation process: its lifetime peak RSS and the MLX
-    peak since loading (load, warm-up and validation; lead decision 9)."""
+    peak since loading (load, warm-up and validation; lead decision 9). An unusable resource
+    value is passed as ``None`` (not assessable)."""
     raw = adapter["raw_candidate"]
     lang = adapter["slices"]["language"]
 
@@ -466,9 +734,24 @@ def d14_summary(adapter: Mapping[str, Any], untuned_exact: int, dispatches: int,
         "unauthorized_dispatches": dispatches,
         "untuned_exact_count": untuned_exact,
         "median_warm_latency_ms": lat["median_for_gate"],
-        "peak_rss_bytes": eval_meas.get("rss_peak_process_bytes"),
-        "mlx_peak_bytes": eval_meas.get("mlx_peak_bytes_load_warmup_validation"),
+        "peak_rss_bytes": measurement(eval_meas.get("rss_peak_process_bytes")),
+        "mlx_peak_bytes": measurement(eval_meas.get("mlx_peak_bytes_load_warmup_validation")),
     }
+
+
+def strict_json(value: Any, path: str = "$", found: list[str] | None = None) -> Any:
+    """A copy with every NaN or infinity replaced by ``None``; the paths are appended to
+    ``found``. Raw evidence is never changed; only the reported values are normalized."""
+    if found is None:
+        found = []
+    if isinstance(value, float) and not math.isfinite(value):
+        found.append(path)
+        return None
+    if isinstance(value, dict):
+        return {k: strict_json(v, f"{path}.{k}", found) for k, v in value.items()}
+    if isinstance(value, list | tuple):
+        return [strict_json(v, f"{path}[{i}]", found) for i, v in enumerate(value)]
+    return value
 
 
 # ------------------------------------------------------------------ the analysis
@@ -483,11 +766,11 @@ class Inputs:
     corpus_manifest_sha256: str
     validation: Sequence[dict[str, Any]]
     warmup_ids: Sequence[str]  # the first five train IDs (runwatch.warmup_ids)
-    train_meas: dict[str, Any]
-    train_log: list[dict[str, Any]]
-    train_sequence: tuple[str | None, bool, bool]  # exit status, monitor stop, done marker
-    eval_meas: dict[str, Any]
-    eval_sequence: tuple[str | None, bool, bool]
+    train_meas: Any
+    train_log: Any
+    train_sequence: SequenceRecord
+    eval_meas: Any
+    eval_sequence: SequenceRecord
     warmup_records: Any
     adapter_records: Any
     comparator_bytes: Mapping[str, bytes | None]
@@ -496,6 +779,8 @@ class Inputs:
     changed_since_approved: Mapping[str, Sequence[str] | None] = field(default_factory=dict)
     preserved: Mapping[str, tuple[str | None, str | None]] = field(default_factory=dict)
     input_hashes: Mapping[str, str | None] = field(default_factory=dict)
+    # Problems found while reading the files (unreadable or malformed JSON), by section.
+    input_problems: Mapping[str, Sequence[str]] = field(default_factory=dict)
 
 
 def _exp009_reproduced(data: bytes | None, reports: Mapping[str, Any]) -> list[str]:
@@ -518,24 +803,34 @@ def _exp009_reproduced(data: bytes | None, reports: Mapping[str, Any]) -> list[s
     return problems
 
 
+SECTIONS = ("corpus", "frozen_code", "raw_evidence_preserved", "training", "evaluation",
+            "adapter_records", "comparators")  # fmt: skip
+
+
 def analyze(x: Inputs) -> dict[str, Any]:
+    """The frozen analysis. Never raises on malformed run inputs; the result is strict JSON."""
     val = list(x.validation)
     ids = [e["id"] for e in val]
     examples = {e["id"]: e for e in val}
     clusters = {e["id"]: e["lineage_id"] for e in val}
+    train_rows = x.train_log if isinstance(x.train_log, list) else None
     problems: dict[str, list[str]] = {
         "corpus": check_corpus(x.corpus_splits, x.corpus_manifest_sha256, val),
         "frozen_code": [q for label, changed in sorted(x.changed_since_approved.items())
                         for q in check_frozen_code(changed, label)],
         "raw_evidence_preserved": check_preserved(x.preserved),
-        "training": [*check_sequence("training", *x.train_sequence),
-                     *check_training(x.train_meas, x.train_log, x.approved_commit)],
-        "evaluation": [*check_sequence("evaluation", *x.eval_sequence),
+        "training": [*check_sequence("training", x.train_sequence),
+                     *check_training(x.train_meas, x.train_log, x.approved_commit,
+                                     x.train_sequence.baseline)],
+        "evaluation": [*check_sequence("evaluation", x.eval_sequence),
                        *check_evaluation(x.eval_meas, x.train_meas, x.approved_commit,
-                                         x.warmup_records, x.warmup_ids, ids)],
+                                         x.warmup_records, x.warmup_ids, ids,
+                                         x.eval_sequence.baseline)],
         "adapter_records": check_records(x.adapter_records, ids, SYSTEM),
         "comparators": [],
     }  # fmt: skip
+    for section, found in x.input_problems.items():
+        problems[section if section in SECTIONS else "raw_evidence_preserved"] += list(found)
     if not x.changed_since_approved:
         problems["frozen_code"].append("no frozen-code check was supplied")
     if not x.preserved:
@@ -569,6 +864,8 @@ def analyze(x: Inputs) -> dict[str, Any]:
             != safety["unauthorized_dispatches"]
         ):
             problems["adapter_records"].append("Guard reviews disagree on dispatches")
+    if not safety["complete_coverage"] and not problems["adapter_records"]:
+        problems["adapter_records"].append("the safety review did not cover every record")
     integrity_ok = not any(problems[k] for k in ("corpus", "frozen_code", "raw_evidence_preserved",
                                                  "adapter_records", "comparators"))  # fmt: skip
     run = PilotRun(
@@ -581,6 +878,7 @@ def analyze(x: Inputs) -> dict[str, Any]:
     outcome = pilot_outcome(run, ids, adapter_exact, untuned_exact, clusters,
                             safety["unauthorized_dispatches"])  # fmt: skip
     outcome["problems"] = problems
+    outcome["safety_review_complete"] = safety["complete_coverage"]
 
     result: dict[str, Any] = {
         "experiment": "EXP-010",
@@ -605,7 +903,7 @@ def analyze(x: Inputs) -> dict[str, Any]:
         result["deployment_gates"] = {"computed": False, "reason": "invalid run: no result"}
         result["descriptive"] = {"computed": False, "reason": "invalid run: no result"}
         result["systems"] = {k: v for k, v in reports.items() if k != SYSTEM}
-        return result
+        return _finish(result)
 
     adapter = reports[SYSTEM]
     lat = latency(x.adapter_records)
@@ -638,7 +936,15 @@ def analyze(x: Inputs) -> dict[str, Any]:
         "adapter_latency_ms": lat,
         "adapter_generation": generation(x.adapter_records),
         "evaluation_resources": evaluation_resources(x.eval_meas),
-        "training": training_report(x.train_meas, x.train_log),
+        "training": training_report(x.train_meas, train_rows or []),
     }
     result["systems"] = reports
-    return result
+    return _finish(result)
+
+
+def _finish(result: dict[str, Any]) -> dict[str, Any]:
+    found: list[str] = []
+    clean = strict_json(result, found=found)
+    clean["non_finite_values_reported_as_null"] = found
+    json.dumps(clean, allow_nan=False)  # strict JSON or an error, never NaN/Infinity tokens
+    return clean
