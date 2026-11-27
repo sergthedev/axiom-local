@@ -55,3 +55,58 @@ def test_a_missing_version_does_not_break_the_order(discovered) -> None:
 def test_sort_by_api_then_prefix_is_unchanged_for_distinct_prefixes(discovered) -> None:
     discovered([OMP, SCIPY_OLD])
     assert [p["user_api"] for p in environment._pools()] == ["blas", "openmp"]
+
+
+def test_an_absent_field_and_an_explicit_none_are_both_totally_ordered(discovered) -> None:
+    """``str`` renders a missing version and ``None`` alike; the canonical JSON breaks the tie."""
+    absent = {k: v for k, v in OMP.items() if k != "version"}  # no version key at all
+    explicit = {**OMP, "version": None}  # version reported as None
+    seen = set()
+    for order in itertools.permutations([absent, explicit]):
+        discovered(list(order))
+        seen.add(repr(environment._pools()))
+    assert len(seen) == 1
+    discovered([explicit, absent])
+    assert sorted(map(repr, environment._pools())) == sorted(map(repr, [absent, explicit]))
+    assert len(environment._pools()) == 2  # both kept: neither is dropped as a duplicate
+
+
+def test_numeric_and_string_representations_do_not_tie(discovered) -> None:
+    as_int = {**SCIPY_OLD, "num_threads": 1}
+    as_str = {**SCIPY_OLD, "num_threads": "1"}
+    seen = set()
+    for order in itertools.permutations([as_int, as_str]):
+        discovered(list(order))
+        seen.add(repr(environment._pools()))
+    assert len(seen) == 1
+
+
+def test_all_permutations_of_a_mixed_set_agree_and_keep_api_then_prefix_first(discovered) -> None:
+    absent = {k: v for k, v in OMP.items() if k != "version"}
+    pools = [SCIPY_NEW, OMP, SCIPY_OLD, absent, {**OMP, "version": "1"}]
+    results = set()
+    for order in itertools.permutations(pools):
+        discovered(list(order))
+        got = environment._pools()
+        results.add(repr(got))
+        assert [p["user_api"] for p in got] == sorted(p["user_api"] for p in got)
+    assert len(results) == 1
+
+
+def test_a_passport_recorded_in_legacy_discovery_order_is_compared_as_a_different_environment() -> (
+    None
+):
+    """Passports written before the fix hold pools in discovery order. Compared with the same
+    environment captured now (sorted), the list differs only by order, the status is ``different``
+    on ``threads.detected_pools`` alone, and so the cross-environment numeric criteria apply, never
+    the exact-bytes ones. The comparison only reads the environment record; result hashes and the
+    numerical kernels are not involved, and the fingerprint schema is unchanged."""
+    sorted_now = [SCIPY_OLD, SCIPY_NEW]
+    legacy = [SCIPY_NEW, SCIPY_OLD]  # the other discovery order, as an old passport may hold it
+    reference = {"threads": {"detected_pools": legacy}}
+    current = {"threads": {"detected_pools": sorted_now}}
+    result = environment.compare_environments(reference, current)
+    assert result["status"] == "different"
+    assert [d["field"] for d in result["differences"]] == ["threads.detected_pools"]
+    same = environment.compare_environments(current, {"threads": {"detected_pools": sorted_now}})
+    assert "threads.detected_pools" not in [d["field"] for d in same["differences"]]
