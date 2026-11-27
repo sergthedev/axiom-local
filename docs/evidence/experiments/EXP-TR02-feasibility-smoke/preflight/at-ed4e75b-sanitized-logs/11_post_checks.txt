@@ -1,0 +1,21 @@
+== date -u
+Fri Nov 27 20:52:21 UTC 2026
+== ps
+(end ps)
+== pressure
+1
+== pmset
+Now drawing from 'AC Power'
+ -InternalBattery-0 (id=22937699)	95%; AC attached; not charging present: true
+== swap
+vm.swapusage: total = 1024.00M  used = 2.44M  free = 1021.56M  (encrypted)
+== HEAD / status
+ed4e75b7668c5541c0912a066b57cce88c938713
+[]
+== output dirs
+probe absent
+smoke absent
+reload absent
+probe.supervisor absent
+smoke.supervisor absent
+reload.supervisor absent

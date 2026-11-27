@@ -1,0 +1,24 @@
+CMD: uv run --locked --project envs/model python training/tr02/tr02.py verify-model --model-dir $HOME/axiom-models/qwen3-1.7b
+START: Fri Nov 27 20:51:37 UTC 2026
+{
+ "problems": []
+}
+        1.61 real         1.25 user         0.32 sys
+            34144256  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                6868  page reclaims
+                  78  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   1  messages sent
+                   1  messages received
+                   1  signals received
+                  28  voluntary context switches
+                2477  involuntary context switches
+            98558197  instructions retired
+            37797291  cycles elapsed
+            10109480  peak memory footprint
+EXIT_STATUS: 0

@@ -726,4 +726,9 @@ for a comprehensive final audit of AXIOM Verify.
 - Evidence workflow: `collect-evidence` refuses missing runs and duplicate names and never copies weights; new
   `sanitize-evidence` with a redaction manifest; a documented separate evidence checkout (`.evidence-raw/` is git-ignored).
 - Another session on the owner's Mac had started the same repair locally in parallel; it was stopped before any commit.
-
+- M5 no-weight preflight at the frozen code head `ed4e75b` (CI green on macOS and Windows, run 46065804096): ten steps, each run
+  once, all exit 0 (inputs, checkpoint inventory, data, probe and smoke iterator masks, `check-lora`, `preflight`, 13 tiny-model
+  tests passed on the M5 with MLX 0.32.4); no model weights were loaded, nothing was trained, no sealed-test access. Sanitized
+  logs and the record are in `docs/evidence/experiments/EXP-TR02-feasibility-smoke/preflight/` (`PREFLIGHT_NOWEIGHT_ed4e75b.md`,
+  `at-ed4e75b-sanitized-logs/`); each file was matched against the device's hashes (one word-level transport typo and one
+  duplicated fragment were caught by the hashes and resent). A new execution authorization is still required.
