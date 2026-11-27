@@ -182,7 +182,11 @@ def _pools() -> list[dict[str, Any]]:
 
     keep = ("user_api", "internal_api", "prefix", "version", "num_threads", "threading_layer")
     pools = [{k: p.get(k) for k in keep if k in p} for p in threadpool_info()]
-    return sorted(pools, key=lambda p: (str(p.get("user_api")), str(p.get("prefix"))))
+    # A total order over every kept field. NumPy and SciPy can each bundle an OpenBLAS with the same
+    # ``user_api`` and ``prefix`` and differ only in ``version``; threadpoolctl lists them in
+    # discovery order, which varies between processes, so ``(user_api, prefix)`` alone left their
+    # order, and with it the list compared at replay, to chance.
+    return sorted(pools, key=lambda p: tuple(str(p.get(k)) for k in ("user_api", "prefix", *keep)))
 
 
 def thread_policy() -> dict[str, Any]:
