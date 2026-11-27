@@ -1,0 +1,9 @@
+== 2026-11-26T13:26:53Z start exp010.supervise/2 pid 17661 steps ['train', 'reload']
+== 2026-11-26T13:26:53Z monitor started pid 17677
+== 2026-11-26T13:26:55Z monitor ready
+== 2026-11-26T13:26:55Z train started pid 17686
+== 2026-11-26T13:27:33Z train exited rc=0
+== 2026-11-26T13:27:33Z reload started pid 17814
+== 2026-11-26T13:27:57Z reload exited rc=0
+== 2026-11-26T13:27:58Z monitor rc=0
+== 2026-11-26T13:27:58Z end rc=0

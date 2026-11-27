@@ -1,0 +1,12 @@
+{
+  "memory_free_percentage": 78,
+  "power_source": "AC Power",
+  "pressure_level": 1,
+  "swap": {
+    "free_bytes": 0,
+    "total_bytes": 0,
+    "used_bytes": 0
+  },
+  "swap_used": 0,
+  "time_utc": "2026-11-26T13:26:53Z"
+}

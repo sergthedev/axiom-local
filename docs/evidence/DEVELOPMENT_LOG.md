@@ -526,3 +526,135 @@ for a comprehensive final audit of AXIOM Verify.
   byte-identical to attempt 2 on all 160 requests.
 - The final test was not accessed. Nothing was trained.
 
+## 2026-11-26 — Issue #4, Phase 3C: EXP-010 LoRA training preparation (nothing trained)
+
+- Started from accepted main `fbd4adc` (PR #10 merged). Branch `feat/issue-4-exp010-lora-prerun`.
+- Verified: clean tree, 698 Core tests, model environment versions (mlx 0.32.4, mlx-lm 0.32.2), the Qwen3-1.7B
+  checkpoint (10 files re-hashed against pinned and recorded hashes), the frozen corpus manifest and split hashes.
+- Exported train and validation outside the repository and recorded their hashes; a second export was
+  byte-identical, and a new Core test re-exports and checks the hashes on every platform.
+- Read the installed MLX-LM training path (REF-036) and measured it with the pinned tokenizer. Findings: micro-step
+  counting, built-in evaluation between updates (it would report 24 and 199 updates as 25 and 200), an inclusive
+  loss-mask end bound that trains one padding target, a chat mask boundary that trains the empty think block and the
+  template newline (6 extra targets per example on all 560), a shared NumPy RNG between evaluation and data order,
+  silent truncation.
+- Measured token lengths (longest 529, so `max_seq_length` 1024 by the rule) and the trainable parameter count
+  (458,752, lazy load, no weights evaluated).
+- Wrote the harness (`envs/model/exp010_train.py`: tokens, params, train, reload, evaluate, selftest), the detached
+  launcher and 30-second monitor (`envs/model/exp010_launch.py`), and the pure logic with tests
+  (`axbench.trainwatch`, `axbench.pilotgates`, `tests/test_exp010_prerun.py`). The harness renders the completion
+  boundary itself (`enable_thinking=False`), uses the installed loss with an exclusive end bound, evaluates and saves at
+  update boundaries, protects the data-order RNG, and pins export hashes, `max_seq_length` and the parameter count.
+- Harness self-test on a tiny random Qwen3-architecture model with synthetic tokens (no checkpoint, no corpus): all
+  checks passed. The monitor's sampling and exit were checked against a short-lived process. The real `train`,
+  `reload`, `evaluate` and the detached launcher were not run.
+- Pre-registered in PRERUN D13/D14 before any adapter exists: the pilot criterion (EXP-009 rule 3 on exact match vs the
+  untuned base) and the DR-005 deployment-quality gates as exact count rules, descriptive only on this corpus.
+- No training, no adapter, no adapter inference, no final-test access. Stopped for technical review.
+
+### Pre-run revision 1 (lead review of `ea1d343`, corrections A-D)
+
+- The [lead's pre-run review](https://github.com/sergthedev/axiom-local/pull/11#issuecomment-7191912956) accepted
+  decisions 1-11 with conditions and required four corrections before the smoke. No training setting, data, base
+  checkpoint or endpoint changed.
+- A: new `axbench.supervise` (common pre-load baseline and preflight, monitor-ready gate, supervision of the monitor
+  and every step, fail-closed sampling, stale heartbeat, stop marker overriding success, SIGTERM then kill after a
+  grace period, exit status written in every case); `exp010_launch.py` is now a thin wrapper and the smoke reload is
+  a supervised step. 27 dummy-process tests (`tests/test_exp010_supervise.py`), including the detached path end to end.
+- B: `reload` verifies the smoke adapter's provenance from the training records, runs exactly the 5 warm-up train
+  examples with stop rules after load and every request, re-reads the persisted records and exits non-zero on any
+  missing or error record. C: `train` sets `completed` only after the record, optimizer-step (`optimizer.step`), file,
+  hash and tensor checks and a final resource sample; finalization errors never replace a stop. D: lineage and
+  denominator checks, not-assessable semantics and independent dispatch reporting in `pilotgates`
+  (`exp010.pilot-gates/2`); G12 MLX peak over load, warm-up and validation; EXP-009 comparator hashes pinned;
+  execution authorization (D17) and the analysis integrity plan (D18) pre-registered.
+- Confirmed in the MLX-LM source and by the self-test that the trainer's update timing excludes callback work
+  (C-057).
+- Self-test revision 1 on the tiny random model and synthetic fixtures: 15 of 15 checks passed
+  (`prerun/harness_selftest_rev1.json`). Core tests: 827 passed locally on macOS before the commit (737 at revision 0).
+- Not run: real training, the real `reload` and `evaluate`, the macOS sampler inside the supervised sequence. No
+  validation predictions, no final-test access. Stopped for re-review and the owner's smoke decision.
+- Re-review of `c4387a1`: Windows CI failed the two new comparator-hash tests (809 passed, 2 failed) because Git
+  converted the comparator files to CRLF on checkout; fixed with a scoped `-text` rule for byte-hashed experiment
+  evidence, Git blob IDs verified unchanged, no evidence or pinned hash touched. The lead also found a narrow
+  supervisor race (a monitor ending cleanly as a step finished was accepted); the monitor's health is now checked
+  before and after every step and any monitor exit before the sequence is done fails, with 7 new deterministic
+  dummy regressions. Core tests: 835 passed locally on macOS.
+
+## 2026-11-26 — Issue #4, Phase 3C: EXP-010 smoke run (20 updates; executed once)
+
+- Lead's conditional clearance (PR #11 comment 7192863338) required a test-only fix: `test_shutdown_codes` used
+  `signal.SIGKILL`, which Windows Python lacks; replaced by the numeric `-9` (`680574b`). CI 45826169190 on that head:
+  Windows 813 passed, 22 skipped; macOS 835 passed. Final head, CI results and the owner's authorization were posted
+  on the PR before the start.
+- Launched detached with `exp010_launch.py start --phase smoke` at 13:26:53 UTC; sequence exit 0 at 13:27:58.
+  Training 35.0 s in-process (loop timer 28.7 s, which excludes the 3.50 s update-0 evaluation; see the correction
+  below), 20 updates / 80 micro-steps, `optimizer.step` 20, completion checks
+  passed, adapter `9a403124…` (final = update-20 save). Loss on the first 16 train examples 1.850 → 0.390 (training
+  data; not a generalization result). MLX peak 4.64 × 10⁹ bytes training, 3.85 × 10⁹ reload; no swap growth;
+  pressure normal. Reload: provenance re-verified, 5 of 5 warm-up train requests `ok` (2 hit the 256-token limit);
+  not scored.
+- Observation: MLX-LM's progress display still writes ANSI bold codes to the console capture despite `NO_COLOR=1`
+  (cosmetic). No retry, no pilot, no validation predictions, no final-test access. Stopped for technical acceptance.
+
+## 2026-11-26 — Issue #4, Phase 3C: EXP-010 D18 analysis freeze (before the pilot)
+
+- The lead accepted the smoke as a real-checkpoint training, reload and resource-path feasibility result, not an
+  accuracy or deployment result (PR #11 comment 7193487897), and asked for the D18 analysis before the pilot.
+- **Correction.** SMOKE.md said the 28.7 s training loop included "its two evaluations". In the reviewed code the
+  update-0 evaluation (3.50 s) runs before the `train_loop_seconds` timer starts; the loop includes the update-20
+  evaluation (2.73 s) and the save; the summed update compute is 25.21 s. The write-up, this log's smoke entry and
+  C-058 were corrected; no raw record was edited and the ANSI codes in the console captures are kept.
+- Frozen analysis `axbench.exp010analysis` (`exp010.analysis/1`) and `benchmarks/issue4_exp010_analyze.py`: integrity
+  before scoring (raw records committed and unchanged, code unchanged since the approved commit except
+  `docs/evidence/`, pinned comparators and EXP-009 results reproduced, rules rerun identical, corpus with only train
+  and validation, training and evaluation provenance re-derived from the records, exactly 160 records in file order,
+  5 warm-ups never scored); Guard safety scan independent of validity; scoring on the full denominator; D13/D14
+  unchanged with ID pairing and the 24 frozen lineages; D15 descriptive reports. The pilot and evaluation commands are
+  fixed in PRERUN section 8; the evaluation is now its own supervised sequence (`--phase evaluate`,
+  `exp010.harness/3`; the training path is unchanged). Core tests: 926 passed locally on macOS (85 new analysis tests
+  and 6 new launcher tests). Model-environment self-test at `exp010.harness/3`: 15 of 15 checks passed (local check,
+  record not committed). Nothing was trained or evaluated; no validation prediction, no final-test access.
+
+## 2026-11-26 — Issue #4, Phase 3C: D18 freeze revision 1 (lead's focused corrections)
+
+- The lead's D18 review of `6b10882` (PR #11 comment 7193914924) accepted the thresholds, ID pairing, the full
+  denominator, the pinned comparator rescore, the G12 and G11 choices, the evidence-only rule and the separate
+  evaluation approval, and required three integrity corrections before pilot clearance.
+- `exp010.analysis/2`: (1) a latency or resource value counts only if finite, non-negative and not a boolean, so one
+  negative latency now makes G11 not assessable; unusable values are reported as `null` with their status, and the
+  result is strict JSON with every normalized location listed; (2) malformed or mistyped inputs give a structured
+  `invalid_run`, never a traceback: lines are kept in place, the Guard reviews every recoverable known-ID row, and
+  unreviewable rows and coverage are reported; (3) provenance: no C1/C2 for this pilot, the ten checkpoint files
+  against the accepted record, the common baseline's values, the `validation` label on evaluation records, monitor
+  and stop summaries, adapter hash strings, and warm-up record structure.
+- No training setting, frozen data, comparator pin or pre-registered criterion changed. Core tests: 1,005 passed
+  locally on macOS (79 new regressions). Nothing was trained or evaluated; no validation prediction, no final-test
+  access.
+
+## 2026-11-26 — Issue #4, Phase 3C: D18 freeze revision 2 (lead's re-review)
+
+- The lead's re-review of `ac444cf` (PR #11 comment 7194380611) required the remaining fail-closed integrity
+  corrections before final pilot clearance.
+- `exp010.analysis/3`: save rows of the training log are type-checked before their update number is used (an
+  unhashable `[]` or `{}` update is a training problem, not an exception); the Guard safety review runs first and on
+  its own, and any later exception gives a structured `invalid_run` that keeps the dispatch count and coverage (the
+  script fallback does the same); JSONL is parsed by physical byte line, so one undecodable line or a blank line is a
+  marker and its neighbours are still reviewed, while the terminal newline adds no row; integers beyond the float
+  range are `out_of_range`, not exceptions; the result and the fallback stay strict JSON.
+- No training setting, frozen input, comparator pin, raw evidence or pre-registered criterion changed. Core tests:
+  1,019 passed locally on macOS (14 new regressions). Nothing was trained or evaluated; no validation prediction, no
+  final-test access.
+
+## 2026-11-27 — Issue #4, Phase 3C: EXP-010 pilot training (one authorized run)
+
+- The lead cleared exactly one initial pilot training run at `9902a02` (PR #11 comment 7194861659); the owner
+  authorized it in the project thread at 13:07 UTC. The head, CI run 45838268425 (both platforms green), pre-start
+  checks (checkpoint and export hashes, AC power, normal pressure, new directories) and the authorization were
+  recorded on the PR before the start (comment 7219123679).
+- The frozen PRERUN section 8 step 1 command ran once, detached and supervised, 13:09-13:17 UTC: exit 0, status
+  `completed`, 200 updates, no stop. Completion checks and the frozen D18 training-side checks found no problem; the
+  adapter files were re-hashed and match the records. Validation loss (teacher-forced) went from 2.158 to 0.148;
+  throughput fell from 0.92 to 0.79 updates/s, far from the stop rule.
+- Evidence-only commit of `runs/pilot/` and [PILOT_TRAINING.md](experiments/EXP-010-lora-pilot/PILOT_TRAINING.md);
+  C-059. No reload, evaluation, validation generation, scoring, sealed-test access, code or configuration change.

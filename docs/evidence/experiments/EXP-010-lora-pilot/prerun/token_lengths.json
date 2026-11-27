@@ -1,0 +1,97 @@
+{
+  "export": {
+    "corpus_manifest_sha256": "b8b6d39f8cf942629d4abeff8e7d96f4b876c37ebf13f4082f7f5d47f516239c",
+    "corpus_version": "axbench/0.1-ai-reviewed",
+    "files": {
+      "train.jsonl": {
+        "bytes": 845791,
+        "examples": 400,
+        "sha256": "437c2ef0ce44bdedcb865f7f115ef2b7eda461063e127b5e4cb77da20ec99b31"
+      },
+      "valid.jsonl": {
+        "bytes": 335911,
+        "examples": 160,
+        "sha256": "40f83a3ca85a1802d6877c4d09d6d620dcb416b4ee9169b1417239d1e85d4361"
+      }
+    }
+  },
+  "harness_version": "exp010.harness/1",
+  "longest_sequence": 529,
+  "loss_mask_check": {
+    "examples_checked": 560,
+    "mask_equals_completion_positions": true
+  },
+  "max_seq_length": 1024,
+  "max_seq_length_rule": "smallest power of two >= longest sequence (train and validation); stop above 1024; no truncation",
+  "prompt_version": "axiom.prompt/1",
+  "rendering": "prompt: chat template, enable_thinking=False, generation prompt; sequence: prompt + compact gold JSON + <|im_end|> (template newline dropped)",
+  "splits": {
+    "train": {
+      "boundary_checks_passed": 400,
+      "completion_tokens_incl_im_end": {
+        "max": 48,
+        "median": 29.0,
+        "min": 21,
+        "n": 400,
+        "sum": 11504
+      },
+      "examples": 400,
+      "mlx_lm_chat_default_extra_targets_per_example": [
+        6
+      ],
+      "prompt_tokens": {
+        "max": 480,
+        "median": 428.0,
+        "min": 382,
+        "n": 400,
+        "sum": 171088
+      },
+      "sequence_tokens": {
+        "max": 514,
+        "median": 456.5,
+        "min": 407,
+        "n": 400,
+        "sum": 182592
+      }
+    },
+    "validation": {
+      "boundary_checks_passed": 160,
+      "completion_tokens_incl_im_end": {
+        "max": 45,
+        "median": 29.5,
+        "min": 21,
+        "n": 160,
+        "sum": 4614
+      },
+      "examples": 160,
+      "mlx_lm_chat_default_extra_targets_per_example": [
+        6
+      ],
+      "prompt_tokens": {
+        "max": 500,
+        "median": 423.0,
+        "min": 369,
+        "n": 160,
+        "sum": 67512
+      },
+      "sequence_tokens": {
+        "max": 529,
+        "median": 452.0,
+        "min": 396,
+        "n": 160,
+        "sum": 72126
+      }
+    }
+  },
+  "tokenizer": {
+    "checkpoint_revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+    "class": "Qwen2Tokenizer",
+    "tokenizer_files_sha256": {
+      "merges.txt": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5",
+      "tokenizer.json": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+      "tokenizer_config.json": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+      "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+    }
+  },
+  "train_plan_version": "exp010.train-plan/1"
+}

@@ -19,7 +19,15 @@ uv run --locked python -c "import mlx.core as mx; print(mx.default_device())"
   rules): `verify` re-hashes the provisioned weights, `smoke` runs a few train examples, `main` and `fresh` are the
   protocol runs (see `docs/evidence/experiments/EXP-009-untuned-baselines/PRERUN.md`). Raw outputs are scored in the
   Core environment by `benchmarks/issue4_exp009_analyze.py`.
-- Training follows the EXP-010 protocol; nothing has been trained.
+- `exp010_train.py` is the EXP-010 LoRA harness (`tokens`, `params`, `train`, `reload`, `evaluate`, `selftest`) and
+  `exp010_launch.py` its detached launcher, a thin wrapper over the Core module `axbench.supervise` (common pre-load
+  baseline, 30-second resource monitor, supervised steps that fail closed). Operational definitions, the installed
+  MLX-LM behaviour they work around, and the pre-registered criteria are in
+  `docs/evidence/experiments/EXP-010-lora-pilot/PRERUN.md`. The launcher's phases are `smoke` (training and the
+  reload check), `pilot` (training only) and `evaluate` (the final pilot adapter on validation, its own supervised
+  sequence). Only the accepted smoke has run; the pilot and its evaluation start only after clearance and the owner's
+  approval, with the exact commands of PRERUN section 8. Their raw outputs are scored in the Core environment by
+  `benchmarks/issue4_exp010_analyze.py` (`axbench.exp010analysis`).
 
 Rules: no weights, adapters or caches in Git (`.gitignore` blocks common formats); offline inference only
 (`HF_HUB_OFFLINE=1`); never download on failure; no remote experiment trackers; the final AXBENCH test split is never

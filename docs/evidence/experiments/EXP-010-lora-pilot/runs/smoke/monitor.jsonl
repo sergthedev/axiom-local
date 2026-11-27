@@ -1,0 +1,4 @@
+{"memory_free_percentage": 78, "power_source": "AC Power", "pressure_level": 1, "sample": 0, "stop": null, "swap": {"free_bytes": 0, "total_bytes": 0, "used_bytes": 0}, "swap_used": 0, "target_pid_rss_bytes": null, "time_utc": "2026-11-26T13:26:55Z"}
+{"memory_free_percentage": 46, "power_source": "AC Power", "pressure_level": 1, "sample": 1, "stop": null, "swap": {"free_bytes": 0, "total_bytes": 0, "used_bytes": 0}, "swap_used": 0, "target_pid_rss_bytes": 1934704640, "time_utc": "2026-11-26T13:27:25Z"}
+{"memory_free_percentage": 51, "power_source": "AC Power", "pressure_level": 1, "sample": 2, "stop": null, "swap": {"free_bytes": 0, "total_bytes": 0, "used_bytes": 0}, "swap_used": 0, "target_pid_rss_bytes": 2550071296, "time_utc": "2026-11-26T13:27:55Z"}
+{"final": true, "sample": 3, "time_utc": "2026-11-26T13:27:58Z"}

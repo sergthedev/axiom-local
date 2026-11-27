@@ -6,6 +6,14 @@
   has been run. Pilot results on this corpus are exploratory and are not presented as human-validated or
   population-representative.
 - Issue: #4 (protocol). Decision record: ADR 0012. Lead starting point: DR-003 review (REF-031).
+- Phase 3C (2026-11-26): EXP-009 selected Qwen3-1.7B and the selection was accepted (PR #10). The operational
+  definitions, measured inputs (export hashes, token lengths, `max_seq_length` 1024, 458,752 trainable parameters),
+  the installed MLX-LM findings and the pre-registered pilot criteria and gates are in the pre-run record
+  [PRERUN.md](PRERUN.md), proposed for technical review. The protocol text below is unchanged (revision 3); nothing
+  has been trained. PRERUN revision 1 records the lead's accepted decisions and the corrected launcher, reload and
+  completion checks; the separate shell monitor loop described below is implemented as the supervised monitor process
+  of PRERUN D10. The single owner-authorized smoke ran on 2026-11-26 at `680574b` and completed; see
+  [SMOKE.md](SMOKE.md). The pilot has not started.
 
 ## Fixed inputs
 

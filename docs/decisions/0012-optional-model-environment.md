@@ -74,6 +74,24 @@ decoding in thinking mode; whether greedy decoding hurts this non-thinking task 
 and the frozen base-selection rule; [EXP-010](../evidence/experiments/EXP-010-lora-pilot/PROTOCOL.md) LoRA smoke and
 pilot with resource limits and stop rules.
 
+### Addendum (2026-11-26, EXP-010 pre-run; proposed with the pre-run record)
+
+Reading the installed training path (REF-036) and measuring it with the pinned tokenizer added findings that the
+LoRA harness must handle explicitly (details and decisions in the EXP-010 [PRERUN.md](../evidence/experiments/EXP-010-lora-pilot/PRERUN.md)):
+
+5. The installed `default_loss` trains one padding target per example (its end bound is inclusive). The EXP-010
+   harness uses the same loss with an exclusive end bound.
+6. MLX-LM counts micro-steps, not optimizer updates, in `iters`, `steps_per_eval` and `save_every`, and its built-in
+   evaluation runs between updates. The harness evaluates and saves at update boundaries itself.
+7. The installed chat path would train 6 tokens per example beyond the completion (4 empty-think tokens, the
+   template newline, the padding target). The harness renders prompt and completion itself with
+   `enable_thinking=False` (finding 2 resolved this way, pending review).
+8. Evaluation and batch order share the global NumPy RNG; the harness protects the data-order state around
+   evaluation so that the order depends only on the seed.
+
+The LoRA harness lives in `envs/model/exp010_train.py` and `envs/model/exp010_launch.py`; its pure logic is in
+`axbench.trainwatch` and `axbench.pilotgates` and is tested in Core CI.
+
 ## Tradeoffs and consequences
 
 - Two lock files to maintain; the Core pins must be kept equal by hand (checked in review).
@@ -90,4 +108,4 @@ pilot with resource limits and stop rules.
 
 ## References
 
-REF-031, REF-032, REF-033, REF-034, REF-035
+REF-031, REF-032, REF-033, REF-034, REF-035, REF-036
