@@ -18,6 +18,38 @@ THRESHOLDS = (0.8, 0.9, 0.95)
 CHUNK = 500
 
 
+def _similar_pairs(texts: list[str], floor: float):
+    """Yield (i, j, cosine) with i < j for every pair at or above ``floor`` (each pair once)."""
+    matrix = (
+        TfidfVectorizer(analyzer="char_wb", ngram_range=(3, 5), sublinear_tf=True)
+        .fit_transform(texts)
+        .tocsr()
+    )
+    for start in range(0, len(texts), CHUNK):
+        sim = (matrix[start : start + CHUNK] @ matrix.T).toarray()
+        for i in range(sim.shape[0]):
+            sim[i, : start + i + 1] = 0.0
+        for i, j in np.argwhere(sim >= floor):
+            yield start + int(i), int(j), float(sim[i, j])
+
+
+def cross_split_conflicts(corpus: dict[str, list[dict[str, Any]]], threshold: float) -> set[str]:
+    """Lineages to drop so no train/validation pair of different text is at or above ``threshold``.
+
+    The validation-side record of each close pair loses its whole lineage (a translation pair
+    stays together). Dropping is deterministic and only ever removes validation records.
+    """
+    rows = [r for split in sorted(corpus) for r in corpus[split]]
+    texts = [normalize_request(r["request"]) for r in rows]
+    drop: set[str] = set()
+    for a, b, _ in _similar_pairs(texts, threshold):
+        if rows[a]["split"] == rows[b]["split"] or texts[a] == texts[b]:
+            continue
+        loser = rows[a] if rows[a]["split"] == "validation" else rows[b]
+        drop.add(loser["lineage_id"])
+    return drop
+
+
 def near_duplicate_report(corpus: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
     rows = [r for split in sorted(corpus) for r in corpus[split]]
     texts = [normalize_request(r["request"]) for r in rows]

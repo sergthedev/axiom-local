@@ -17,6 +17,7 @@ import re
 import xml.etree.ElementTree as ET
 from collections.abc import Iterable
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 
 from axiom_router.schema import deasciify
@@ -371,12 +372,48 @@ def all_tables(path: Path = INVENTORY_PATH) -> list[RealTable]:
     ]
 
 
+def schema_key(columns: Iterable[tuple[str, str]]) -> str:
+    """Order-free identity of a column list (folded names and kinds)."""
+    pairs = sorted((re.sub(r"\W+", "", deasciify(n).lower()), k) for n, k in columns)
+    return hashlib.sha256(json.dumps(pairs, ensure_ascii=False).encode()).hexdigest()[:16]
+
+
+def components(links: Iterable[tuple[str, str]]) -> dict[str, str]:
+    """Union-find over (a, b) links: every node maps to the smallest node of its component."""
+    parent: dict[str, str] = {}
+
+    def find(x: str) -> str:
+        parent.setdefault(x, x)
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    for a, b in links:
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[max(ra, rb)] = min(ra, rb)
+    return {x: find(x) for x in list(parent)}
+
+
+@lru_cache(maxsize=1)
+def _group_roots() -> dict[str, str]:
+    """Table groups that share an identical schema are one family and go to one split."""
+    by_key: dict[str, str] = {}
+    links: list[tuple[str, str]] = []
+    for t in all_tables():
+        links.append((t.group, t.group))
+        key = schema_key((c.name, c.kind) for c in t.columns)
+        links.append((by_key.setdefault(key, t.group), t.group))
+    return components(links)
+
+
 def table_partition(table: RealTable) -> str:
     if table.source_id == "SRC-O01":
         return table.group.rsplit("/", 1)[1]
     if table.source_id == "SRC-O05":
         return "train"
-    return partition_of(table.group)
+    return partition_of(_group_roots().get(table.group, table.group))
 
 
 def usable(table: RealTable) -> bool:

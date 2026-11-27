@@ -87,12 +87,6 @@
    "bytes": 29811
   },
   {
-   "path": "izmir/turizm-bilgilendirme-ofisleri-konum-verisi.csv",
-   "source_id": "SRC-O06",
-   "sha256": "85b6f2967b01742dfaa8d92c74747a487e55841ce1a6152c5ed71ebe5ccd6e6b",
-   "bytes": 848
-  },
-  {
    "path": "izmir/turizm-tesisleri.csv",
    "source_id": "SRC-O06",
    "sha256": "3c9facfaa8e7a576da134ad67f0d3a38997850240a4292ac44b38b1c55de0569",

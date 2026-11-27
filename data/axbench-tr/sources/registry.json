@@ -13,7 +13,8 @@
     "id": "Apache-2.0",
     "evidence": "Hugging Face dataset card metadata; card states it is a Turkish translation of gretelai/synthetic_text_to_sql (Apache-2.0 per the card)",
     "derivatives_allowed": true,
-    "redistribution": "allowed with notice (Apache-2.0)"
+    "redistribution": "allowed with notice (Apache-2.0)",
+    "upstream_generation": "The Gretel README states the data were designed and generated using Gretel Navigator and released under Apache 2.0 by the publisher; the terms of the underlying generator model are not stated and were not verified. Records carry provenance.upstream_license and can be excluded as a group (origin external_adapted)."
    },
    "language": [
     "tr",
@@ -22,8 +23,8 @@
    "domain": "synthetic cross-domain business tables (text-to-SQL)",
    "status": "accepted_adapted",
    "origin": "machine_translated_synthetic",
-   "justification": "Table definitions (CREATE TABLE) give typed schemas; English source prompt and Turkish translation give a bilingual request pair. Only prompts whose SQL maps without loss onto Compare or Inspect, and data-modification prompts (REJECT), are adapted; the SQL is used to derive gold plans and is never taught or emitted. Translation is machine-made and not human-reviewed.",
-   "suitability": "partial: synthetic domains, English column names, machine-translated Turkish",
+   "justification": "Only request texts whose whole meaning is a plain average, minimum or maximum (optionally per group) on the bound columns, and INSERT/UPDATE/DELETE prompts (REJECT), are adapted. SUM, count, filters, rankings, named places and wrong-measure prompts are excluded (axbench_tr/intent.py). The CREATE TABLE contexts are synthetic, not real published tables. The SQL is parsed only to derive the gold plan and is never taught or emitted. The Turkish text is machine-made and unreviewed.",
+   "suitability": "partial: synthetic domains and tables, English column names, machine-translated Turkish; about 190 qualified upstream rows",
    "acquire": {
     "method": "hf_files",
     "repo": "Cognipeer/synthetic-text-to-sql-tr",
@@ -78,17 +79,17 @@
    "license": {
     "id": "MIT (card metadata); README badge says Apache-2.0",
     "evidence": "Hugging Face card metadata and README badge disagree; both are permissive",
-    "derivatives_allowed": true,
-    "redistribution": "allowed with notice (either licence)"
+    "derivatives_allowed": null,
+    "redistribution": "unresolved: quarantined"
    },
    "language": [
     "tr"
    ],
    "domain": "crypto, equities, finance Q&A (LLM-generated)",
-   "status": "accepted_adapted",
+   "status": "quarantined_licence_unresolved",
    "origin": "llm_generated",
-   "justification": "User questions only (no answers, no system text) are reused as Turkish out_of_scope REJECT negatives: general finance questions that are not requests to analyse a loaded table. The card claims about 10M rows while the file holds fewer (measured count in INVENTORY.json), so card statistics are not trusted.",
-   "suitability": "negatives only; no tabular content",
+   "justification": "Hub card metadata says MIT while the README badge says Apache-2.0, and the card names no copyright holder or upstream provenance for the questions. The conflict is unresolved, so nothing from this source is used (it was 300 out_of_scope negatives in the preserved v0.2-draft). Reinstating it needs the publisher's clarification.",
+   "suitability": "quarantined: no records used in v0.2-rev1",
    "acquire": {
     "method": "hf_files",
     "repo": "AlicanKiraz0/Turkish-Finance-SFT-Dataset",

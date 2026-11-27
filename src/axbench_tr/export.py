@@ -24,7 +24,7 @@ from typing import Any
 from axiom_router.prompt import build_router_input, chat_messages
 from axiom_router.schema import project_columns
 
-from .build import OUT_ROOT
+from .build import CURRENT_VERSION, OUT_ROOT
 from .fetch import sha256_bytes
 
 SMOKE_TRAIN = 400
@@ -67,7 +67,7 @@ def _write(path: Path, records: list[dict[str, Any]]) -> dict[str, Any]:
     return {"examples": len(records), "bytes": len(data), "sha256": sha256_bytes(data)}
 
 
-def export(out: Path, version: str = "v0.2-draft") -> dict[str, Any]:
+def export(out: Path, version: str = CURRENT_VERSION) -> dict[str, Any]:
     out = out.resolve()
     if OUT_ROOT.parents[1] in (out, *out.parents):
         raise SystemExit("refusing to export inside the repository; choose another directory")
@@ -100,9 +100,15 @@ def export(out: Path, version: str = "v0.2-draft") -> dict[str, Any]:
         "peak_probe": (longest, longest[:SMOKE_VALID]),
     }
     files: dict[str, Any] = {}
+    row_ids: dict[str, list[str]] = {}
     for name, (tr, va) in sets.items():
         files[f"{name}/train.jsonl"] = _write(out / name / "train.jsonl", tr)
         files[f"{name}/valid.jsonl"] = _write(out / name / "valid.jsonl", va)
+        row_ids[f"{name}/train.jsonl"] = [r["id"] for r in tr]  # file order, line by line
+        row_ids[f"{name}/valid.jsonl"] = [r["id"] for r in va]
+    ids_bytes = (json.dumps(row_ids, indent=0, sort_keys=True) + "\n").encode("utf-8")
+    (out / "ROW_IDS.json").write_bytes(ids_bytes)
+    files["ROW_IDS.json"] = {"bytes": len(ids_bytes), "sha256": sha256_bytes(ids_bytes)}
     manifest = {
         "schema": "axbench-tr.mlx-export/1",
         "corpus_version": f"axbench-tr/{version.removeprefix('v')}",

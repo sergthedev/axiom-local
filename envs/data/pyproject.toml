@@ -1,0 +1,25 @@
+# Optional data-build environment for AXBENCH-TR (PR #13): the packages that rebuild the corpus
+# (pyarrow reads the Cognipeer parquet) and measure tokens (tokenizers, jinja2). A separate uv
+# project with its own lock file, so the AXIOM Core environment, its uv.lock digest (ADR 0007) and
+# the Windows/macOS CI are unaffected. Never required by Core, Verify, the Guard or AXBENCH.
+[project]
+name = "axiom-data-env"
+version = "0.0.0"
+description = "Optional AXBENCH-TR data-build and token-count environment (not part of Core)."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "axiom-local",
+    "pyarrow==26.0.1",
+    "tokenizers==0.23.3",
+    "jinja2==3.1.6",
+]
+
+[tool.uv]
+package = false
+# Resolve only releases at least two weeks old at the time of locking (supply-chain hygiene).
+exclude-newer = "2026-11-12T00:00:00Z"
+# Core pins are reviewed in the main project's lock; they are exempt from the cut-off here.
+exclude-newer-package = { numpy = "2026-11-26T00:00:00Z", pydantic = "2026-11-26T00:00:00Z", pydantic-core = "2026-11-26T00:00:00Z", scikit-learn = "2026-11-26T00:00:00Z", scipy = "2026-11-26T00:00:00Z", threadpoolctl = "2026-11-26T00:00:00Z" }
+
+[tool.uv.sources]
+axiom-local = { path = "../..", editable = true }

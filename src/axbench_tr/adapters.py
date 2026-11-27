@@ -24,8 +24,9 @@ from typing import Any
 from axiom_router.contract import CANDIDATE_VERSION
 from axiom_router.schema import project_columns
 
+from . import intent
 from .fetch import raw_dir
-from .schemas import RealTable, table_partition, usable
+from .schemas import RealTable, schema_key, table_partition, usable
 from .synth import CORPUS_VERSION, normalize_request
 
 COGNIPEER_FILE = (
@@ -35,12 +36,12 @@ FINANCE_FILE = "hf/AlicanKiraz0/Turkish-Finance-SFT-Dataset/d106acf808bf/finance
 
 _CREATE = re.compile(r"CREATE TABLE(?: IF NOT EXISTS)?\s+([\w.\"]+)\s*\((.*?)\)\s*;", re.S | re.I)
 _GROUP = re.compile(
-    r"^SELECT\s+(\w+)\s*,\s*(AVG|SUM|MIN|MAX)\(\s*(\w+)\s*\)(?:\s+AS\s+\w+)?"
+    r"^SELECT\s+(\w+)\s*,\s*(AVG|MIN|MAX)\(\s*(\w+)\s*\)(?:\s+AS\s+\w+)?"
     r"\s+FROM\s+([\w.]+)\s+GROUP BY\s+(\w+)\s*;?$",
     re.I,
 )
 _AGG = re.compile(
-    r"^SELECT\s+(AVG|SUM|MIN|MAX)\(\s*(\w+)\s*\)(?:\s+AS\s+\w+)?\s+FROM\s+([\w.]+)\s*;?$", re.I
+    r"^SELECT\s+(AVG|MIN|MAX)\(\s*(\w+)\s*\)(?:\s+AS\s+\w+)?\s+FROM\s+([\w.]+)\s*;?$", re.I
 )
 _MOD = re.compile(r"^\s*(INSERT|UPDATE|DELETE)\b", re.I)
 _NUMERIC_TYPES = re.compile(
@@ -100,6 +101,9 @@ def parse_create(context: str) -> tuple[str, list[tuple[str, str]]] | None:
     return name, cols
 
 
+_OWNER_SPLIT: dict[str, str] = {}  # schema fingerprint -> the one split allowed to use it
+
+
 def _domain_split(domain: str) -> str:
     digest = hashlib.sha256(f"axbench-tr/0.2/external-domain/{domain}".encode()).digest()
     return "validation" if digest[0] < 51 else "train"
@@ -108,6 +112,11 @@ def _domain_split(domain: str) -> str:
 def _economic(domain: str) -> str:
     d = domain.lower()
     return "economic" if any(k in d for k in _ECON_DOMAIN) else "non_economic"
+
+
+# Rows considered and excluded in the last call of ``cognipeer_records``: {row id: reason}.
+LAST_EXCLUSIONS: dict[int, str] = {}
+LAST_CANDIDATES: dict[str, int] = {}
 
 
 def cognipeer_records(want: dict[str, int], seed: str) -> dict[str, list[dict[str, Any]]]:
@@ -123,12 +132,26 @@ def cognipeer_records(want: dict[str, int], seed: str) -> dict[str, list[dict[st
         "inspect": [],
         "data_modification": [],
     }
+    LAST_EXCLUSIONS.clear()
+    # A schema shared by domains in both splits would leak; it is used only in the split of the
+    # alphabetically first domain that hosts it, and rows in the other split are excluded.
+    owner: dict[str, tuple[str, str]] = {}
+    for row in rows:
+        if parsed_ := parse_create(row["sql_context"]):
+            key = schema_key(parsed_[1])
+            if key not in owner or row["domain"] < owner[key][0]:
+                owner[key] = (row["domain"], _domain_split(row["domain"]))
+    _OWNER_SPLIT.clear()
+    _OWNER_SPLIT.update({k: v[1] for k, v in owner.items()})
     for row in rows:
         parsed = parse_create(row["sql_context"])
         sql = row["sql"].strip()
         if not parsed:
             continue
         table, cols = parsed
+        if _OWNER_SPLIT[schema_key(cols)] != _domain_split(row["domain"]):
+            LAST_EXCLUSIONS[int(row["id"])] = "schema_shared_with_other_split"
+            continue
         kinds = dict(cols)
         if not 2 <= len(cols) <= 64 or len({c for c, _ in cols}) != len(cols):
             continue
@@ -139,46 +162,78 @@ def cognipeer_records(want: dict[str, int], seed: str) -> dict[str, list[dict[st
         ):
             g, m_col = m.group(1), m.group(3)
             if kinds.get(g) == "text" and kinds.get(m_col) == "numeric" and g != m_col:
-                pools["compare"].append(
-                    (
-                        row,
-                        {
-                            "op": "compare",
-                            "group_by": g,
-                            "measure": m_col,
-                            "agg": m.group(2).upper(),
-                            "cols": cols,
-                        },
-                    )
-                )
+                basis = {
+                    "op": "compare",
+                    "group_by": g,
+                    "measure": m_col,
+                    "agg": m.group(2).upper(),
+                    "cols": cols,
+                }
+                if reason := intent.english_problem(row["sql_prompt"], basis):
+                    LAST_EXCLUSIONS[int(row["id"])] = f"compare:{reason}"
+                else:
+                    pools["compare"].append((row, basis))
         elif (m := _AGG.match(sql)) and m.group(3).split(".")[-1].lower() == table:
             if kinds.get(m.group(2)) == "numeric":
-                pools["inspect"].append(
-                    (
-                        row,
-                        {
-                            "op": "inspect",
-                            "column": m.group(2),
-                            "agg": m.group(1).upper(),
-                            "cols": cols,
-                        },
-                    )
-                )
+                basis = {
+                    "op": "inspect",
+                    "column": m.group(2),
+                    "agg": m.group(1).upper(),
+                    "cols": cols,
+                }
+                if reason := intent.english_problem(row["sql_prompt"], basis):
+                    LAST_EXCLUSIONS[int(row["id"])] = f"inspect:{reason}"
+                else:
+                    pools["inspect"].append((row, basis))
         elif _MOD.match(sql):
-            pools["data_modification"].append((row, {"op": "data_modification", "cols": cols}))
+            if reason := intent.modification_problem(row["sql_prompt"]):
+                LAST_EXCLUSIONS[int(row["id"])] = f"data_modification:{reason}"
+            else:
+                pools["data_modification"].append((row, {"op": "data_modification", "cols": cols}))
+        elif re.match(r"^SELECT\b", sql, re.I):
+            LAST_EXCLUSIONS[int(row["id"])] = "select:shape_not_a_supported_summary"
+    LAST_CANDIDATES.clear()
+    LAST_CANDIDATES.update({k: len(v) for k, v in pools.items()})
     out: dict[str, list[dict[str, Any]]] = {"train": [], "validation": []}
     seen: set[str] = set()
     for frame, n_tr in want.items():
         picked = pools[frame]
+        if frame != "data_modification":
+            # Both languages of one qualified upstream row, so a translation pair never
+            # straddles a split (the split is by domain) and shares one lineage id.
+            rows_taken = 0
+            for row, basis in picked:
+                if rows_taken >= n_tr:
+                    break
+                en = (row["sql_prompt"] or "").strip()
+                tr = (row["tr_prompt"] or "").strip()
+                emitted = False
+                if 12 <= len(en) <= 260 and normalize_request(en) not in seen:
+                    seen.add(normalize_request(en))
+                    out[_domain_split(row["domain"])].append(
+                        _cognipeer_record(row, basis, "en", en, frame)
+                    )
+                    emitted = True
+                if 12 <= len(tr) <= 260 and tr != en:
+                    if reason := intent.turkish_problem(tr, basis):
+                        LAST_EXCLUSIONS[int(row["id"]) * 10 + 1] = f"tr_{frame}:{reason}"
+                    elif normalize_request(tr) not in seen:
+                        seen.add(normalize_request(tr))
+                        out[_domain_split(row["domain"])].append(
+                            _cognipeer_record(row, basis, "tr", tr, frame)
+                        )
+                        emitted = True
+                rows_taken += emitted
+            continue
         n_en = n_tr // 4
         for lang, count, start in (("tr", n_tr, 0), ("en", n_en, n_tr * 3)):  # disjoint row ranges
             taken = 0
             for row, basis in picked[start:]:
                 if taken >= count:
                     break
-                text = (row["tr_prompt"] if lang == "tr" else row["sql_prompt"]).strip()
+                text = ((row["tr_prompt"] if lang == "tr" else row["sql_prompt"]) or "").strip()
                 if not 12 <= len(text) <= 260 or (
-                    lang == "tr" and text == row["sql_prompt"].strip()
+                    lang == "tr" and text == (row["sql_prompt"] or "").strip()
                 ):
                     continue
                 key = normalize_request(text)

@@ -10,20 +10,21 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from . import adapters, contamination, dedup, validate
+from . import acquire, adapters, contamination, dedup, validate
 from .registry import ACQUISITION_PATH, REGISTRY_PATH
 from .schemas import all_tables, table_partition, usable
 from .synth import CORPUS_VERSION, GENERATOR, generate
 
 OUT_ROOT = Path(__file__).resolve().parents[2] / "data" / "axbench-tr"
-DEFAULT_SEED = "axbench-tr-0.2-draft"
+CURRENT_VERSION = "v0.2-rev1"  # v0.2-draft is preserved unchanged for the record
+DEFAULT_SEED = "axbench-tr-0.2-rev1"
+CROSS_SPLIT_COSINE = 0.9  # char n-gram TF-IDF cosine; a lexical proxy, not semantic equivalence
 SYNTHETIC_SIZES = {"train": 5400, "validation": 1300}
 COGNIPEER_WANT = {
-    "compare": 700,
-    "inspect": 300,
-    "data_modification": 300,
-}  # Turkish counts; a quarter more in English
-FINANCE_NEGATIVES = 300
+    "compare": 1000,  # upper bounds on upstream rows; the intent check decides what qualifies
+    "inspect": 1000,
+    "data_modification": 300,  # Turkish rows; a quarter as many English ones from other rows
+}
 
 
 def _jsonl(records: list[dict[str, Any]]) -> bytes:
@@ -32,15 +33,32 @@ def _jsonl(records: list[dict[str, Any]]) -> bytes:
     ).encode("utf-8")
 
 
+ADAPTER_AUDIT: dict[str, Any] = {}
+DEDUP_AUDIT: dict[str, Any] = {}
+
+
 def build_corpus(seed: str = DEFAULT_SEED) -> dict[str, list[dict[str, Any]]]:
+    problems = acquire.verify()  # the raw files must match the acquisition manifest
+    if problems:
+        raise SystemExit("raw files do not match ACQUISITION.json:\n" + "\n".join(problems[:10]))
     tables = all_tables()
     corpus: dict[str, list[dict[str, Any]]] = {
         s: generate(tables, s, n, seed) for s, n in SYNTHETIC_SIZES.items()
     }
     for split, recs in adapters.cognipeer_records(COGNIPEER_WANT, seed).items():
         corpus[split] += recs
-    for split, recs in adapters.finance_negatives(tables, FINANCE_NEGATIVES, seed).items():
-        corpus[split] += recs
+    ADAPTER_AUDIT.clear()
+    ADAPTER_AUDIT.update(
+        {
+            "qualified_upstream_rows": dict(adapters.LAST_CANDIDATES),
+            "excluded_by_reason": dict(Counter(adapters.LAST_EXCLUSIONS.values())),
+            "rule": "an adapted PLAN is kept only if the whole English request is a plain "
+            "aggregate (average/min/max, no sum or count) question matching the bound columns; "
+            "see axbench_tr/intent.py",
+        }
+    )
+    # SRC-N03 (finance questions) is quarantined: its licence evidence conflicts (MIT tag, Apache
+    # badge) and is unresolved. ``adapters.finance_negatives`` is kept but not called.
     # Final deterministic order and cross-source duplicate removal (first occurrence wins).
     seen: set[str] = set()
     for split, recs in corpus.items():
@@ -51,6 +69,19 @@ def build_corpus(seed: str = DEFAULT_SEED) -> dict[str, list[dict[str, Any]]]:
                 seen.add(key)
                 kept.append(rec)
         corpus[split] = kept
+    # Near-duplicates across the split boundary (lexical proxy, cosine >= CROSS_SPLIT_COSINE)
+    # are resolved on the validation side, whole lineage at a time.
+    drop = dedup.cross_split_conflicts(corpus, CROSS_SPLIT_COSINE)
+    DEDUP_AUDIT.clear()
+    DEDUP_AUDIT.update(
+        {
+            "rule": f"validation lineages with a record at cosine >= {CROSS_SPLIT_COSINE} to a "
+            "train record of different text are removed whole (lexical proxy only)",
+            "dropped_validation_lineages": sorted(drop),
+        }
+    )
+    for split in corpus:
+        corpus[split] = [r for r in corpus[split] if r["lineage_id"] not in drop]
     return corpus
 
 
@@ -140,6 +171,8 @@ def write(corpus: dict[str, list[dict[str, Any]]], version: str, seed: str = DEF
             contamination.template_report()
         ),
         "near_duplicates_in_corpus": dedup.near_duplicate_report(corpus),
+        "external_adapter_audit": ADAPTER_AUDIT,
+        "cross_split_near_duplicate_resolution": DEDUP_AUDIT,
         "sealed_test_check": (
             "not performed: this project's tooling has not been run on the sealed AXBENCH "
             "test split"
@@ -159,8 +192,8 @@ def write(corpus: dict[str, list[dict[str, Any]]], version: str, seed: str = DEF
         "files": files,
         "synthetic_sizes": SYNTHETIC_SIZES,
         "external_adapted": {
-            "SRC-N01 requested Turkish counts": COGNIPEER_WANT,
-            "SRC-N03 negatives": FINANCE_NEGATIVES,
+            "SRC-N01 row caps": COGNIPEER_WANT,
+            "SRC-N03": "quarantined: licence evidence conflicts, no records used",
         },
         "tables_in_inventory": len(all_tables()),
         "tables_usable": sum(1 for t in all_tables() if usable(t)),

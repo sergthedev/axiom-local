@@ -54,11 +54,11 @@
    "url": "https://acikveri.bizizmir.com/license"
   },
   {
-   "bytes": 1876291,
+   "bytes": 1876253,
    "excerpt": "License : Creative Commons Attribution 4.0 This dataset is licensed under Creative Commons Attribution 4.0 Contact data@wo",
    "id": "LE-05",
    "retrieved": "2026-11-27",
-   "sha256": "e3506f68e422b2030798d73c02877042c5131ae81551c62cf304ce4568440324",
+   "sha256": "7f94ce704e9cffb441f3e968404082330a604d17ea0f4eb9acab238812f82503",
    "sources": [
     "SRC-O01"
    ],
@@ -80,11 +80,11 @@
    "url": "https://datacatalog.worldbank.org/public-licenses"
   },
   {
-   "bytes": 178058,
+   "bytes": 179849,
    "excerpt": "Reuse of statistical data, metadata, publications, and other dissemination tools published on this website for commercial or non-commercial purposes is authorised provided the source is acknowledged. The reuse policy of the European Commission is implemented by the Dec",
    "id": "LE-07",
    "retrieved": "2026-11-27",
-   "sha256": "8cf8fb2ce8853c7ec359c8919964d0726f703866646011de07fa9c710adbb6cd",
+   "sha256": "92eb8337512e377da3d27938a2c1b251b510599dcc2ec0528b3a315a6c65e15e",
    "sources": [
     "SRC-O02"
    ],

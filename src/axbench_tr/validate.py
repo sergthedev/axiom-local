@@ -14,7 +14,7 @@ from typing import Any
 
 from axbench.audit import gold_problems
 
-from .schemas import tokens
+from .schemas import schema_key, tokens
 from .synth import normalize_request
 
 REQUIRED_KEYS = (
@@ -119,6 +119,11 @@ def _mention_problems(rec: dict[str, Any]) -> list[str]:
     return problems
 
 
+def schema_fingerprint(rec: dict[str, Any]) -> str:
+    """Identity of a schema projection (same function the partitioner uses)."""
+    return schema_key((c["name"], c["type"]) for c in rec["schema"]["columns"])
+
+
 def corpus_report(corpus: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
     """Validate every record and the cross-split constraints; returns problems and counts."""
     problems: list[str] = []
@@ -134,16 +139,23 @@ def corpus_report(corpus: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
     lineages: dict[str, set[str]] = defaultdict(set)
     groups: dict[str, set[str]] = defaultdict(set)
     texts: dict[str, set[str]] = defaultdict(set)
+    fingerprints: dict[str, set[str]] = defaultdict(set)
+    upstream_rows: dict[str, set[str]] = defaultdict(set)
     for split, recs in corpus.items():
         for rec in recs:
             lineages[rec["lineage_id"]].add(split)
-            if rec["provenance"]["origin"] == "synthetic_template":
-                groups[rec["family"]].add(split)
+            groups[rec["family"]].add(split)  # every origin: template tables and upstream domains
+            fingerprints[schema_fingerprint(rec)].add(split)
+            upstream = rec["provenance"].get("upstream_row_id")
+            if upstream is not None:
+                upstream_rows[f"{rec['provenance']['source_id']}:{upstream}"].add(split)
             texts[normalize_request(rec["request"])].add(split)
     shared = {
         "lineages": sorted(k for k, v in lineages.items() if len(v) > 1),
         "table_groups": sorted(k for k, v in groups.items() if len(v) > 1),
         "request_texts": sorted(k for k, v in texts.items() if len(v) > 1),
+        "schema_fingerprints": sorted(k for k, v in fingerprints.items() if len(v) > 1),
+        "upstream_rows": sorted(k for k, v in upstream_rows.items() if len(v) > 1),
     }
     problems += [f"cross_split_{kind}:{x}" for kind, xs in shared.items() for x in xs]
     n = sum(map(len, corpus.values()))

@@ -1,0 +1,80 @@
+{
+ "hyperparameters": {
+  "grad_checkpoint": false,
+  "learning_rate": 1e-05,
+  "lora_dropout": 0.0,
+  "lora_keys": [
+   "self_attn.q_proj",
+   "self_attn.v_proj"
+  ],
+  "lora_layers": 8,
+  "lora_rank": 8,
+  "lora_scale": 20.0,
+  "max_seq_length": 2048,
+  "micro_batch": 1,
+  "optimizer": "adam",
+  "seed": 2026
+ },
+ "inputs": {
+  "corpus_files_sha256": {
+   "train.jsonl": "2f7c1533a414186810809f7a829bc73cceba5e4f2e6a34f4a331a3563fa484b8",
+   "validation.jsonl": "0c5496ca937261456f7352725e6ce5242cf4dcb89a66d43c87090dd8faa0841f"
+  },
+  "corpus_version": "v0.2-rev1",
+  "export_files": {
+   "ROW_IDS.json": "7d8fd1203d180fdf57ee6d2c877ab4d01b4ba53d42df461f5197be7c33b35210",
+   "full/train.jsonl": "36e3120a0a0fa252a3b7248b5060d2210d67eac3b80e2fe601e399d76da76bae",
+   "full/valid.jsonl": "6790b5e2ef6a8cd40642b359b0ba5f0fb81ce562419dff85867dbca148b4dcd7",
+   "peak_probe/train.jsonl": "787296439900464802bf4600daaead77194d1c1a4897b9c32f418101e79d4f76",
+   "peak_probe/valid.jsonl": "787296439900464802bf4600daaead77194d1c1a4897b9c32f418101e79d4f76",
+   "smoke/train.jsonl": "7208c9f5efee29eeaff5057ac07c001586ad858192cc1953593346b3ced61a4e",
+   "smoke/valid.jsonl": "37949fc982d61dc32cdd97ba3bbd48991eb1855c0be5f27451e8182d72b8e0b4"
+  },
+  "export_manifest_sha256": "17e8f0fd1bee0a79c9e0c230c33fc278df866a8415065190a726b57b37c9069b",
+  "per_example_path": "data/axbench-tr/v0.2-rev1/token_lengths_per_example.jsonl",
+  "per_example_sha256": "8789711a24b7e800b52ccd64c78ffd0c9b98c4836b3ee3c11a6817fb115bcae8"
+ },
+ "limits": {
+  "mlx_peak_gb": 10.0,
+  "pressure_critical": 4,
+  "reports_per_window": 10,
+  "rss_gb": 11.0,
+  "swap_growth_gb": 2.0,
+  "window_count": 3,
+  "window_ratio_floor": 0.5
+ },
+ "model": {
+  "repo_id": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "tokenizer_sha256": {
+   "tokenizer.json": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+   "tokenizer_config.json": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+  }
+ },
+ "packages": {
+  "mlx": "0.32.4",
+  "mlx-lm": "0.32.2"
+ },
+ "phases": [
+  {
+   "data": "peak_probe",
+   "grad_accumulation": 4,
+   "loss_is_diagnostic": true,
+   "microsteps": 20,
+   "microsteps_per_report": 4,
+   "name": "probe",
+   "optimizer_updates": 5
+  },
+  {
+   "data": "smoke",
+   "grad_accumulation": 4,
+   "loss_is_diagnostic": false,
+   "microsteps": 400,
+   "microsteps_per_report": 4,
+   "name": "smoke",
+   "optimizer_updates": 100
+  }
+ ],
+ "schema": "axbench-tr.exp-tr02-config/1",
+ "status": "prepared; not executed; not approved; immutable once reviewed (change = new version)"
+}

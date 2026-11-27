@@ -6,6 +6,8 @@ import argparse
 import json
 import sys
 
+from .build import CURRENT_VERSION
+
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(
@@ -20,13 +22,16 @@ def main(argv: list[str] | None = None) -> int:
         "economic", help="copy redistributable real observations to data/axbench-tr/economic/"
     )
     p = sub.add_parser("build", help="generate, validate, audit and write the corpus")
-    p.add_argument("--version", default="v0.2-draft")
+    p.add_argument("--version", default=CURRENT_VERSION)
     sub.add_parser("validate", help="validate the committed corpus")
     sub.add_parser("docs", help="regenerate DATA_SOURCES.md from the registry")
     p = sub.add_parser("export-mlx", help="write MLX-LM chat files outside the repository")
     p.add_argument("--out", required=True)
+    sub.add_parser("privacy-audit", help="scan committed economic CSVs for identifiers")
     sub.add_parser("licences", help="fetch licence pages and write LICENCE_EVIDENCE.json")
-    sub.add_parser("review-sample", help="write the stratified 300-record Turkish review sample")
+    sub.add_parser(
+        "review-sample", help="write the stratified 390-record review sample (300 Turkish)"
+    )
     p = sub.add_parser("review-summary", help="count decisions in a filled-in review CSV")
     p.add_argument("--file", required=True)
     p = sub.add_parser(
@@ -34,7 +39,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     p.add_argument("--file", required=True)
     p.add_argument("--field", default="request")
-    p.add_argument("--version", default="v0.2-draft")
+    p.add_argument("--version", default=CURRENT_VERSION)
     a = ap.parse_args(argv)
 
     if a.cmd == "acquire":
@@ -67,7 +72,7 @@ def main(argv: list[str] | None = None) -> int:
 
         corpus = {}
         for split in ("train", "validation"):
-            path = OUT_ROOT / "v0.2-draft" / f"{split}.jsonl"
+            path = OUT_ROOT / CURRENT_VERSION / f"{split}.jsonl"
             corpus[split] = [json.loads(line) for line in path.read_text("utf-8").splitlines()]
         report = corpus_report(corpus)
         print(json.dumps({k: v for k, v in report.items() if k != "problems"}, indent=1))
@@ -78,7 +83,22 @@ def main(argv: list[str] | None = None) -> int:
         from .export import export
 
         manifest = export(Path(a.out))
-        print(json.dumps({k: v["examples"] for k, v in manifest["files"].items()}, indent=1))
+        print(
+            json.dumps(
+                {k: v["examples"] for k, v in manifest["files"].items() if "examples" in v},
+                indent=1,
+            )
+        )
+    elif a.cmd == "privacy-audit":
+        from .economic import OUT_DIR, privacy_and_licence_audit
+
+        report = privacy_and_licence_audit()
+        (OUT_DIR / "PRIVACY_AUDIT.json").write_text(
+            json.dumps(report, indent=1, ensure_ascii=False, sort_keys=True) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+        print(report["files_scanned"], "files;", len(report["files_with_candidates"]), "flagged")
     elif a.cmd == "licences":
         from .licences import write as write_licences
 

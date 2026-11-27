@@ -559,3 +559,32 @@ for a comprehensive final audit of AXIOM Verify.
 - Added: reproducible 300-record Turkish review sample and protocol; licence evidence (8 pages, hashed, excerpts);
   near-duplicate audit; token gate and per-example lengths; MLX export; tests (33 in `tests/test_axbench_tr.py`).
 - Sealed test: not accessed and its contamination command not run, per the owner.
+
+### AXBENCH-TR revision 1 after the technical review of PR #13 (2026-11-27)
+- The review accepted the draft as acquisition evidence only. Blocking defect confirmed: the adapters derived a plan
+  from SQL shape, so SUM (not a Core kernel), value filters, rankings and wrong measures became labelled PLANs.
+  Fix: `axbench_tr/intent.py` keeps an upstream row only if the whole request is a plain average, minimum or maximum
+  question matching the bound columns; nothing is relabelled. Exclusions and reasons are in `AUDIT.json`.
+- Splits: schema fingerprints (normalised column names and kinds) and table families are now checked across all
+  origins; an upstream schema shared by domains of both splits is used in one split only (5,223 rows excluded);
+  one validation lineage was removed for a cross-split lexical near-duplicate at cosine 0.9. The audit says plainly
+  that this is not semantic deduplication.
+- SRC-N03 is quarantined (MIT tag versus Apache badge); nothing from it is in v0.2-rev1. No blanket MIT: per-origin
+  licences, Apache-2.0 and CC BY 4.0 texts in `data/axbench-tr/LICENSES/`. The committed economic CSVs were scanned for
+  private fields; one CSV with contact details was removed. Documentation no longer calls the Cognipeer tables real.
+- The draft (8,625 records) is preserved unchanged under `v0.2-draft/` with a README; `v0.2-rev1/` has a new seed and
+  a new 390-record review sample (300 Turkish) with predeclared gates and a second-review protocol.
+- Reproducibility: an isolated locked environment (`envs/data`, pyarrow, tokenizers, jinja2) rebuilds the corpus; the
+  raw files are verified against `ACQUISITION.json` before a build, which stops on a mismatch; two builds, one in
+  each environment, were byte-identical. A first isolated rebuild differed only because my snapshot predated two
+  code edits, not because the build is unstable.
+- A comparison that "passed" while the build had crashed (system Python lacked scikit-learn, files not rewritten) was
+  caught by checking file modification times and redone with the project environment.
+- Token statistics now verify the pinned tokenizer hashes, encode the whole sequence jointly, and report boundary
+  straddles (0) and separate-versus-joint differences (0).
+- EXP-TR02: reading mlx-lm 0.32.2 showed the stock trainer truncates silently, reports loss-token throughput, validates
+  one update early and supervises the empty thinking block. A new independent harness (`training/tr02/`) fixes each,
+  with immutable input hashes, an exact schedule (smoke: 400 rows once = 400 microsteps = 100 updates), separate
+  MLX-peak and RSS rules, a supervisor and 21 tests. No model was loaded; PR #11 was not touched.
+- Not done: human review, independently authored held-out tasks, the separate replay-fingerprint PR (prepared after
+  this PR, from `main`, as its own draft), the sealed-test check (not accessed), any training.

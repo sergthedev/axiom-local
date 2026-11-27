@@ -1,0 +1,67 @@
+{
+ "ai_review": "none: no AI review decisions are recorded here; human and AI review results, when they exist, go in separate files",
+ "by_frame": {
+  "clarify:ambiguous_column": 10,
+  "clarify:column_not_found": 9,
+  "clarify:column_type_mismatch": 11,
+  "clarify:invalid_parameter": 11,
+  "clarify:missing_cluster_count": 9,
+  "clarify:missing_column": 8,
+  "clarify:missing_correlation_method": 9,
+  "clarify:missing_operation": 8,
+  "clarify:multiple_operations": 8,
+  "cluster": 20,
+  "compare": 79,
+  "inspect": 26,
+  "inspect_all": 9,
+  "reject:causal_inference": 8,
+  "reject:code_or_system_request": 9,
+  "reject:data_modification": 77,
+  "reject:forecasting": 8,
+  "reject:hypothesis_test": 8,
+  "reject:instruction_override": 10,
+  "reject:out_of_scope": 8,
+  "reject:regression": 8,
+  "reject:unsupported_analysis": 8,
+  "relate": 29
+ },
+ "by_language": {
+  "en": 90,
+  "tr": 300
+ },
+ "by_origin": {
+  "external_adapted": 130,
+  "synthetic_template": 260
+ },
+ "by_risk": {
+  "high": 51,
+  "standard": 339
+ },
+ "by_source": {
+  "SRC-N01": 130,
+  "SRC-O01": 110,
+  "SRC-O02": 7,
+  "SRC-O03": 2,
+  "SRC-O04": 1,
+  "SRC-O05": 5,
+  "SRC-O06": 135
+ },
+ "by_split": {
+  "train": 308,
+  "validation": 82
+ },
+ "corpus_files_sha256": {
+  "train.jsonl": "2f7c1533a414186810809f7a829bc73cceba5e4f2e6a34f4a331a3563fa484b8",
+  "validation.jsonl": "0c5496ca937261456f7352725e6ce5242cf4dcb89a66d43c87090dd8faa0841f"
+ },
+ "distinct_lineages": 248,
+ "files": {
+  "REVIEW_SAMPLE.csv": "5a0ff8608c3f6f0029fa807ecfc5b3805d407821e192d551578b9ab5d2968b50",
+  "REVIEW_SAMPLE.jsonl": "7729629f70703be478a7934074529d4ba31bf1e040984ab29d555089f74baad5"
+ },
+ "records": 390,
+ "schema": "axbench-tr.review-sample/1",
+ "seed": "axbench-tr-0.2-rev1-review-sample",
+ "selection": "Records of train and validation; strata language x origin x frame; allocation {'tr/external_adapted': 100, 'tr/synthetic_template': 200, 'en/external_adapted': 30, 'en/synthetic_template': 60}; floor 3 per stratum, 5 for high-risk frames (1 in a small slice; or all if fewer); largest-remainder allocation; inside a stratum records are ranked by sha256(seed/language/origin/frame|id) with one record per lineage preferred",
+ "status": "unreviewed: reviewer columns are empty"
+}

@@ -22,6 +22,7 @@ STATUSES = frozenset(
         "accepted_reference",  # observations kept apart from training data, for demos and checks
         "reviewed_not_used",
         "probed_not_acquired",
+        "quarantined_licence_unresolved",  # acquired for the record, no content used in any record
         "blocked_access",
         "rejected_duplicate",
         "rejected_license_conflict",

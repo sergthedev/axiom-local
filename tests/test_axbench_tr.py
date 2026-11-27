@@ -12,11 +12,22 @@ from pathlib import Path
 import pytest
 
 from axbench_tr import acquire as acq
-from axbench_tr import adapters, contamination, fetch, registry, schemas, synth, templates, validate
-from axbench_tr.build import OUT_ROOT
+from axbench_tr import (
+    adapters,
+    contamination,
+    fetch,
+    intent,
+    registry,
+    schemas,
+    synth,
+    templates,
+    validate,
+)
+from axbench_tr.build import CURRENT_VERSION, OUT_ROOT
 
 ROOT = Path(__file__).resolve().parents[1]
-CORPUS = OUT_ROOT / "v0.2-draft"
+CORPUS = OUT_ROOT / CURRENT_VERSION
+DRAFT = OUT_ROOT / "v0.2-draft"  # the first, superseded corpus, kept unchanged as a record
 
 
 # ----------------------------------------------------------------------------------- registry
@@ -32,6 +43,8 @@ def test_registry_loads_and_is_consistent() -> None:
             assert src["license"]["derivatives_allowed"] is True, src["id"]
         if src["status"].startswith("rejected_license"):
             assert src["license"]["derivatives_allowed"] is not True, src["id"]
+    by_id = {s["id"]: s for s in reg["sources"]}
+    assert by_id["SRC-N03"]["status"] == "quarantined_licence_unresolved"  # MIT vs Apache conflict
 
 
 def test_registry_validation_rejects_bad_entries() -> None:
@@ -270,9 +283,9 @@ def test_cognipeer_record_derivation_and_validity() -> None:
     cols = adapters.parse_create(_row("")["sql_context"])[1]
     rec = adapters._cognipeer_record(
         _row(""),
-        {"op": "compare", "group_by": "region", "measure": "amt", "agg": "SUM", "cols": cols},
+        {"op": "compare", "group_by": "region", "measure": "amt", "agg": "AVG", "cols": cols},
         "tr",
-        "Bölgeye göre toplam tutar nedir?",
+        "Bölgeye göre ortalama tutar nedir?",
         "compare",
     )
     assert rec["gold"] == {
@@ -295,12 +308,16 @@ def test_cognipeer_record_derivation_and_validity() -> None:
 
 
 def test_sql_patterns_are_strict() -> None:
-    assert adapters._GROUP.match("SELECT region, SUM(amt) FROM t GROUP BY region;")
+    assert adapters._GROUP.match("SELECT region, AVG(amt) FROM t GROUP BY region;")
+    # SUM and COUNT are not Core descriptive kernels, so they are never accepted
+    assert not adapters._GROUP.match("SELECT region, SUM(amt) FROM t GROUP BY region;")
+    assert not adapters._GROUP.match("SELECT region, COUNT(amt) FROM t GROUP BY region;")
+    assert not adapters._AGG.match("SELECT SUM(amt) AS a FROM t;")
     assert not adapters._GROUP.match(
-        "SELECT region, SUM(amt) FROM t WHERE amt > 1 GROUP BY region;"
+        "SELECT region, AVG(amt) FROM t WHERE amt > 1 GROUP BY region;"
     )
     assert not adapters._GROUP.match(
-        "SELECT region, SUM(amt) FROM t JOIN u ON 1=1 GROUP BY region;"
+        "SELECT region, AVG(amt) FROM t JOIN u ON 1=1 GROUP BY region;"
     )
     assert adapters._AGG.match("SELECT AVG(amt) AS a FROM t;")
     assert not adapters._AGG.match("SELECT AVG(amt) FROM t WHERE x = 1;")
@@ -311,6 +328,8 @@ def test_adapters_read_only_registered_training_files() -> None:
     reg = {s["id"]: s for s in registry.load_registry()["sources"]}
     assert adapters.COGNIPEER_FILE.endswith(reg["SRC-N01"]["acquire"]["files"][1])
     assert adapters.FINANCE_FILE.endswith(reg["SRC-N03"]["acquire"]["files"][1])
+    build_source = (Path(adapters.__file__).with_name("build.py")).read_text("utf-8")
+    assert "finance_negatives(" not in build_source  # SRC-N03 is quarantined: never called
     for sid in ("SRC-N13", "SRC-N14"):  # external benchmarks: no test split is ever acquired
         assert not any("test" in f or "dev" in f for f in reg[sid]["acquire"]["files"]), sid
 
@@ -409,9 +428,8 @@ def test_review_sample_is_deterministic_stratified_and_turkish() -> None:
     assert [r["record_id"] for r in first] == [r["record_id"] for r in again]
     assert len(first) == review.SAMPLE_SIZE
     assert {r["record_id"] for r in first} <= {r["id"] for r in rows}
-    by_id = {r["id"]: r for r in rows}
-    assert all(by_id[r["record_id"]]["language"] == "tr" for r in first)
-    assert {r["origin"] for r in first} == set(review.ORIGIN_SHARE)
+    assert {r["language"] for r in first} == {"tr", "en"}
+    assert {(r["language"], r["origin"]) for r in first} == set(review.ALLOCATION)
     assert {r["frame"] for r in first} >= {"inspect", "relate", "compare", "cluster"}
     assert all(r["reviewer_decision"] == "" for r in first)  # nothing pre-filled
     committed = [
@@ -448,7 +466,7 @@ def test_licence_evidence_covers_every_used_source() -> None:
     evidence = json.loads(path.read_text("utf-8"))
     assert all(e["status"] == "excerpt_found" for e in evidence["entries"])
     covered = {s for e in evidence["entries"] for s in e["sources"]}
-    used = {"SRC-N01", "SRC-N03", "SRC-O01", "SRC-O02", "SRC-O06"}
+    used = {"SRC-N01", "SRC-O01", "SRC-O02", "SRC-O06"}
     assert used <= covered
 
 
@@ -456,6 +474,7 @@ def test_licence_evidence_covers_every_used_source() -> None:
 def test_audit_reports_near_duplicates_and_no_cross_split_close_pairs() -> None:
     audit = json.loads((CORPUS / "AUDIT.json").read_text("utf-8"))
     nd = audit["near_duplicates_in_corpus"]
+    # the build removes validation lineages at cosine >= 0.9 to a train record
     assert nd["cross_split_pairs"][">=0.9"] == 0 and nd["cross_split_pairs"][">=0.95"] == 0
     assert audit["validation"]["cross_split_shared"]["request_texts"] == 0
 
@@ -466,9 +485,12 @@ def test_every_sequence_fits_the_declared_limit_without_truncation() -> None:
         json.loads(line)
         for line in (CORPUS / "token_lengths_per_example.jsonl").read_text("utf-8").splitlines()
     ]
-    assert len(rows) == 8625
+    manifest = json.loads((CORPUS / "MANIFEST.json").read_text("utf-8"))
+    assert len(rows) == sum(f["records"] for f in manifest["files"].values())
     assert max(r["sequence_tokens"] for r in rows) <= 2048
-    assert all(r["prompt_tokens"] + r["completion_tokens"] == r["sequence_tokens"] for r in rows)
+    assert all(r["prompt_tokens"] + r["completion_tokens"] == r["separate_tokens"] for r in rows)
+    assert all(r["sequence_tokens"] >= r["separate_tokens"] for r in rows)
+    assert not any(r["boundary_straddle"] for r in rows)
 
 
 @pytest.mark.skipif(not CORPUS.exists(), reason="corpus not built")
@@ -480,7 +502,9 @@ def test_mlx_export_is_deterministic_chat_format_and_refuses_repo_paths(tmp_path
     first = export.export(tmp_path / "a")
     second = export.export(tmp_path / "b")
     assert first["files"] == second["files"]
-    assert first["files"]["full/train.jsonl"]["examples"] == 6942
+    assert first["files"]["full/train.jsonl"]["examples"] == len(
+        (CORPUS / "train.jsonl").read_text("utf-8").splitlines()
+    )
     assert first["files"]["smoke/train.jsonl"]["examples"] == export.SMOKE_TRAIN
     assert first["files"]["peak_probe/train.jsonl"]["examples"] == export.PROBE
     assert max(first["peak_probe_lengths"]) <= 2048
@@ -488,3 +512,186 @@ def test_mlx_export_is_deterministic_chat_format_and_refuses_repo_paths(tmp_path
         roles = [m["role"] for m in json.loads(line)["messages"]]
         assert roles == ["system", "user", "assistant"]
     assert not list((tmp_path / "a").rglob("test*"))
+
+
+# ------------------------------------------------------------ intent: what a plan may say
+
+
+def _cmp(agg: str) -> dict[str, object]:
+    return {"op": "compare", "group_by": "region", "measure": "amount", "agg": agg}
+
+
+def _ins(column: str, agg: str) -> dict[str, object]:
+    return {"op": "inspect", "column": column, "agg": agg}
+
+
+@pytest.mark.parametrize(
+    ("prompt", "basis"),
+    [
+        ("What is the average amount for each region?", _cmp("AVG")),
+        ("Show the maximum amount per region.", _cmp("MAX")),
+        ("What is the lowest price?", _ins("price", "MIN")),
+    ],
+)
+def test_intent_accepts_plain_summaries(prompt: str, basis: dict[str, object]) -> None:
+    assert intent.english_problem(prompt, basis) is None
+
+
+@pytest.mark.parametrize(
+    ("prompt", "basis", "reason"),
+    [
+        # SUM is not a Core descriptive kernel
+        ("What is the total amount for each region?", _cmp("SUM"), "unsupported_aggregate"),
+        ("How many amounts are there for each region?", _cmp("COUNT"), "unsupported_aggregate"),
+        # a value filter, a year, a named place, a clause about other rows
+        ("What is the average amount for each region with amount above fifty?", _cmp("AVG"), None),
+        ("What is the average amount for each region in 2020?", _cmp("AVG"), None),
+        ("What is the average amount for each Region in France?", _cmp("AVG"), None),
+        (
+            "What is the average price of products priced above the mean?",
+            _ins("price", "AVG"),
+            None,
+        ),
+        # a ranking asks for an entity, not a summary
+        ("Which region has the highest amount?", _cmp("MAX"), None),
+        # the wrong measure, or the wrong aggregate word
+        ("What is the average salary for each region?", _cmp("AVG"), None),
+        ("What is the average cost?", _ins("price", "AVG"), None),
+        ("What is the maximum amount for each region?", _cmp("AVG"), None),
+    ],
+)
+def test_intent_rejects_what_the_plan_would_misstate(
+    prompt: str, basis: dict[str, object], reason: str | None
+) -> None:
+    got = intent.english_problem(prompt, basis)
+    assert got is not None, prompt
+    if reason:
+        assert got == reason
+
+
+def test_intent_translation_must_keep_the_aggregate_and_add_no_constraint() -> None:
+    assert intent.turkish_problem("Her bölge için ortalama tutar nedir?", _cmp("AVG")) is None
+    # a translation that turned an average into a total, or lost the aggregate, is dropped
+    assert intent.turkish_problem("Her bölge için toplam tutar nedir?", _cmp("AVG"))
+    assert intent.turkish_problem("Ortalama tutar nedir?", _cmp("MAX"))
+    assert intent.turkish_problem("Her bölge için tutar nedir?", _cmp("AVG"))
+    # an added number or a lost group marker
+    assert intent.turkish_problem(
+        "Her bölge için ortalama tutar 50'den fazla olanlar?", _cmp("AVG")
+    )
+    assert intent.turkish_problem("Ortalama tutar nedir?", _cmp("AVG"))  # group marker missing
+    assert intent.turkish_problem("Her bölge için toplam tutar nedir?", _cmp("SUM")) == (
+        "total_count_or_ranking_word"
+    )
+
+
+def test_modification_prompts_must_ask_for_a_change() -> None:
+    assert intent.modification_problem("Delete all rows older than the cutoff") is None
+    assert intent.modification_problem("Which rows were deleted?")  # a question about the past
+    assert intent.modification_problem("Create a table of sales")  # not a data change
+    assert intent.modification_problem("Remove the old rows?")  # a question
+
+
+# ---------------------------------------------------------- committed corpus: adapted records
+
+
+def _corpus_records() -> list[dict]:
+    return [
+        json.loads(line)
+        for split in ("train", "validation")
+        for line in (CORPUS / f"{split}.jsonl").read_text("utf-8").splitlines()
+    ]
+
+
+@pytest.mark.skipif(not CORPUS.exists(), reason="corpus not built")
+def test_adapted_plans_use_only_core_summaries_and_bind_named_columns() -> None:
+    """Independent of the adapter: re-derive each adapted PLAN from what the record itself says."""
+    adapted = [r for r in _corpus_records() if r["provenance"]["origin"] == "external_adapted"]
+    plans = [r for r in adapted if r["gold"]["action"] == "PLAN"]
+    assert plans and {r["gold"]["operation"] for r in plans} == {"inspect", "compare"}
+    for rec in plans:
+        agg = rec["provenance"]["gold_derivation"]["aggregate"]
+        assert agg in {"AVG", "MIN", "MAX"}, rec["id"]  # never SUM or COUNT
+        names = {c["id"]: c["name"] for c in rec["schema"]["columns"]}
+        kinds = {c["id"]: c["type"] for c in rec["schema"]["columns"]}
+        gold = rec["gold"]
+        if gold["operation"] == "inspect":
+            bound = [gold["columns"][0]]
+            basis = {"op": "inspect", "column": names[bound[0]], "agg": agg}
+            assert kinds[bound[0]] == "numeric"
+        else:
+            bound = [gold["group_by"], gold["measure"]]
+            basis = {
+                "op": "compare",
+                "group_by": names[gold["group_by"]],
+                "measure": names[gold["measure"]],
+                "agg": agg,
+            }
+            assert kinds[gold["group_by"]] == "text" and kinds[gold["measure"]] == "numeric"
+        assert len(set(bound)) == len(bound)
+        check = intent.english_problem if rec["language"] == "en" else intent.turkish_problem
+        assert check(rec["request"], basis) is None, (rec["id"], rec["request"])
+        assert not re.search(r"\d", rec["request"]), rec["id"]
+    for rec in adapted:
+        if rec["gold"]["action"] == "REJECT":
+            assert rec["gold"]["reason"] == "data_modification"
+            assert not rec["request"].rstrip().endswith("?"), rec["id"]
+
+
+@pytest.mark.skipif(not CORPUS.exists(), reason="corpus not built")
+def test_audit_records_why_upstream_rows_were_excluded() -> None:
+    audit = json.loads((CORPUS / "AUDIT.json").read_text("utf-8"))["external_adapter_audit"]
+    reasons = audit["excluded_by_reason"]
+    assert reasons["select:shape_not_a_supported_summary"] > 0  # SUM/COUNT/filtered SELECTs
+    assert any(k.startswith("compare:extra") or k.startswith("inspect:") for k in reasons)
+    assert audit["qualified_upstream_rows"]["compare"] > 0
+
+
+@pytest.mark.skipif(not CORPUS.exists(), reason="corpus not built")
+def test_no_schema_fingerprint_or_family_is_shared_across_splits_for_any_origin() -> None:
+    by_split: dict[str, dict[str, set[str]]] = {"fingerprint": {}, "family": {}}
+    for rec in _corpus_records():
+        by_split["fingerprint"].setdefault(validate.schema_fingerprint(rec), set()).add(
+            rec["split"]
+        )
+        by_split["family"].setdefault(rec["family"], set()).add(rec["split"])
+    for kind, groups in by_split.items():
+        shared = [k for k, v in groups.items() if len(v) > 1]
+        assert not shared, (kind, shared[:3])
+
+
+def test_corpus_report_flags_a_shared_schema_fingerprint_across_origins(
+    sample: dict[str, list[dict]],
+) -> None:
+    leaked = {k: copy.deepcopy(v) for k, v in sample.items()}
+    clone = copy.deepcopy(leaked["train"][0])
+    clone.update({"id": "leak-2", "split": "validation", "lineage_id": "L-other"})
+    clone["family"] = "cognipeer/other"
+    clone["request"] = "A completely different sentence about nothing in particular"
+    leaked["validation"].append(clone)
+    report = validate.corpus_report(leaked)
+    assert report["cross_split_shared"]["schema_fingerprints"] >= 1
+
+
+# ------------------------------------------------------------- the superseded draft stays as it was
+
+
+@pytest.mark.skipif(not DRAFT.exists(), reason="draft not present")
+def test_original_draft_is_preserved_unchanged() -> None:
+    manifest = json.loads((DRAFT / "MANIFEST.json").read_text("utf-8"))
+    assert manifest["corpus_version"] == "axbench-tr/0.2-draft"
+    total = 0
+    for split in ("train", "validation"):
+        data = (DRAFT / f"{split}.jsonl").read_bytes()
+        assert fetch.sha256_bytes(data) == manifest["files"][f"{split}.jsonl"]["sha256"]
+        total += manifest["files"][f"{split}.jsonl"]["records"]
+    assert total == 8625
+    assert CURRENT_VERSION != "v0.2-draft"
+
+
+def test_the_sealed_test_is_never_touched_by_the_tooling() -> None:
+    sources = "".join(p.read_text("utf-8") for p in (ROOT / "src" / "axbench_tr").glob("*.py"))
+    assert "contamination --sealed" not in sources
+    assert not any(
+        "sealed" in str(p).lower() for p in (ROOT / "data" / "axbench-tr").rglob("*.jsonl")
+    )

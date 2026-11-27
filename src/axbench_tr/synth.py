@@ -18,7 +18,7 @@ from .schemas import RealTable, table_partition, time_like, tokens, usable
 from .templates import LINEAGES, Lineage, split_of
 
 GENERATOR = "axbench_tr.synth/0.2"
-CORPUS_VERSION = "axbench-tr/0.2-draft"
+CORPUS_VERSION = "axbench-tr/0.2-rev1"
 
 FRAME_WEIGHTS: dict[str, float] = {
     "inspect": 8,
