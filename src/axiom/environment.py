@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import hashlib
 import importlib.metadata
+import json
 import os
 import platform
 import subprocess
@@ -182,7 +183,19 @@ def _pools() -> list[dict[str, Any]]:
 
     keep = ("user_api", "internal_api", "prefix", "version", "num_threads", "threading_layer")
     pools = [{k: p.get(k) for k in keep if k in p} for p in threadpool_info()]
-    return sorted(pools, key=lambda p: (str(p.get("user_api")), str(p.get("prefix"))))
+
+    # A total order over the retained dictionaries. NumPy and SciPy can each bundle an OpenBLAS
+    # with the same ``user_api`` and ``prefix`` and differ only in ``version``; threadpoolctl lists
+    # them in discovery order, which varies between processes, so ``(user_api, prefix)`` alone left
+    # their order, and with it the list compared at replay, to chance. The primary key keeps the API
+    # and prefix order; the other kept fields follow; the canonical JSON of the whole dictionary is
+    # the final tie-breaker, so two distinct dictionaries never tie (``str`` renders an absent field
+    # and an explicit ``None`` alike, and ``1`` and ``"1"`` alike, but their JSON differs).
+    def key(p: dict[str, Any]) -> tuple[str, ...]:
+        fields = tuple(str(p.get(k)) for k in ("user_api", "prefix", *keep))
+        return (*fields, json.dumps(p, sort_keys=True, separators=(",", ":"), default=str))
+
+    return sorted(pools, key=key)
 
 
 def thread_policy() -> dict[str, Any]:
