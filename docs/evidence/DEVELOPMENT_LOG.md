@@ -617,3 +617,16 @@ for a comprehensive final audit of AXIOM Verify.
 - A mistake caught while testing: my first events helper gave the validation events a lower MLX peak than the training
   reports, which the new monotonic-peak rule correctly refused; the helper was fixed, not the rule.
 - Not done: human review, held-out authoring, the M5 preflight and the smoke (no approval), the sealed-test check.
+
+### EXP-TR02 no-weight M5 preflight (2026-11-27, after the technical clearance of PR #13 at 96cbdf7)
+- The review cleared only the no-weight preflight at the immutable head. It was run on the owner's M5 from a clean,
+  isolated worktree at exactly that commit with the locked model environment and offline flags: export, `verify-inputs`,
+  `verify-model` (hashing only), `check-data`, `check-iterator` for probe and smoke, `preflight probe`. All seven exited 0
+  with no problems; memory pressure stayed at 1; no weights were loaded and `supervise`/`run` were not executed.
+- The loss-mask finding from the CPU build holds on the M5: the stock `default_loss` counts one token more than the answer in
+  every sample, the exact-mask loss equals the answer. The export hashes are byte-identical to the Linux export.
+- Source-rights check of the selected rows: none uses an SRC-N01 (Gretel-derived) schema, but 23 smoke rows are on header
+  layouts from SRC-O03, O04 and O05, whose terms are unverified. Recorded as an open point for the reviewer; no code changed.
+- Evidence: `docs/evidence/experiments/EXP-TR02-feasibility-smoke/preflight/`. The record is transcribed from the report of
+  the session that ran the commands; the raw logs stayed on the device.
+
