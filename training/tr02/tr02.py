@@ -36,6 +36,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from collections.abc import Callable, Collection, Iterable, Mapping
 from dataclasses import dataclass, field
@@ -50,6 +51,11 @@ COMPLETE = "COMPLETE.json"  # written by the supervisor only for a valid, finish
 STOP = "STOP.json"
 ADAPTER_FILE = "adapters.safetensors"
 ADAPTER_CONFIG = "adapter_config.json"
+# mlx-lm 0.32.2 ``qwen3.Model`` keeps its decoder blocks in ``self.model``, so every flattened
+# parameter, trainable tensor and saved adapter key reads ``model.layers.N...``. The first
+# authorized probe (protocol v4) expected the unprefixed ``layers.N...`` and stopped on it.
+LORA_LAYERS_PREFIX = "model.layers"
+SUPPORTED_MODEL_TYPE = "qwen3"
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
@@ -486,9 +492,16 @@ def expected_lora_shapes(
 ) -> dict[str, tuple]:
     """``{tensor name: shape}`` the adapter must hold, from the checkpoint's own ``config.json``.
 
+    Names are derived from the pinned Qwen3 architecture in mlx-lm 0.32.2
+    (``model.layers.N.self_attn.{q,v}_proj.lora_{a,b}``), never from what a model reports.
     ``lora_a`` is ``(in, rank)`` and ``lora_b`` is ``(rank, out)`` for q/v projections of the last
     ``lora_layers`` blocks. q out = heads * head_dim, v out = kv_heads * head_dim.
     """
+    if model_config.get("model_type") != SUPPORTED_MODEL_TYPE:
+        raise ValueError(
+            f"model_type is {model_config.get('model_type')!r}; this contract is for "
+            f"{SUPPORTED_MODEL_TYPE!r} in mlx-lm 0.32.2"
+        )
     hidden = int(model_config["hidden_size"])
     heads = int(model_config["num_attention_heads"])
     kv = int(model_config["num_key_value_heads"])
@@ -500,7 +513,7 @@ def expected_lora_shapes(
     for layer in range(n_layers - int(hp["lora_layers"]), n_layers):
         for key in hp["lora_keys"]:
             proj = key.split(".")[-1]
-            base = f"layers.{layer}.{key}"
+            base = f"{LORA_LAYERS_PREFIX}.{layer}.{key}"
             shapes[f"{base}.lora_a"] = (hidden, rank)
             shapes[f"{base}.lora_b"] = (rank, outs[proj])
     return shapes
@@ -519,6 +532,175 @@ def lora_problems(shapes: Mapping[str, tuple], expected: Mapping[str, tuple]) ->
 
 def trainable_params(shapes: Mapping[str, tuple]) -> int:
     return sum(math.prod(s) for s in shapes.values())
+
+
+def lora_report(
+    shapes: Mapping[str, tuple], expected: Mapping[str, tuple], limit: int = 6
+) -> dict[str, Any]:
+    """Bounded record of the observed and expected tensor names and shapes (no tensor contents)."""
+    missing = sorted(set(expected) - set(shapes))
+    extra = sorted(set(shapes) - set(expected))
+    wrong = sorted(n for n in expected if n in shapes and tuple(shapes[n]) != tuple(expected[n]))
+    return {
+        "observed_count": len(shapes),
+        "expected_count": len(expected),
+        "missing_count": len(missing),
+        "unexpected_count": len(extra),
+        "shape_mismatch_count": len(wrong),
+        "observed_sample": {n: list(shapes[n]) for n in sorted(shapes)[:limit]},
+        "expected_sample": {n: list(expected[n]) for n in sorted(expected)[:limit]},
+    }
+
+
+def lora_adapter_config(hp: Mapping[str, Any]) -> dict[str, Any]:
+    """The ``adapter_config.json`` content the harness writes and ``mlx_lm`` reloads."""
+    return {
+        "fine_tune_type": "lora",
+        "num_layers": hp["lora_layers"],
+        "lora_parameters": {
+            "rank": hp["lora_rank"],
+            "scale": hp["lora_scale"],
+            "dropout": hp["lora_dropout"],
+            "keys": hp["lora_keys"],
+        },
+    }
+
+
+def attach_lora(model: Any, hp: Mapping[str, Any]) -> None:
+    """Freeze ``model`` and convert the configured projections with the stock mlx-lm converter."""
+    from mlx_lm.tuner.utils import linear_to_lora_layers
+
+    model.freeze()
+    linear_to_lora_layers(model, hp["lora_layers"], lora_adapter_config(hp)["lora_parameters"])
+
+
+# A real, randomly initialized, tiny mlx-lm Qwen3 model for the namespace / save / reload check. No
+# pretrained weights, no download, no optimizer step. Config values only need to be self-consistent.
+TINY_QWEN3_CONFIG: dict[str, Any] = {
+    "model_type": SUPPORTED_MODEL_TYPE,
+    "hidden_size": 64,
+    "num_hidden_layers": 4,
+    "intermediate_size": 128,
+    "num_attention_heads": 4,
+    "num_key_value_heads": 2,
+    "head_dim": 16,
+    "rms_norm_eps": 1e-6,
+    "vocab_size": 128,
+    "max_position_embeddings": 128,
+    "rope_theta": 1000000.0,
+    "tie_word_embeddings": True,
+}
+
+
+def tiny_hyperparameters(hp: Mapping[str, Any]) -> dict[str, Any]:
+    """The production LoRA hyperparameters with the layer count and rank scaled down."""
+    return {**hp, "lora_layers": 2, "lora_rank": 4}
+
+
+def build_tiny_qwen3(seed: int = 0) -> Any:
+    import mlx.core as mx
+    from mlx_lm.models import qwen3
+
+    mx.random.seed(seed)
+    model = qwen3.Model(qwen3.ModelArgs(**TINY_QWEN3_CONFIG))
+    mx.eval(model.parameters())
+    return model
+
+
+def lora_leaves(model: Any) -> dict[str, Any]:
+    """Every ``lora_a`` / ``lora_b`` tensor of ``model`` as float32 NumPy arrays (mlx-lm's rule)."""
+    import mlx.core as mx
+    import numpy as np
+    from mlx.utils import tree_flatten
+
+    return {
+        k: np.array(v.astype(mx.float32))
+        for k, v in tree_flatten(model.parameters())
+        if k.rsplit(".", 1)[-1] in ("lora_a", "lora_b")
+    }
+
+
+def assign_fixture_values(model: Any) -> None:
+    """Deterministic, finite, non-zero values for every trainable LoRA tensor (test only)."""
+    import mlx.core as mx
+    import numpy as np
+    from mlx.utils import tree_flatten, tree_unflatten
+
+    items = []
+    for k, v in sorted(tree_flatten(model.trainable_parameters())):
+        n = int(np.prod(v.shape))
+        base = (np.arange(n, dtype=np.float32).reshape(v.shape) % 17 - 8.0) / 64.0
+        items.append((k, mx.array(base + 0.125)))
+    model.update(tree_unflatten(items))
+    mx.eval(model.parameters())
+
+
+def lora_fixture_check(hp: Mapping[str, Any], workdir: Path) -> dict[str, Any]:
+    """LoRA conversion, name/shape contract, safetensors round trip and reload on a tiny model.
+
+    Uses the harness's own ``attach_lora``, ``expected_lora_shapes``, ``lora_problems``,
+    ``lora_adapter_config``, safetensors save and mlx-lm ``load_adapters``. Returns ``problems``
+    (empty if all checks hold). Nothing is trained and no pretrained weight is read.
+    """
+    import mlx.core as mx
+    import numpy as np
+    from mlx.utils import tree_flatten
+    from mlx_lm.tuner.utils import load_adapters
+
+    thp = tiny_hyperparameters(hp)
+    want = expected_lora_shapes(TINY_QWEN3_CONFIG, thp)
+    problems: list[str] = []
+    model = build_tiny_qwen3(0)
+    attach_lora(model, thp)
+    flat = dict(tree_flatten(model.trainable_parameters()))
+    got = {k: tuple(v.shape) for k, v in flat.items()}
+    problems += [f"attach: {p}" for p in lora_problems(got, want)]
+    if trainable_params(got) != trainable_params(want):
+        problems.append("attach: trainable parameter count differs from the contract")
+    assign_fixture_values(model)
+    saved_path = workdir / ADAPTER_FILE
+    mx.save_safetensors(str(saved_path), dict(tree_flatten(model.trainable_parameters())))
+    (workdir / ADAPTER_CONFIG).write_text(json.dumps(lora_adapter_config(thp)), "utf-8")
+    saved = {k: np.array(v.astype(mx.float32)) for k, v in mx.load(str(saved_path)).items()}
+    problems += [
+        f"saved: {p}" for p in lora_problems({k: tuple(v.shape) for k, v in saved.items()}, want)
+    ]
+    fresh = build_tiny_qwen3(1)
+    load_adapters(fresh, str(workdir))
+    problems += [f"reload: {p}" for p in live_adapter_problems(saved, lora_leaves(fresh))]
+    unprefixed = {k.removeprefix("model."): tuple(v.shape) for k, v in saved.items()}
+    if not lora_problems(unprefixed, want):
+        problems.append("negative: unprefixed names were accepted")
+    return {
+        "problems": problems,
+        "tensors": len(saved),
+        "trainable_params": trainable_params(got),
+        "names": sorted(saved)[:4],
+        "mlx": mx.__version__ if hasattr(mx, "__version__") else None,
+    }
+
+
+def live_adapter_problems(
+    saved: Mapping[str, Any], live: Mapping[str, Any], limit: int = 6
+) -> list[str]:
+    """Names, shapes, finiteness and values of ``live`` (reloaded) against ``saved`` (the file)."""
+    import numpy as np
+
+    problems = [
+        f"saved tensor not in the reloaded model: {n}" for n in sorted(set(saved) - set(live))
+    ]
+    problems += [
+        f"reloaded tensor not in the saved file: {n}" for n in sorted(set(live) - set(saved))
+    ]
+    for n in sorted(set(saved) & set(live)):
+        a, b = np.asarray(saved[n]), np.asarray(live[n])
+        if a.shape != b.shape:
+            problems.append(f"{n}: saved shape {a.shape}, reloaded shape {b.shape}")
+        elif not bool(np.isfinite(b).all()):
+            problems.append(f"{n}: reloaded tensor is not finite")
+        elif not np.array_equal(a, b):
+            problems.append(f"{n}: reloaded values differ from the saved file")
+    return problems[:limit]
 
 
 def adapter_summary(initial: Mapping[str, Any], final: Mapping[str, Any]) -> dict[str, Any]:
@@ -1035,8 +1217,18 @@ def collect_evidence(runs: list[tuple[str, Path]], dest: Path) -> dict[str, Any]
     """Copy the raw records of finished or stopped phases into ``dest`` (a repository directory).
 
     Per phase: ``events.jsonl``, supervisor log, child log and STOP/COMPLETE. Adapters are hashed
-    but not copied. ``EVIDENCE.json`` lists the SHA-256 of every copied file and the adapters.
+    but not copied, and no weight file is ever copied. ``EVIDENCE.json`` lists the SHA-256 of every
+    copied file and of every file that was not copied. ``dest`` must not exist (nothing is
+    overwritten) and every run directory must exist. Run it only after the execution has ended,
+    from a separate evidence checkout (see the README): the copies hold private paths and are for
+    ``sanitize-evidence``, not for a commit.
     """
+    names = [name for name, _ in runs]
+    if len(set(names)) != len(names):
+        raise ValueError("run names must be unique")
+    for name, out in runs:
+        if not out.is_dir():
+            raise FileNotFoundError(f"run directory for {name!r} does not exist")
     dest.mkdir(parents=True, exist_ok=False)
     index: dict[str, Any] = {"schema": "axbench-tr.exp-tr02-evidence/1", "phases": {}}
     for name, out in runs:
@@ -1062,8 +1254,108 @@ def collect_evidence(runs: list[tuple[str, Path]], dest: Path) -> dict[str, Any]
                     "bytes": path.stat().st_size,
                 }
         index["phases"][name] = got
+    if any(p.suffix == ".safetensors" for p in dest.rglob("*")):
+        raise RuntimeError("a weight file reached the evidence directory")
     _write_json(dest / "EVIDENCE.json", index)
     return index
+
+
+# ------------------------------------------------------------------------ sanitizing evidence
+
+CREDENTIAL_RE = re.compile(
+    r"\b(?:hf_[A-Za-z0-9]{20,}|gh[pousr]_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9_-]{20,}|AKIA[A-Z0-9]{16})\b"
+    r"|(?i:\bbearer\s+[A-Za-z0-9._~+/=-]{16,})"
+)
+OTHER_PATH_RE = re.compile(
+    r"(?<![\w.$<-])(?:/Users|/home|/opt/homebrew|/private/var|/var/folders|/Volumes)"
+    r"/[^\s\"'`),;:<>]+"
+)
+LEAK_RE = re.compile(
+    r"(?<![\w.])/(?:Users|home|private/var|var/folders|Volumes)/[^\s]|[A-Za-z]:\\Users\\"
+)
+REDACTION_KINDS = (
+    "home_directory_prefix",
+    "other_absolute_local_path",
+    "named_term",
+    "credential_like_token",
+)
+
+
+def sanitize_text(text: str, home: str, terms: Mapping[str, str]) -> tuple[str, dict[str, int]]:
+    """Home prefix to ``$HOME``, other local paths to ``<local-path>``, named terms and tokens.
+
+    Returns the text and the count of every kind of replacement. Longest matches go first so a home
+    prefix inside a longer path is replaced as a prefix.
+    """
+    counts = dict.fromkeys(REDACTION_KINDS, 0)
+    home = home.rstrip("/")
+    if home:
+        text, n = re.subn(re.escape(home) + r"(?=/|\b|$)", "$HOME", text)
+        counts["home_directory_prefix"] += n
+    text, n = OTHER_PATH_RE.subn("<local-path>", text)
+    counts["other_absolute_local_path"] += n
+    for term, placeholder in terms.items():
+        text, n = re.subn(re.escape(term), placeholder, text, flags=re.IGNORECASE)
+        counts["named_term"] += n
+    text, n = CREDENTIAL_RE.subn("<redacted-credential>", text)
+    counts["credential_like_token"] += n
+    return text, counts
+
+
+def sanitize_evidence(
+    src: Path, dest: Path, home: str, terms: Mapping[str, str] | None = None
+) -> dict[str, Any]:
+    """Write sanitized copies of every text file under ``src`` into the new directory ``dest``.
+
+    ``REDACTIONS.json`` records, per file, the original and the sanitized SHA-256 and size and the
+    redaction counts. Files with no redaction are byte-identical (same hash). Weights and non-UTF-8
+    files are refused, and a file that still looks like it holds a private path or a named term
+    after sanitizing is a failure. Nothing is overwritten.
+    """
+    terms = dict(terms or {})
+    files = sorted(p for p in src.rglob("*") if p.is_file())
+    if any(p.suffix == ".safetensors" for p in files):
+        raise ValueError("weight files are never sanitized or committed")
+    dest.mkdir(parents=True, exist_ok=False)
+    records = []
+    for path in files:
+        raw = path.read_bytes()
+        try:
+            text = raw.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise ValueError(f"{path.name} is not UTF-8 text") from exc
+        clean, counts = sanitize_text(text, home, terms)
+        leaks = [m.group(0) for m in LEAK_RE.finditer(clean)]
+        bare = clean
+        for placeholder in terms.values():  # a placeholder may contain its own term
+            bare = bare.replace(placeholder, "")
+        leaks += [t for t in terms if re.search(re.escape(t), bare, flags=re.IGNORECASE)]
+        if leaks:
+            raise ValueError(f"{path.name} still holds private text after sanitizing")
+        out = dest / path.relative_to(src)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        data = clean.encode("utf-8")
+        out.write_bytes(data)
+        records.append(
+            {
+                "original_filename": path.relative_to(src).as_posix(),
+                "original_sha256": hashlib.sha256(raw).hexdigest(),
+                "sanitized_sha256": hashlib.sha256(data).hexdigest(),
+                "original_bytes": len(raw),
+                "sanitized_bytes": len(data),
+                "redaction_counts": counts,
+            }
+        )
+    manifest = {
+        "note": (
+            "Home directory prefix to $HOME, other absolute local paths to <local-path>, named "
+            "terms to their placeholders, credential-like tokens to <redacted-credential>."
+        ),
+        "named_term_placeholders": sorted(set(terms.values())),
+        "files": records,
+    }
+    _write_json(dest / "REDACTIONS.json", manifest)
+    return manifest
 
 
 # -------------------------------------------------------------------------------- driver (model)
@@ -1137,7 +1429,6 @@ def run_phase(
         iterate_batches,
         train,
     )
-    from mlx_lm.tuner.utils import linear_to_lora_layers
 
     cfg = load_config()
     phase = phase_config(cfg, phase_name)
@@ -1180,17 +1471,7 @@ def run_phase(
                     checker.observe(tokens_hash(batch[0, :n].tolist()), n)
                 yield batch, lengths
 
-        model.freeze()
-        linear_to_lora_layers(
-            model,
-            hp["lora_layers"],
-            {
-                "rank": hp["lora_rank"],
-                "scale": hp["lora_scale"],
-                "dropout": hp["lora_dropout"],
-                "keys": hp["lora_keys"],
-            },
-        )
+        attach_lora(model, hp)
         initial = _np_params(mx, tree_flatten, model.trainable_parameters())
         want = expected_lora_shapes(json.loads((model_dir / "config.json").read_text("utf-8")), hp)
         bad = lora_problems({k: v.shape for k, v in initial.items()}, want)
@@ -1201,27 +1482,14 @@ def run_phase(
                 "trainable_params": trainable_params({k: v.shape for k, v in initial.items()}),
                 "shapes_ok": not bad,
                 "problems": bad[:5],
+                "report": lora_report({k: v.shape for k, v in initial.items()}, want),
             }
         )
         if bad:
             raise RuntimeError(
                 "LoRA tensors differ from the expected shapes: " + "; ".join(bad[:3])
             )
-        (out / ADAPTER_CONFIG).write_text(
-            json.dumps(
-                {
-                    "fine_tune_type": "lora",
-                    "num_layers": hp["lora_layers"],
-                    "lora_parameters": {
-                        "rank": hp["lora_rank"],
-                        "scale": hp["lora_scale"],
-                        "dropout": hp["lora_dropout"],
-                        "keys": hp["lora_keys"],
-                    },
-                }
-            ),
-            "utf-8",
-        )
+        (out / ADAPTER_CONFIG).write_text(json.dumps(lora_adapter_config(hp)), "utf-8")
 
         def val_loss(tag: str, updates_done: int) -> float:
             tic = time.perf_counter()
@@ -1344,6 +1612,7 @@ def run_reload(
     """
     import mlx.core as mx
     import numpy as np
+    from mlx.utils import tree_flatten
     from mlx_lm import load
     from mlx_lm.tuner.datasets import CacheDataset
     from mlx_lm.tuner.trainer import evaluate
@@ -1380,6 +1649,16 @@ def run_reload(
                 "finite": all(bool(np.isfinite(a).all()) for a in saved.values()),
             }
         )
+        live = {
+            k: np.array(v.astype(mx.float32))
+            for k, v in tree_flatten(model.parameters())
+            if k.rsplit(".", 1)[-1] in ("lora_a", "lora_b")
+        }
+        mismatch = live_adapter_problems(saved, live)
+        if mismatch:
+            raise RuntimeError(
+                "the reloaded adapter is not the saved file: " + "; ".join(mismatch[:3])
+            )
         valid_rows = read_jsonl(export_dir / "smoke" / "valid.jsonl")
         valid = CacheDataset(TR02ChatDataset(valid_rows, tokenizer, int(hp["max_seq_length"])))
         tic = time.perf_counter()
@@ -1578,6 +1857,14 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("--after", help="the previous phase's output directory (smoke, reload)")
         if name == "supervise":
             p.add_argument("--poll-seconds", type=float, default=5.0)
+    p = sub.add_parser("check-lora")  # tiny random Qwen3 only: no pretrained weights, no training
+    p = sub.add_parser("sanitize-evidence")
+    p.add_argument("--src", required=True, help="raw directory written by collect-evidence")
+    p.add_argument("--dest", required=True, help="new directory inside the repository")
+    p.add_argument("--home", default=str(Path.home()), help="home directory prefix to replace")
+    p.add_argument(
+        "--term", action="append", default=[], help="NAME=PLACEHOLDER (account, device, owner)"
+    )
     p = sub.add_parser("collect-evidence")
     p.add_argument("--dest", required=True, help="new directory inside the repository")
     p.add_argument("--run", action="append", required=True, metavar="NAME=OUT_DIR")
@@ -1638,6 +1925,19 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(json.dumps({"problems": problems}, indent=1))
         return 1 if problems else 0
+    if a.cmd == "check-lora":
+        with tempfile.TemporaryDirectory() as tmp:
+            result = lora_fixture_check(cfg["hyperparameters"], Path(tmp))
+        print(json.dumps(result, indent=1))
+        return 1 if result["problems"] else 0
+    if a.cmd == "sanitize-evidence":
+        dest = Path(a.dest)
+        if not dest.resolve().is_relative_to(REPO.resolve()):
+            raise SystemExit("the sanitized directory must be inside the repository")
+        terms = dict(t.split("=", 1) for t in a.term)
+        manifest = sanitize_evidence(Path(a.src), dest, a.home, terms)
+        print(json.dumps({"files": len(manifest["files"])}, indent=1))
+        return 0
     if a.cmd == "collect-evidence":
         runs = [(r.split("=", 1)[0], Path(r.split("=", 1)[1])) for r in a.run]
         dest = Path(a.dest)

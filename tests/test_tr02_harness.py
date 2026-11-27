@@ -370,6 +370,7 @@ def test_the_run_and_probe_use_the_declared_batching() -> None:
 # -------------------------------------------------------------------- LoRA and adapter checks
 
 MODEL_CONFIG = {
+    "model_type": "qwen3",
     "hidden_size": 2048,
     "num_attention_heads": 16,
     "num_key_value_heads": 8,
@@ -378,26 +379,115 @@ MODEL_CONFIG = {
 }
 
 
+def test_config_json_is_byte_identical_to_the_revision_4_pins() -> None:
+    # revision 5 changes the name contract and the checks around it, never a pin or a limit
+    assert (
+        fetch.sha256_file(tr02.CONFIG_PATH)
+        == "7d31d916621523281d2226de9802671ddc63b05aad219388064a275abaf5301c"
+    )
+
+
 def test_expected_lora_shapes_follow_the_checkpoint_config() -> None:
     shapes = tr02.expected_lora_shapes(MODEL_CONFIG, CFG["hyperparameters"])
-    assert len(shapes) == 32 and tr02.trainable_params(shapes) == LORA_PARAMS
-    assert shapes["layers.20.self_attn.q_proj.lora_a"] == (2048, 8)
-    assert shapes["layers.20.self_attn.q_proj.lora_b"] == (8, 2048)
-    assert shapes["layers.27.self_attn.v_proj.lora_b"] == (8, 1024)
-    assert not any(f"layers.{n}." in k for n in range(20) for k in shapes)
+    assert len(shapes) == 32 and tr02.trainable_params(shapes) == LORA_PARAMS == 458_752
+    # mlx-lm 0.32.2 qwen3.Model nests the blocks under `model`: the contract names carry the prefix
+    assert shapes["model.layers.20.self_attn.q_proj.lora_a"] == (2048, 8)
+    assert shapes["model.layers.20.self_attn.q_proj.lora_b"] == (8, 2048)
+    assert shapes["model.layers.27.self_attn.v_proj.lora_b"] == (8, 1024)
+    assert not any(f"model.layers.{n}." in k for n in range(20) for k in shapes)
+    assert all(k.startswith("model.layers.") for k in shapes)  # no unprefixed name is accepted
+
+
+def test_expected_lora_shapes_refuse_a_model_type_they_were_not_derived_for() -> None:
+    other = {**MODEL_CONFIG, "model_type": "llama"}
+    with pytest.raises(ValueError, match="qwen3"):
+        tr02.expected_lora_shapes(other, CFG["hyperparameters"])
+    with pytest.raises(ValueError):
+        tr02.expected_lora_shapes(
+            {k: v for k, v in MODEL_CONFIG.items() if k != "model_type"}, CFG["hyperparameters"]
+        )
 
 
 def test_lora_problems_name_missing_extra_and_misshapen_tensors() -> None:
     want = tr02.expected_lora_shapes(MODEL_CONFIG, CFG["hyperparameters"])
     assert tr02.lora_problems(dict(want), want) == []
     got = dict(want)
-    del got["layers.20.self_attn.q_proj.lora_a"]
-    got["layers.19.self_attn.q_proj.lora_a"] = (2048, 8)
-    got["layers.27.self_attn.v_proj.lora_b"] = (8, 2048)
+    del got["model.layers.20.self_attn.q_proj.lora_a"]
+    got["model.layers.19.self_attn.q_proj.lora_a"] = (2048, 8)
+    got["model.layers.27.self_attn.v_proj.lora_b"] = (8, 2048)
     text = "; ".join(tr02.lora_problems(got, want))
-    assert "missing tensor: layers.20.self_attn.q_proj.lora_a" in text
-    assert "unexpected tensor: layers.19" in text
-    assert "layers.27.self_attn.v_proj.lora_b is (8, 2048)" in text
+    assert "missing tensor: model.layers.20.self_attn.q_proj.lora_a" in text
+    assert "unexpected tensor: model.layers.19" in text
+    assert "model.layers.27.self_attn.v_proj.lora_b is (8, 2048)" in text
+
+
+def test_the_unprefixed_namespace_that_stopped_the_first_probe_is_rejected() -> None:
+    want = tr02.expected_lora_shapes(MODEL_CONFIG, CFG["hyperparameters"])
+    bare = {k.removeprefix("model."): v for k, v in want.items()}
+    problems = tr02.lora_problems(bare, want)
+    assert len([p for p in problems if p.startswith("missing tensor")]) == 32
+    assert len([p for p in problems if p.startswith("unexpected tensor")]) == 32
+    mixed = dict(want)
+    name = "model.layers.20.self_attn.q_proj.lora_a"
+    mixed[name.removeprefix("model.")] = mixed.pop(name)
+    assert tr02.lora_problems(mixed, want) == [
+        f"missing tensor: {name}",
+        "unexpected tensor: layers.20.self_attn.q_proj.lora_a",
+    ]
+
+
+def test_lora_report_is_bounded_and_holds_names_and_shapes_only() -> None:
+    want = tr02.expected_lora_shapes(MODEL_CONFIG, CFG["hyperparameters"])
+    bare = {k.removeprefix("model."): v for k, v in want.items()}
+    report = tr02.lora_report(bare, want)
+    assert report["observed_count"] == report["expected_count"] == 32
+    assert report["missing_count"] == report["unexpected_count"] == 32
+    assert report["shape_mismatch_count"] == 0
+    assert len(report["observed_sample"]) == len(report["expected_sample"]) == 6
+    assert all(k.startswith("layers.") for k in report["observed_sample"])
+    assert all(k.startswith("model.layers.") for k in report["expected_sample"])
+    assert all(
+        isinstance(v, list) and all(isinstance(i, int) for i in v)
+        for v in report["observed_sample"].values()
+    )
+    assert json.dumps(report)  # plain JSON, no tensor contents, no paths
+
+
+def test_adapter_config_the_harness_writes_is_the_one_mlx_lm_reloads() -> None:
+    cfg = tr02.lora_adapter_config(CFG["hyperparameters"])
+    assert cfg == {
+        "fine_tune_type": "lora",
+        "num_layers": 8,
+        "lora_parameters": {
+            "rank": 8,
+            "scale": 20.0,
+            "dropout": 0.0,
+            "keys": ["self_attn.q_proj", "self_attn.v_proj"],
+        },
+    }
+    # the bytes are unchanged from protocol v4 (same keys, same order, default separators)
+    assert json.dumps(cfg) == (
+        '{"fine_tune_type": "lora", "num_layers": 8, "lora_parameters": {"rank": 8, '
+        '"scale": 20.0, "dropout": 0.0, "keys": ["self_attn.q_proj", "self_attn.v_proj"]}}'
+    )
+
+
+def test_live_adapter_problems_names_missing_extra_shape_nonfinite_and_value_differences() -> None:
+    np = pytest.importorskip("numpy")
+    a = {"x": np.ones((2, 3), np.float32), "y": np.zeros((3, 2), np.float32)}
+    assert tr02.live_adapter_problems(a, {k: v.copy() for k, v in a.items()}) == []
+    assert "not in the reloaded model: y" in tr02.live_adapter_problems(a, {"x": a["x"]})[0]
+    assert "not in the saved file: z" in tr02.live_adapter_problems(a, {**a, "z": a["x"]})[0]
+    assert (
+        "reloaded shape"
+        in tr02.live_adapter_problems(a, {**a, "y": np.zeros((2, 3), np.float32)})[0]
+    )
+    bad = a["x"].copy()
+    bad[0, 0] = np.nan
+    assert "not finite" in tr02.live_adapter_problems(a, {**a, "x": bad})[0]
+    diff = a["x"].copy()
+    diff[0, 0] = 2.0
+    assert "values differ" in tr02.live_adapter_problems(a, {**a, "x": diff})[0]
 
 
 def test_adapter_summary_detects_no_change_zero_b_and_non_finite() -> None:
@@ -460,7 +550,15 @@ def _load_ev() -> dict:
 
 
 def _lora_ev() -> dict:
-    return {"kind": "lora", "tensors": 32, "trainable_params": LORA_PARAMS, "shapes_ok": True}
+    want = tr02.expected_lora_shapes(MODEL_CONFIG, CFG["hyperparameters"])
+    return {
+        "kind": "lora",
+        "tensors": 32,
+        "trainable_params": LORA_PARAMS,
+        "shapes_ok": True,
+        "problems": [],
+        "report": tr02.lora_report(want, want),  # the bounded record the driver now logs
+    }
 
 
 def _val(tag: str, loss: float = 1.5, updates: int = 0, **kw) -> dict:
@@ -1082,6 +1180,162 @@ def test_collect_evidence_keeps_the_stop_record_of_a_failed_phase(tmp_path: Path
     index = tr02.collect_evidence([("probe", out)], tmp_path / "evidence")
     assert "STOP.json" in index["phases"]["probe"]["files"]
     assert "COMPLETE.json" not in index["phases"]["probe"]["files"]
+
+
+def test_collect_evidence_never_copies_a_weight_file_and_hashes_what_it_skips(
+    tmp_path: Path,
+) -> None:
+    _, out = _run(tmp_path, _events())
+    (out / "0000100_adapters.safetensors").write_bytes(b"checkpoint")  # a trainer checkpoint
+    dest = tmp_path / "evidence"
+    index = tr02.collect_evidence([("smoke", out)], dest)
+    assert not list(dest.rglob("*.safetensors"))
+    skipped = index["phases"]["smoke"]["not_copied"]
+    assert set(skipped) >= {tr02.ADAPTER_FILE, "0000100_adapters.safetensors"}
+    assert skipped["0000100_adapters.safetensors"]["bytes"] == len(b"checkpoint")
+
+
+def test_collect_evidence_refuses_a_missing_run_duplicate_names_and_an_existing_destination(
+    tmp_path: Path,
+) -> None:
+    _, out = _run(tmp_path, _events())
+    dest = tmp_path / "evidence"
+    with pytest.raises(FileNotFoundError):
+        tr02.collect_evidence([("smoke", out), ("reload", tmp_path / "never_ran")], dest)
+    assert not dest.exists()  # nothing was created before the check
+    with pytest.raises(ValueError, match="unique"):
+        tr02.collect_evidence([("smoke", out), ("smoke", out)], dest)
+    dest.mkdir()
+    (dest / "keep.txt").write_text("earlier evidence", "utf-8")
+    with pytest.raises(FileExistsError):
+        tr02.collect_evidence([("smoke", out)], dest)
+    assert (dest / "keep.txt").read_text("utf-8") == "earlier evidence"  # never overwritten
+
+
+def test_collect_evidence_of_a_stopped_phase_has_no_adapter_and_no_complete(
+    tmp_path: Path,
+) -> None:
+    ev = [*_events()[:3], {"kind": "lora", "shapes_ok": False, "tensors": 32}]
+    _, out = _run(tmp_path, ev, sleep=30.0)
+    (out / tr02.ADAPTER_FILE).unlink(missing_ok=True)  # a phase that stopped never saved one
+    index = tr02.collect_evidence([("probe", out)], tmp_path / "evidence")
+    got = index["phases"]["probe"]
+    assert "STOP.json" in got["files"] and "COMPLETE.json" not in got["files"]
+    assert tr02.ADAPTER_FILE not in got["files"] and tr02.ADAPTER_FILE not in got["not_copied"]
+
+
+def test_collect_evidence_command_accepts_only_a_destination_inside_the_repository(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _, out = _run(tmp_path, _events())
+    outside = tmp_path / "outside"
+    with pytest.raises(SystemExit, match="inside the repository"):
+        tr02.main(["collect-evidence", "--dest", str(outside), "--run", f"smoke={out}"])
+    assert not outside.exists()
+    monkeypatch.setattr(tr02, "REPO", tmp_path / "evidence-checkout")
+    inside = tmp_path / "evidence-checkout" / "raw"
+    assert tr02.main(["collect-evidence", "--dest", str(inside), "--run", f"smoke={out}"]) == 0
+    assert (inside / "EVIDENCE.json").is_file()
+
+
+HOME = "/Users/someone"
+
+
+def _raw_dir(tmp_path: Path) -> Path:
+    raw = tmp_path / "raw"
+    (raw / "probe").mkdir(parents=True)
+    (raw / "probe" / "child.log").write_text(
+        f'File "{HOME}/repo/tr02.py", line 12\nuses /opt/homebrew/bin/python3 and Owner\n'
+        "token hf_" + "a" * 24 + "\n",
+        "utf-8",
+    )
+    (raw / "probe" / "events.jsonl").write_text('{"kind": "start"}\n', "utf-8")
+    return raw
+
+
+def test_sanitize_evidence_replaces_private_text_and_records_every_redaction(
+    tmp_path: Path,
+) -> None:
+    raw = _raw_dir(tmp_path)
+    dest = tmp_path / "clean"
+    manifest = tr02.sanitize_evidence(raw, dest, HOME, {"Owner": "<owner>"})
+    text = (dest / "probe" / "child.log").read_text("utf-8")
+    assert "$HOME/repo/tr02.py" in text and "<local-path>" in text and "<owner>" in text
+    assert "<redacted-credential>" in text and "someone" not in text and "hf_a" not in text
+    by_name = {f["original_filename"]: f for f in manifest["files"]}
+    log = by_name["probe/child.log"]
+    assert log["redaction_counts"] == {
+        "home_directory_prefix": 1,
+        "other_absolute_local_path": 1,
+        "named_term": 1,
+        "credential_like_token": 1,
+    }
+    assert (
+        log["original_sha256"]
+        == hashlib.sha256((raw / "probe" / "child.log").read_bytes()).hexdigest()
+    )
+    assert (
+        log["sanitized_sha256"]
+        == hashlib.sha256((dest / "probe" / "child.log").read_bytes()).hexdigest()
+    )
+    assert log["original_bytes"] != log["sanitized_bytes"]
+    assert json.loads((dest / "REDACTIONS.json").read_text("utf-8")) == manifest
+
+
+def test_sanitize_evidence_keeps_a_clean_file_byte_identical(tmp_path: Path) -> None:
+    raw = _raw_dir(tmp_path)
+    dest = tmp_path / "clean"
+    manifest = tr02.sanitize_evidence(raw, dest, HOME, {"Owner": "<owner>"})
+    clean = next(f for f in manifest["files"] if f["original_filename"] == "probe/events.jsonl")
+    assert clean["original_sha256"] == clean["sanitized_sha256"]
+    assert (dest / "probe" / "events.jsonl").read_bytes() == (
+        raw / "probe" / "events.jsonl"
+    ).read_bytes()
+    assert sum(clean["redaction_counts"].values()) == 0
+
+
+def test_sanitize_evidence_refuses_weights_binary_files_and_existing_destinations(
+    tmp_path: Path,
+) -> None:
+    raw = _raw_dir(tmp_path)
+    (raw / "weights.safetensors").write_bytes(b"w")
+    with pytest.raises(ValueError, match="weight"):
+        tr02.sanitize_evidence(raw, tmp_path / "a", HOME)
+    assert not (tmp_path / "a").exists()
+    (raw / "weights.safetensors").unlink()
+    (raw / "blob.bin").write_bytes(b"\xff\xfe\x00")
+    with pytest.raises(ValueError, match="UTF-8"):
+        tr02.sanitize_evidence(raw, tmp_path / "b", HOME)
+    (raw / "blob.bin").unlink()
+    (tmp_path / "c").mkdir()
+    with pytest.raises(FileExistsError):
+        tr02.sanitize_evidence(raw, tmp_path / "c", HOME)
+
+
+def test_sanitize_evidence_fails_when_a_private_path_survives(tmp_path: Path) -> None:
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    (raw / "x.log").write_text("path /Users/other/place with the wrong home\n", "utf-8")
+    # another user's home is caught by the generic local-path rule
+    manifest = tr02.sanitize_evidence(raw, tmp_path / "clean", HOME)
+    assert manifest["files"][0]["redaction_counts"]["other_absolute_local_path"] == 1
+    (raw / "y.log").write_text("Windows C:\\Users\\someone\\x\n", "utf-8")
+    with pytest.raises(ValueError, match="still holds private text"):
+        tr02.sanitize_evidence(raw, tmp_path / "clean2", HOME)
+
+
+def test_sanitize_evidence_command_accepts_only_a_destination_inside_the_repository(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    raw = _raw_dir(tmp_path)
+    with pytest.raises(SystemExit, match="inside the repository"):
+        tr02.main(
+            ["sanitize-evidence", "--src", str(raw), "--dest", str(tmp_path / "o"), "--home", HOME]
+        )
+    monkeypatch.setattr(tr02, "REPO", tmp_path / "wt")
+    args = ["sanitize-evidence", "--src", str(raw), "--dest", str(tmp_path / "wt" / "clean")]
+    assert tr02.main([*args, "--home", HOME, "--term", "Owner=<owner>"]) == 0
+    assert (tmp_path / "wt" / "clean" / "REDACTIONS.json").is_file()
 
 
 # --------------------------------------------------------- data path (optional dependencies)

@@ -1,10 +1,35 @@
-# Proposed EXP-TR02: AXBENCH-TR LoRA feasibility smoke (proposal v4; not approved, not run)
+# Proposed EXP-TR02: AXBENCH-TR LoRA feasibility smoke (proposal v5; the v4 probe stopped on a name check; not approved to run again)
 
 Status: **proposed, revised after the second technical review of PR #13 (harness revision) and again for the owner-authorized final licensing revision (probe and smoke restricted to schema sources with documented terms).** No model has been
 loaded or run, and none may be until this protocol and PR #13 are reviewed, the M5 no-weight preflight below has been
 run and its output reviewed, and the owner approves the run **for a named commit**. EXP-010 (PR #11) is untouched;
 this protocol reads its committed numbers and changes nothing there. The harness is new and independent
 (`training/tr02/`).
+
+## Revision 5 (after the first authorized probe stopped): precise delta
+
+The one probe authorized at code commit `d5f6cd56` (protocol v4) loaded the checkpoint (MLX peak 3.44 GB), attached 32 LoRA
+tensors with 458,752 trainable parameters and stopped before any update on `lora_shapes_not_ok` (evidence:
+`docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/p1-probe-stopped-at-d5f6cd5/RUN_RESULT.md`, claim C-TR-17). P2 and
+P3 never ran. That authorization is spent. Revision 5 changes **only** the following:
+
+1. **Name contract.** The pinned model-specific expectation is `model.layers.N.self_attn.{q,v}_proj.lora_{a,b}` (mlx-lm 0.32.2
+   `qwen3.Model` nests the blocks in `self.model`), derived from the checkpoint config and the architecture, not from what the
+   model reports; it refuses other model types; no wildcard or suffix matching; missing, extra, wrong-layer,
+   wrong-projection, wrong-shape and unprefixed names fail. Counts and parameter totals are unchanged (32 and 458,752).
+2. **Checks around it.** The `lora` event carries a bounded name and shape report; `run_reload` additionally compares the
+   reloaded model's live LoRA tensors with the saved file (names, shapes, finiteness, values) before the reload loss; the
+   conversion, freezing and adapter config now come from named helpers (`attach_lora`, `lora_adapter_config`) that write
+   byte-identical adapter configs to revision 4.
+3. **Tests.** Real tiny random Qwen3 regression tests (`tests/test_tr02_lora_tiny_qwen3.py`, skipped where MLX is absent) and
+   a `check-lora` command that runs the same fixture in the M5 no-weight preflight.
+4. **Evidence workflow.** A documented separate-evidence-checkout procedure and a `sanitize-evidence` command with a
+   redaction manifest; `collect-evidence` is stricter (existing run directories, unique names, no weight copy, no
+   overwrite) and its destination guard is unchanged.
+
+**Unchanged:** model and checkpoint pins, corpus, export, per-example hashes and subset selection, hyperparameters, stop
+limits, phases, optimizer counts, evaluation gates, the event audit's gates and `training/tr02/config.json` (byte-identical).
+Execution needs a new, separately granted owner authorization for a named code commit after technical review.
 
 ## Question
 Part A (this smoke): can the M5 16 GB train Qwen3-1.7B LoRA on AXBENCH-TR sequences of up to 1,342 tokens (1,343 with

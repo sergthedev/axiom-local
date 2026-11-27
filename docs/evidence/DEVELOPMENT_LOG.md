@@ -710,3 +710,20 @@ for a comprehensive final audit of AXIOM Verify.
   criteria apply and never the exact-bytes ones. No numerical kernel, tolerance, result hash or fingerprint schema
   changed. A reviewer-side reproduction of the Linux subprocess measurements has not been done.
 
+### EXP-TR02 harness revision 5: name contract, tiny-model tests, evidence workflow (2026-11-27, no training)
+- Owner authorization in the project thread (corrective engineering only, no training); the technical lead's task on PR #13
+  set the scope. Baseline first: PR #13 conflicted with `main` after PR #14 merged, so GitHub started no CI on the evidence
+  commit; `main` was merged into the branch (no rebase, no force-push, conflicts only in the three append-only evidence
+  files, both sides kept) and CI went green on macOS and Windows at `2c8eac2` (run 46064296958).
+- Fix: `expected_lora_shapes` now names `model.layers.N...` from the config and refuses other model types. Every call site
+  was audited (initial attachment, saved adapter versus contract and versus live, reload versus contract; `build_rules` uses
+  counts only) and `run_reload` gained a live-versus-saved tensor check. The `lora` event carries a bounded name and shape
+  report. `config.json` is byte-identical to revision 4 (test).
+- Reproduced the prefixed names on a real tiny Qwen3 before the fix, then wrote regression tests on a real randomly initialized tiny
+  Qwen3 (no pretrained weights, no optimizer step) with the locked MLX and mlx-lm; skipped, not passed, where MLX is absent.
+  mlx-lm's own `load_adapters` was read and refuses names that are not adapter parameters, which the tests use as an
+  independent check.
+- Evidence workflow: `collect-evidence` refuses missing runs and duplicate names and never copies weights; new
+  `sanitize-evidence` with a redaction manifest; a documented separate evidence checkout (`.evidence-raw/` is git-ignored).
+- Another session on the owner's Mac had started the same repair locally in parallel; it was stopped before any commit.
+

@@ -234,3 +234,6 @@ adapters/
 
 # AXBENCH-TR raw downloads (kept outside Git; see data/axbench-tr/sources/ACQUISITION.json)
 data/axbench-tr/_raw/
+
+# EXP-TR02 raw evidence copies (hold private paths; only sanitized copies are committed)
+.evidence-raw/
