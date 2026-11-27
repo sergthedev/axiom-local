@@ -380,9 +380,11 @@ MODEL_CONFIG = {
 
 
 def test_config_json_is_byte_identical_to_the_revision_4_pins() -> None:
-    # revision 5 changes the name contract and the checks around it, never a pin or a limit
+    # revision 5 changes the name contract and the checks around it, never a pin or a limit.
+    # Line endings are normalized: a Windows checkout may convert LF to CRLF in this text file.
+    data = tr02.CONFIG_PATH.read_bytes().replace(b"\r\n", b"\n")
     assert (
-        fetch.sha256_file(tr02.CONFIG_PATH)
+        hashlib.sha256(data).hexdigest()
         == "7d31d916621523281d2226de9802671ddc63b05aad219388064a275abaf5301c"
     )
 
