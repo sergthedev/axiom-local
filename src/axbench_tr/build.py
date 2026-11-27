@@ -10,7 +10,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from . import adapters, contamination, validate
+from . import adapters, contamination, dedup, validate
 from .registry import ACQUISITION_PATH, REGISTRY_PATH
 from .schemas import all_tables, table_partition, usable
 from .synth import CORPUS_VERSION, GENERATOR, generate
@@ -139,6 +139,7 @@ def write(corpus: dict[str, list[dict[str, Any]]], version: str, seed: str = DEF
         "template_similarity_against_axbench_v0.1_train_and_validation_lineages": (
             contamination.template_report()
         ),
+        "near_duplicates_in_corpus": dedup.near_duplicate_report(corpus),
         "sealed_test_check": (
             "not performed: this project's tooling has not been run on the sealed AXBENCH "
             "test split"
@@ -146,7 +147,9 @@ def write(corpus: dict[str, list[dict[str, Any]]], version: str, seed: str = DEF
         "distributions": distributions(corpus),
     }
     (out / "AUDIT.json").write_text(
-        json.dumps(audit, ensure_ascii=False, indent=1, sort_keys=True) + "\n", "utf-8"
+        json.dumps(audit, ensure_ascii=False, indent=1, sort_keys=True) + "\n",
+        "utf-8",
+        newline="\n",
     )
     manifest = {
         "corpus_version": CORPUS_VERSION,
@@ -166,7 +169,7 @@ def write(corpus: dict[str, list[dict[str, Any]]], version: str, seed: str = DEF
         ),
         "registry_sha256": hashlib.sha256(REGISTRY_PATH.read_bytes()).hexdigest(),
         "acquisition_manifest_sha256": hashlib.sha256(ACQUISITION_PATH.read_bytes()).hexdigest(),
-        "base_commit": _git("rev-parse", "HEAD"),
+        "base_commit": _git("merge-base", "HEAD", "origin/main"),  # stable across branch commits
     }
     (out / "MANIFEST.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=1, sort_keys=True) + "\n", "utf-8"

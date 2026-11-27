@@ -1,13 +1,18 @@
-"""Measure AXBENCH-TR training-token counts with the real Qwen3-1.7B tokenizer.
+"""Measure AXBENCH-TR training-sequence lengths with the real Qwen3-1.7B tokenizer.
 
-Each record is rendered exactly as the MLX export renders it (``axiom.prompt/1`` system and user
-turns, compact gold JSON as the assistant turn) through the model's own ``chat_template`` with
-``enable_thinking=False``, then tokenised with ``tokenizer.json``. Only the tokenizer files
-(SRC-M01, no weights) are read. Output is JSON on stdout.
+Rendering follows the EXP-010 convention: the prompt is the model's own ``chat_template`` applied
+to the ``axiom.prompt/1`` system and user turns with ``enable_thinking=False`` and the generation
+prompt; the sequence is that prompt, the compact gold JSON, and ``<|im_end|>``. Only the tokenizer
+files (SRC-M01, no weights) are read. The report is JSON on stdout; ``--per-example`` writes one
+line per record.
 
-Optional dependencies, not part of the locked environment: ``tokenizers`` and ``jinja2``.
+``--max-seq-length N`` is a gate, never a truncation: the exit status is 1 if any sequence is longer
+than N, and the report lists how many exceed 1024 and N.
 
-    PYTHONPATH=src python benchmarks/axbench_tr_token_stats.py [--version v0.2-draft]
+Optional dependencies, not in the locked environment: ``tokenizers`` and ``jinja2``.
+
+    PYTHONPATH=src python benchmarks/axbench_tr_token_stats.py --max-seq-length 2048 \
+        --per-example data/axbench-tr/v0.2-draft/token_lengths_per_example.jsonl
 """
 
 from __future__ import annotations
@@ -16,16 +21,19 @@ import argparse
 import json
 import statistics
 import sys
+from pathlib import Path
 
 from axbench_tr.build import OUT_ROOT
 from axbench_tr.fetch import raw_dir
 from axiom_router.prompt import build_router_input, chat_messages
 from axiom_router.schema import project_columns
 
+PREVIOUS_LIMIT = 1024  # EXP-010 max_seq_length
+
 
 def _percentile(values: list[int], q: float) -> int:
     ordered = sorted(values)
-    return ordered[min(len(ordered) - 1, int(round(q * (len(ordered) - 1))))]
+    return ordered[min(len(ordered) - 1, round(q * (len(ordered) - 1)))]
 
 
 def _summary(values: list[int]) -> dict[str, float | int]:
@@ -43,6 +51,8 @@ def _summary(values: list[int]) -> dict[str, float | int]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--version", default="v0.2-draft")
+    parser.add_argument("--max-seq-length", type=int, default=2048)
+    parser.add_argument("--per-example", help="write one JSON line per record to this path")
     args = parser.parse_args()
     try:
         import jinja2
@@ -62,40 +72,68 @@ def main() -> int:
     env.globals["raise_exception"] = _raise
     template = env.from_string(config["chat_template"])
 
+    def count(text: str) -> int:
+        return len(tokenizer.encode(text, add_special_tokens=False).ids)
+
     report: dict[str, object] = {
-        "tokenizer": "Qwen/Qwen3-1.7B tokenizer.json + chat_template, enable_thinking=False",
+        "rendering": "chat_template(enable_thinking=False, generation prompt) + compact gold JSON "
+        "+ <|im_end|>; Qwen3-1.7B tokenizer.json",
         "corpus": f"axbench-tr/{args.version.removeprefix('v')}",
+        "previous_limit": PREVIOUS_LIMIT,
+        "max_seq_length_gate": args.max_seq_length,
     }
+    per_example: list[dict[str, object]] = []
+    over_gate = 0
     for split in ("train", "validation"):
         path = OUT_ROOT / args.version / f"{split}.jsonl"
         counts: dict[str, list[int]] = {"all": [], "tr": [], "en": []}
-        prompt_counts: list[int] = []
+        prompts: list[int] = []
+        completions: list[int] = []
         for line in path.read_text("utf-8").splitlines():
             rec = json.loads(line)
             view = project_columns([(c["name"], c["type"]) for c in rec["schema"]["columns"]])
             msgs = chat_messages(build_router_input(rec["request"], view))
             target = json.dumps(rec["gold"], ensure_ascii=False, separators=(",", ":"))
-            full = template.render(
-                messages=[*msgs, {"role": "assistant", "content": target}],
-                add_generation_prompt=False,
-                enable_thinking=False,
-            )
             prompt = template.render(
                 messages=msgs, add_generation_prompt=True, enable_thinking=False
             )
-            n = len(tokenizer.encode(full, add_special_tokens=False).ids)
+            n_prompt = count(prompt)
+            n_completion = count(target) + 1  # + <|im_end|>
+            n = n_prompt + n_completion
             counts["all"].append(n)
             counts[rec["language"]].append(n)
-            prompt_counts.append(len(tokenizer.encode(prompt, add_special_tokens=False).ids))
+            prompts.append(n_prompt)
+            completions.append(n_completion)
+            over_gate += n > args.max_seq_length
+            per_example.append(
+                {
+                    "id": rec["id"],
+                    "split": split,
+                    "language": rec["language"],
+                    "columns": len(rec["schema"]["columns"]),
+                    "prompt_tokens": n_prompt,
+                    "completion_tokens": n_completion,
+                    "sequence_tokens": n,
+                }
+            )
         report[split] = {
-            "per_example_tokens": _summary(counts["all"]),
+            "sequence_tokens": _summary(counts["all"]),
             "turkish": _summary(counts["tr"]),
             "english": _summary(counts["en"]),
-            "prompt_only_tokens": _summary(prompt_counts),
+            "prompt_tokens": _summary(prompts),
+            "completion_tokens": _summary(completions),
+            "over_1024": sum(c > PREVIOUS_LIMIT for c in counts["all"]),
+            f"over_{args.max_seq_length}": sum(c > args.max_seq_length for c in counts["all"]),
         }
+    longest = sorted(per_example, key=lambda r: -int(r["sequence_tokens"]))[:10]
+    report["longest_ten"] = longest
+    report["examples_over_gate"] = over_gate
+    if args.per_example:
+        lines = (json.dumps(r, sort_keys=True) for r in per_example)
+        Path(args.per_example).write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     json.dump(report, sys.stdout, ensure_ascii=False, indent=2, sort_keys=True)
     print()
-    return 0
+    return 1 if over_gate else 0
 
 
 if __name__ == "__main__":

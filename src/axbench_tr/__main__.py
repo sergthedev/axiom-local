@@ -23,6 +23,12 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--version", default="v0.2-draft")
     sub.add_parser("validate", help="validate the committed corpus")
     sub.add_parser("docs", help="regenerate DATA_SOURCES.md from the registry")
+    p = sub.add_parser("export-mlx", help="write MLX-LM chat files outside the repository")
+    p.add_argument("--out", required=True)
+    sub.add_parser("licences", help="fetch licence pages and write LICENCE_EVIDENCE.json")
+    sub.add_parser("review-sample", help="write the stratified 300-record Turkish review sample")
+    p = sub.add_parser("review-summary", help="count decisions in a filled-in review CSV")
+    p.add_argument("--file", required=True)
     p = sub.add_parser(
         "contamination", help="count overlaps with an owner-supplied JSONL of requests"
     )
@@ -66,6 +72,27 @@ def main(argv: list[str] | None = None) -> int:
         report = corpus_report(corpus)
         print(json.dumps({k: v for k, v in report.items() if k != "problems"}, indent=1))
         return 1 if report["problem_count"] else 0
+    elif a.cmd == "export-mlx":
+        from pathlib import Path
+
+        from .export import export
+
+        manifest = export(Path(a.out))
+        print(json.dumps({k: v["examples"] for k, v in manifest["files"].items()}, indent=1))
+    elif a.cmd == "licences":
+        from .licences import write as write_licences
+
+        print(write_licences().name)
+    elif a.cmd == "review-sample":
+        from .review import build as build_sample
+
+        print(json.dumps(build_sample()["by_origin"]))
+    elif a.cmd == "review-summary":
+        from pathlib import Path
+
+        from .review import reviewed_summary
+
+        print(json.dumps(reviewed_summary(Path(a.file)), indent=1))
     elif a.cmd == "docs":
         from .docs import write
 

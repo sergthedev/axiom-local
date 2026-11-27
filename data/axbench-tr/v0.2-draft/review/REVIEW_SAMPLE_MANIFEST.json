@@ -1,0 +1,60 @@
+{
+ "by_frame": {
+  "clarify:ambiguous_column": 7,
+  "clarify:column_not_found": 6,
+  "clarify:column_type_mismatch": 7,
+  "clarify:invalid_parameter": 7,
+  "clarify:missing_cluster_count": 7,
+  "clarify:missing_column": 7,
+  "clarify:missing_correlation_method": 7,
+  "clarify:missing_operation": 7,
+  "clarify:multiple_operations": 7,
+  "cluster": 17,
+  "compare": 64,
+  "inspect": 34,
+  "inspect_all": 7,
+  "reject:causal_inference": 6,
+  "reject:code_or_system_request": 6,
+  "reject:data_modification": 25,
+  "reject:forecasting": 6,
+  "reject:hypothesis_test": 6,
+  "reject:instruction_override": 6,
+  "reject:out_of_scope": 25,
+  "reject:regression": 6,
+  "reject:unsupported_analysis": 6,
+  "relate": 24
+ },
+ "by_origin": {
+  "external_adapted": 100,
+  "synthetic_template": 200
+ },
+ "by_source": {
+  "SRC-N01": 81,
+  "SRC-N03": 19,
+  "SRC-O01": 71,
+  "SRC-O02": 6,
+  "SRC-O03": 2,
+  "SRC-O04": 2,
+  "SRC-O05": 5,
+  "SRC-O06": 114
+ },
+ "by_split": {
+  "train": 239,
+  "validation": 61
+ },
+ "corpus_files_sha256": {
+  "train.jsonl": "c40d1bc8c18dad84a0cbabdf0bc109e03a3645e60025ef3adaa31425ed676792",
+  "validation.jsonl": "4d7d82414c5aa639955a23bf2f97b0f27193662efdf6c8e2683f77a5979c24e0"
+ },
+ "distinct_lineages": 222,
+ "files": {
+  "REVIEW_SAMPLE.csv": "e0bd7c1466c6e5935199602be12d994cd43e585a61b6ca7a330cafded6b98914",
+  "REVIEW_SAMPLE.jsonl": "35989ad1334313eee4c9e0a064b2b0f8ee604e557aa27b3ffcc9a9ab3439ca81"
+ },
+ "language": "tr",
+ "records": 300,
+ "schema": "axbench-tr.review-sample/1",
+ "seed": "axbench-tr-0.2-review-sample",
+ "selection": "Turkish records of train and validation; strata origin x frame; origin shares {'external_adapted': 100, 'synthetic_template': 200}; floor 3 per stratum (or all if fewer); largest-remainder allocation; inside a stratum records are ranked by sha256(seed/origin/frame|id) with one record per lineage preferred",
+ "status": "unreviewed: reviewer columns are empty"
+}

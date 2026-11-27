@@ -65,3 +65,25 @@ weights are distributed.
 | AXBENCH-TR v0.2-draft (train, validation, token statistics) | `data/axbench-tr/v0.2-draft/` | AI-generated corpus on real table headers; no human review; repository license applies to the generated text. Contains adapted text derived from Cognipeer/synthetic-text-to-sql-tr (Apache-2.0; itself a translation of gretelai/synthetic_text_to_sql, Apache-2.0, per the card) and from AlicanKiraz0/Turkish-Finance-SFT-Dataset (MIT per card metadata; README badge says Apache-2.0). Licence metadata is from dataset cards and was not independently verified. See the [dataset card](data/axbench-tr/DATASET_CARD.md) and [DATA_SOURCES.md](data/axbench-tr/DATA_SOURCES.md). |
 | Real Turkish and international table headers and observations | `data/axbench-tr/schemas/`, `data/axbench-tr/economic/` | Column names and kinds from the İzmir Metropolitan Municipality open data portal (CC BY 4.0; attribution: "İzmir Büyükşehir Belediyesi Açık Veri Portalı"), World Bank World Development Indicators (CC BY 4.0; "The World Bank, World Development Indicators"), Eurostat (reuse under Commission Decision 2011/833/EU: "Source: Eurostat"), and ECB, OECD and TCMB layouts (headers only; terms not verified, no observations redistributed). Observation files carry their source id in `economic/MANIFEST.json`. Changes: tables were reduced to selected series and the files re-encoded as UTF-8 CSV. |
 | Qwen3-1.7B tokenizer and chat template | not committed; downloaded to the ignored `data/axbench-tr/_raw/` by `python -m axbench_tr acquire` | Qwen team, Apache-2.0 (REF-033). Used only to count tokens; no weights are fetched. |
+
+## Notices for adapted dataset text (AXBENCH-TR)
+
+**Cognipeer/synthetic-text-to-sql-tr** (Apache-2.0), a Turkish translation of **gretelai/synthetic_text_to_sql**
+(Apache-2.0). Licence: https://www.apache.org/licenses/LICENSE-2.0. Changes made here: request sentences were
+selected, lightly normalised and paired with a schema taken from the `CREATE TABLE` context; gold labels were
+derived by rule; no SQL is used or emitted. The files are in `data/axbench-tr/v0.2-draft/`.
+
+**AlicanKiraz0/Turkish-Finance-SFT-Dataset** (MIT per the Hub tag; the card names no copyright holder). Short
+questions from this dataset appear as out-of-scope requests. Standard MIT permission notice: Permission is hereby
+granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, subject to the inclusion of this
+notice. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
+
+**İzmir Büyükşehir Belediyesi Açık Veri Portalı** (CC BY 4.0, https://creativecommons.org/licenses/by/4.0/):
+the CSV files under `data/axbench-tr/economic/izmir/` are unmodified copies; the table-name and column-name
+inventory is derived from them.
+
+The licence evidence read for each source (page, SHA-256, excerpt) is in
+`data/axbench-tr/sources/LICENCE_EVIDENCE.json` and `data/axbench-tr/DATA_SOURCES.md`.
+

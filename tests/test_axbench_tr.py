@@ -347,7 +347,7 @@ def test_committed_files_hold_no_absolute_local_paths_or_secrets() -> None:
         r"/(?:home|Users|root|tmp)/[\w.-]+|[A-Za-z]:\\\\Users|hf_[A-Za-z0-9]{20,}|api[_-]?key", re.I
     )
     for path in [
-        *CORPUS.glob("*"),
+        *(p for p in CORPUS.rglob("*") if p.is_file()),
         *(OUT_ROOT / "sources").glob("*"),
         *(OUT_ROOT / "economic").glob("*.json"),
     ]:
@@ -394,3 +394,97 @@ def test_data_sources_md_is_generated_from_registry() -> None:
     from axbench_tr import docs
 
     assert docs.DATA_SOURCES_PATH.read_text("utf-8") == docs.render()
+
+
+REVIEW = CORPUS / "review"
+
+
+@pytest.mark.skipif(not REVIEW.exists(), reason="review sample not built")
+def test_review_sample_is_deterministic_stratified_and_turkish() -> None:
+    from axbench_tr import review
+
+    rows, hashes = review.load_corpus()
+    first = review.sample_rows(review.select(rows))
+    again = review.sample_rows(review.select(list(reversed(rows))))  # input order must not matter
+    assert [r["record_id"] for r in first] == [r["record_id"] for r in again]
+    assert len(first) == review.SAMPLE_SIZE
+    assert {r["record_id"] for r in first} <= {r["id"] for r in rows}
+    by_id = {r["id"]: r for r in rows}
+    assert all(by_id[r["record_id"]]["language"] == "tr" for r in first)
+    assert {r["origin"] for r in first} == set(review.ORIGIN_SHARE)
+    assert {r["frame"] for r in first} >= {"inspect", "relate", "compare", "cluster"}
+    assert all(r["reviewer_decision"] == "" for r in first)  # nothing pre-filled
+    committed = [
+        json.loads(line)
+        for line in (REVIEW / "REVIEW_SAMPLE.jsonl").read_text("utf-8").splitlines()
+    ]
+    assert [r["record_id"] for r in committed] == [r["record_id"] for r in first]
+    manifest = json.loads((REVIEW / "REVIEW_SAMPLE_MANIFEST.json").read_text("utf-8"))
+    assert manifest["corpus_files_sha256"] == hashes
+    for name, digest in manifest["files"].items():
+        assert fetch.sha256_file(REVIEW / name) == digest
+
+
+def test_review_allocation_respects_floor_and_total() -> None:
+    from axbench_tr.review import _allocate
+
+    alloc = _allocate({"a": 1000, "b": 10, "c": 2}, 100)
+    assert sum(alloc.values()) == 100
+    assert alloc["c"] == 2 and alloc["b"] >= 3
+
+
+def test_gold_is_readable_for_every_action() -> None:
+    from axbench_tr.review import readable_gold
+
+    schema = {"columns": [{"id": "c1", "name": "Ülke", "type": "text"}]}
+    plan = {"schema": schema, "gold": {"action": "PLAN", "operation": "inspect", "columns": ["c1"]}}
+    assert readable_gold(plan) == "PLAN inspect: Ülke (c1)"
+    reject = {"schema": schema, "gold": {"action": "REJECT", "reason": "forecasting"}}
+    assert readable_gold(reject) == "REJECT: forecasting"
+
+
+def test_licence_evidence_covers_every_used_source() -> None:
+    path = OUT_ROOT / "sources" / "LICENCE_EVIDENCE.json"
+    evidence = json.loads(path.read_text("utf-8"))
+    assert all(e["status"] == "excerpt_found" for e in evidence["entries"])
+    covered = {s for e in evidence["entries"] for s in e["sources"]}
+    used = {"SRC-N01", "SRC-N03", "SRC-O01", "SRC-O02", "SRC-O06"}
+    assert used <= covered
+
+
+@pytest.mark.skipif(not CORPUS.exists(), reason="corpus not built")
+def test_audit_reports_near_duplicates_and_no_cross_split_close_pairs() -> None:
+    audit = json.loads((CORPUS / "AUDIT.json").read_text("utf-8"))
+    nd = audit["near_duplicates_in_corpus"]
+    assert nd["cross_split_pairs"][">=0.9"] == 0 and nd["cross_split_pairs"][">=0.95"] == 0
+    assert audit["validation"]["cross_split_shared"]["request_texts"] == 0
+
+
+@pytest.mark.skipif(not CORPUS.exists(), reason="corpus not built")
+def test_every_sequence_fits_the_declared_limit_without_truncation() -> None:
+    rows = [
+        json.loads(line)
+        for line in (CORPUS / "token_lengths_per_example.jsonl").read_text("utf-8").splitlines()
+    ]
+    assert len(rows) == 8625
+    assert max(r["sequence_tokens"] for r in rows) <= 2048
+    assert all(r["prompt_tokens"] + r["completion_tokens"] == r["sequence_tokens"] for r in rows)
+
+
+@pytest.mark.skipif(not CORPUS.exists(), reason="corpus not built")
+def test_mlx_export_is_deterministic_chat_format_and_refuses_repo_paths(tmp_path: Path) -> None:
+    from axbench_tr import export
+
+    with pytest.raises(SystemExit):
+        export.export(OUT_ROOT / "export-here")
+    first = export.export(tmp_path / "a")
+    second = export.export(tmp_path / "b")
+    assert first["files"] == second["files"]
+    assert first["files"]["full/train.jsonl"]["examples"] == 6942
+    assert first["files"]["smoke/train.jsonl"]["examples"] == export.SMOKE_TRAIN
+    assert first["files"]["peak_probe/train.jsonl"]["examples"] == export.PROBE
+    assert max(first["peak_probe_lengths"]) <= 2048
+    for line in (tmp_path / "a" / "smoke" / "train.jsonl").read_text("utf-8").splitlines():
+        roles = [m["role"] for m in json.loads(line)["messages"]]
+        assert roles == ["system", "user", "assistant"]
+    assert not list((tmp_path / "a").rglob("test*"))

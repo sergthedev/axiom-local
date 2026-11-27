@@ -543,3 +543,19 @@ for a comprehensive final audit of AXIOM Verify.
   `tests/test_review_regressions.py` (fresh-process replay and environment metadata; the set varies between runs).
   The same files fail with 5 failures on an untouched `origin/main` here, so they are environmental, not caused by this
   branch; they were not investigated. All 26 new tests pass.
+
+### AXBENCH-TR pre-training clearance work (2026-11-27, after Issue #12 and PR #13)
+- Draft PR #13 opened against Issue #12 after GitHub authorization returned.
+- First CI run on the PR: macOS passed all tests; Windows failed `test_committed_corpus_matches_manifest_and_validates`
+  because Git converted line endings of `train.jsonl`. Fix: `.gitattributes` rules `-text` for
+  `data/axbench-tr/**/*.{jsonl,json,csv}`, matching `data/axbench`.
+- Replay failures: the environment fingerprint sorts `detected_pools` by API and prefix only; NumPy and SciPy ship two
+  OpenBLAS builds with the same prefix, so their order differs between fresh processes. Adding `version` to the sort key
+  gave 74 of 74 passes in 3 runs; the change was reverted (engine rule) and is proposed separately.
+- Defect found by the review-sample work: 8 finance negatives began with list numbers ("40. ...") copied from the
+  source text; the adapter now strips them. The corpus was rebuilt (counts unchanged) and hashes recorded again.
+- `base_commit` in the corpus manifest is now the merge base with `origin/main`, so the manifest does not change when
+  the branch gets commits. Two consecutive builds were byte-identical.
+- Added: reproducible 300-record Turkish review sample and protocol; licence evidence (8 pages, hashed, excerpts);
+  near-duplicate audit; token gate and per-example lengths; MLX export; tests (33 in `tests/test_axbench_tr.py`).
+- Sealed test: not accessed and its contamination command not run, per the owner.

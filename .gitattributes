@@ -8,3 +8,7 @@ uv.lock text eol=lf
 data/axbench/**/*.jsonl -text
 data/axbench/**/*.json -text
 data/axbench/**/*.csv -text
+# AXBENCH-TR files are hashed in MANIFEST.json, ACQUISITION.json and the registry manifest: keep their bytes identical on every platform.
+data/axbench-tr/**/*.jsonl -text
+data/axbench-tr/**/*.json -text
+data/axbench-tr/**/*.csv -text

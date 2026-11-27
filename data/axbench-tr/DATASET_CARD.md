@@ -58,22 +58,42 @@ against real data. ECB, OECD and TCMB observations are not redistributed; only t
   `axbench_tr/validate.py`) found 0 problems in 8,625 records. A record that fails refuses the build.
 - Overlap with AXBENCH v0.1 train and validation (560 requests): 0 exact normalised matches, 0
   near-duplicate pairs at 4-gram Jaccard 0.8. Closest template pair: similarity 0.6957 (0 pairs at or above 0.8).
+- Near-duplicate audit (character n-gram TF-IDF cosine on normalised requests, a lexical proxy, not an
+  embedding model): across splits 8 pairs reach 0.8, none reach 0.9; all 8 are short requests dominated by the
+  same column names from different lineages. Within a split, 2,898 pairs of the same lineage reach 0.9 (the
+  template varies only in a column name) and 47 pairs of different lineages reach 0.9. This shows how narrow the
+  template phrasing is.
 - **The sealed AXBENCH test split was never accessed.** The owner can measure overlap with the sealed
   requests without exposing them: `python -m axbench_tr contamination --file <requests.jsonl>` prints
   counts only. That check has not been run.
 - No external benchmark test split (TAT-QA, FinQA, ConvFinQA, DataBench, StatQA) is in any record.
 
-## Token counts (Qwen3-1.7B tokenizer, chat template, `enable_thinking=False`)
+## Sequence lengths (Qwen3-1.7B tokenizer, chat template, `enable_thinking=False`)
 
-| Split | Examples | Total tokens | Mean | Median | p95 | p99 | Max |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| train | 6,942 | 3,493,955 | 503.3 | 470 | 805 | 1,077 | 1,220 |
-| validation | 1,683 | 847,410 | 503.5 | 487 | 817 | 848 | 891 |
+Rendering follows EXP-010: the template prompt with the generation prompt, plus the compact gold JSON and
+`<|im_end|>`. Per-example lengths are in `v0.2-draft/token_lengths_per_example.jsonl`.
 
-About 94% of tokens per example are the fixed instruction and schema prompt; the assistant answer is
-the small remainder (prompt-only tokens: train 3,290,807 of 3,493,955). Turkish and English
-examples have nearly the same mean length (504.6 and 497.8 tokens). Reproduce with
-`benchmarks/axbench_tr_token_stats.py` (needs `tokenizers` and `jinja2`, not in the lockfile).
+| Split | Examples | Total tokens | Mean | Median | p95 | p99 | Max | Over 1,024 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| train | 6,942 | 3,487,013 | 502.3 | 469 | 804 | 1,076 | 1,219 | 91 |
+| validation | 1,683 | 845,727 | 502.5 | 486 | 816 | 847 | 890 | 0 |
+
+About 94% of tokens are the fixed instruction and schema prompt (train prompt tokens 3,290,807); the answer
+averages 28.3 tokens. Turkish and English examples have about the same length.
+
+**The previous 1,024-token configuration is too short for this corpus.** 91 train examples (1.3%) are longer,
+all on two real wide tables (37 and 43 columns); the longest is 1,219. Truncating them would cut the schema and
+corrupt the label, so none may be truncated or silently dropped. The corpus fits a 2,048-token limit with no
+example over it. `benchmarks/axbench_tr_token_stats.py --max-seq-length 2048` is a gate that exits 1 if any
+sequence is longer; the smoke protocol uses it. Reproduce with that script (needs `tokenizers` and `jinja2`,
+not in the lockfile).
+
+## Human-review sample
+
+`v0.2-draft/review/` holds a reproducible 300-record Turkish sample for native-speaker review: 100
+external-adapted and 200 template records, stratified by origin and 23 frames (floor 3 per stratum, one record per
+lineage preferred), with provenance, upstream licence, gold plan in readable and JSON form, and empty reviewer
+columns. See `REVIEW_PROTOCOL.md` there. `python -m axbench_tr review-sample` regenerates it byte for byte.
 
 ## Known limitations
 
@@ -94,8 +114,10 @@ examples have nearly the same mean length (504.6 and 497.8 tokens). Reproduce wi
 The corpus files are AI-generated derivatives. Inputs: İzmir and World Bank (CC BY 4.0), Cognipeer
 and the Gretel original (Apache-2.0), AlicanKiraz0 (MIT per card; the README badge says Apache-2.0),
 Eurostat (reuse policy). The repository code is MIT. Attribution is in `THIRD_PARTY_NOTICES.md`; the
-per-source terms and their evidence are in `DATA_SOURCES.md`. The Cognipeer and AlicanKiraz0 licence
-metadata come from dataset cards and were not independently verified.
+per-source terms, the derivative-rights summary and the evidence read (page, SHA-256, excerpt; 8 checks, all
+found) are in `DATA_SOURCES.md` and `sources/LICENCE_EVIDENCE.json`. Dataset-card licence tags were read, not
+independently verified, and the summary has had no legal review. The upstream Gretel data were model-generated and
+the terms of that model were not checked.
 
 ## Reproduction
 
@@ -107,6 +129,10 @@ PYTHONPATH=src python -m axbench_tr schemas
 PYTHONPATH=src python -m axbench_tr economic
 PYTHONPATH=src python -m axbench_tr build       # needs pyarrow==26.0.1 for the Cognipeer part
 PYTHONPATH=src python -m axbench_tr validate
+PYTHONPATH=src python -m axbench_tr licences    # re-fetch licence pages
+PYTHONPATH=src python -m axbench_tr review-sample
+PYTHONPATH=src python -m axbench_tr docs
 ```
+Two builds from the same raw files give byte-identical corpus, manifest and audit (checked by hashing).
 
 `pyarrow` is a build-time dependency only and is not in `pyproject.toml` or `uv.lock`.

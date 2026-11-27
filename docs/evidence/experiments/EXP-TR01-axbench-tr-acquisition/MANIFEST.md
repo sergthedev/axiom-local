@@ -20,13 +20,18 @@ PYTHONPATH=src python -m axbench_tr build && python -m axbench_tr validate
 PYTHONPATH=src python -m axbench_tr docs
 PYTHONPATH=src python benchmarks/axbench_tr_token_stats.py > data/axbench-tr/v0.2-draft/TOKEN_STATS.json
 pytest tests/test_axbench_tr.py
+PYTHONPATH=src python -m axbench_tr licences && python -m axbench_tr review-sample
+PYTHONPATH=src python -m axbench_tr export-mlx --out <directory outside the repository>
 ```
 - Exit codes: 0 for each command on the final run. Logs: none kept beyond the files above (no absolute paths in them).
 
 ## Results (measured only)
 - Corpus: 8,625 records (train 6,942, validation 1,683); Turkish 6,960 (80.7%), English 1,665 (19.3%); 0 validation problems; 0 shared lineages, request texts or table groups between splits (`AUDIT.json`).
 - Overlap with AXBENCH v0.1 train and validation (560 requests): 0 exact, 0 near-duplicate pairs at 4-gram Jaccard 0.8.
-- Tokens, Qwen3-1.7B tokenizer and chat template: train 3,493,955; validation 847,410 (`TOKEN_STATS.json`).
+- Sequence lengths, Qwen3-1.7B tokenizer, EXP-010 rendering: train 3,487,013 tokens (91 rows over 1,024, max 1,219); validation 845,727 (max 890); none over 2,048 (`TOKEN_STATS.json`, `token_lengths_per_example.jsonl`).
+- Near-duplicates (char n-gram TF-IDF cosine, lexical proxy): 0 cross-split pairs at 0.9; 8 at 0.8 (`AUDIT.json`).
+- Review sample: 300 Turkish records, 100 external + 200 template, 23 frames (`v0.2-draft/review/`).
+- Licence evidence: 8 pages or cards fetched, hashed, excerpt found for each (`sources/LICENCE_EVIDENCE.json`).
 - Acquisition: 35 sources surveyed, 21 with downloads, about 217 MB of raw files outside Git (`du` of the raw directory); committed data about 15 MB.
 - Independent reference: the validator re-derives every gold label from the record's own schema through `axbench.audit.gold_problems`; this is the same contract code, so it checks consistency with the contract, not human judgement. Mutation tests show the validator rejects broken records.
 

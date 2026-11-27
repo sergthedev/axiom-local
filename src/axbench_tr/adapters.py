@@ -264,6 +264,7 @@ def finance_negatives(
     for i, line in enumerate(path.read_text("utf-8").splitlines()):
         q = " ".join(json.loads(line)["user"].split())
         q = q.replace('\\"', '"').replace("\\'", "'").replace("**", "")
+        q = re.sub(r"^\d+[.)]\s+", "", q)  # list numbering copied from the source text
         if (
             25 <= len(q) <= 200
             and q.endswith("?")
