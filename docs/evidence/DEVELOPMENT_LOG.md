@@ -645,3 +645,16 @@ for a comprehensive final audit of AXIOM Verify.
 - No training setting, frozen input, comparator pin, raw evidence or pre-registered criterion changed. Core tests:
   1,019 passed locally on macOS (14 new regressions). Nothing was trained or evaluated; no validation prediction, no
   final-test access.
+
+## 2026-11-27 — Issue #4, Phase 3C: EXP-010 pilot training (one authorized run)
+
+- The lead cleared exactly one initial pilot training run at `9902a02` (PR #11 comment 7194861659); the owner
+  authorized it in the project thread at 13:07 UTC. The head, CI run 45838268425 (both platforms green), pre-start
+  checks (checkpoint and export hashes, AC power, normal pressure, new directories) and the authorization were
+  recorded on the PR before the start (comment 7219123679).
+- The frozen PRERUN section 8 step 1 command ran once, detached and supervised, 13:09-13:17 UTC: exit 0, status
+  `completed`, 200 updates, no stop. Completion checks and the frozen D18 training-side checks found no problem; the
+  adapter files were re-hashed and match the records. Validation loss (teacher-forced) went from 2.158 to 0.148;
+  throughput fell from 0.92 to 0.79 updates/s, far from the stop rule.
+- Evidence-only commit of `runs/pilot/` and [PILOT_TRAINING.md](experiments/EXP-010-lora-pilot/PILOT_TRAINING.md);
+  C-059. No reload, evaluation, validation generation, scoring, sealed-test access, code or configuration change.
