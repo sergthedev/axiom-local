@@ -788,3 +788,59 @@ def test_smoke_and_probe_exports_hold_only_rights_cleared_template_rows(tmp_path
         assert {origin[i] for i in ids[name]} == {"synthetic_template"}, name
         assert not any("translation_unverified" in tags[i] for i in ids[name])
     assert "external_adapted" in manifest["rights_cleared_subsets"]["full"]
+
+
+@pytest.mark.skipif(not CORPUS.exists(), reason="corpus not built")
+def test_probe_and_smoke_use_only_schema_sources_with_documented_terms(tmp_path: Path) -> None:
+    from axbench_tr import export
+    from axbench_tr.licences_addendum import ADDENDUM_PATH, coverage_problems, tables_used
+
+    assert export.RIGHTS_VERIFIED_SCHEMA_SOURCES == ("SRC-O01", "SRC-O02", "SRC-O06")
+    export.export(tmp_path)
+    ids = json.loads((tmp_path / "ROW_IDS.json").read_text("utf-8"))
+    records = {r["id"]: r for r in _corpus_records()}
+    for name in ("smoke/train.jsonl", "smoke/valid.jsonl", "peak_probe/train.jsonl"):
+        sources = {records[i]["provenance"]["schema_source_id"] for i in ids[name]}
+        assert sources <= set(export.RIGHTS_VERIFIED_SCHEMA_SOURCES), (name, sources)
+    # no overlap between the probe and the smoke training rows; validation stays validation
+    assert not set(ids["peak_probe/train.jsonl"]) & set(ids["smoke/train.jsonl"])
+    assert {records[i]["split"] for i in ids["smoke/train.jsonl"]} == {"train"}
+    assert {records[i]["split"] for i in ids["smoke/valid.jsonl"]} == {"validation"}
+    assert len(ids["smoke/train.jsonl"]) == export.SMOKE_TRAIN
+    assert len(ids["smoke/valid.jsonl"]) == export.SMOKE_VALID
+    # the committed addendum documents the terms of every dataset those rows use
+    addendum = json.loads(ADDENDUM_PATH.read_text("utf-8"))
+    assert addendum["tables_used"] == tables_used()
+    assert coverage_problems(addendum, tables_used()) == []
+
+
+def test_addendum_does_not_modify_the_original_licence_evidence() -> None:
+    import hashlib
+
+    from axbench_tr.licences import EVIDENCE_PATH
+
+    digest = hashlib.sha256(EVIDENCE_PATH.read_bytes()).hexdigest()
+    assert digest == "9304939da99058fe8ade25f6a0829304c388295956d81318a7fee01b063b1337"
+
+
+def test_addendum_coverage_names_a_missing_or_unverified_source() -> None:
+    from axbench_tr.licences_addendum import coverage_problems
+
+    addendum = {
+        "entries": [
+            {"id": "AD-01", "scope": "portal", "source": "SRC-O01", "status": "excerpt_found"},
+            {"id": "AD-04", "scope": "portal", "source": "SRC-O02", "status": "excerpt_found"},
+            {"id": "AD-06", "scope": "portal", "source": "SRC-O06", "status": "excerpt_not_found"},
+            {
+                "id": "IZ-a",
+                "scope": "dataset",
+                "source": "SRC-O06",
+                "status": "needs_review",
+                "tables": ["izmir/a/1"],
+            },
+        ]
+    }
+    problems = coverage_problems(addendum, {"SRC-O03": ["ecb/x"], "SRC-O06": ["izmir/a/1"]})
+    assert any("SRC-O03" in p for p in problems)
+    assert any("AD-06" in p for p in problems)
+    assert any("izmir/a/1" in p for p in problems)

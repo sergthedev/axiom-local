@@ -1,6 +1,6 @@
-# Proposed EXP-TR02: AXBENCH-TR LoRA feasibility smoke (proposal v3; not approved, not run)
+# Proposed EXP-TR02: AXBENCH-TR LoRA feasibility smoke (proposal v4; not approved, not run)
 
-Status: **proposed, revised after the second technical review of PR #13 (harness revision).** No model has been
+Status: **proposed, revised after the second technical review of PR #13 (harness revision) and again for the owner-authorized final licensing revision (probe and smoke restricted to schema sources with documented terms).** No model has been
 loaded or run, and none may be until this protocol and PR #13 are reviewed, the M5 no-weight preflight below has been
 run and its output reviewed, and the owner approves the run **for a named commit**. EXP-010 (PR #11) is untouched;
 this protocol reads its committed numbers and changes nothing there. The harness is new and independent
@@ -17,11 +17,17 @@ evaluation and separately approved criteria.
 
 ## Data used: rights-cleared draft subset only
 The probe and smoke rows are drawn **only from `synthetic_template` records** (this project's own text on real table
-headers; no upstream text). `external_adapted` records are not used: the upstream Gretel generation terms are
+headers; no upstream text) **whose table schema comes from SRC-O01 (World Bank WDI), SRC-O02 (Eurostat) or SRC-O06
+(İzmir open data)**, the three sources whose reuse terms are documented for the exact datasets used
+(`data/axbench-tr/sources/LICENCE_EVIDENCE_ADDENDUM_1.json`; the original `LICENCE_EVIDENCE.json` is unchanged). Schemas
+from SRC-O03 (ECB), SRC-O04 (OECD) and SRC-O05 (TCMB), whose terms are unverified, are excluded. Compared with the
+previous selection, 22 smoke train rows and 1 smoke validation row (23 in all) were replaced by the next-ranked
+eligible rows of the same frame; the other 378 train rows, 39 validation rows and all 20 probe rows are unchanged.
+`external_adapted` records are not used: the upstream Gretel generation terms are
 unresolved and the SRC-N03 licence conflict is open, so there is no final corpus clearance, and the 97 Turkish external
 PLANs are `translation_unverified`. The data are unreviewed AI-authored text; that is acceptable only because the
 smoke measures resources. The export records the subset (`rights_cleared_subsets` in `EXPORT_MANIFEST.json`) and the
-tests check that no external row is in `smoke/` or `peak_probe/`.
+tests check that no external row and no row on a schema source outside that list is in `smoke/` or `peak_probe/`, and that the addendum covers every table those rows use.
 
 ## What reading the stock trainer showed (mlx-lm 0.32.2 source; data path and loss mask run on a CPU build)
 `python -m mlx_lm lora` is therefore not used. The harness reuses its `train`, `evaluate` and `iterate_batches`
@@ -92,8 +98,8 @@ directory. Purpose: the memory and time of the worst case. The loss before and a
 The probe adapter is not reused by any later phase.
 
 **P2 Smoke:** a new process, fresh adapter directory, fresh optimizer, no state from the probe (requires a COMPLETE
-probe). The 400 rows of `smoke/train.jsonl` (stratified over all frames, none of them in the probe, 209,407 tokens,
-215,680 padded) are each exposed **exactly once** in the seeded order: **400 microsteps = 100 optimizer updates** =
+probe). The 400 rows of `smoke/train.jsonl` (stratified over all frames, none of them in the probe, 206,526 tokens,
+212,704 padded) are each exposed **exactly once** in the seeded order: **400 microsteps = 100 optimizer updates** =
 one pass. Validation loss on the 40 rows of `smoke/valid.jsonl` before training (update 0) and after update 100 only.
 One report per update. The adapter is saved once, at the end; there are no intermediate checkpoints, so there is
 nothing to select.

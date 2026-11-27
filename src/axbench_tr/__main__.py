@@ -30,6 +30,10 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("privacy-audit", help="scan committed economic CSVs for identifiers")
     sub.add_parser("licences", help="fetch licence pages and write LICENCE_EVIDENCE.json")
     sub.add_parser(
+        "licences-addendum",
+        help="fetch dataset-level terms for the probe/smoke subsets, write the addendum",
+    )
+    sub.add_parser(
         "review-sample", help="write the stratified 390-record review sample (300 Turkish)"
     )
     p = sub.add_parser("review-summary", help="count decisions in a filled-in review CSV")
@@ -103,6 +107,10 @@ def main(argv: list[str] | None = None) -> int:
         from .licences import write as write_licences
 
         print(write_licences().name)
+    elif a.cmd == "licences-addendum":
+        from .licences_addendum import write as write_addendum
+
+        print(write_addendum().name)
     elif a.cmd == "review-sample":
         from .review import build as build_sample
 

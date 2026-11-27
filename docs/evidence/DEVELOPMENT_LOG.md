@@ -630,3 +630,30 @@ for a comprehensive final audit of AXIOM Verify.
 - Evidence: `docs/evidence/experiments/EXP-TR02-feasibility-smoke/preflight/`. The record is transcribed from the report of
   the session that ran the commands; the raw logs stayed on the device.
 
+
+### EXP-TR02 final licensing revision (2026-11-27, owner-authorized, no training)
+- Trigger: the owner-authorized comment on PR #13 asked to resolve the 23 smoke records on schema sources with unverified
+  terms (ECB 8 train, OECD 4 train and 1 validation, TCMB 10 train) and to verify the raw M5 logs behind the preflight record.
+- Decision: restrict the probe and smoke to `synthetic_template` rows on table schemas from SRC-O01, O02 and O06
+  (`RIGHTS_VERIFIED_SCHEMA_SOURCES` in `src/axbench_tr/export.py`). The ranking is unchanged, so each dropped row is replaced
+  by the next-ranked eligible row of the same frame: 22 train and 1 validation rows changed; 378 train rows, 39 validation
+  rows and all 20 probe rows are unchanged (the probe was already entirely SRC-O06).
+- Evidence for the three sources was read for the exact datasets the subsets use and recorded in a new file,
+  `data/axbench-tr/sources/LICENCE_EVIDENCE_ADDENDUM_1.json` (`python -m axbench_tr licences-addendum`); the original
+  `LICENCE_EVIDENCE.json` is unchanged (a test pins its hash). WDI: the catalogue page labels the dataset CC BY 4.0; the
+  World Bank site terms say content is non-commercial "unless otherwise stated", so the use rests on that dataset label,
+  and no indicator-level override was found (several indicators are compiled from IMF, ILO, UN, OECD or Eurostat; their own
+  terms were not read). Eurostat: general reuse permission with acknowledgement; the commercial-use exception list covers
+  data for countries other than EU, EFTA and official acceding or candidate countries, and Turkey is a candidate country; the
+  dataflow records name Eurostat as creator for the three datasets. İzmir: 93 packages (116 tables) used; 92 carry
+  `Izmir-Metropolitan-Municipality-License`, whose licence URL is the page that states CC BY 4.0 unless stated otherwise, and
+  one carries `cc-by`. A first draft of the addendum copied WDI `sourceOrganization` text containing a URL path that the
+  repository's own privacy test matched as a local path; the URL text is now removed from that field (the raw bytes are
+  still identified by their hash).
+- Numbers after the change: smoke 400 train rows, 206,526 full tokens (212,704 padded), supervised answer tokens 10,530
+  (train) and 1,069 (validation); smoke train rows by schema source O06 257, O01 133, O02 10; validation O01 28, O06 11, O02 1;
+  probe unchanged (20 rows, 24,260 tokens). The export manifest, `ROW_IDS.json`, `smoke/train.jsonl`, `smoke/valid.jsonl` and
+  `training/tr02/config.json` were re-pinned; `peak_probe` files are byte-identical to the previous export.
+- Checks run on Linux (no weights): `verify-inputs`, `check-data`, `check-iterator` for probe and smoke (0 problems); ruff;
+  62 harness tests with the MLX CPU build; 82 `axbench_tr` tests. Four replay tests that fail on this Linux host come from the
+  pool-order defect fixed in PR #14 and do not touch this change.

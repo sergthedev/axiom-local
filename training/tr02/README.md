@@ -19,6 +19,13 @@ The last point was found by `check-iterator` against mlx-lm 0.32.2 (stock mask 3
 first probe row); the harness uses `make_exact_loss` for training, every validation and the reload. The rest of the
 comparison is in the protocol; every statement was read from the mlx-lm 0.32.2 source.
 
+## Data subsets
+
+`probe` (the 20 longest eligible train rows) and `smoke` (400 train rows stratified by frame, 40 validation rows) use only
+`synthetic_template` records on table schemas from SRC-O01, O02 and O06, the sources whose terms are documented for the
+datasets used (`data/axbench-tr/sources/LICENCE_EVIDENCE_ADDENDUM_1.json`). Smoke: 206,526 full tokens (212,704 padded),
+supervised answer tokens 10,530 (train) and 1,069 (validation); probe: 24,260 full tokens (24,448 padded).
+
 ## What is checked, and when
 
 Checked at execution time, by the supervisor before it starts the child **and again by the child** (`preflight`):

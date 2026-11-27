@@ -42,7 +42,7 @@ pytest tests/test_axbench_tr.py tests/test_tr02_harness.py
 ## Limitations and failures
 - No human review of any record, gold plan, Turkish text or licence reading.
 - 92% of records come from 122 AI-authored templates; deduplication is lexical only; external Turkish is machine-translated and checked only for the aggregate word and added constraints (hence `translation_unverified`).
-- Upstream Gretel generation terms and the SRC-N03 licence conflict are unresolved: no final corpus or product clearance; the smoke uses only rights-cleared template rows and is discard-only.
+- Upstream Gretel generation terms and the SRC-N03 licence conflict are unresolved: no final corpus or product clearance; the smoke and probe use only rights-cleared template rows on schemas from SRC-O01, O02 and O06 (terms documented per dataset in `sources/LICENCE_EVIDENCE_ADDENDUM_1.json`; ECB, OECD and TCMB schemas excluded) and are discard-only.
 - The sealed AXBENCH test split was never accessed; the owner-run overlap check has not been run.
 - TÜİK, EVDS, ILOSTAT, IMF and İBB were not acquired; no restriction was bypassed.
 - Mistakes found and fixed are in the development log entries of 2026-11-27, including the draft's SUM, filter and ranking labels (superseded) and a rebuild comparison that passed only because the build had crashed (caught and redone).

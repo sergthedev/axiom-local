@@ -85,5 +85,7 @@ v0.2-rev1, and no MIT notice is claimed. It stays unused until the conflict is r
 the CSV files under `data/axbench-tr/economic/izmir/` are unmodified copies (full licence text: `data/axbench-tr/LICENSES/CC-BY-4.0.txt`); the table-name and column-name inventory is derived from them. One file with contact details was removed after the privacy audit (`economic/PRIVACY_AUDIT.json`).
 
 The licence evidence read for each source (page, SHA-256, excerpt) is in
-`data/axbench-tr/sources/LICENCE_EVIDENCE.json` and `data/axbench-tr/DATA_SOURCES.md`.
+`data/axbench-tr/sources/LICENCE_EVIDENCE.json` and `data/axbench-tr/DATA_SOURCES.md`. Addendum 1
+(`data/axbench-tr/sources/LICENCE_EVIDENCE_ADDENDUM_1.json`, 2026-11-27) records the dataset-level terms of the World Bank WDI,
+Eurostat and İzmir datasets behind the EXP-TR02 probe and smoke subsets, with the limits of that evidence.
 

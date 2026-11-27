@@ -14,7 +14,7 @@ Written 2026-11-27 after the technical review of PR #13. *Measured* means measur
   and the predeclared thresholds; independently authored Turkish held-out tasks; licence items resolved.
 - **Second review applied:** the English gate no longer accepts an extra modifier or 5-character stems, the 97
   Turkish external PLANs are tagged `translation_unverified` and quarantined from product training, and the smoke
-  and probe draw only rights-cleared `synthetic_template` rows (no upstream text). Upstream Gretel terms and the
+  and probe draw only rights-cleared `synthetic_template` rows (no upstream text) on table schemas from SRC-O01, O02 and O06, whose terms are documented per dataset in a licence-evidence addendum (ECB, OECD and TCMB schemas are excluded). Upstream Gretel terms and the
   SRC-N03 conflict are unresolved, so there is no final corpus or product clearance.
 - **EXP-TR02 smoke:** protocol v3 and an independent, revised harness (full event audit, supervised reload, ten pinned
   checkpoint files, hardened supervisor, evidence kept in the repository) are prepared and tested without any model.

@@ -141,8 +141,9 @@ decision exists yet, and the sample is **not** an independent benchmark.
 3. More genuine Turkish economic diversity (the corpus is 92% template-derived).
 4. Resolution of the SRC-N03 licence conflict and of the upstream Gretel generation terms. **Until the Gretel terms
    are resolved or the 569 external records are excluded there is no final corpus or product clearance.** The EXP-TR02
-   smoke is limited to the rights-cleared draft subset (`synthetic_template` records only; no upstream text) and is
-   discard-only.
+   smoke is limited to the rights-cleared draft subset (`synthetic_template` records only; no upstream text; table
+   schemas from SRC-O01, O02 and O06 only, whose terms are documented in `sources/LICENCE_EVIDENCE_ADDENDUM_1.json`)
+   and is discard-only.
 
 ## Known limitations
 

@@ -1,0 +1,2689 @@
+{
+ "addendum": 1,
+ "entries": [
+  {
+   "bytes": 1876291,
+   "excerpt": "License : Creative Commons Attribution 4.0 This dataset is licensed under Creative Commons Attribution 4.0",
+   "id": "AD-01",
+   "retrieved": "2026-11-27",
+   "scope": "portal",
+   "sha256": "67b35b37fdfd73887568e0beeaf5e9bdd8e3c3e8cd9d3ff4edf981a330aa1da1",
+   "source": "SRC-O01",
+   "status": "excerpt_found",
+   "supports": "WDI dataset page of the World Bank Data Catalog: this dataset is licensed under CC BY 4.0.",
+   "url": "https://datacatalog.worldbank.org/search/dataset/0037712/World-Development-Indicators"
+  },
+  {
+   "bytes": 17657,
+   "excerpt": "licenses datasets under the Creative Commons Attribution 4.0 International license (CC-BY 4.0). Many datasets are available under other licenses. They are labeled accordingly, and when they are accessed by users, users agree to comply with all of the terms of the respective licenses, as explai",
+   "id": "AD-02",
+   "retrieved": "2026-11-27",
+   "scope": "portal",
+   "sha256": "f7106582fe705d8ea31c2bd7ef726636942b870104a88d882563b16bcece3910",
+   "source": "SRC-O01",
+   "status": "excerpt_found",
+   "supports": "World Bank Data Catalog licensing page: CC BY 4.0 is the default; datasets under other licences are labelled. The WDI page (AD-01) carries the CC BY 4.0 label.",
+   "url": "https://datacatalog.worldbank.org/public-licenses"
+  },
+  {
+   "bytes": 46882,
+   "excerpt": "The content available on this platform is provided for informational and non-commercial purposes only, unless otherwise stated.",
+   "id": "AD-03",
+   "retrieved": "2026-11-27",
+   "scope": "portal",
+   "sha256": "686ea44d85a201428bb17e69ef1eccd17c21fcc51f61ba169eb4834f912cb1f2",
+   "source": "SRC-O01",
+   "status": "excerpt_found",
+   "supports": "World Bank site terms: the general default is non-commercial, 'unless otherwise stated'. Datasets carry their own licence on their catalogue page, which for WDI is CC BY 4.0 (AD-01). Recorded as a limit: the WDI use rests on that dataset-specific label.",
+   "url": "https://www.worldbank.org/en/about/legal/terms-of-use-for-datasets"
+  },
+  {
+   "bytes": 178077,
+   "excerpt": "Data for countries other than: Member States of the European Union (EU) Member States of the European Free Trade Association (EFTA) official EU acceding and candidate countries.",
+   "id": "AD-04",
+   "retrieved": "2026-11-27",
+   "scope": "portal",
+   "sha256": "655e3c0f818ce5f7d50cd629a0866b97f901782699e4111fa4aad32950d9e7f6",
+   "source": "SRC-O02",
+   "status": "excerpt_found",
+   "supports": "Eurostat copyright notice, list of data that may not be reused commercially: data for countries other than EU and EFTA member states and official EU acceding and candidate countries. Turkey is an official EU candidate country, so the Turkey series are not in that exception list.",
+   "url": "https://ec.europa.eu/eurostat/web/main/help/copyright-notice"
+  },
+  {
+   "bytes": 178078,
+   "excerpt": "Reuse of statistical data, metadata, publications, and other dissemination tools published on this website for commercial or non-commercial purposes is authorised provided the source is acknowledged. The reuse policy of the European Commission is implemented by the Dec",
+   "id": "AD-05",
+   "retrieved": "2026-11-27",
+   "scope": "portal",
+   "sha256": "d0ede4fabe48307bfaa9298f8646a1e8cff305d727a473dc08b12480dd431997",
+   "source": "SRC-O02",
+   "status": "excerpt_found",
+   "supports": "Eurostat copyright notice: general permission to reuse statistical data for commercial or non-commercial purposes with the source acknowledged.",
+   "url": "https://ec.europa.eu/eurostat/web/main/help/copyright-notice"
+  },
+  {
+   "bytes": 24965,
+   "excerpt": "İzmir Büyükşehir Belediyesi Açık Veri Lisansı Bu site altında yer alan tüm materyaller aksi belirtilmedikçe CC BY 4.0 uluslararası lisansı ile İzmir Büyükşehir Belediyesi tarafından lisanslanmıştır. Lisans detayları için; https://creativecommons.org/licenses/by/4.0/deed.tr bağlantısını kullanabilirsiniz. Veriler atıf vermek kaydıyla ticari amaç da dahil olmak üzere kopyalanabilir, düzenlenebilir, dağıtılabilir. Şunları Yapmakta Özgürsünüz; Verileri kopya",
+   "id": "AD-06",
+   "retrieved": "2026-11-27",
+   "scope": "portal",
+   "sha256": "806e4c527090247f4b83d24247f446219a44782944a13e066a7322ca1c659659",
+   "source": "SRC-O06",
+   "status": "excerpt_found",
+   "supports": "The page that every used CKAN package names as its licence URL: 'İzmir Metropolitan Municipality Open Data Licence', all materials CC BY 4.0 unless stated otherwise; copying, editing and distribution allowed with attribution, commercial use included.",
+   "url": "https://acikveri.bizizmir.com/tr/license"
+  },
+  {
+   "bytes": 632,
+   "id": "WB-FP.CPI.TOTL.ZG",
+   "indicator_name": "Inflation, consumer prices (annual %)",
+   "licence_field_in_api_record": false,
+   "retrieved": "2026-11-27",
+   "scope": "indicator",
+   "sha256": "df9371a3b6c01e55a3f28991e62e1b1ebbe0cd2a7da94456be9938c7a2962233",
+   "source": "SRC-O01",
+   "source_organization": "International Financial Statistics database, International Monetary Fund (IMF)",
+   "status": "recorded",
+   "tables_using_the_dataset": 25,
+   "url": "https://api.worldbank.org/v2/indicator/FP.CPI.TOTL.ZG?format=json",
+   "wdi_source": "World Development Indicators"
+  },
+  {
+   "bytes": 670,
+   "id": "WB-SL.UEM.TOTL.ZS",
+   "indicator_name": "Unemployment, total (% of total labor force) (modeled ILO estimate)",
+   "licence_field_in_api_record": false,
+   "retrieved": "2026-11-27",
+   "scope": "indicator",
+   "sha256": "3ae370ed4bebba092338e94334c35add71490324ee57f1dfe81885dade51f52f",
+   "source": "SRC-O01",
+   "source_organization": "ILO Modelled Estimates database (ILOEST), International Labour Organization (ILO), publisher: ILOSTAT, type: external database, date accessed: January 17, 2026",
+   "status": "recorded",
+   "tables_using_the_dataset": 25,
+   "url": "https://api.worldbank.org/v2/indicator/SL.UEM.TOTL.ZS?format=json",
+   "wdi_source": "World Development Indicators"
+  },
+  {
+   "bytes": 938,
+   "id": "WB-NY.GDP.MKTP.CD",
+   "indicator_name": "GDP (current US$)",
+   "licence_field_in_api_record": false,
+   "retrieved": "2026-11-27",
+   "scope": "indicator",
+   "sha256": "51cec1e144a5bad8d92238630c0a305e20116e86d34ad95c7c315ed166255b28",
+   "source": "SRC-O01",
+   "source_organization": "Country official statistics, National Statistical Organizations and/or Central Banks;\nNational Accounts data files, Organisation for Economic Co-operation and Development (OECD);\nStaff estimates, World Bank (WB)",
+   "status": "recorded",
+   "tables_using_the_dataset": 25,
+   "url": "https://api.worldbank.org/v2/indicator/NY.GDP.MKTP.CD?format=json",
+   "wdi_source": "World Development Indicators"
+  },
+  {
+   "bytes": 909,
+   "id": "WB-NY.GDP.MKTP.KD.ZG",
+   "indicator_name": "GDP growth (annual %)",
+   "licence_field_in_api_record": false,
+   "retrieved": "2026-11-27",
+   "scope": "indicator",
+   "sha256": "ed7703d841d4dde2d1cb858f0dd53229fe3e841f72abb17dbc8c950ad20c88ce",
+   "source": "SRC-O01",
+   "source_organization": "Country official statistics, National Statistical Organizations and/or Central Banks;\nNational Accounts data files, Organisation for Economic Co-operation and Development (OECD);\nStaff estimates, World Bank (WB)",
+   "status": "recorded",
+   "tables_using_the_dataset": 25,
+   "url": "https://api.worldbank.org/v2/indicator/NY.GDP.MKTP.KD.ZG?format=json",
+   "wdi_source": "World Development Indicators"
+  },
+  {
+   "bytes": 1044,
+   "id": "WB-NY.GDP.PCAP.CD",
+   "indicator_name": "GDP per capita (current US$)",
+   "licence_field_in_api_record": false,
+   "retrieved": "2026-11-27",
+   "scope": "indicator",
+   "sha256": "96520c3a22b1f9da1c7456349a6e70b1643db88d427671faced17cb8b9eaf907",
+   "source": "SRC-O01",
+   "source_organization": "Country official statistics, National Statistical Organizations and/or Central Banks;\nNational Accounts data files, Organisation for Economic Co-operation and Development (OECD);\nStaff estimates, World Bank (WB)",
+   "status": "recorded",
+   "tables_using_the_dataset": 25,
+   "url": "https://api.worldbank.org/v2/indicator/NY.GDP.PCAP.CD?format=json",
+   "wdi_source": "World Development Indicators"
+  },
+  {
+   "bytes": 943,
+   "id": "WB-NE.EXP.GNFS.ZS",
+   "indicator_name": "Exports of goods and services (% of GDP)",
+   "licence_field_in_api_record": false,
+   "retrieved": "2026-11-27",
+   "scope": "indicator",
+   "sha256": "2324e64be12297b7dd655312acf3581dff838c732d6c989cdfc75653956bd542",
+   "source": "SRC-O01",
+   "source_organization": "Country official statistics, National Statistical Offices (NSOs);\nNational Accounts data files, Central Banks;\nStaff estimates, World Bank (WB)",
+   "status": "recorded",
+   "tables_using_the_dataset": 25,
+   "url": "https://api.worldbank.org/v2/indicator/NE.EXP.GNFS.ZS?format=json",
+   "wdi_source": "World Development Indicators"
+  },
+  {
+   "bytes": 971,
+   "id": "WB-NE.IMP.GNFS.ZS",
+   "indicator_name": "Imports of goods and services (% of GDP)",
+   "licence_field_in_api_record": false,
+   "retrieved": "2026-11-27",
+   "scope": "indicator",
+   "sha256": "7b4d9cbb46f5e6baca7dd719e96f2dc355bd8cd6959dccd11fa48e64ea1f15f3",
+   "source": "SRC-O01",
+   "source_organization": "Country official statistics, National Statistical Offices (NSOs);\nNational Accounts data files, Central Banks;\nStaff estimates, World Bank (WB)",
+   "status": "recorded",
+   "tables_using_the_dataset": 25,
+   "url": "https://api.worldbank.org/v2/indicator/NE.IMP.GNFS.ZS?format=json",
+   "wdi_source": "World Development Indicators"
+  },
+  {
+   "bytes": 685,
+   "id": "WB-PA.NUS.FCRF",
+   "indicator_name": "Official exchange rate (LCU per US$, period average)",
+   "licence_field_in_api_record": false,
+   "retrieved": "2026-11-27",
+   "scope": "indicator",
+   "sha256": "879ac40c1e115d0575c0ac1d26a45b68432303927ea163be9c80e7f47c739b12",
+   "source": "SRC-O01",
+   "source_organization": "International Financial Statistics database, International Monetary Fund (IMF)",
+   "status": "recorded",
+   "tables_using_the_dataset": 25,
+   "url": "https://api.worldbank.org/v2/indicator/PA.NUS.FCRF?format=json",
+   "wdi_source": "World Development Indicators"
+  },
+  {
+   "bytes": 673,
+   "id": "WB-FR.INR.LEND",
+   "indicator_name": "Lending interest rate (%)",
+   "licence_field_in_api_record": false,
+   "retrieved": "2026-11-27",
+   "scope": "indicator",
+   "sha256": "5ba11a439eaa6c91ab9fa1ac555c5da4a5a697c1cb0aac1c99342af54dbdb80c",
+   "source": "SRC-O01",
+   "source_organization": "International Financial Statistics database, International Monetary Fund (IMF)",
+   "status": "recorded",
+   "tables_using_the_dataset": 25,
+   "url": "https://api.worldbank.org/v2/indicator/FR.INR.LEND?format=json",
+   "wdi_source": "World Development Indicators"
+  },
+  {
+   "bytes": 1099,
+   "id": "WB-SP.POP.TOTL",
+   "indicator_name": "Population, total",
+   "licence_field_in_api_record": false,
+   "retrieved": "2026-11-27",
+   "scope": "indicator",
+   "sha256": "2f8491efc00bf2c0995112ff8e87aba69e5e9d22d0880b22f7e3a4ec757ba05c",
+   "source": "SRC-O01",
+   "source_organization": "World Population Prospects, United Nations (UN), publisher: UN Population Division;\nStatistical databases and publications from national statistical offices, National Statistical Offices (NSOs), publisher: National Statistical Offices;\nEurostat: Demographic Statistics, Eurostat (ESTAT), publisher: Eurostat;\nPopulation and Vital Statistics Report (various years), United Nations (UN), publisher: UN Statistics Division",
+   "status": "recorded",
+   "tables_using_the_dataset": 25,
+   "url": "https://api.worldbank.org/v2/indicator/SP.POP.TOTL?format=json",
+   "wdi_source": "World Development Indicators"
+  },
+  {
+   "bytes": 1440,
+   "id": "WB-GC.DOD.TOTL.GD.ZS",
+   "indicator_name": "Central government debt, total (% of GDP)",
+   "licence_field_in_api_record": false,
+   "retrieved": "2026-11-27",
+   "scope": "indicator",
+   "sha256": "840db52efe87e4415fecd7d9ac7ca68f875cd8388755126e05609d2e688b5da0",
+   "source": "SRC-O01",
+   "source_organization": "Government Finance Statistics Yearbook and data files, International Monetary Fund (IMF)",
+   "status": "recorded",
+   "tables_using_the_dataset": 25,
+   "url": "https://api.worldbank.org/v2/indicator/GC.DOD.TOTL.GD.ZS?format=json",
+   "wdi_source": "World Development Indicators"
+  },
+  {
+   "bytes": 1168,
+   "id": "WB-BN.CAB.XOKA.GD.ZS",
+   "indicator_name": "Current account balance (% of GDP)",
+   "licence_field_in_api_record": false,
+   "retrieved": "2026-11-27",
+   "scope": "indicator",
+   "sha256": "0c9f6a6e82c0fb828a7d41a14766f8810a57109b219db5d768d5bd53fdfedfb5",
+   "source": "SRC-O01",
+   "source_organization": "Balance of Payments Statistics Yearbook and data files, International Monetary Fund (IMF);\nWorld Development Indicators Database, World Bank (WB);\nNational Accounts data files, Organisation for Economic Co-operation and Development (OECD)",
+   "status": "recorded",
+   "tables_using_the_dataset": 25,
+   "url": "https://api.worldbank.org/v2/indicator/BN.CAB.XOKA.GD.ZS?format=json",
+   "wdi_source": "World Development Indicators"
+  },
+  {
+   "bytes": 759,
+   "id": "WB-SL.TLF.CACT.ZS",
+   "indicator_name": "Labor force participation rate, total (% of total population ages 15+) (modeled ILO estimate)",
+   "licence_field_in_api_record": false,
+   "retrieved": "2026-11-27",
+   "scope": "indicator",
+   "sha256": "10154473c4d75dd636f728baf231162ddd5a12c910084f832a3b93fe55038fe7",
+   "source": "SRC-O01",
+   "source_organization": "ILO Modelled Estimates database (ILOEST), International Labour Organization (ILO), publisher: ILOSTAT, type: external database, date accessed: January 17, 2026",
+   "status": "recorded",
+   "tables_using_the_dataset": 25,
+   "url": "https://api.worldbank.org/v2/indicator/SL.TLF.CACT.ZS?format=json",
+   "wdi_source": "World Development Indicators"
+  },
+  {
+   "annotation_has_other_source_marker": false,
+   "bytes": 4576,
+   "dataflow": "ESTAT:NAMQ_10_GDP",
+   "dct_creator": "ESTAT",
+   "doi": "10.2908/NAMQ_10_GDP",
+   "geo": "TR",
+   "id": "EU-namq_10_gdp",
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "488de63841b7bbde2e238ec226bbec6c9a146acfb82e24501088b566bd8fb037",
+   "source": "SRC-O02",
+   "status": "terms_documented",
+   "tables": [
+    "eurostat/namq_10_gdp_TR.csv"
+   ],
+   "url": "https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/dataflow/ESTAT/namq_10_gdp/latest?detail=full"
+  },
+  {
+   "annotation_has_other_source_marker": false,
+   "bytes": 7610,
+   "dataflow": "ESTAT:PRC_HICP_MANR",
+   "dct_creator": "ESTAT",
+   "doi": "10.2908/PRC_HICP_MANR",
+   "geo": "TR",
+   "id": "EU-prc_hicp_manr",
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "2ee75df51e365994a5a3b5f0fc228a24128711a9086e7840c08aa35f8b2ea96f",
+   "source": "SRC-O02",
+   "status": "terms_documented",
+   "tables": [
+    "eurostat/prc_hicp_manr_TR.csv"
+   ],
+   "url": "https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/dataflow/ESTAT/prc_hicp_manr/latest?detail=full"
+  },
+  {
+   "annotation_has_other_source_marker": false,
+   "bytes": 5450,
+   "dataflow": "ESTAT:UNE_RT_M",
+   "dct_creator": "ESTAT",
+   "doi": "10.2908/UNE_RT_M",
+   "geo": "TR",
+   "id": "EU-une_rt_m",
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "da94c7d9f3f8759b13135119fff75e9f9aee784c7d86fc1215b7219c1a7b1cd6",
+   "source": "SRC-O02",
+   "status": "terms_documented",
+   "tables": [
+    "eurostat/une_rt_m_TR.csv"
+   ],
+   "url": "https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/dataflow/ESTAT/une_rt_m/latest?detail=full"
+  },
+  {
+   "bytes": 7712,
+   "id": "IZ-akaryakit-ve-veya-otogaz-satis-istasyonu-sayisi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2023-10-23T10:43:15.079132",
+   "organization": "Çevre Koruma Ve Kontrol Dairesi Başkanlığı",
+   "package_name": "akaryakit-ve-veya-otogaz-satis-istasyonu-sayisi",
+   "resource_ids_found": [
+    "950314d2-50b8-463b-8ded-d27e0319ed09"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "27ce699bf851d9199f6c464c304b60ee092a9c8c430b6b465860cfa14d76fbd6",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/akaryakit-ve-veya-otogaz-satis-istasyonu-sayisi/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=akaryakit-ve-veya-otogaz-satis-istasyonu-sayisi"
+  },
+  {
+   "bytes": 6429,
+   "id": "IZ-ana-arterler-gunluk-hiz-ve-sure-verileri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-23T09:13:57.265219",
+   "organization": "Ulaşım Dairesi Başkanlığı",
+   "package_name": "ana-arterler-gunluk-hiz-ve-sure-verileri",
+   "resource_ids_found": [
+    "a3bd880f-dfc6-4f65-bbfd-5fcc998268c3"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "34b5ed3ed8dc81d0e63d728eb45ad6653542dc19270cd65df1a7ad600d99ea64",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/ana-arterler-gunluk-hiz-ve-sure-verileri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=ana-arterler-gunluk-hiz-ve-sure-verileri"
+  },
+  {
+   "bytes": 8547,
+   "id": "IZ-arac-muayene-istasyonlari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-25T23:04:16.628060",
+   "organization": "Akıllı Şehir ve Kent Bilgi Sistemleri Dairesi Başkanlığı",
+   "package_name": "arac-muayene-istasyonlari",
+   "resource_ids_found": [
+    "e1ba131f-73d9-4928-b391-3e5b85a147a5"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "0b976e30c9afbc21a572c449749eaa3d56f68c12d2cc68d20c10d810aa205ac4",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/arac-muayene-istasyonlari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=arac-muayene-istasyonlari"
+  },
+  {
+   "bytes": 6118,
+   "id": "IZ-aricilik-desteginin-yillara-gore-ilce-ve-mahallere-dagilimi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-03-30T05:35:07.999773",
+   "organization": "Tarımsal Hizmetler Dairesi Başkanlığı",
+   "package_name": "aricilik-desteginin-yillara-gore-ilce-ve-mahallere-dagilimi",
+   "resource_ids_found": [
+    "f6b56d38-2d52-4ca9-b58d-79aca7937b68"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "2b8a3629eb4016986f12b7aaa9eee2787d5bf13e46eac90e6a279f0214cfb111",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/aricilik-desteginin-yillara-gore-ilce-ve-mahallere-dagilimi/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=aricilik-desteginin-yillara-gore-ilce-ve-mahallere-dagilimi"
+  },
+  {
+   "bytes": 9835,
+   "id": "IZ-askida-fatura-rakamlari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-10-14T23:01:53.165333",
+   "organization": "İZSU",
+   "package_name": "askida-fatura-rakamlari",
+   "resource_ids_found": [
+    "6db088a9-0feb-47cd-b711-f68675a83804",
+    "cbe6232a-bc4e-420d-8641-8ed2ddbef61a"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "89feb7d3e4f1502444bb63d5ee2ce07e018c7cd512eca023bcd4f8626f9be4b5",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/askida-fatura-rakamlari/1",
+    "izmir/askida-fatura-rakamlari/2"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=askida-fatura-rakamlari"
+  },
+  {
+   "bytes": 7130,
+   "id": "IZ-bademsu-fabrikasi-uretim-verileri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-10T07:49:00.476825",
+   "organization": "Grand Plaza Gıda Otelcilik ve Turizm İşletmeleri A.Ş.",
+   "package_name": "bademsu-fabrikasi-uretim-verileri",
+   "resource_ids_found": [
+    "dfc56e0f-411d-4044-9a91-0c590dcd2a1c"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "1ede0112f2813471f99cb2380b54b4ae96d90e77f168c16dcb00303c21259831",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/bademsu-fabrikasi-uretim-verileri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=bademsu-fabrikasi-uretim-verileri"
+  },
+  {
+   "bytes": 21504,
+   "id": "IZ-balik-hal-fiyatlari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-25T23:03:08.336634",
+   "organization": "Tarımsal Hizmetler Dairesi Başkanlığı",
+   "package_name": "balik-hal-fiyatlari",
+   "resource_ids_found": [
+    "27832153-b03c-4008-9eb0-e33fa6165de8"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "e654908360e6c381d1569d5e5fb7f402fcc3d296bf66b6e245676a3e0a097417",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/balik-hal-fiyatlari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=balik-hal-fiyatlari"
+  },
+  {
+   "bytes": 8599,
+   "id": "IZ-barajlarin-doluluk-oranlari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-23T07:47:58.102599",
+   "organization": "İZSU",
+   "package_name": "barajlarin-doluluk-oranlari",
+   "resource_ids_found": [
+    "5c2ad5b0-f681-45a6-b72c-170791ea8f50"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "5ade3dd279f1315c0936e7abce186f84a67f43a9d660de7977a80688bdfb7f82",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/barajlarin-doluluk-oranlari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=barajlarin-doluluk-oranlari"
+  },
+  {
+   "bytes": 5833,
+   "id": "IZ-bergama-elektrik-uretim-verileri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-11T11:45:27.515987",
+   "organization": "İklim Değişikliği Ve Sıfır Atık Dairesi Başkanlığı",
+   "package_name": "bergama-elektrik-uretim-verileri",
+   "resource_ids_found": [
+    "4634db61-2460-4b45-88ef-d7ca86c7c97c"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "87bcb69d56284daf20b11d138a885e9952583282fa73bfb66b75a4a047f6758b",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/bergama-elektrik-uretim-verileri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=bergama-elektrik-uretim-verileri"
+  },
+  {
+   "bytes": 7009,
+   "id": "IZ-bina-kimlik-belgesi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-25T23:03:42.808817",
+   "organization": "Afet İşleri ve Risk Yönetimi Dairesi Başkanlığı",
+   "package_name": "bina-kimlik-belgesi",
+   "resource_ids_found": [
+    "0fdfe219-3bec-49a9-bac4-56e0e0156e7e",
+    "a596d09a-8e1a-46b4-9b4d-46cbce08123e"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "fd11154bd8cc71fd5892722cffcf007e916c9ad7cfb112e783629869e754f2a5",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/bina-kimlik-belgesi/1",
+    "izmir/bina-kimlik-belgesi/2"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=bina-kimlik-belgesi"
+  },
+  {
+   "bytes": 5030,
+   "id": "IZ-bisikletli-giris-sayilari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-10T06:52:14.591393",
+   "organization": "İZMİR METRO A.Ş.",
+   "package_name": "bisikletli-giris-sayilari",
+   "resource_ids_found": [
+    "c774b611-0be0-4021-ba4c-8bec8cc7201d"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "6f618ad3ed1cefbca655818bf05aec138c3d1940a74629ecd2eecc544e492f8f",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/bisikletli-giris-sayilari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=bisikletli-giris-sayilari"
+  },
+  {
+   "bytes": 7602,
+   "id": "IZ-bisikletli-yaya-sayim-istasyonlari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-10-15T07:28:08.629849",
+   "organization": "Ulaşım Dairesi Başkanlığı",
+   "package_name": "bisikletli-yaya-sayim-istasyonlari",
+   "resource_ids_found": [
+    "60459c57-42d5-4c48-9c4d-80e0b1ee9796",
+    "7ee6cb63-c315-48bf-a375-2b0b0dcbe660",
+    "a5627bda-b739-4b05-a47e-4c6e5ff0ce84"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "1c7637c2d410b8f5998ce6b9afc524f885c1647b40c1cf9507abea5ee8e12fa2",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/bisikletli-yaya-sayim-istasyonlari/2",
+    "izmir/bisikletli-yaya-sayim-istasyonlari/3",
+    "izmir/bisikletli-yaya-sayim-istasyonlari/4"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=bisikletli-yaya-sayim-istasyonlari"
+  },
+  {
+   "bytes": 7287,
+   "id": "IZ-co2-emisyon-degerleri-ton-ve-bir-milyon-yolcu-basina-co2-miktari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-19T08:40:03.986149",
+   "organization": "İZMİR METRO A.Ş.",
+   "package_name": "co2-emisyon-degerleri-ton-ve-bir-milyon-yolcu-basina-co2-miktari",
+   "resource_ids_found": [
+    "d2ec448e-f225-430e-9e26-2a7b51e539b6"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "30604a19e4bad21c2c82b60247ef5333f1d0efba00cb6731759685bb0303803e",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/co2-emisyon-degerleri-ton-ve-bir-milyon-yolcu-basina-co2-miktari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=co2-emisyon-degerleri-ton-ve-bir-milyon-yolcu-basina-co2-miktari"
+  },
+  {
+   "bytes": 6525,
+   "id": "IZ-depolama-sahalari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-11T12:05:42.002273",
+   "organization": "İklim Değişikliği Ve Sıfır Atık Dairesi Başkanlığı",
+   "package_name": "depolama-sahalari",
+   "resource_ids_found": [
+    "14d88274-efcc-4f36-95f2-bb77b8e35cff"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "97c892fbad6f1bd1da54793b82cad64ac5bb681e48896bd4b3235e5fd4dde7ae",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/depolama-sahalari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=depolama-sahalari"
+  },
+  {
+   "bytes": 5814,
+   "id": "IZ-elektrik-uretim-verileri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-11T11:45:56.144759",
+   "organization": "İklim Değişikliği Ve Sıfır Atık Dairesi Başkanlığı",
+   "package_name": "elektrik-uretim-verileri",
+   "resource_ids_found": [
+    "ab179d93-9d2f-4fe1-af64-5c73851c99f6"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "17e9767b880fbefbba5353bcaf0f7edff1d6334cee875cdef538ce7830990969",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/elektrik-uretim-verileri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=elektrik-uretim-verileri"
+  },
+  {
+   "bytes": 4766,
+   "id": "IZ-esrefpasa-hastanesi-randevu-bilgileri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-25T23:03:33.972165",
+   "organization": "Eşrefpaşa Hastanesi Başhekimliği",
+   "package_name": "esrefpasa-hastanesi-randevu-bilgileri",
+   "resource_ids_found": [
+    "1f3e2c49-2fdd-4d39-a2ab-79813d2a2add"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "a30367e669024e0f0fd577ab684de04b2c813ef26afbf120299b3a1bce27d786",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/esrefpasa-hastanesi-randevu-bilgileri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=esrefpasa-hastanesi-randevu-bilgileri"
+  },
+  {
+   "bytes": 8164,
+   "id": "IZ-gunluk-su-uretimi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-10-13T11:53:17.971753",
+   "organization": "İZSU",
+   "package_name": "gunluk-su-uretimi",
+   "resource_ids_found": [
+    "0eca9087-41de-4beb-93a2-d7129faede40"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "c507626129fae33bb73ebef91c38b8564b02c6b35caaaa66aa6fd84d5f5f248d",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/gunluk-su-uretimi/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=gunluk-su-uretimi"
+  },
+  {
+   "bytes": 7136,
+   "id": "IZ-halk-ekmek-fabrikasi-uretim-verileri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-10T07:45:02.217063",
+   "organization": "Grand Plaza Gıda Otelcilik ve Turizm İşletmeleri A.Ş.",
+   "package_name": "halk-ekmek-fabrikasi-uretim-verileri",
+   "resource_ids_found": [
+    "c045bdde-5911-43a6-ba3e-64aff1729211"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "361987917d7b88727cfd4ded234566b0040089d4d1c08b1e3c7b24bf021ea19e",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/halk-ekmek-fabrikasi-uretim-verileri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=halk-ekmek-fabrikasi-uretim-verileri"
+  },
+  {
+   "bytes": 5897,
+   "id": "IZ-halkin-bakkali-siparisi-alinan-paket-miktarlari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-22T09:09:22.880973",
+   "organization": "Grand Plaza Gıda Otelcilik ve Turizm İşletmeleri A.Ş.",
+   "package_name": "halkin-bakkali-siparisi-alinan-paket-miktarlari",
+   "resource_ids_found": [
+    "a934941c-08eb-47ee-90dd-f71a8c526ca5"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "7c7d7ed629a1ee66b9945ff49760dbe58efa0efc0e75a52dceacb331d562865a",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/halkin-bakkali-siparisi-alinan-paket-miktarlari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=halkin-bakkali-siparisi-alinan-paket-miktarlari"
+  },
+  {
+   "bytes": 5291,
+   "id": "IZ-halkin-bakkali-urunleri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2025-04-10T05:56:05.493516",
+   "organization": "İZTARIM A.Ş",
+   "package_name": "halkin-bakkali-urunleri",
+   "resource_ids_found": [
+    "44855909-9060-4e8b-8de2-a878697760a2"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "6973e926e94c370cc5bae662ea11a9af3432783d3ae468b978bc4e0c6ce26902",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/halkin-bakkali-urunleri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=halkin-bakkali-urunleri"
+  },
+  {
+   "bytes": 6077,
+   "id": "IZ-hayvan-icme-suyu-his-goletleri-calismalari-ve-projeleri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2025-08-01T07:32:48.082752",
+   "organization": "Tarımsal Hizmetler Dairesi Başkanlığı",
+   "package_name": "hayvan-icme-suyu-his-goletleri-calismalari-ve-projeleri",
+   "resource_ids_found": [
+    "277a1881-1af9-4cc0-a2ca-b809e8c2d6bb"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "7f12761a87c8db4353057c5dcfbcde1a6a11c63bddef711346b884acfaad25d1",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/hayvan-icme-suyu-his-goletleri-calismalari-ve-projeleri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=hayvan-icme-suyu-his-goletleri-calismalari-ve-projeleri"
+  },
+  {
+   "bytes": 4963,
+   "id": "IZ-hos-geldin-bebek-basvuru-listesi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-04T11:04:51.766315",
+   "organization": "Sağlık İşleri Dairesi Başkanlığı",
+   "package_name": "hos-geldin-bebek-basvuru-listesi",
+   "resource_ids_found": [
+    "d4391b3e-5f37-469e-8520-a5f5b9924451"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "6708c91cb0c5a8026df05e360b97aa9be2235f7e18d563242fe63a60c565de04",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/hos-geldin-bebek-basvuru-listesi/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=hos-geldin-bebek-basvuru-listesi"
+  },
+  {
+   "bytes": 5633,
+   "id": "IZ-ihtiyac-sahiplerine-gunluk-sicak-yemek-corba-pide-kumanya-ve-ikramlik-kahvaltilik-destegi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-08-18T13:31:57.079478",
+   "organization": "Sosyal Hizmetler Dairesi Başkanlığı",
+   "package_name": "ihtiyac-sahiplerine-gunluk-sicak-yemek-corba-pide-kumanya-ve-ikramlik-kahvaltilik-destegi",
+   "resource_ids_found": [
+    "139e7761-e9e0-4400-b866-8185d07316c7"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "d5a92efe0c4c06a6004390b32044f993e55e3cce36dece035d7f2d6ad3847d46",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/ihtiyac-sahiplerine-gunluk-sicak-yemek-corba-pide-kumanya-ve-ikramlik-kahvaltilik-destegi/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=ihtiyac-sahiplerine-gunluk-sicak-yemek-corba-pide-kumanya-ve-ikramlik-kahvaltilik-destegi"
+  },
+  {
+   "bytes": 5306,
+   "id": "IZ-ilce-ve-mahallelere-ait-yol-sayilari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-11T13:19:14.333113",
+   "organization": "Akıllı Şehir ve Kent Bilgi Sistemleri Dairesi Başkanlığı",
+   "package_name": "ilce-ve-mahallelere-ait-yol-sayilari",
+   "resource_ids_found": [
+    "9bfbf3cd-ab9d-4fdc-8da8-3537467138ae"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "854621be448df76daed6bd5fce7cb990c6f8c6b86c237e657f929ad156a589f1",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/ilce-ve-mahallelere-ait-yol-sayilari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=ilce-ve-mahallelere-ait-yol-sayilari"
+  },
+  {
+   "bytes": 3066,
+   "id": "IZ-ilcelere-ait-bina-kat-sayilari",
+   "license_id": "cc-by",
+   "license_title": "Creative Commons Attribution",
+   "license_url": "http://www.opendefinition.org/licenses/cc-by",
+   "metadata_modified": "2026-08-06T08:06:36.303200",
+   "organization": "Akıllı Şehir ve Kent Bilgi Sistemleri Dairesi Başkanlığı",
+   "package_name": "ilcelere-ait-bina-kat-sayilari",
+   "resource_ids_found": [
+    "add93bea-aa93-4f95-8e0f-2428efea5196"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "0690ef6c728513c775f2c9a4542fc324d532425549e8455ccf80b7a4d45d4477",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/ilcelere-ait-bina-kat-sayilari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=ilcelere-ait-bina-kat-sayilari"
+  },
+  {
+   "bytes": 5294,
+   "id": "IZ-ilcelere-ait-mahalle-bazli-bina-sayilari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-11T13:02:44.749787",
+   "organization": "Akıllı Şehir ve Kent Bilgi Sistemleri Dairesi Başkanlığı",
+   "package_name": "ilcelere-ait-mahalle-bazli-bina-sayilari",
+   "resource_ids_found": [
+    "54af6862-2d36-48d0-838f-a42133e8b943"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "7e68681fdadbb7685a7e9eb4dff5f6abf027f5abe6cc07c845927696924a1882",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/ilcelere-ait-mahalle-bazli-bina-sayilari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=ilcelere-ait-mahalle-bazli-bina-sayilari"
+  },
+  {
+   "bytes": 5382,
+   "id": "IZ-ilkogretim-ogrencilerine-yapilan-yardimlar",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-25T23:03:29.940145",
+   "organization": "Sosyal Hizmetler Dairesi Başkanlığı",
+   "package_name": "ilkogretim-ogrencilerine-yapilan-yardimlar",
+   "resource_ids_found": [
+    "c375393e-9504-4548-b6f8-7f8b2eed4a53"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "42c7b0309e0a7f5244837d433c5bcc937d8022b65f8b4cebf2f206f0ee2b95de",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/ilkogretim-ogrencilerine-yapilan-yardimlar/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=ilkogretim-ogrencilerine-yapilan-yardimlar"
+  },
+  {
+   "bytes": 5676,
+   "id": "IZ-imalat-sanayi-ihracati",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-03-04T10:35:50.076491",
+   "organization": "Strateji Geliştirme Dairesi Başkanlığı",
+   "package_name": "imalat-sanayi-ihracati",
+   "resource_ids_found": [
+    "6b004db6-62d9-41f9-b51d-6f0d961e80a2"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "b9d5661ec4759f6984abd9fb3dcd9dd89981d0cd2cbce790665234935ce5352e",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/imalat-sanayi-ihracati/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=imalat-sanayi-ihracati"
+  },
+  {
+   "bytes": 6107,
+   "id": "IZ-imalat-sanayi-ithalati",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-03-04T10:34:58.377560",
+   "organization": "Strateji Geliştirme Dairesi Başkanlığı",
+   "package_name": "imalat-sanayi-ithalati",
+   "resource_ids_found": [
+    "76ee91fb-3f3a-4a83-b24a-6c41a7fbeb56"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "8c01fc034083b3e7547d628e56e164e26a8954cef27a7e5c1815bc1c79a0b8a9",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/imalat-sanayi-ithalati/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=imalat-sanayi-ithalati"
+  },
+  {
+   "bytes": 5870,
+   "id": "IZ-itfaiye-acil-mudahale-sayilari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-25T23:03:15.662965",
+   "organization": "İtfaiye Dairesi Başkanlığı",
+   "package_name": "itfaiye-acil-mudahale-sayilari",
+   "resource_ids_found": [
+    "4b7a8da1-94ed-487f-8b7a-e13d40a5cd33"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "c109422fe6bc81f2ad4c8377b1c418c713d34cfd5d76317230bf556e7869ef48",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/itfaiye-acil-mudahale-sayilari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=itfaiye-acil-mudahale-sayilari"
+  },
+  {
+   "bytes": 6021,
+   "id": "IZ-itfaiye-egitim-hizmetleri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-25T23:03:00.202868",
+   "organization": "İtfaiye Dairesi Başkanlığı",
+   "package_name": "itfaiye-egitim-hizmetleri",
+   "resource_ids_found": [
+    "db592f6e-4694-470f-be03-64444fc0bb88"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "948bb30bb37d6f80477823156b178383949b0ade7d9b14c287c1aeadf6775e89",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/itfaiye-egitim-hizmetleri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=itfaiye-egitim-hizmetleri"
+  },
+  {
+   "bytes": 5611,
+   "id": "IZ-izban-elektrik-tuketimi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-08-27T08:49:30.442731",
+   "organization": "İzmir Banliyö Taşımacılığı Sistemi Ticaret A.Ş.",
+   "package_name": "izban-elektrik-tuketimi",
+   "resource_ids_found": [
+    "699d5c26-93e7-499f-b528-3da630a3965b"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "ca2e446df081fb21c799a1b632ea372ba4c2a5e4227264974b2c27c1b3d7e703",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izban-elektrik-tuketimi/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izban-elektrik-tuketimi"
+  },
+  {
+   "bytes": 8320,
+   "id": "IZ-izban-istasyonlari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-10-19T06:52:09.958090",
+   "organization": "İzmir Banliyö Taşımacılığı Sistemi Ticaret A.Ş.",
+   "package_name": "izban-istasyonlari",
+   "resource_ids_found": [
+    "df6ec7bf-5e75-4f89-9d60-e8da7319517c"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "f69b400bbb684fffabff3be1729d3c275ddd802a4b63bd87c64a92d93f560d2e",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izban-istasyonlari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izban-istasyonlari"
+  },
+  {
+   "bytes": 5605,
+   "id": "IZ-izdeniz-vapurlari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2023-01-16T08:04:04.623659",
+   "organization": "Ulaşım Dairesi Başkanlığı",
+   "package_name": "izdeniz-vapurlari",
+   "resource_ids_found": [
+    "646fb9ea-3e34-40b8-bbef-fa727b527960",
+    "e6d7425a-694c-4f39-b452-4aade132635c"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "1b2cf3d77905be08a4aef102997eb99ce26aacd9bc714b2c8f25d833c5539c86",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izdeniz-vapurlari/1",
+    "izmir/izdeniz-vapurlari/2"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izdeniz-vapurlari"
+  },
+  {
+   "bytes": 8073,
+   "id": "IZ-izelman-otopark-lokasyon-kapasite-ve-calisma-saati-verisi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2022-11-28T07:00:17.941302",
+   "organization": "İZELMAN A.Ş.",
+   "package_name": "izelman-otopark-lokasyon-kapasite-ve-calisma-saati-verisi",
+   "resource_ids_found": [
+    "22cf1829-b59b-4366-9169-8542f39de992",
+    "a982c5d9-931d-4a75-a61d-23127d8ddad2"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "40452e4afdb4590bd03115edeadcbe76c5f6afef73ad9e47be88ca295a4178ea",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izelman-otopark-lokasyon-kapasite-ve-calisma-saati-verisi/1",
+    "izmir/izelman-otopark-lokasyon-kapasite-ve-calisma-saati-verisi/4"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izelman-otopark-lokasyon-kapasite-ve-calisma-saati-verisi"
+  },
+  {
+   "bytes": 4945,
+   "id": "IZ-izmir-banliyo-izban-duraklar-arasi-mesafeler",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-04-05T08:09:51.467151",
+   "organization": "İzmir Banliyö Taşımacılığı Sistemi Ticaret A.Ş.",
+   "package_name": "izmir-banliyo-izban-duraklar-arasi-mesafeler",
+   "resource_ids_found": [
+    "53ff5f4b-c514-43aa-a4cd-4a12e03976e1"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "f21d9b45af3b926a50b51d1f8f0b0d42c0283c104b36daa50062c1dcc120c599",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izmir-banliyo-izban-duraklar-arasi-mesafeler/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izmir-banliyo-izban-duraklar-arasi-mesafeler"
+  },
+  {
+   "bytes": 5627,
+   "id": "IZ-izmir-buyuksehir-belediyesi-yetki-alani-nufusu",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-03-04T11:01:14.629607",
+   "organization": "Strateji Geliştirme Dairesi Başkanlığı",
+   "package_name": "izmir-buyuksehir-belediyesi-yetki-alani-nufusu",
+   "resource_ids_found": [
+    "d1fca272-1bdd-43ee-a50d-27b73cca966d"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "b0df282beaaf61bd2655683c9464df2bdd597f857c52fd16c5bdb12ef3f5fd38",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izmir-buyuksehir-belediyesi-yetki-alani-nufusu/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izmir-buyuksehir-belediyesi-yetki-alani-nufusu"
+  },
+  {
+   "bytes": 7332,
+   "id": "IZ-izmir-buyuksehir-belediyesine-yapilan-staj-basvurulari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-10-13T07:47:12.358470",
+   "organization": "İnsan Kaynakları Ve Eğitim Dairesi Başkanlığı",
+   "package_name": "izmir-buyuksehir-belediyesine-yapilan-staj-basvurulari",
+   "resource_ids_found": [
+    "08d598bc-0ca1-42be-bbc3-be5a816528a7"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "f357a15ff2419fc8d811fa585c25c34bb7c996b9e825b5eac4dd62b1b4fe2847",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izmir-buyuksehir-belediyesine-yapilan-staj-basvurulari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izmir-buyuksehir-belediyesine-yapilan-staj-basvurulari"
+  },
+  {
+   "bytes": 5926,
+   "id": "IZ-izmir-dis-ticaret-hacmi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-03-04T10:36:39.612612",
+   "organization": "Strateji Geliştirme Dairesi Başkanlığı",
+   "package_name": "izmir-dis-ticaret-hacmi",
+   "resource_ids_found": [
+    "d2e97280-5120-420a-a114-b38d3bbe1f8f"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "5bbeb68a49f4fa4dbd1c33a985e6f3be84a2a34ca245a8e3db2b7c2209852b00",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izmir-dis-ticaret-hacmi/2"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izmir-dis-ticaret-hacmi"
+  },
+  {
+   "bytes": 6380,
+   "id": "IZ-izmir-elektrikli-otobus-projesinin-urettigi-cevresel-degerler",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-25T23:03:52.907113",
+   "organization": "ESHOT",
+   "package_name": "izmir-elektrikli-otobus-projesinin-urettigi-cevresel-degerler",
+   "resource_ids_found": [
+    "c57403dd-adba-4b2a-8573-cfb63f09946b"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "edaea000890dc015b04d01ea6957c52525d708dcd87b229b316398eeb00e01af",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izmir-elektrikli-otobus-projesinin-urettigi-cevresel-degerler/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izmir-elektrikli-otobus-projesinin-urettigi-cevresel-degerler"
+  },
+  {
+   "bytes": 6157,
+   "id": "IZ-izmir-ilcelerine-ait-konut-ve-ozel-is-yeri-istatistikleri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-03-04T10:37:10.208421",
+   "organization": "Strateji Geliştirme Dairesi Başkanlığı",
+   "package_name": "izmir-ilcelerine-ait-konut-ve-ozel-is-yeri-istatistikleri",
+   "resource_ids_found": [
+    "ab009a57-0fdd-40cd-8cd3-7cdd3e23aaaa"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "950ad38b5d1aaf0f8bf124b3962e82a4cbb82d531b07cba686363a700c14e9df",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izmir-ilcelerine-ait-konut-ve-ozel-is-yeri-istatistikleri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izmir-ilcelerine-ait-konut-ve-ozel-is-yeri-istatistikleri"
+  },
+  {
+   "bytes": 5038,
+   "id": "IZ-izmir-ili-arizali-kazali-arac-verileri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-23T09:14:59.332956",
+   "organization": "Ulaşım Dairesi Başkanlığı",
+   "package_name": "izmir-ili-arizali-kazali-arac-verileri",
+   "resource_ids_found": [
+    "e4832801-ccfe-4e29-8a14-5c7d63545984"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "8084fd44d91c9d92865848a4c63a312e2ce168a64eb95785207b6ea2207acb54",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izmir-ili-arizali-kazali-arac-verileri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izmir-ili-arizali-kazali-arac-verileri"
+  },
+  {
+   "bytes": 12698,
+   "id": "IZ-izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-19T08:19:49.105791",
+   "organization": "İtfaiye Dairesi Başkanlığı",
+   "package_name": "izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi",
+   "resource_ids_found": [
+    "73cc2266-30f5-48d9-b34b-cb90cf75bfc3",
+    "82fecb79-a244-4f73-80b3-6b5f4dec3d5d",
+    "8a148b69-f8ce-44ce-aa93-80400eea244d",
+    "ae8feb0e-0e41-4939-b9e8-529253762023",
+    "cc618ede-40eb-4a79-b7e6-91020757926c",
+    "f38a8f36-5e6a-488b-85f5-7c20ae44f53c",
+    "fce52f2f-bf20-460c-b09d-ce373d966716"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "e67842d11ddda67fad471c3e37d678a95fcbdb2c84c3d0c1cce950b4911504a1",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi/1",
+    "izmir/izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi/2",
+    "izmir/izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi/3",
+    "izmir/izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi/4",
+    "izmir/izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi/5",
+    "izmir/izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi/6",
+    "izmir/izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi/7"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi"
+  },
+  {
+   "bytes": 14852,
+   "id": "IZ-izmir-itfaiyesi-kontrol-emniyet-tedbir-ve-vatandasa-verilen-hizmetlerin-istatistigi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-19T08:41:07.643775",
+   "organization": "İtfaiye Dairesi Başkanlığı",
+   "package_name": "izmir-itfaiyesi-kontrol-emniyet-tedbir-ve-vatandasa-verilen-hizmetlerin-istatistigi",
+   "resource_ids_found": [
+    "a57863ff-8bad-43bc-8151-0d6c5305fb06",
+    "baa812e1-45d6-4e35-9f64-0e2c1481678e",
+    "ca5b1ccc-c846-46f0-b0ed-d3b91ac24c9f"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "adfe1d998ff403dd6c39ab686a86fc747985a1ca8857812dd2b3d325457b52b4",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izmir-itfaiyesi-kontrol-emniyet-tedbir-ve-vatandasa-verilen-hizmetlerin-istatistigi/1",
+    "izmir/izmir-itfaiyesi-kontrol-emniyet-tedbir-ve-vatandasa-verilen-hizmetlerin-istatistigi/2",
+    "izmir/izmir-itfaiyesi-kontrol-emniyet-tedbir-ve-vatandasa-verilen-hizmetlerin-istatistigi/3"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izmir-itfaiyesi-kontrol-emniyet-tedbir-ve-vatandasa-verilen-hizmetlerin-istatistigi"
+  },
+  {
+   "bytes": 12460,
+   "id": "IZ-izmir-itfaiyesi-yangin-mudahale-istatistigi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-19T08:09:13.007760",
+   "organization": "İtfaiye Dairesi Başkanlığı",
+   "package_name": "izmir-itfaiyesi-yangin-mudahale-istatistigi",
+   "resource_ids_found": [
+    "224e722f-d8ef-4452-9f03-abc7135e23c1",
+    "23bfeebe-1370-49da-aed0-5573cf3dd612"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "d62d6659176eb358f922fb1f0c8f16d891d9f50e378a03c477b43b54de76b4f5",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izmir-itfaiyesi-yangin-mudahale-istatistigi/2",
+    "izmir/izmir-itfaiyesi-yangin-mudahale-istatistigi/6"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izmir-itfaiyesi-yangin-mudahale-istatistigi"
+  },
+  {
+   "bytes": 5551,
+   "id": "IZ-izmir-konut-satis-sayilarina-gore-dagilimi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-03-04T10:36:11.999180",
+   "organization": "Strateji Geliştirme Dairesi Başkanlığı",
+   "package_name": "izmir-konut-satis-sayilarina-gore-dagilimi",
+   "resource_ids_found": [
+    "b660df10-ad8d-4713-a100-2d6ceb38b824"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "018f2fd6cfe180cc9490523b88c9cd7ec504a75594cc66851c06e34653ae3a68",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izmir-konut-satis-sayilarina-gore-dagilimi/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izmir-konut-satis-sayilarina-gore-dagilimi"
+  },
+  {
+   "bytes": 5528,
+   "id": "IZ-izmir-yillara-gore-issizlik-orani",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-03-04T10:57:11.767036",
+   "organization": "Strateji Geliştirme Dairesi Başkanlığı",
+   "package_name": "izmir-yillara-gore-issizlik-orani",
+   "resource_ids_found": [
+    "ba115dd3-780f-41ed-8f9f-da5c4c8c4188",
+    "eee13f37-d4d2-4a0d-b380-0449dbfd26f6"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "3c25de739c9c74ce9f1403df0299892c30f0d0b7db638c230d5d56332d9113ff",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izmir-yillara-gore-issizlik-orani/1",
+    "izmir/izmir-yillara-gore-issizlik-orani/2"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izmir-yillara-gore-issizlik-orani"
+  },
+  {
+   "bytes": 7204,
+   "id": "IZ-izmir95-erken-cocukluk-gelisim-programi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-08-27T13:46:30.798669",
+   "organization": "Sağlık İşleri Dairesi Başkanlığı",
+   "package_name": "izmir95-erken-cocukluk-gelisim-programi",
+   "resource_ids_found": [
+    "3071431d-d514-4cfb-b8c8-d8c31617c910"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "8a628d58e585b72a08ada7dd892e068a0cfddd96c82c9bbaf06611c24113367c",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izmir95-erken-cocukluk-gelisim-programi/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izmir95-erken-cocukluk-gelisim-programi"
+  },
+  {
+   "bytes": 5509,
+   "id": "IZ-izmirim-kart-aktarmali-binis-bilgileri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2025-05-08T12:31:05.434819",
+   "organization": "İzmir İnovasyon ve Teknoloji A.Ş.",
+   "package_name": "izmirim-kart-aktarmali-binis-bilgileri",
+   "resource_ids_found": [
+    "825141af-975f-499b-9540-f1cfb38346f2"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "fc5cc80e8361410314750cbc402dd4d6c1b6eb5d476c990ac16b9c7b11386fb8",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izmirim-kart-aktarmali-binis-bilgileri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izmirim-kart-aktarmali-binis-bilgileri"
+  },
+  {
+   "bytes": 5854,
+   "id": "IZ-izmirim-kart-kullanim-istatistikleri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-04-02T09:19:25.894104",
+   "organization": "İzmir İnovasyon ve Teknoloji A.Ş.",
+   "package_name": "izmirim-kart-kullanim-istatistikleri",
+   "resource_ids_found": [
+    "fb89e667-e5a3-4be2-8ab2-cce4abfbdbe5"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "e34720ccb1a25303265ede3c6c69677384f4958525ebee6974e85be2d25b11bc",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izmirim-kart-kullanim-istatistikleri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izmirim-kart-kullanim-istatistikleri"
+  },
+  {
+   "bytes": 5453,
+   "id": "IZ-izmirin-goc-verdigi-illere-gore-nufus-dagilimi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-03-04T10:34:47.925938",
+   "organization": "Strateji Geliştirme Dairesi Başkanlığı",
+   "package_name": "izmirin-goc-verdigi-illere-gore-nufus-dagilimi",
+   "resource_ids_found": [
+    "27a097b3-bd19-4f50-b2ab-628d14576870"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "abef97e03a825273d9bdf1fc0d6e30805d54d0f326d7ead1f1a0f836f390c735",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/izmirin-goc-verdigi-illere-gore-nufus-dagilimi/2"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=izmirin-goc-verdigi-illere-gore-nufus-dagilimi"
+  },
+  {
+   "bytes": 7858,
+   "id": "IZ-kadin-danisma-merkezi-verilen-hizmet-detay-verisi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-04T11:19:34.488387",
+   "organization": "Kadın ve Aile Hizmetleri Dairesi Başkanlığı",
+   "package_name": "kadin-danisma-merkezi-verilen-hizmet-detay-verisi",
+   "resource_ids_found": [
+    "b7c6062b-27e5-44e1-89f2-121628748311"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "93f3f86405749cc52f37f35fb4b5ac3bbe96e9a578a1b90ce97a1b07f66b919a",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/kadin-danisma-merkezi-verilen-hizmet-detay-verisi/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=kadin-danisma-merkezi-verilen-hizmet-detay-verisi"
+  },
+  {
+   "bytes": 5304,
+   "id": "IZ-kadin-danisma-merkezinde-verilen-destekler",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-04T11:13:28.480800",
+   "organization": "Kadın ve Aile Hizmetleri Dairesi Başkanlığı",
+   "package_name": "kadin-danisma-merkezinde-verilen-destekler",
+   "resource_ids_found": [
+    "5104632a-f3ae-450e-8082-59b4916a8a95"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "b92be37279de7c605e91216173eece6be2d0f7c9b7584f71da43b520291c9b4e",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/kadin-danisma-merkezinde-verilen-destekler/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=kadin-danisma-merkezinde-verilen-destekler"
+  },
+  {
+   "bytes": 6100,
+   "id": "IZ-kadin-siginmaevi-istatistikleri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-04T11:23:05.458377",
+   "organization": "Kadın ve Aile Hizmetleri Dairesi Başkanlığı",
+   "package_name": "kadin-siginmaevi-istatistikleri",
+   "resource_ids_found": [
+    "efe5b775-2e36-4995-9a27-e79ecce110d4"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "22ae667cb1600fd1a5d21587f5204df5d3fc8c343b5d97ba397b90144677f1d6",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/kadin-siginmaevi-istatistikleri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=kadin-siginmaevi-istatistikleri"
+  },
+  {
+   "bytes": 6346,
+   "id": "IZ-kestane-kanseri-ile-mucadele-destegi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-07T08:17:20.494473",
+   "organization": "Tarımsal Hizmetler Dairesi Başkanlığı",
+   "package_name": "kestane-kanseri-ile-mucadele-destegi",
+   "resource_ids_found": [
+    "8c495959-c39a-4495-a7c3-20a7b7537af5"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "66b70fda5b0916ce72b9d547ce1b586919e98da95039a7dbe96efa1a1fc2b86a",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/kestane-kanseri-ile-mucadele-destegi/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=kestane-kanseri-ile-mucadele-destegi"
+  },
+  {
+   "bytes": 6401,
+   "id": "IZ-kisirlastirilan-sokak-hayvanlari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-04T06:52:59.790038",
+   "organization": "Veteriner İşleri Dairesi Başkanlığı",
+   "package_name": "kisirlastirilan-sokak-hayvanlari",
+   "resource_ids_found": [
+    "0c8b2359-b6dd-4f9d-b337-0b71becbd626"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "6eb1c07269b0667c410e4e3d4917f28aac307f80a260c816f555f1536a2ce5d5",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/kisirlastirilan-sokak-hayvanlari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=kisirlastirilan-sokak-hayvanlari"
+  },
+  {
+   "bytes": 4812,
+   "id": "IZ-korfez-degerleri-izleme",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-25T23:03:22.178625",
+   "organization": "Çevre Koruma Ve Kontrol Dairesi Başkanlığı",
+   "package_name": "korfez-degerleri-izleme",
+   "resource_ids_found": [
+    "c7edfdc6-3f0a-43f4-bdda-c136e32d3658"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "fdabf4cdaa6014f7c33cf1f20480ad8349cfb4f7251b1345f6deae02d3612043",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/korfez-degerleri-izleme/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=korfez-degerleri-izleme"
+  },
+  {
+   "bytes": 5734,
+   "id": "IZ-korfez-degerleri-izleme-istasyonlari-konum-verisi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2023-01-11T06:49:43.954773",
+   "organization": "Çevre Koruma Ve Kontrol Dairesi Başkanlığı",
+   "package_name": "korfez-degerleri-izleme-istasyonlari-konum-verisi",
+   "resource_ids_found": [
+    "48025ac5-310c-49dc-aa5c-2a82ce26485e"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "cf14125caf801938a3588308fcbda9fb4c8122ae171fefef7afea93e594c7c96",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/korfez-degerleri-izleme-istasyonlari-konum-verisi/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=korfez-degerleri-izleme-istasyonlari-konum-verisi"
+  },
+  {
+   "bytes": 6023,
+   "id": "IZ-kruvaziyer-gemi-bilgileri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-01-29T12:40:25.058833",
+   "organization": "Dış İlişkiler Dairesi Başkanlığı",
+   "package_name": "kruvaziyer-gemi-bilgileri",
+   "resource_ids_found": [
+    "bc35acd2-1b20-4a76-81cd-6f29f1a01612"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "b5cefa35ce3c8ff23e6e36480821f390ec568dc9d161ea51407b6790681666ee",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/kruvaziyer-gemi-bilgileri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=kruvaziyer-gemi-bilgileri"
+  },
+  {
+   "bytes": 5596,
+   "id": "IZ-kucukbas-hayvan-dagitimi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-03-30T05:34:47.347282",
+   "organization": "Tarımsal Hizmetler Dairesi Başkanlığı",
+   "package_name": "kucukbas-hayvan-dagitimi",
+   "resource_ids_found": [
+    "3a5e54ad-5b71-44e0-82de-1441ca4b94e0"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "c8c791ae984244fecbb2601299d63452b084bbbd15b8119baf514c2fea64efe0",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/kucukbas-hayvan-dagitimi/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=kucukbas-hayvan-dagitimi"
+  },
+  {
+   "bytes": 9508,
+   "id": "IZ-kuzey-guney-alani-park-sayilari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-08-27T09:37:28.054945",
+   "organization": "Park ve Bahçeler Dairesi Başkanlığı",
+   "package_name": "kuzey-guney-alani-park-sayilari",
+   "resource_ids_found": [
+    "63962b2c-b58a-4694-b289-76e0e9590472"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "0f244334733c9777c8ca7124c140bed916793a69f91d8c705d9072b8adb1e047",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/kuzey-guney-alani-park-sayilari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=kuzey-guney-alani-park-sayilari"
+  },
+  {
+   "bytes": 6876,
+   "id": "IZ-masalevleri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-04T11:06:12.159594",
+   "organization": "Sosyal Hizmetler Dairesi Başkanlığı",
+   "package_name": "masalevleri",
+   "resource_ids_found": [
+    "a59f40b6-e0db-495e-b7f6-db53e246e98a"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "789e78aba72de4feed2205b6f0b4555fb3b94519fe2f1f829c6cd64f5f2dc5f1",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/masalevleri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=masalevleri"
+  },
+  {
+   "bytes": 8011,
+   "id": "IZ-metro-ve-tramvay-sefer-planlama",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-10T06:57:38.544569",
+   "organization": "İZMİR METRO A.Ş.",
+   "package_name": "metro-ve-tramvay-sefer-planlama",
+   "resource_ids_found": [
+    "2fc4d0cf-9628-43b7-95d3-df5742a95f02"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "38e78caa6d80156a30d03c03b8585d73f009e44711102ef09892d70c60fb782f",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/metro-ve-tramvay-sefer-planlama/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=metro-ve-tramvay-sefer-planlama"
+  },
+  {
+   "bytes": 6348,
+   "id": "IZ-mezbaha-kesim-adetleri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-25T23:03:25.087935",
+   "organization": "Tarımsal Hizmetler Dairesi Başkanlığı",
+   "package_name": "mezbaha-kesim-adetleri",
+   "resource_ids_found": [
+    "36a20c09-e0fe-4459-aa44-2f0e6d6a8fbb",
+    "c4f2bf14-20b2-403c-b3fd-803bdfa4bda2"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "eea98148bb1148c27919ea9911241441bc5ad1dd192bb01b735d439a47819f3b",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/mezbaha-kesim-adetleri/1",
+    "izmir/mezbaha-kesim-adetleri/2"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=mezbaha-kesim-adetleri"
+  },
+  {
+   "bytes": 6196,
+   "id": "IZ-moduler-tuvaletler",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2023-01-23T09:20:28.191243",
+   "organization": "İklim Değişikliği Ve Sıfır Atık Dairesi Başkanlığı",
+   "package_name": "moduler-tuvaletler",
+   "resource_ids_found": [
+    "8f6e905d-3f76-45e5-b52a-b89be7d4631b"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "bcbbb94677bce8d2642dd351da0c2d32477277920beae78b0fb59aa21161fb9a",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/moduler-tuvaletler/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=moduler-tuvaletler"
+  },
+  {
+   "bytes": 5451,
+   "id": "IZ-motolu-kara-tasit-sayilari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-03-04T11:36:26.980568",
+   "organization": "Strateji Geliştirme Dairesi Başkanlığı",
+   "package_name": "motolu-kara-tasit-sayilari",
+   "resource_ids_found": [
+    "7f5b433c-a29e-41fd-9354-bcedaa36f57e"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "48182d4338676245dea13fc582c6f038344ef91bb9ea7e76b127dd33c3c22315",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/motolu-kara-tasit-sayilari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=motolu-kara-tasit-sayilari"
+  },
+  {
+   "bytes": 5622,
+   "id": "IZ-muayene-edilen-sokak-hayvanlarina-ait-veriler",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-04T07:02:39.946748",
+   "organization": "Veteriner İşleri Dairesi Başkanlığı",
+   "package_name": "muayene-edilen-sokak-hayvanlarina-ait-veriler",
+   "resource_ids_found": [
+    "61239c80-401a-49c2-8858-d43dcb84676a"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "167389f05db681f14818eef1b569f88f212816b23562f564363a0a54340dc099",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/muayene-edilen-sokak-hayvanlarina-ait-veriler/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=muayene-edilen-sokak-hayvanlarina-ait-veriler"
+  },
+  {
+   "bytes": 5424,
+   "id": "IZ-onemli-yerler-listesi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-10-15T12:55:40.070018",
+   "organization": "Akıllı Şehir ve Kent Bilgi Sistemleri Dairesi Başkanlığı",
+   "package_name": "onemli-yerler-listesi",
+   "resource_ids_found": [
+    "d1484773-3538-4937-b033-7db46c062064"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "d4bd652a507608954336ae9a41cf17feb968faaba125c4d7556d354cd801e865",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/onemli-yerler-listesi/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=onemli-yerler-listesi"
+  },
+  {
+   "bytes": 7222,
+   "id": "IZ-otobus-hat-guzergahlari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-22T09:10:07.252507",
+   "organization": "ESHOT",
+   "package_name": "otobus-hat-guzergahlari",
+   "resource_ids_found": [
+    "543f2249-c734-48e4-8739-72efbbfc843c"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "46bd8511847b1d87e491892ad2d23ee8b271e30e30efaf6a68a518b5de350ba7",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/otobus-hat-guzergahlari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=otobus-hat-guzergahlari"
+  },
+  {
+   "bytes": 5307,
+   "id": "IZ-otopark-ucretleri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-02-16T07:39:54.741915",
+   "organization": "İZELMAN A.Ş.",
+   "package_name": "otopark-ucretleri",
+   "resource_ids_found": [
+    "8dca3fb5-b7fe-4f16-91af-d8248da59f87",
+    "b45d2e9f-f258-476e-a12d-d0ff62471ee0"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "304a9c4671cfba216434c2ef5cf9bc0a325523b5274afb336f6e26b278d58e0e",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/otopark-ucretleri/1",
+    "izmir/otopark-ucretleri/2"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=otopark-ucretleri"
+  },
+  {
+   "bytes": 22584,
+   "id": "IZ-sebze-ve-meyve-hal-fiyatlari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-25T23:03:06.013355",
+   "organization": "Tarımsal Hizmetler Dairesi Başkanlığı",
+   "package_name": "sebze-ve-meyve-hal-fiyatlari",
+   "resource_ids_found": [
+    "e835ebff-854e-44fd-aa86-1c848667b0bf"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "f07c3cd507c7066cc1b25049532af7d09150244e6243a1602e5f99b1b25e66e0",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/sebze-ve-meyve-hal-fiyatlari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=sebze-ve-meyve-hal-fiyatlari"
+  },
+  {
+   "bytes": 5721,
+   "id": "IZ-sokak-hayvanlarina-dagitilan-mama-miktari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-04T07:59:25.560756",
+   "organization": "Veteriner İşleri Dairesi Başkanlığı",
+   "package_name": "sokak-hayvanlarina-dagitilan-mama-miktari",
+   "resource_ids_found": [
+    "90cbd8fc-6cd9-4183-9ab2-e2b5a17c6636"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "675f5565a217f1aa9ac0e1b90a8cdd8e60b88ed0c079ef23a34860d3e0e09c4f",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/sokak-hayvanlarina-dagitilan-mama-miktari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=sokak-hayvanlarina-dagitilan-mama-miktari"
+  },
+  {
+   "bytes": 6578,
+   "id": "IZ-spor-ekipmani-destegi-verilen-okul-sayisi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-10-01T11:04:46.259656",
+   "organization": "Gençlik Ve Spor Hizmetleri Dairesi Başkanlığı",
+   "package_name": "spor-ekipmani-destegi-verilen-okul-sayisi",
+   "resource_ids_found": [
+    "87e3fa26-a134-4386-bee1-7db1707567ad"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "675fcb3edf61e2913a66735d004bafaac58342d6eba357f08f3bead0e0b14f95",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/spor-ekipmani-destegi-verilen-okul-sayisi/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=spor-ekipmani-destegi-verilen-okul-sayisi"
+  },
+  {
+   "bytes": 7394,
+   "id": "IZ-su-kayiplari-yillik-raporlari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-07-11T12:49:58.337306",
+   "organization": "İZSU",
+   "package_name": "su-kayiplari-yillik-raporlari",
+   "resource_ids_found": [
+    "0c70a23a-b293-4906-a348-2cbd5be65d86",
+    "45614495-496c-48a1-93c5-e928dbf743cf"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "d461f265de3cad8b0653c0f264c196b931c7f9b2fc9032987641290cb20a9200",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/su-kayiplari-yillik-raporlari/1",
+    "izmir/su-kayiplari-yillik-raporlari/2"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=su-kayiplari-yillik-raporlari"
+  },
+  {
+   "bytes": 9252,
+   "id": "IZ-tarimsal-destekler",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-07T08:39:33.171479",
+   "organization": "Tarımsal Hizmetler Dairesi Başkanlığı",
+   "package_name": "tarimsal-destekler",
+   "resource_ids_found": [
+    "d2f7eb8e-6f84-4cef-ab11-a99c2ef8c969"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "1fdeb9ba4fabf623e554945e4e680a15f2cedc4bcb0fdb3bf0b7e50c8787ced9",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/tarimsal-destekler/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=tarimsal-destekler"
+  },
+  {
+   "bytes": 4632,
+   "id": "IZ-tek-tikla-doktor-basvurusu-destegi-sayilari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2023-07-17T13:09:05.527290",
+   "organization": "Eşrefpaşa Hastanesi Başhekimliği",
+   "package_name": "tek-tikla-doktor-basvurusu-destegi-sayilari",
+   "resource_ids_found": [
+    "9b36daff-53b8-4013-9d26-e4fcf5423eb9"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "54198cd59f16904a8d12868bc7bdf91d8f87c0b94c7c908e87f386119bbf91a1",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/tek-tikla-doktor-basvurusu-destegi-sayilari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=tek-tikla-doktor-basvurusu-destegi-sayilari"
+  },
+  {
+   "bytes": 6960,
+   "id": "IZ-tesisler-ve-atiksu-miktarlari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-06-13T08:42:39.503827",
+   "organization": "İZSU",
+   "package_name": "tesisler-ve-atiksu-miktarlari",
+   "resource_ids_found": [
+    "1427ee01-1b38-4a2b-a1b8-ce13cd9140bd"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "df1b31d6cf198a3218bf91259472916c399f84e9ab02d2b5aad36f9725593058",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/tesisler-ve-atiksu-miktarlari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=tesisler-ve-atiksu-miktarlari"
+  },
+  {
+   "bytes": 6920,
+   "id": "IZ-toplu-ulasim-genel-binis-raporu",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2025-05-08T12:32:52.287378",
+   "organization": "İzmir İnovasyon ve Teknoloji A.Ş.",
+   "package_name": "toplu-ulasim-genel-binis-raporu",
+   "resource_ids_found": [
+    "ecde7ddc-ccee-46c9-a6c1-f533c9edd3ba"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "05600afbb1ff5f165584bd62a12532b31f07b03da4af28edf0bccac525762a46",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/toplu-ulasim-genel-binis-raporu/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=toplu-ulasim-genel-binis-raporu"
+  },
+  {
+   "bytes": 6667,
+   "id": "IZ-toplum-sagligi-egitimleri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-08-27T13:55:44.386812",
+   "organization": "Sağlık İşleri Dairesi Başkanlığı",
+   "package_name": "toplum-sagligi-egitimleri",
+   "resource_ids_found": [
+    "a273b34a-0bb4-4aef-afa2-1c12d0271dee"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "7082679f3918b41dd7b0915710025c66827fe8c56fea3295f7c9f8684ae9cb21",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/toplum-sagligi-egitimleri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=toplum-sagligi-egitimleri"
+  },
+  {
+   "bytes": 6190,
+   "id": "IZ-turizm-tesisleri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-03-07T08:29:26.484603",
+   "organization": "Strateji Geliştirme Dairesi Başkanlığı",
+   "package_name": "turizm-tesisleri",
+   "resource_ids_found": [
+    "8a4aaa3e-0a0c-4c1d-8988-dcfd6296f869"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "00fbfab009c8b7b04f8b9ebbda18ab6cfa5039235146c91044f777248e9ae427",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/turizm-tesisleri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=turizm-tesisleri"
+  },
+  {
+   "bytes": 4095,
+   "id": "IZ-turuncu-cember-sertifikasi-alan-isletmeler-listesi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-09-23T11:37:16.937514",
+   "organization": "Dış İlişkiler Dairesi Başkanlığı",
+   "package_name": "turuncu-cember-sertifikasi-alan-isletmeler-listesi",
+   "resource_ids_found": [
+    "4fae2868-9cf0-4379-b7c7-b93420c65534"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "88139e1695460bbf109c6ca11174c95cd43e05d9dd0dee45c225f03935fa8025",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/turuncu-cember-sertifikasi-alan-isletmeler-listesi/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=turuncu-cember-sertifikasi-alan-isletmeler-listesi"
+  },
+  {
+   "bytes": 9262,
+   "id": "IZ-ucretsiz-kablosuz-internet-wizmirnet-hizmeti-verileri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-02T07:21:12.287332",
+   "organization": "Bilgi İşlem Dairesi Başkanlığı",
+   "package_name": "ucretsiz-kablosuz-internet-wizmirnet-hizmeti-verileri",
+   "resource_ids_found": [
+    "0cd6149b-5965-4a28-ad6d-209ad08e20ae",
+    "1e6f54bc-2f80-4ebf-8936-8ddd2ac6d1e4",
+    "535b7b93-8514-4da4-8348-c711a2c381b5"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "50e9ba462d60eda99405c155f1a2e8c4aae5bbe3e5518a56a901f79a1f8ab579",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/ucretsiz-kablosuz-internet-wizmirnet-hizmeti-verileri/1",
+    "izmir/ucretsiz-kablosuz-internet-wizmirnet-hizmeti-verileri/2",
+    "izmir/ucretsiz-kablosuz-internet-wizmirnet-hizmeti-verileri/3"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=ucretsiz-kablosuz-internet-wizmirnet-hizmeti-verileri"
+  },
+  {
+   "bytes": 5466,
+   "id": "IZ-yabanci-turist-istatistikleri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-03-04T10:36:31.037756",
+   "organization": "Strateji Geliştirme Dairesi Başkanlığı",
+   "package_name": "yabanci-turist-istatistikleri",
+   "resource_ids_found": [
+    "eb033c80-a695-42b6-bf23-8d420c30ebf2"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "4e7224d237265f5f96a833aa886649482f0547bc14b2bd767467f0f275c17123",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/yabanci-turist-istatistikleri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=yabanci-turist-istatistikleri"
+  },
+  {
+   "bytes": 7597,
+   "id": "IZ-yapilan-sosyal-yardimlar",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-25T23:03:26.082255",
+   "organization": "Sosyal Hizmetler Dairesi Başkanlığı",
+   "package_name": "yapilan-sosyal-yardimlar",
+   "resource_ids_found": [
+    "9f36cc61-540f-49b9-a795-9eb604f88281"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "91a84e875f1fb0debd952c59a35dbd4d70ca49f31d8b805b9225c5f6a61586fe",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/yapilan-sosyal-yardimlar/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=yapilan-sosyal-yardimlar"
+  },
+  {
+   "bytes": 7058,
+   "id": "IZ-yarimada-bag-yolu-gezi-rotalari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2022-06-29T11:34:36.312083",
+   "organization": "Tarımsal Hizmetler Dairesi Başkanlığı",
+   "package_name": "yarimada-bag-yolu-gezi-rotalari",
+   "resource_ids_found": [
+    "e611a277-a04b-4d2e-abcf-e14c1feaec00"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "6d6b40a50e1b68e06ce610f8893574596922ad454bb4256d4b90b0723f3f925e",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/yarimada-bag-yolu-gezi-rotalari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=yarimada-bag-yolu-gezi-rotalari"
+  },
+  {
+   "bytes": 6990,
+   "id": "IZ-yarimada-yuruyus-ve-bisiklet-yolu-gezi-rotalari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-01-23T07:16:08.196630",
+   "organization": "Tarımsal Hizmetler Dairesi Başkanlığı",
+   "package_name": "yarimada-yuruyus-ve-bisiklet-yolu-gezi-rotalari",
+   "resource_ids_found": [
+    "4896beb8-0139-4135-9475-d790c18bbb19"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "583ccc794bd66c3eee57a8e49b8dcaddc46ec1f3d26fe687d82029353eee0b26",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/yarimada-yuruyus-ve-bisiklet-yolu-gezi-rotalari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=yarimada-yuruyus-ve-bisiklet-yolu-gezi-rotalari"
+  },
+  {
+   "bytes": 7846,
+   "id": "IZ-yarimada-zeytin-yolu-gezi-rotalari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2022-09-06T09:02:55.806138",
+   "organization": "Tarımsal Hizmetler Dairesi Başkanlığı",
+   "package_name": "yarimada-zeytin-yolu-gezi-rotalari",
+   "resource_ids_found": [
+    "903ba502-b25d-4d1b-a822-b6535c263c82"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "2d81889b843553f14fd8fa25c5ea975088c023446b6e9d27095098a4594ed8ee",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/yarimada-zeytin-yolu-gezi-rotalari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=yarimada-zeytin-yolu-gezi-rotalari"
+  },
+  {
+   "bytes": 5282,
+   "id": "IZ-yemek-corba-pide-kumanya-destegi",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-26T10:32:33.534287",
+   "organization": "Sosyal Hizmetler Dairesi Başkanlığı",
+   "package_name": "yemek-corba-pide-kumanya-destegi",
+   "resource_ids_found": [
+    "86ec770d-b4ec-470b-aeda-f1d7717c7db0",
+    "98c11b1c-095f-4135-b7a2-ca0e72a7489c"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "aafa4852e28ad157c1d439159317c422c8fcb82341753475cd74d627ee9ea12e",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/yemek-corba-pide-kumanya-destegi/1",
+    "izmir/yemek-corba-pide-kumanya-destegi/2"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=yemek-corba-pide-kumanya-destegi"
+  },
+  {
+   "bytes": 5246,
+   "id": "IZ-yillara-gore-istihdam-sayilari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-03-07T08:30:25.842350",
+   "organization": "Strateji Geliştirme Dairesi Başkanlığı",
+   "package_name": "yillara-gore-istihdam-sayilari",
+   "resource_ids_found": [
+    "9f3f8ea8-bfdb-4fc1-a0fd-d607341c4ebf"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "702d21d32fedd096a2a577e27ace132ee43c2d1fa63252dda57d56eb9a151b50",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/yillara-gore-istihdam-sayilari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=yillara-gore-istihdam-sayilari"
+  },
+  {
+   "bytes": 5652,
+   "id": "IZ-yillara-gore-yolcu-ve-arac-tasima-sayilari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-10T08:01:57.363916",
+   "organization": "İZDENİZ A.Ş.",
+   "package_name": "yillara-gore-yolcu-ve-arac-tasima-sayilari",
+   "resource_ids_found": [
+    "002074cf-4877-4885-98a8-ba8666e8f392",
+    "65c6d14b-5b7b-475d-89ac-1c9ed65a4042"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "3851c40e59f89ac7c9c021e20661589d9557c72e26d7fcfa2ee91fe968d610db",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/yillara-gore-yolcu-ve-arac-tasima-sayilari/1",
+    "izmir/yillara-gore-yolcu-ve-arac-tasima-sayilari/2"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=yillara-gore-yolcu-ve-arac-tasima-sayilari"
+  },
+  {
+   "bytes": 8478,
+   "id": "IZ-yillik-ilce-ve-mahalle-bazli-su-tuketim-miktarlari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-06-13T08:42:31.580713",
+   "organization": "İZSU",
+   "package_name": "yillik-ilce-ve-mahalle-bazli-su-tuketim-miktarlari",
+   "resource_ids_found": [
+    "7a7485e5-2f04-4daf-9cc0-75ef1c24bc23"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "6b4039b640af6815742c3a52b380225108a27de387ec244381d17c8a95ba1b61",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/yillik-ilce-ve-mahalle-bazli-su-tuketim-miktarlari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=yillik-ilce-ve-mahalle-bazli-su-tuketim-miktarlari"
+  },
+  {
+   "bytes": 7959,
+   "id": "IZ-yillik-tarife-bilgileri-artislari",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2024-09-06T08:51:29.361852",
+   "organization": "İZSU",
+   "package_name": "yillik-tarife-bilgileri-artislari",
+   "resource_ids_found": [
+    "a523da27-7756-439b-83ed-1da073d8dc86"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "c6b9ad60f3931bdc2008928913c7934e1676500bb8d07ba9c1db49f87f2b09a5",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/yillik-tarife-bilgileri-artislari/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=yillik-tarife-bilgileri-artislari"
+  },
+  {
+   "bytes": 7601,
+   "id": "IZ-zubeyde-hanim-huzurevi-istatistikleri",
+   "license_id": "Izmir-Metropolitan-Municipality-License",
+   "license_title": "Izmir Metropolitan Municipality Open Data License",
+   "license_url": "http://acikveri.bizizmir.com/tr/license",
+   "metadata_modified": "2026-11-25T23:03:28.236324",
+   "organization": "Sosyal Hizmetler Dairesi Başkanlığı",
+   "package_name": "zubeyde-hanim-huzurevi-istatistikleri",
+   "resource_ids_found": [
+    "4638caa9-d2e6-4150-a570-c73731f366bc"
+   ],
+   "resource_ids_missing": [],
+   "retrieved": "2026-11-27",
+   "scope": "dataset",
+   "sha256": "dd56ac04254966402bc706a4aea78e3e551e7aaa431267202ee3199285b1c13a",
+   "source": "SRC-O06",
+   "status": "terms_documented",
+   "tables": [
+    "izmir/zubeyde-hanim-huzurevi-istatistikleri/1"
+   ],
+   "url": "https://acikveri.bizizmir.com/api/3/action/package_show?id=zubeyde-hanim-huzurevi-istatistikleri"
+  }
+ ],
+ "limits": [
+  "SRC-O01: no indicator-level licence override was found (the API record has no licence field and the WDI catalogue page carries one dataset label, CC BY 4.0). Several indicators are compiled from IMF, ILO, UN, OECD or Eurostat; their upstream terms were not read separately, so the use rests on the WDI dataset label (AD-01). Only indicator names reach the examples as column headers.",
+  "SRC-O02: terms rest on the Eurostat notice (AD-04, AD-05) and on the dataflow record naming Eurostat as creator; a dataset-specific copyright note was not found for any of the three datasets.",
+  "SRC-O06: the licence field is the CKAN record's licence_id on the retrieval date; the per-package notes were not read for free-text exceptions beyond that field.",
+  "Not legal advice. Pages and records can change after the retrieval date."
+ ],
+ "note": "Evidence for a human reader, not legal advice; hashes identify the bytes read. Only table and column names of these sources reach the examples; no observations do.",
+ "retrieved_on": "2026-11-27",
+ "rule": {
+  "excluded_unverified": [
+   "SRC-O03",
+   "SRC-O04",
+   "SRC-O05"
+  ],
+  "izmir_allowed_license_ids": [
+   "Izmir-Metropolitan-Municipality-License",
+   "cc-by"
+  ],
+  "probe_and_smoke_schema_sources": [
+   "SRC-O01",
+   "SRC-O02",
+   "SRC-O06"
+  ]
+ },
+ "schema": "axbench-tr.licence-evidence-addendum/1",
+ "supplements": "data/axbench-tr/sources/LICENCE_EVIDENCE.json (unchanged)",
+ "tables_used": {
+  "SRC-O01": [
+   "worldbank/train/0",
+   "worldbank/train/1",
+   "worldbank/train/10",
+   "worldbank/train/11",
+   "worldbank/train/12",
+   "worldbank/train/13",
+   "worldbank/train/2",
+   "worldbank/train/3",
+   "worldbank/train/4",
+   "worldbank/train/5",
+   "worldbank/train/6",
+   "worldbank/train/7",
+   "worldbank/train/8",
+   "worldbank/train/9",
+   "worldbank/validation/0",
+   "worldbank/validation/1",
+   "worldbank/validation/10",
+   "worldbank/validation/2",
+   "worldbank/validation/3",
+   "worldbank/validation/4",
+   "worldbank/validation/5",
+   "worldbank/validation/6",
+   "worldbank/validation/7",
+   "worldbank/validation/8",
+   "worldbank/validation/9"
+  ],
+  "SRC-O02": [
+   "eurostat/namq_10_gdp_TR.csv",
+   "eurostat/prc_hicp_manr_TR.csv",
+   "eurostat/une_rt_m_TR.csv"
+  ],
+  "SRC-O06": [
+   "izmir/akaryakit-ve-veya-otogaz-satis-istasyonu-sayisi/1",
+   "izmir/ana-arterler-gunluk-hiz-ve-sure-verileri/1",
+   "izmir/arac-muayene-istasyonlari/1",
+   "izmir/aricilik-desteginin-yillara-gore-ilce-ve-mahallere-dagilimi/1",
+   "izmir/askida-fatura-rakamlari/1",
+   "izmir/askida-fatura-rakamlari/2",
+   "izmir/bademsu-fabrikasi-uretim-verileri/1",
+   "izmir/balik-hal-fiyatlari/1",
+   "izmir/barajlarin-doluluk-oranlari/1",
+   "izmir/bergama-elektrik-uretim-verileri/1",
+   "izmir/bina-kimlik-belgesi/1",
+   "izmir/bina-kimlik-belgesi/2",
+   "izmir/bisikletli-giris-sayilari/1",
+   "izmir/bisikletli-yaya-sayim-istasyonlari/2",
+   "izmir/bisikletli-yaya-sayim-istasyonlari/3",
+   "izmir/bisikletli-yaya-sayim-istasyonlari/4",
+   "izmir/co2-emisyon-degerleri-ton-ve-bir-milyon-yolcu-basina-co2-miktari/1",
+   "izmir/depolama-sahalari/1",
+   "izmir/elektrik-uretim-verileri/1",
+   "izmir/esrefpasa-hastanesi-randevu-bilgileri/1",
+   "izmir/gunluk-su-uretimi/1",
+   "izmir/halk-ekmek-fabrikasi-uretim-verileri/1",
+   "izmir/halkin-bakkali-siparisi-alinan-paket-miktarlari/1",
+   "izmir/halkin-bakkali-urunleri/1",
+   "izmir/hayvan-icme-suyu-his-goletleri-calismalari-ve-projeleri/1",
+   "izmir/hos-geldin-bebek-basvuru-listesi/1",
+   "izmir/ihtiyac-sahiplerine-gunluk-sicak-yemek-corba-pide-kumanya-ve-ikramlik-kahvaltilik-destegi/1",
+   "izmir/ilce-ve-mahallelere-ait-yol-sayilari/1",
+   "izmir/ilcelere-ait-bina-kat-sayilari/1",
+   "izmir/ilcelere-ait-mahalle-bazli-bina-sayilari/1",
+   "izmir/ilkogretim-ogrencilerine-yapilan-yardimlar/1",
+   "izmir/imalat-sanayi-ihracati/1",
+   "izmir/imalat-sanayi-ithalati/1",
+   "izmir/itfaiye-acil-mudahale-sayilari/1",
+   "izmir/itfaiye-egitim-hizmetleri/1",
+   "izmir/izban-elektrik-tuketimi/1",
+   "izmir/izban-istasyonlari/1",
+   "izmir/izdeniz-vapurlari/1",
+   "izmir/izdeniz-vapurlari/2",
+   "izmir/izelman-otopark-lokasyon-kapasite-ve-calisma-saati-verisi/1",
+   "izmir/izelman-otopark-lokasyon-kapasite-ve-calisma-saati-verisi/4",
+   "izmir/izmir-banliyo-izban-duraklar-arasi-mesafeler/1",
+   "izmir/izmir-buyuksehir-belediyesi-yetki-alani-nufusu/1",
+   "izmir/izmir-buyuksehir-belediyesine-yapilan-staj-basvurulari/1",
+   "izmir/izmir-dis-ticaret-hacmi/2",
+   "izmir/izmir-elektrikli-otobus-projesinin-urettigi-cevresel-degerler/1",
+   "izmir/izmir-ilcelerine-ait-konut-ve-ozel-is-yeri-istatistikleri/1",
+   "izmir/izmir-ili-arizali-kazali-arac-verileri/1",
+   "izmir/izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi/1",
+   "izmir/izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi/2",
+   "izmir/izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi/3",
+   "izmir/izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi/4",
+   "izmir/izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi/5",
+   "izmir/izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi/6",
+   "izmir/izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi/7",
+   "izmir/izmir-itfaiyesi-kontrol-emniyet-tedbir-ve-vatandasa-verilen-hizmetlerin-istatistigi/1",
+   "izmir/izmir-itfaiyesi-kontrol-emniyet-tedbir-ve-vatandasa-verilen-hizmetlerin-istatistigi/2",
+   "izmir/izmir-itfaiyesi-kontrol-emniyet-tedbir-ve-vatandasa-verilen-hizmetlerin-istatistigi/3",
+   "izmir/izmir-itfaiyesi-yangin-mudahale-istatistigi/2",
+   "izmir/izmir-itfaiyesi-yangin-mudahale-istatistigi/6",
+   "izmir/izmir-konut-satis-sayilarina-gore-dagilimi/1",
+   "izmir/izmir-yillara-gore-issizlik-orani/1",
+   "izmir/izmir-yillara-gore-issizlik-orani/2",
+   "izmir/izmir95-erken-cocukluk-gelisim-programi/1",
+   "izmir/izmirim-kart-aktarmali-binis-bilgileri/1",
+   "izmir/izmirim-kart-kullanim-istatistikleri/1",
+   "izmir/izmirin-goc-verdigi-illere-gore-nufus-dagilimi/2",
+   "izmir/kadin-danisma-merkezi-verilen-hizmet-detay-verisi/1",
+   "izmir/kadin-danisma-merkezinde-verilen-destekler/1",
+   "izmir/kadin-siginmaevi-istatistikleri/1",
+   "izmir/kestane-kanseri-ile-mucadele-destegi/1",
+   "izmir/kisirlastirilan-sokak-hayvanlari/1",
+   "izmir/korfez-degerleri-izleme-istasyonlari-konum-verisi/1",
+   "izmir/korfez-degerleri-izleme/1",
+   "izmir/kruvaziyer-gemi-bilgileri/1",
+   "izmir/kucukbas-hayvan-dagitimi/1",
+   "izmir/kuzey-guney-alani-park-sayilari/1",
+   "izmir/masalevleri/1",
+   "izmir/metro-ve-tramvay-sefer-planlama/1",
+   "izmir/mezbaha-kesim-adetleri/1",
+   "izmir/mezbaha-kesim-adetleri/2",
+   "izmir/moduler-tuvaletler/1",
+   "izmir/motolu-kara-tasit-sayilari/1",
+   "izmir/muayene-edilen-sokak-hayvanlarina-ait-veriler/1",
+   "izmir/onemli-yerler-listesi/1",
+   "izmir/otobus-hat-guzergahlari/1",
+   "izmir/otopark-ucretleri/1",
+   "izmir/otopark-ucretleri/2",
+   "izmir/sebze-ve-meyve-hal-fiyatlari/1",
+   "izmir/sokak-hayvanlarina-dagitilan-mama-miktari/1",
+   "izmir/spor-ekipmani-destegi-verilen-okul-sayisi/1",
+   "izmir/su-kayiplari-yillik-raporlari/1",
+   "izmir/su-kayiplari-yillik-raporlari/2",
+   "izmir/tarimsal-destekler/1",
+   "izmir/tek-tikla-doktor-basvurusu-destegi-sayilari/1",
+   "izmir/tesisler-ve-atiksu-miktarlari/1",
+   "izmir/toplu-ulasim-genel-binis-raporu/1",
+   "izmir/toplum-sagligi-egitimleri/1",
+   "izmir/turizm-tesisleri/1",
+   "izmir/turuncu-cember-sertifikasi-alan-isletmeler-listesi/1",
+   "izmir/ucretsiz-kablosuz-internet-wizmirnet-hizmeti-verileri/1",
+   "izmir/ucretsiz-kablosuz-internet-wizmirnet-hizmeti-verileri/2",
+   "izmir/ucretsiz-kablosuz-internet-wizmirnet-hizmeti-verileri/3",
+   "izmir/yabanci-turist-istatistikleri/1",
+   "izmir/yapilan-sosyal-yardimlar/1",
+   "izmir/yarimada-bag-yolu-gezi-rotalari/1",
+   "izmir/yarimada-yuruyus-ve-bisiklet-yolu-gezi-rotalari/1",
+   "izmir/yarimada-zeytin-yolu-gezi-rotalari/1",
+   "izmir/yemek-corba-pide-kumanya-destegi/1",
+   "izmir/yemek-corba-pide-kumanya-destegi/2",
+   "izmir/yillara-gore-istihdam-sayilari/1",
+   "izmir/yillara-gore-yolcu-ve-arac-tasima-sayilari/1",
+   "izmir/yillara-gore-yolcu-ve-arac-tasima-sayilari/2",
+   "izmir/yillik-ilce-ve-mahalle-bazli-su-tuketim-miktarlari/1",
+   "izmir/yillik-tarife-bilgileri-artislari/1",
+   "izmir/zubeyde-hanim-huzurevi-istatistikleri/1"
+  ]
+ }
+}
