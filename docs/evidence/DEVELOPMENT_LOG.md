@@ -687,3 +687,26 @@ for a comprehensive final audit of AXIOM Verify.
   `docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/p1-probe-stopped-at-d5f6cd5/`. The README `collect-evidence`
   command only writes inside the repository and was not used on the clean execution worktree.
 
+### Environment fingerprint: deterministic order of same-prefix native pools (2026-11-27)
+- Symptom: on Linux, `tests/test_replay.py::test_replay_in_fresh_processes_is_byte_identical` and three tests in
+  `tests/test_review_regressions.py` failed on untouched `origin/main` in a varying subset (5, 1 and 3 failures in three
+  runs of the replay, regression and passport files).
+- Cause: `environment._pools()` sorted `detected_pools` by `(user_api, prefix)`. NumPy and SciPy each bundle an OpenBLAS
+  with the same prefix (`libscipy_openblas`) and different versions; threadpoolctl lists them in an order that varies
+  between processes. The passport and the replay worker therefore recorded the two pools in different orders, and the
+  list comparison classified the environments as `different`, which selects the cross-environment numeric mode.
+- Reproducer: 20 fresh processes printing `_pools()`: 10 and 10 split between the two orders before the change, 20 of 20
+  identical after it.
+- Change: sort by every kept field, so the order is total. Regression tests feed all permutations of discovery order.
+  Replay, regression and passport files: 0 failures in three runs after the change; the full suite passed (702).
+- Note: a first check ran the worker from another checkout's editable install and still failed; it was repeated in a
+  virtual environment synced for this branch.
+- Review amendment (technical review of this PR): the sort key `tuple(str(p.get(k)))` still tied a missing field with an
+  explicit `None` (and `1` with `"1"`), so two distinct retained dictionaries could keep discovery order. The canonical
+  JSON of the dictionary is now the final tie-breaker after the unchanged primary order (`user_api`, `prefix`, then the
+  other kept fields). Added permutation tests for absent versus explicit `None`, for `1` versus `"1"`, for a mixed set
+  (API order preserved), and a test of a legacy passport recorded in discovery order: against the same environment
+  captured now it is classified `different` on `threads.detected_pools` only, so the cross-environment numeric
+  criteria apply and never the exact-bytes ones. No numerical kernel, tolerance, result hash or fingerprint schema
+  changed. A reviewer-side reproduction of the Linux subprocess measurements has not been done.
+
