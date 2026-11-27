@@ -17,3 +17,10 @@ data/axbench-tr/**/*.csv -text
 docs/evidence/experiments/EXP-TR02-feasibility-smoke/preflight/**/*.log -text
 docs/evidence/experiments/EXP-TR02-feasibility-smoke/preflight/**/*.txt -text
 docs/evidence/experiments/EXP-TR02-feasibility-smoke/preflight/**/*.json -text
+# EXP-TR02 run evidence (sanitized logs): keep raw bytes identical on every platform.
+docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/**/*.log -text
+docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/**/*.stdout -text
+docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/**/*.txt -text
+docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/**/*.json -text
+docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/**/*.jsonl -text
+docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/**/*.md -text

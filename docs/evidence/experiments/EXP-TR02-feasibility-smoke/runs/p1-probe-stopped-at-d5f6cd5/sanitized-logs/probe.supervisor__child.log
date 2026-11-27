@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "$HOME/tr02-run-repo/training/tr02/tr02.py", line 1692, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "$HOME/tr02-run-repo/training/tr02/tr02.py", line 1684, in main
+    run_phase(
+  File "$HOME/tr02-run-repo/training/tr02/tr02.py", line 1207, in run_phase
+    raise RuntimeError(
+RuntimeError: LoRA tensors differ from the expected shapes: missing tensor: layers.20.self_attn.q_proj.lora_a; missing tensor: layers.20.self_attn.q_proj.lora_b; missing tensor: layers.20.self_attn.v_proj.lora_a

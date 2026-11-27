@@ -1,0 +1,6 @@
+{
+ "child_exit_code": 1,
+ "events_accepted": 2,
+ "reason": "lora_shapes_not_ok",
+ "stopped": true
+}

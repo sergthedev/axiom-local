@@ -673,3 +673,17 @@ for a comprehensive final audit of AXIOM Verify.
   `03_verify_model.log`) was caught by the hash check and the block re-sent; the committed file matches the device hash.
 - Observed differences from the first run, as expected from the changed subset: smoke supervised answer tokens 10,530
   (was 10,534), new smoke mask samples; probe values identical.
+
+### EXP-TR02 authorized sequence at d5f6cd5: probe stopped by the harness (2026-11-27, no training)
+- The owner authorized exactly one probe, smoke and reload sequence at code commit d5f6cd5 (decision card in the project
+  thread, 19:08 UTC). The authorization was recorded on the device before any model load; pre-launch checks, execution-time
+  checks and the export hashes all passed.
+- The first `supervise` launch was denied by the Mac's local permission control and not bypassed; after the owner's interactive
+  approval the original command ran once. The weights loaded (MLX peak 3.44 GB), 32 LoRA tensors with 458,752 trainable
+  parameters were attached, and the harness stopped with `lora_shapes_not_ok` before any update: it expects names starting with
+  `layers.` and mlx-lm 0.32.2 names them `model.layers.`. P2 and P3 were not started; no retry, no code change.
+- Reproduced the naming without weights on a tiny CPU Qwen3 model. The Linux unit tests did not use a real mlx-lm model object.
+- Sanitized failure evidence was verified byte-exact against the device's hashes and committed under
+  `docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/p1-probe-stopped-at-d5f6cd5/`. The README `collect-evidence`
+  command only writes inside the repository and was not used on the clean execution worktree.
+
