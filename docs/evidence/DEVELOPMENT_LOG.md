@@ -686,6 +686,7 @@ for a comprehensive final audit of AXIOM Verify.
 - Sanitized failure evidence was verified byte-exact against the device's hashes and committed under
   `docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/p1-probe-stopped-at-d5f6cd5/`. The README `collect-evidence`
   command only writes inside the repository and was not used on the clean execution worktree.
+
 ### Environment fingerprint: deterministic order of same-prefix native pools (2026-11-27)
 - Symptom: on Linux, `tests/test_replay.py::test_replay_in_fresh_processes_is_byte_identical` and three tests in
   `tests/test_review_regressions.py` failed on untouched `origin/main` in a varying subset (5, 1 and 3 failures in three
