@@ -85,6 +85,15 @@ From the repository root, with the locked model environment (exact commands in `
 and loss mask on the M5's MLX build; the CPU-build check done in preparation does not validate the GPU path), and
 `preflight --phase probe`. The outputs are committed and reviewed before approval. Any failure ends the attempt.
 
+### Preflight results and the proposed authorization target
+The no-weight preflight was run twice on the owner's M5, each time once and from a clean worktree at the exact commit: at
+96cbdf7 (superseded subset) and, after the licensing revision, at **d5f6cd56c0d3a12ecb9e917570d028788809ac78** (all steps exit
+0, no problems, export hashes equal the pins; `docs/evidence/experiments/EXP-TR02-feasibility-smoke/preflight/`). The feasibility
+run's `--expect-commit` is checked against a clean tree at the approved commit, so the proposed target is that same code head,
+`d5f6cd56c0d3a12ecb9e917570d028788809ac78`, which is the commit the preflight evidence covers; later commits on the branch
+change only evidence and documents (and `.gitattributes`), not code, config or data. If the owner prefers a later head, the
+no-weight preflight must be repeated at it. Nothing is authorized by this text.
+
 ## Phases (each its own supervised process, fresh output and supervisor directories, no retry)
 Each phase is started by its own `supervise --phase ...` command, chained with `--after <previous output directory>`.
 A phase refuses to start unless the previous phase wrote `COMPLETE.json` (written only after a finished, valid run

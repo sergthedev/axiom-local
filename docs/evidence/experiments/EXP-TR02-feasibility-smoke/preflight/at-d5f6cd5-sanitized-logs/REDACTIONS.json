@@ -1,0 +1,159 @@
+{
+  "note": "Only absolute private paths, user account name, device/host name and credential-like tokens are redacted. $HOME replaces the home directory prefix; <local-path> replaces any other absolute local path; <device> replaces machine names; <user> replaces a standalone account name; <redacted-credential> replaces credential-like tokens.",
+  "files": [
+    {
+      "original_filename": "00_environment.txt",
+      "original_sha256": "d322335af87c516a71149a51ca7080b0d29e13443cba5db2b0c200a1b5b73910",
+      "sanitized_sha256": "d322335af87c516a71149a51ca7080b0d29e13443cba5db2b0c200a1b5b73910",
+      "original_bytes": 1711,
+      "sanitized_bytes": 1711,
+      "redaction_counts": {
+        "home_directory_prefix": 0,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "00b_uv_sync.log",
+      "original_sha256": "ca5491cf77b162a58fb75c0141f79ed2ef9f54658502aaf9f98e5e86580975e7",
+      "sanitized_sha256": "c27ced7efe80f63ee64fdc6024c8525e7e61d4e347710a67e25d303939a406bd",
+      "original_bytes": 2205,
+      "sanitized_bytes": 2149,
+      "redaction_counts": {
+        "home_directory_prefix": 3,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 1,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "01_export.log",
+      "original_sha256": "b15a798358288f7ea77db5904ba1f0e7c5aa038c938b80be00e3286e1795fee4",
+      "sanitized_sha256": "cae92986b4cafc7aa4970efc58af7a7119bfe700601aa37d683720a0b7fa531e",
+      "original_bytes": 1254,
+      "sanitized_bytes": 1214,
+      "redaction_counts": {
+        "home_directory_prefix": 1,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 1,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "02_verify_inputs.log",
+      "original_sha256": "ffb0fb329836f5134a8707d04998d712a2e78fd8b29e5336887ae08912b74c1e",
+      "sanitized_sha256": "cd757d51f30f37e516bd8891ca7bb4a685d95fc3efe7d009a06111177ae7be0c",
+      "original_bytes": 985,
+      "sanitized_bytes": 977,
+      "redaction_counts": {
+        "home_directory_prefix": 1,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "03_verify_model.log",
+      "original_sha256": "ee3ce563bc4df5a0398b17d80b7be0681c21ac11b7d4929de9d7671ca086d7ef",
+      "sanitized_sha256": "7827fad69ca95ec1a54ce1723629ae7724feb158c568bfa155d3419f7b76018a",
+      "original_bytes": 982,
+      "sanitized_bytes": 974,
+      "redaction_counts": {
+        "home_directory_prefix": 1,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "04_check_data.log",
+      "original_sha256": "c6064c8bc4d4c1d75216613ac03ece4af034b5f0684dcd4b85ce712d6394b6dd",
+      "sanitized_sha256": "ff5f0260630893fc1c5ec5e1c91cf227b04f2c163f9e98ffeca68613a78b9a36",
+      "original_bytes": 1990,
+      "sanitized_bytes": 1974,
+      "redaction_counts": {
+        "home_directory_prefix": 2,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "05_check_iterator_probe.log",
+      "original_sha256": "35456dd7307729deabdb7c11f6bbf11599006487fd64e9cab602a5dbfe42e765",
+      "sanitized_sha256": "e4b142fc9aa30f93bed35dce4581187daaa6fb1b6d84723131115df97f82b8cd",
+      "original_bytes": 1969,
+      "sanitized_bytes": 1953,
+      "redaction_counts": {
+        "home_directory_prefix": 2,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "05_pressure.txt",
+      "original_sha256": "37bc57022bf6242b990b4a539316849e4d34a944b21156b7e91ba6b4c571f8ee",
+      "sanitized_sha256": "37bc57022bf6242b990b4a539316849e4d34a944b21156b7e91ba6b4c571f8ee",
+      "original_bytes": 37,
+      "sanitized_bytes": 37,
+      "redaction_counts": {
+        "home_directory_prefix": 0,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "06_check_iterator_smoke.log",
+      "original_sha256": "7f0afc251d86d86fd4e5d3fdaa50ef8986f9331e4092ac9d1798820e862c9e9f",
+      "sanitized_sha256": "2add95a0db158c405ab908c7e7d2e972590433ce41146b2876e4cac80891dcd0",
+      "original_bytes": 1970,
+      "sanitized_bytes": 1954,
+      "redaction_counts": {
+        "home_directory_prefix": 2,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "06_pressure.txt",
+      "original_sha256": "37bc57022bf6242b990b4a539316849e4d34a944b21156b7e91ba6b4c571f8ee",
+      "sanitized_sha256": "37bc57022bf6242b990b4a539316849e4d34a944b21156b7e91ba6b4c571f8ee",
+      "original_bytes": 37,
+      "sanitized_bytes": 37,
+      "redaction_counts": {
+        "home_directory_prefix": 0,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "07_preflight_probe.log",
+      "original_sha256": "1b919fbc597597d38653d9a8dd92515b8fa4b6f208be76e197b07d6fea138fd9",
+      "sanitized_sha256": "acf3c473835eae3cf80a31b1f2a8ff1757272e29413f0bda47766cda2fcdd941",
+      "original_bytes": 1628,
+      "sanitized_bytes": 1604,
+      "redaction_counts": {
+        "home_directory_prefix": 3,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0
+      }
+    }
+  ]
+}

@@ -657,3 +657,19 @@ for a comprehensive final audit of AXIOM Verify.
 - Checks run on Linux (no weights): `verify-inputs`, `check-data`, `check-iterator` for probe and smoke (0 problems); ruff;
   62 harness tests with the MLX CPU build; 82 `axbench_tr` tests. Four replay tests that fail on this Linux host come from the
   pool-order defect fixed in PR #14 and do not touch this change.
+
+### EXP-TR02 log verification and second no-weight preflight (2026-11-27, same review, no training)
+- The original raw logs of the first M5 preflight (head 96cbdf7) were checked on the device against the transcribed record: no
+  numeric discrepancy; SHA-256 of all nine originals measured twice with identical results. Sanitized copies (home directory
+  prefixes and one Homebrew path replaced; no account or device names or credentials were present) were committed byte-exact
+  in `at-96cbdf7-sanitized-logs/` after decoding the transported base64 here and matching every hash against the device's
+  `REDACTIONS.json`. Facts the first record had taken from live terminal output and no log preserved (AC power, process check,
+  OS and hardware, MLX device line, worktree status, checkpoint revision, `uv sync`) are listed in `LOG_VERIFICATION.md`.
+- Code head d5f6cd5 passed CI on macOS and Windows before the second preflight was requested. The preflight ran once on the
+  owner's M5 from a clean worktree at that exact commit: all seven steps (plus the logged `uv sync`) exited 0 with no problems,
+  AC power and memory pressure 1, no other MLX or Python process, export hashes equal to the pins, no weights loaded,
+  `supervise` and `run` not executed. This time the safety readings, export hash list and MLX device line were saved in
+  `00_environment.txt`, and step 6's output was kept. One transport typo in one base64 block (a mangled word in
+  `03_verify_model.log`) was caught by the hash check and the block re-sent; the committed file matches the device hash.
+- Observed differences from the first run, as expected from the changed subset: smoke supervised answer tokens 10,530
+  (was 10,534), new smoke mask samples; probe values identical.

@@ -1,0 +1,131 @@
+{
+  "note": "Only absolute private paths, user account name, device/host name and credential-like tokens are redacted. $HOME replaces the home directory prefix; <local-path> replaces any other absolute local path; <device> replaces machine names; <user> replaces a standalone account name; <redacted-credential> replaces credential-like tokens.",
+  "files": [
+    {
+      "original_filename": "01_export.log",
+      "original_sha256": "ecf54d21333a29e43785cf46e8366bc9cc3800f72f53010adbdd54141bfed58b",
+      "sanitized_sha256": "3536e412bd41750666a6c5510e1bba16db6f5ac23643c72297d05c6b54a43d40",
+      "original_bytes": 1252,
+      "sanitized_bytes": 1212,
+      "redaction_counts": {
+        "home_directory_prefix": 1,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 1,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "02_verify_inputs.log",
+      "original_sha256": "25ebccb950c101b24d25315f6707fd3101939f68dd5658c1d8502a087fcdd465",
+      "sanitized_sha256": "2406174586290d6664dec073259ec8fad158d7b6a39c5e52267976f2f97ba057",
+      "original_bytes": 983,
+      "sanitized_bytes": 975,
+      "redaction_counts": {
+        "home_directory_prefix": 1,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "03_verify_model.log",
+      "original_sha256": "cd9edef73780ffdc19327454b1e652001928125be498fb1bf463080a7ce281eb",
+      "sanitized_sha256": "23892f080bfd3519d36eff9519fc854e51888e24a2daca0cb54485e6fdf77eae",
+      "original_bytes": 982,
+      "sanitized_bytes": 974,
+      "redaction_counts": {
+        "home_directory_prefix": 1,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "04_check_data.log",
+      "original_sha256": "349a17b1068af4bdf29aeae4426a03ed6015d45d9c89574c71cb177ba833a1a7",
+      "sanitized_sha256": "e92b0a6a1b963bce2940b2ff084172aa1a52e93b7b4f61ad0b88aa98ffe07d5e",
+      "original_bytes": 1988,
+      "sanitized_bytes": 1972,
+      "redaction_counts": {
+        "home_directory_prefix": 2,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "05_check_iterator_probe.log",
+      "original_sha256": "127a433e976a73b7cf4a4a3027f1f514d3ba495e9c78ae5a3f86d4ebfd088f74",
+      "sanitized_sha256": "aab09daee53c6977d4efe73cea2eebd339857ef2ad76369246b19dc8bcb12364",
+      "original_bytes": 1967,
+      "sanitized_bytes": 1951,
+      "redaction_counts": {
+        "home_directory_prefix": 2,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "05_pressure.txt",
+      "original_sha256": "37bc57022bf6242b990b4a539316849e4d34a944b21156b7e91ba6b4c571f8ee",
+      "sanitized_sha256": "37bc57022bf6242b990b4a539316849e4d34a944b21156b7e91ba6b4c571f8ee",
+      "original_bytes": 37,
+      "sanitized_bytes": 37,
+      "redaction_counts": {
+        "home_directory_prefix": 0,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "06_check_iterator_smoke.log",
+      "original_sha256": "373a0355ee2f2157785cd430239f1476dd237f697263878490be2e49f90c1357",
+      "sanitized_sha256": "4cd61ddc22185dae897df4baf7777cc240262603aaef7a0199be342fa70184f9",
+      "original_bytes": 1968,
+      "sanitized_bytes": 1952,
+      "redaction_counts": {
+        "home_directory_prefix": 2,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "06_pressure.txt",
+      "original_sha256": "37bc57022bf6242b990b4a539316849e4d34a944b21156b7e91ba6b4c571f8ee",
+      "sanitized_sha256": "37bc57022bf6242b990b4a539316849e4d34a944b21156b7e91ba6b4c571f8ee",
+      "original_bytes": 37,
+      "sanitized_bytes": 37,
+      "redaction_counts": {
+        "home_directory_prefix": 0,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0
+      }
+    },
+    {
+      "original_filename": "07_preflight_probe.log",
+      "original_sha256": "1f8c4cfb185d0588b3b3098ebc36b0410e1898866b42a1d8677918a5bedf2cfd",
+      "sanitized_sha256": "dc91f921215fd5cebe97e811fe036ad6e1178fd820f8edc732f64eba26dbadb7",
+      "original_bytes": 1624,
+      "sanitized_bytes": 1600,
+      "redaction_counts": {
+        "home_directory_prefix": 3,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0
+      }
+    }
+  ]
+}

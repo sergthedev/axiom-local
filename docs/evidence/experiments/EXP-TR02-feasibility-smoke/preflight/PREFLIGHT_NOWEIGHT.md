@@ -1,5 +1,10 @@
 # EXP-TR02 no-weight preflight on the MacBook Air M5 (evidence record)
 
+> **Superseded for the subset.** This is the first preflight (head 96cbdf7). Its probe and smoke subset was replaced after
+> the licensing review (23 smoke rows on ECB, OECD and TCMB schemas); see `PREFLIGHT_NOWEIGHT_d5f6cd5.md`. The sanitized raw logs of
+> this run are now committed in `at-96cbdf7-sanitized-logs/` and the numbers below were checked against them (`LOG_VERIFICATION.md`):
+> no numeric discrepancy was found.
+
 Status: **run once, all seven steps passed.** This is the technical lead's cleared no-weight preflight for PR #13 at the
 immutable head `96cbdf7edf30e26bf535a7eb0a84bb6467302ffd`. **No model weights were loaded, `supervise` and `run` were not
 executed, nothing was trained or generated, the sealed test was not touched, and no code was changed.** The full smoke is

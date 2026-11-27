@@ -1,0 +1,43 @@
+== date -u
+Fri Nov 27 18:44:51 UTC 2026
+== sw_vers
+ProductName:		macOS
+ProductVersion:		27.0.1
+BuildVersion:		26A434
+== sysctl hw.model hw.memsize
+hw.model: Mac17,3
+hw.memsize: 17179869184
+== pmset -g batt
+Now drawing from 'AC Power'
+ -InternalBattery-0 (id=22937699)	95%; AC attached; not charging present: true
+== vm_pressure_level
+1
+== ps aux | grep -E 'mlx|python' | grep -v grep
+(end ps; exit-of-grep shown above is empty if no lines)
+== uv --version
+uv 0.13.10 (Homebrew 2026-11-24 aarch64-apple-darwin)
+== worktree HEAD
+d5f6cd56c0d3a12ecb9e917570d028788809ac78
+== git status --porcelain --untracked-files=all
+[]
+== checkpoint PROVENANCE.json revision
+  "repo_id": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+== export/probe absence
+export does not exist
+probe does not exist
+
+== after step 1: sha256 of export files (relative paths, sorted)
+f99d236d0681852e3ba0c57959f6ace89a41fabc4c96bd4fd7bf5ee9ba033b92  ./EXPORT_MANIFEST.json
+2646499c1583414e50f39fd59f25a1e6d7a519eb39a826892b51edcf26412197  ./ROW_IDS.json
+68edeb0674cd0b445bbedc2a515f1bef10ee2cd9cbdad4f8eba7a615dbbfe4ed  ./full/train.jsonl
+edcd5bcf492dc8a5ecc617d371a67486656759aba472a338105f48505ddd0066  ./full/valid.jsonl
+787296439900464802bf4600daaead77194d1c1a4897b9c32f418101e79d4f76  ./peak_probe/train.jsonl
+787296439900464802bf4600daaead77194d1c1a4897b9c32f418101e79d4f76  ./peak_probe/valid.jsonl
+455099332e82f8803c9d15ef0ac5d1ae397faeb44b73265a40e49f34adf2ce2c  ./smoke/train.jsonl
+6b56ff796a83ea712969db29d2444fb5945a16e666662518ede747ef6a8c543a  ./smoke/valid.jsonl
+== MLX device / versions (import check only)
+Device(gpu, 0) 0.32.4
+mlx 0.32.4 mlx-lm 0.32.2
+== worktree status after step 1 and sync
+[]
