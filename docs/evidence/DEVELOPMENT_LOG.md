@@ -526,3 +526,20 @@ for a comprehensive final audit of AXIOM Verify.
   byte-identical to attempt 2 on all 160 requests.
 - The final test was not accessed. Nothing was trained.
 
+### AXBENCH-TR v0.2 draft: acquisition and corpus (2026-11-27)
+- New package `src/axbench_tr` (acquisition, real-schema inventory, generator, adapters, validator, contamination
+  checks). The deterministic engine, `axiom_router` contracts, `src/axbench` and EXP-010 were not changed.
+- 35 sources were surveyed; 21 were downloaded (raw files stay outside Git with SHA-256 in `ACQUISITION.json`).
+  The proxy allowlist was widened step by step with the owner's approval; no access restriction was bypassed.
+- Failures found and fixed while building: TCMB archive 404 for some dates; the Cognipeer parquet needed an
+  optional `pyarrow` (build-time only); templates that echoed v0.1 phrasing (caught by the contamination check);
+  column collisions in `inspect all` records; a year column treated as a measure; ambiguous partial column names;
+  vacuous test assertions; a UTF-8 byte-order mark leading 95 train records' first header (stripped, tested).
+- The validator, mutation-tested, refuses the build on any problem. Result: 8,625 records, 0 problems.
+- Not done: TÜİK, EVDS, ILOSTAT, IMF and İBB data; human review; the sealed-test overlap check (never accessed);
+  any training.
+- GitHub write access returned 403 in this environment, so the branch was committed locally first.
+- Full suite in this container: 720 passed, 4 to 5 failed in `tests/test_replay.py` and
+  `tests/test_review_regressions.py` (fresh-process replay and environment metadata; the set varies between runs).
+  The same files fail with 5 failures on an untouched `origin/main` here, so they are environmental, not caused by this
+  branch; they were not investigated. All 26 new tests pass.

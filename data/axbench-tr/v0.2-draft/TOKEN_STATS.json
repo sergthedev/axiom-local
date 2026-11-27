@@ -1,0 +1,80 @@
+{
+  "corpus": "axbench-tr/0.2-draft",
+  "tokenizer": "Qwen/Qwen3-1.7B tokenizer.json + chat_template, enable_thinking=False",
+  "train": {
+    "english": {
+      "max": 1209,
+      "mean": 497.8,
+      "median": 465,
+      "p95": 801,
+      "p99": 1188,
+      "records": 1336,
+      "total_tokens": 665005
+    },
+    "per_example_tokens": {
+      "max": 1220,
+      "mean": 503.3,
+      "median": 470,
+      "p95": 805,
+      "p99": 1077,
+      "records": 6942,
+      "total_tokens": 3493955
+    },
+    "prompt_only_tokens": {
+      "max": 1196,
+      "mean": 474.0,
+      "median": 441,
+      "p95": 773,
+      "p99": 1045,
+      "records": 6942,
+      "total_tokens": 3290807
+    },
+    "turkish": {
+      "max": 1220,
+      "mean": 504.6,
+      "median": 471,
+      "p95": 807,
+      "p99": 1073,
+      "records": 5606,
+      "total_tokens": 2828950
+    }
+  },
+  "validation": {
+    "english": {
+      "max": 846,
+      "mean": 500.0,
+      "median": 481,
+      "p95": 803,
+      "p99": 845,
+      "records": 329,
+      "total_tokens": 164489
+    },
+    "per_example_tokens": {
+      "max": 891,
+      "mean": 503.5,
+      "median": 487,
+      "p95": 817,
+      "p99": 848,
+      "records": 1683,
+      "total_tokens": 847410
+    },
+    "prompt_only_tokens": {
+      "max": 828,
+      "mean": 474.2,
+      "median": 457,
+      "p95": 786,
+      "p99": 813,
+      "records": 1683,
+      "total_tokens": 798026
+    },
+    "turkish": {
+      "max": 891,
+      "mean": 504.4,
+      "median": 488,
+      "p95": 818,
+      "p99": 850,
+      "records": 1354,
+      "total_tokens": 682921
+    }
+  }
+}

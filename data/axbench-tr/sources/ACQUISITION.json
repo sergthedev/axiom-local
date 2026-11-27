@@ -1,0 +1,636 @@
+{
+ "raw_dir_env": "AXBENCH_TR_RAW",
+ "schema": "axbench-tr.acquisition/1",
+ "sources": {
+  "SRC-M01": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 11422654,
+     "path": "hf/Qwen/Qwen3-1.7B/70d244cc86cc/tokenizer.json",
+     "retrieved": "2026-11-27",
+     "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+     "url": "https://huggingface.co/Qwen/Qwen3-1.7B/resolve/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e/tokenizer.json"
+    },
+    {
+     "bytes": 9732,
+     "path": "hf/Qwen/Qwen3-1.7B/70d244cc86cc/tokenizer_config.json",
+     "retrieved": "2026-11-27",
+     "sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+     "url": "https://huggingface.co/Qwen/Qwen3-1.7B/resolve/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e/tokenizer_config.json"
+    }
+   ],
+   "method": "hf_files"
+  },
+  "SRC-N01": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 2543,
+     "path": "hf/Cognipeer/synthetic-text-to-sql-tr/99734807e190/README.md",
+     "retrieved": "2026-11-27",
+     "sha256": "15227e9a12c2072c2d7aea0230025e94b63f8f02b73cde22df03a49b0984d296",
+     "url": "https://huggingface.co/datasets/Cognipeer/synthetic-text-to-sql-tr/resolve/99734807e190805731c1813810bded466c97b5e0/README.md"
+    },
+    {
+     "bytes": 39716519,
+     "path": "hf/Cognipeer/synthetic-text-to-sql-tr/99734807e190/data/train-00000-of-00001.parquet",
+     "retrieved": "2026-11-27",
+     "sha256": "60237c6d2cb56c26978f939d33891e32da3a9d5a6cbf09df3503cac415c54b2b",
+     "url": "https://huggingface.co/datasets/Cognipeer/synthetic-text-to-sql-tr/resolve/99734807e190805731c1813810bded466c97b5e0/data/train-00000-of-00001.parquet"
+    }
+   ],
+   "method": "hf_files"
+  },
+  "SRC-N02": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 2084,
+     "path": "hf/AliBugra/TURSpider/b01f5fc86086/README.md",
+     "retrieved": "2026-11-27",
+     "sha256": "2f7d169a16751e88763cebc4c40c6d1d77169cb5ada4389915e0f3258b33dfc8",
+     "url": "https://huggingface.co/datasets/AliBugra/TURSpider/resolve/b01f5fc8608604aa2f96c1332110b7217bebe7ac/README.md"
+    },
+    {
+     "bytes": 1885215,
+     "path": "hf/AliBugra/TURSpider/b01f5fc86086/train.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "81cde95efde361f4096d5aad9b7beea4975d20b4ee286a515caeb6392c496309",
+     "url": "https://huggingface.co/datasets/AliBugra/TURSpider/resolve/b01f5fc8608604aa2f96c1332110b7217bebe7ac/train.csv"
+    },
+    {
+     "bytes": 208394,
+     "path": "hf/AliBugra/TURSpider/b01f5fc86086/dev.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "ef2f35958e6fda764ae14cc9dd7032ff94b0945b82e6f38fb88880625ede8329",
+     "url": "https://huggingface.co/datasets/AliBugra/TURSpider/resolve/b01f5fc8608604aa2f96c1332110b7217bebe7ac/dev.csv"
+    }
+   ],
+   "method": "hf_files"
+  },
+  "SRC-N03": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 8758,
+     "path": "hf/AlicanKiraz0/Turkish-Finance-SFT-Dataset/d106acf808bf/README.md",
+     "retrieved": "2026-11-27",
+     "sha256": "059864422362f2e76fee83d7f9028091ecb54bec33735e83b4c3d24bb06e544b",
+     "url": "https://huggingface.co/datasets/AlicanKiraz0/Turkish-Finance-SFT-Dataset/resolve/d106acf808bfa59040b1290d360314d079ef1cb7/README.md"
+    },
+    {
+     "bytes": 36417400,
+     "path": "hf/AlicanKiraz0/Turkish-Finance-SFT-Dataset/d106acf808bf/finance_sft_dataset.jsonl",
+     "retrieved": "2026-11-27",
+     "sha256": "36e10091c93ede73d7692a19841cf087da19c432d1b7ac4a22e4ab27631d712b",
+     "url": "https://huggingface.co/datasets/AlicanKiraz0/Turkish-Finance-SFT-Dataset/resolve/d106acf808bfa59040b1290d360314d079ef1cb7/finance_sft_dataset.jsonl"
+    }
+   ],
+   "method": "hf_files"
+  },
+  "SRC-N04": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 36417400,
+     "path": "hf/veripazari/Turkish-Finance-SFT-Dataset/7966ebf8012b/finance_sft_dataset.jsonl",
+     "retrieved": "2026-11-27",
+     "sha256": "36e10091c93ede73d7692a19841cf087da19c432d1b7ac4a22e4ab27631d712b",
+     "url": "https://huggingface.co/datasets/veripazari/Turkish-Finance-SFT-Dataset/resolve/7966ebf8012bacb092cbe2cd5f7159301f9a2fc7/finance_sft_dataset.jsonl"
+    }
+   ],
+   "method": "hf_files"
+  },
+  "SRC-N05": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 10129,
+     "path": "hf/emre/finance-reasoning-turkish/7cbefa2c102f/README.md",
+     "retrieved": "2026-11-27",
+     "sha256": "c2be9429558b238293c59e00923087e5e716a7e013c793de915c3665b5df9378",
+     "url": "https://huggingface.co/datasets/emre/finance-reasoning-turkish/resolve/7cbefa2c102f4b75a17b9e2cf1bbc31cb162f267/README.md"
+    }
+   ],
+   "method": "hf_files"
+  },
+  "SRC-N06": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 1118,
+     "path": "hf/furkancekic/turkish-stockmarket-instructions/dee2c8331c0a/README.md",
+     "retrieved": "2026-11-27",
+     "sha256": "59cfc70c15fdc804bdc0f95ce97c4ca1aca3f16e7c0cec4db33bc392861cb4fe",
+     "url": "https://huggingface.co/datasets/furkancekic/turkish-stockmarket-instructions/resolve/dee2c8331c0a7f5cf2c73187b8fbe6ee5895fd75/README.md"
+    }
+   ],
+   "method": "hf_files"
+  },
+  "SRC-N07": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 495,
+     "path": "hf/Dbmaxwell/turkish-finance-instruction-dataset/c5f4d777daf5/README.md",
+     "retrieved": "2026-11-27",
+     "sha256": "5ef0b780fd6a497ffeef13a73c9c942e383e298c75e05340d4ea66c0de23219b",
+     "url": "https://huggingface.co/datasets/Dbmaxwell/turkish-finance-instruction-dataset/resolve/c5f4d777daf5b1b3c869084f3921724665c2b4ce/README.md"
+    }
+   ],
+   "method": "hf_files"
+  },
+  "SRC-N09": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 2190,
+     "path": "hf/turkish-nlp-datasets/economy-and-finance/c9f66c989aa9/README.md",
+     "retrieved": "2026-11-27",
+     "sha256": "37c05d7e409b43487b3a163dd3335df5ba7e696ca999d8b8cc54a9a27ff08d44",
+     "url": "https://huggingface.co/datasets/turkish-nlp-datasets/economy-and-finance/resolve/c9f66c989aa97722b85f7cb982d5a1eebf8a252e/README.md"
+    }
+   ],
+   "method": "hf_files"
+  },
+  "SRC-N10": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 42,
+     "path": "hf/yusufbaykaloglu/turkish-finance-dataset/54d0ae5c0c8c/README.md",
+     "retrieved": "2026-11-27",
+     "sha256": "f55a9e3c40cd906e576dfcb98c62f55c83fe2abfba567a1666395774a851ad60",
+     "url": "https://huggingface.co/datasets/yusufbaykaloglu/turkish-finance-dataset/resolve/54d0ae5c0c8c3ee105c2630f8a13476f18adf6cf/README.md"
+    }
+   ],
+   "method": "hf_files"
+  },
+  "SRC-N11": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 47464,
+     "path": "hf/cardiffnlp/databench/e75d53add267/README.md",
+     "retrieved": "2026-11-27",
+     "sha256": "1bcf676b449a7071e7f2ecf34eee5f7f9defc998fb438dc5cb55c07459816d49",
+     "url": "https://huggingface.co/datasets/cardiffnlp/databench/resolve/e75d53add267d2f9cfa32efd65ad77f0807adfad/README.md"
+    }
+   ],
+   "method": "hf_files"
+  },
+  "SRC-N12": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 35149,
+     "path": "github/HKUSTDial/StatQA/3d5f6b5b6926/LICENSE",
+     "retrieved": "2026-11-27",
+     "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+     "url": "https://raw.githubusercontent.com/HKUSTDial/StatQA/3d5f6b5b6926600dc952f39d79dfdef82999aeeb/LICENSE"
+    },
+    {
+     "bytes": 9200,
+     "path": "github/HKUSTDial/StatQA/3d5f6b5b6926/README.md",
+     "retrieved": "2026-11-27",
+     "sha256": "dd60a46c3ca6e365cc4bc105124b8632d6dd1b8d334f52b6af9a6fafade6a081",
+     "url": "https://raw.githubusercontent.com/HKUSTDial/StatQA/3d5f6b5b6926600dc952f39d79dfdef82999aeeb/README.md"
+    }
+   ],
+   "method": "github_files"
+  },
+  "SRC-N13": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 5298,
+     "path": "hf/next-tat/TAT-QA/c96247f5077e/README.md",
+     "retrieved": "2026-11-27",
+     "sha256": "4217396f4141272b14ad6829de26b1b2d47a53abe104465098be999af4105832",
+     "url": "https://huggingface.co/datasets/next-tat/TAT-QA/resolve/c96247f5077eac447f63527fd3dcfdc58bb56d6a/README.md"
+    },
+    {
+     "bytes": 12827783,
+     "path": "hf/next-tat/TAT-QA/c96247f5077e/tatqa_dataset_train.json",
+     "retrieved": "2026-11-27",
+     "sha256": "c7bf8eb0c757e57ef3db6c6146dd7e487100dac1e37e66a349813ddc4187cd65",
+     "url": "https://huggingface.co/datasets/next-tat/TAT-QA/resolve/c96247f5077eac447f63527fd3dcfdc58bb56d6a/tatqa_dataset_train.json"
+    }
+   ],
+   "method": "hf_files"
+  },
+  "SRC-N14": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 1067,
+     "path": "github/czyssrs/FinQA/0f16e2867bef/LICENSE",
+     "retrieved": "2026-11-27",
+     "sha256": "92c0e67bd762c15c07ba60de09558338315a8ebf99aac4f51f487179809ac087",
+     "url": "https://raw.githubusercontent.com/czyssrs/FinQA/0f16e2867befa6840783e58be38c9efb9229d742/LICENSE"
+    },
+    {
+     "bytes": 78216616,
+     "path": "github/czyssrs/FinQA/0f16e2867bef/dataset/train.json",
+     "retrieved": "2026-11-27",
+     "sha256": "49f237eb9779b569473b26b08048867d04635a7cc39ad6a7a5664c55bb428db6",
+     "url": "https://raw.githubusercontent.com/czyssrs/FinQA/0f16e2867befa6840783e58be38c9efb9229d742/dataset/train.json"
+    }
+   ],
+   "method": "github_files"
+  },
+  "SRC-N15": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 1067,
+     "path": "github/czyssrs/ConvFinQA/cf3eed2d5984/LICENSE",
+     "retrieved": "2026-11-27",
+     "sha256": "5c7b6fe25d37f4b6cc7e0e76267bce7146765b7661d4bb0e9ecc4eb0ed34fb4c",
+     "url": "https://raw.githubusercontent.com/czyssrs/ConvFinQA/cf3eed2d5984960bf06bb8145bcea5e80b0222a6/LICENSE"
+    },
+    {
+     "bytes": 6164,
+     "path": "github/czyssrs/ConvFinQA/cf3eed2d5984/README.md",
+     "retrieved": "2026-11-27",
+     "sha256": "c5f329640aaffa142984e559b89e7cabd6934d03751260e9860b9278979c4c69",
+     "url": "https://raw.githubusercontent.com/czyssrs/ConvFinQA/cf3eed2d5984960bf06bb8145bcea5e80b0222a6/README.md"
+    }
+   ],
+   "method": "github_files"
+  },
+  "SRC-O01": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 85474,
+     "path": "worldbank/FP.CPI.TOTL.ZG.json",
+     "retrieved": "2026-11-27",
+     "sha256": "0ab13f5adf66ec3a20d60e05346443b6a5c8d591d8b96c5cabc2f740831a58fd",
+     "url": "https://api.worldbank.org/v2/country/TUR;DEU;FRA;ITA;ESP;POL;GBR;USA;BRA;MEX;IDN;KOR;JPN;GRC;ROU/indicator/FP.CPI.TOTL.ZG?format=json&per_page=20000&date=2000:2024"
+    },
+    {
+     "bytes": 92600,
+     "path": "worldbank/SL.UEM.TOTL.ZS.json",
+     "retrieved": "2026-11-27",
+     "sha256": "3ca07a5ee93ff7663c90f7d1a2a331f0cc309b4c9b00d96945ffb047228c3364",
+     "url": "https://api.worldbank.org/v2/country/TUR;DEU;FRA;ITA;ESP;POL;GBR;USA;BRA;MEX;IDN;KOR;JPN;GRC;ROU/indicator/SL.UEM.TOTL.ZS?format=json&per_page=20000&date=2000:2024"
+    },
+    {
+     "bytes": 77828,
+     "path": "worldbank/NY.GDP.MKTP.CD.json",
+     "retrieved": "2026-11-27",
+     "sha256": "d22f3803da8fd6530997d8ceea9b5f5556db3eeb24014be62de39297af121532",
+     "url": "https://api.worldbank.org/v2/country/TUR;DEU;FRA;ITA;ESP;POL;GBR;USA;BRA;MEX;IDN;KOR;JPN;GRC;ROU/indicator/NY.GDP.MKTP.CD?format=json&per_page=20000&date=2000:2024"
+    },
+    {
+     "bytes": 80617,
+     "path": "worldbank/NY.GDP.MKTP.KD.ZG.json",
+     "retrieved": "2026-11-27",
+     "sha256": "513129a81a61e8273ee7126d5fc80f5ce49bfc7bcf2c3ab46870087385144509",
+     "url": "https://api.worldbank.org/v2/country/TUR;DEU;FRA;ITA;ESP;POL;GBR;USA;BRA;MEX;IDN;KOR;JPN;GRC;ROU/indicator/NY.GDP.MKTP.KD.ZG?format=json&per_page=20000&date=2000:2024"
+    },
+    {
+     "bytes": 81997,
+     "path": "worldbank/NY.GDP.PCAP.CD.json",
+     "retrieved": "2026-11-27",
+     "sha256": "69b0d4893a6869346ed4f9d1502512b7057a4ea94c0b3128d17b603b52309c90",
+     "url": "https://api.worldbank.org/v2/country/TUR;DEU;FRA;ITA;ESP;POL;GBR;USA;BRA;MEX;IDN;KOR;JPN;GRC;ROU/indicator/NY.GDP.PCAP.CD?format=json&per_page=20000&date=2000:2024"
+    },
+    {
+     "bytes": 86502,
+     "path": "worldbank/NE.EXP.GNFS.ZS.json",
+     "retrieved": "2026-11-27",
+     "sha256": "f8bbbebe38eca4f9eab3e51ec46df2232f91d657dcf6a38b62e221ecc08fa8ec",
+     "url": "https://api.worldbank.org/v2/country/TUR;DEU;FRA;ITA;ESP;POL;GBR;USA;BRA;MEX;IDN;KOR;JPN;GRC;ROU/indicator/NE.EXP.GNFS.ZS?format=json&per_page=20000&date=2000:2024"
+    },
+    {
+     "bytes": 86514,
+     "path": "worldbank/NE.IMP.GNFS.ZS.json",
+     "retrieved": "2026-11-27",
+     "sha256": "c8744e3d2a785064eeb0a69be6b2249f8881d83e7fefdae81af6349b4144e531",
+     "url": "https://api.worldbank.org/v2/country/TUR;DEU;FRA;ITA;ESP;POL;GBR;USA;BRA;MEX;IDN;KOR;JPN;GRC;ROU/indicator/NE.IMP.GNFS.ZS?format=json&per_page=20000&date=2000:2024"
+    },
+    {
+     "bytes": 89302,
+     "path": "worldbank/PA.NUS.FCRF.json",
+     "retrieved": "2026-11-27",
+     "sha256": "17d7362609c244363f65cb9cb16033c259d48e6901a5ee3feb53b3e34ad85e1a",
+     "url": "https://api.worldbank.org/v2/country/TUR;DEU;FRA;ITA;ESP;POL;GBR;USA;BRA;MEX;IDN;KOR;JPN;GRC;ROU/indicator/PA.NUS.FCRF?format=json&per_page=20000&date=2000:2024"
+    },
+    {
+     "bytes": 76909,
+     "path": "worldbank/FR.INR.LEND.json",
+     "retrieved": "2026-11-27",
+     "sha256": "9f33e06727ddc869ac76607d94263ab75955af640b60652289a203060387e322",
+     "url": "https://api.worldbank.org/v2/country/TUR;DEU;FRA;ITA;ESP;POL;GBR;USA;BRA;MEX;IDN;KOR;JPN;GRC;ROU/indicator/FR.INR.LEND?format=json&per_page=20000&date=2000:2024"
+    },
+    {
+     "bytes": 73919,
+     "path": "worldbank/SP.POP.TOTL.json",
+     "retrieved": "2026-11-27",
+     "sha256": "cc978ded4e090fa24cdd00e944b2164cb06855281df732ae24fd8814d5b96715",
+     "url": "https://api.worldbank.org/v2/country/TUR;DEU;FRA;ITA;ESP;POL;GBR;USA;BRA;MEX;IDN;KOR;JPN;GRC;ROU/indicator/SP.POP.TOTL?format=json&per_page=20000&date=2000:2024"
+    },
+    {
+     "bytes": 85100,
+     "path": "worldbank/GC.DOD.TOTL.GD.ZS.json",
+     "retrieved": "2026-11-27",
+     "sha256": "e63693f2454b1ceebde2b85b5219bb02bae04f23531310c34193a98b764cd377",
+     "url": "https://api.worldbank.org/v2/country/TUR;DEU;FRA;ITA;ESP;POL;GBR;USA;BRA;MEX;IDN;KOR;JPN;GRC;ROU/indicator/GC.DOD.TOTL.GD.ZS?format=json&per_page=20000&date=2000:2024"
+    },
+    {
+     "bytes": 85700,
+     "path": "worldbank/BN.CAB.XOKA.GD.ZS.json",
+     "retrieved": "2026-11-27",
+     "sha256": "22b39eb64d7eb6a50c7669090ce33291b49dee2c2ad2938f28f5e980ea24b114",
+     "url": "https://api.worldbank.org/v2/country/TUR;DEU;FRA;ITA;ESP;POL;GBR;USA;BRA;MEX;IDN;KOR;JPN;GRC;ROU/indicator/BN.CAB.XOKA.GD.ZS?format=json&per_page=20000&date=2000:2024"
+    },
+    {
+     "bytes": 102617,
+     "path": "worldbank/SL.TLF.CACT.ZS.json",
+     "retrieved": "2026-11-27",
+     "sha256": "a7d3d8e05d2ca8837b941937e2d14c028c0230c1664689f9e77938a51ead5e27",
+     "url": "https://api.worldbank.org/v2/country/TUR;DEU;FRA;ITA;ESP;POL;GBR;USA;BRA;MEX;IDN;KOR;JPN;GRC;ROU/indicator/SL.TLF.CACT.ZS?format=json&per_page=20000&date=2000:2024"
+    }
+   ],
+   "method": "worldbank_indicators"
+  },
+  "SRC-O02": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 10905,
+     "path": "eurostat/une_rt_m_TR.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "900bd39e3944d07747a3aad78f350bc8f68223c656ba9b097b821ed23d726552",
+     "url": "https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data/une_rt_m/M.SA.TOTAL.PC_ACT.T.TR?startPeriod=2015&format=SDMX-CSV"
+    },
+    {
+     "bytes": 10090,
+     "path": "eurostat/prc_hicp_manr_TR.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "9c15f445a7957643e010ccba5c8be5e403965aa5c22d7015e11b1fab989e4ba5",
+     "url": "https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data/prc_hicp_manr/M.RCH_A.CP00.TR?startPeriod=2015&format=SDMX-CSV"
+    },
+    {
+     "bytes": 3875,
+     "path": "eurostat/namq_10_gdp_TR.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "1ca9a09b77340d5bfbcb9258c3b5d72f7536879acf5877967ed97d48b14a42ca",
+     "url": "https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data/namq_10_gdp/Q.CLV_PCH_PRE.SCA.B1GQ.TR?startPeriod=2015&format=SDMX-CSV"
+    }
+   ],
+   "method": "http_files"
+  },
+  "SRC-O03": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 509500,
+     "path": "ecb/exr_try_eur_daily.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "0c0fd939eee19d3fccd478b659c226959180c2589226ac7d3bad86678fb199b4",
+     "url": "https://data-api.ecb.europa.eu/service/data/EXR/D.TRY.EUR.SP00.A?format=csvdata&startPeriod=2020-01-01"
+    },
+    {
+     "bytes": 368291,
+     "path": "ecb/exr_usd_eur_daily.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "9febb698184083fad81c08ff487a88645de3a6a821ae5e11b78218c16eafafe5",
+     "url": "https://data-api.ecb.europa.eu/service/data/EXR/D.USD.EUR.SP00.A?format=csvdata&startPeriod=2020-01-01"
+    }
+   ],
+   "method": "http_files"
+  },
+  "SRC-O04": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 404831,
+     "path": "oecd/une_m_TUR.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "21717bd0042ee74f3a967e9babfbf8de737977d9dceae412a097794730f6da6f",
+     "url": "https://sdmx.oecd.org/public/rest/data/OECD.SDD.TPS,DSD_LFS@DF_IALFS_UNE_M,1.0/TUR........?startPeriod=2023-01&format=csvfilewithlabels"
+    },
+    {
+     "bytes": 1615754,
+     "path": "oecd/prices_TUR.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "709e0b739cb14cae801cd7777b6438fdf5a7db8a203a81c6bc914ac89c2fecf3",
+     "url": "https://sdmx.oecd.org/public/rest/data/OECD.SDD.TPS,DSD_PRICES@DF_PRICES_ALL,1.0/TUR.......?startPeriod=2024-01&format=csvfilewithlabels"
+    }
+   ],
+   "method": "http_files"
+  },
+  "SRC-O05": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 9074,
+     "path": "tcmb/kurlar_20250205.xml",
+     "retrieved": "2026-11-27",
+     "sha256": "6592963a063083769b162167e9a9ab3850242c299731030e4eb1e6355b2aa30d",
+     "url": "https://www.tcmb.gov.tr/kurlar/202502/05022025.xml"
+    },
+    {
+     "bytes": 9075,
+     "path": "tcmb/kurlar_20250305.xml",
+     "retrieved": "2026-11-27",
+     "sha256": "b4d6b1ea609a4e08aa989797cb671bc6bafc4d099259464db75bc995b6a919a5",
+     "url": "https://www.tcmb.gov.tr/kurlar/202503/05032025.xml"
+    },
+    {
+     "bytes": 9083,
+     "path": "tcmb/kurlar_20250402.xml",
+     "retrieved": "2026-11-27",
+     "sha256": "ca99abca28060d123aa0ae30530980b5d374d39cdbb0c12686614070585814ee",
+     "url": "https://www.tcmb.gov.tr/kurlar/202504/02042025.xml"
+    },
+    {
+     "bytes": 9083,
+     "path": "tcmb/kurlar_20250507.xml",
+     "retrieved": "2026-11-27",
+     "sha256": "9ceae5966fc91c430555fae8a09f73ea86fbcdcb33509c886dd076bc821f02b1",
+     "url": "https://www.tcmb.gov.tr/kurlar/202505/07052025.xml"
+    },
+    {
+     "bytes": 9084,
+     "path": "tcmb/kurlar_20250604.xml",
+     "retrieved": "2026-11-27",
+     "sha256": "24f2fd99d141a598c7f16e715fcc6dc81e6f4b9f4751703d8d3eec46f417a369",
+     "url": "https://www.tcmb.gov.tr/kurlar/202506/04062025.xml"
+    },
+    {
+     "bytes": 9084,
+     "path": "tcmb/kurlar_20250702.xml",
+     "retrieved": "2026-11-27",
+     "sha256": "aeca53ec006e7ac962edc9133af6ea4d6c92c8f78a13334f5005615a2be76b81",
+     "url": "https://www.tcmb.gov.tr/kurlar/202507/02072025.xml"
+    },
+    {
+     "bytes": 9084,
+     "path": "tcmb/kurlar_20250806.xml",
+     "retrieved": "2026-11-27",
+     "sha256": "1ba7cc2d84c1caff43b2efd5bb8bce7b121c9685d822dd4aef90254264ba8e7e",
+     "url": "https://www.tcmb.gov.tr/kurlar/202508/06082025.xml"
+    },
+    {
+     "bytes": 9084,
+     "path": "tcmb/kurlar_20250903.xml",
+     "retrieved": "2026-11-27",
+     "sha256": "0791213bc064c578f4ecc2ff0b5bbce904a7d78ebf36481722b79b8905878c05",
+     "url": "https://www.tcmb.gov.tr/kurlar/202509/03092025.xml"
+    },
+    {
+     "bytes": 9085,
+     "path": "tcmb/kurlar_20251001.xml",
+     "retrieved": "2026-11-27",
+     "sha256": "4672e5526d2e8bb62f05e62f2d2e8b8b39df5f07811f04a3f035b6d3d48f1b66",
+     "url": "https://www.tcmb.gov.tr/kurlar/202510/01102025.xml"
+    },
+    {
+     "bytes": 9489,
+     "path": "tcmb/kurlar_20251105.xml",
+     "retrieved": "2026-11-27",
+     "sha256": "9e86f692cfc43bb7dfa911eda3374c836f79d17c96952bbb0492f1c501894621",
+     "url": "https://www.tcmb.gov.tr/kurlar/202511/05112025.xml"
+    },
+    {
+     "bytes": 9489,
+     "path": "tcmb/kurlar_20251203.xml",
+     "retrieved": "2026-11-27",
+     "sha256": "780dad511d614cf321fcd2134c8c3bf9e74caf4cbb3927275b3c4ab8c61603cd",
+     "url": "https://www.tcmb.gov.tr/kurlar/202512/03122025.xml"
+    }
+   ],
+   "method": "http_files"
+  },
+  "SRC-O06": {
+   "errors": [],
+   "files": [
+    {
+     "bytes": 1662512,
+     "path": "ckan/catalog.json",
+     "retrieved": "2026-11-27",
+     "sha256": "cf1c8301ac747d33d8ffffc7274e789497cb79fdf226a450be6f49209e646bd9",
+     "url": "https://acikveri.bizizmir.com/api/3/action/package_search?rows=1000"
+    },
+    {
+     "bytes": 341954,
+     "path": "ckan/izmir_tables.json",
+     "retrieved": "2026-11-27",
+     "sha256": "b46525f801b884ea7b1e0397b1da2e8cf7fee9d7db3fcdb057fdeabb636e8177",
+     "url": "https://acikveri.bizizmir.com/api/3/action/datastore_search"
+    },
+    {
+     "bytes": 67312,
+     "path": "ckan/data/kablosuz-internet-baglanti-noktalari.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "607e9041b1d5379f3ae097b0e22304d963784a44eb5d57eb3d644a1ff85c86f8",
+     "url": "https://acikveri.bizizmir.com/dataset/f91f98bd-bbd0-4333-85d3-9de8beb4f09c/resource/60ca8451-d6d2-419f-b533-ab92bd5955b2/download/izbb-wizmirnet-noktalari.csv"
+    },
+    {
+     "bytes": 23689,
+     "path": "ckan/data/balik-hal-fiyatlari.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "d7933f3d437b881b6701d328a496f5f631e77e45509d3963f00de4e6ed09116c",
+     "url": "https://acikveri.bizizmir.com/dataset/96a32452-2b91-4120-b9c7-395e0dd0e4b5/resource/27832153-b03c-4008-9eb0-e33fa6165de8/download/izbb-balik-hal-fiyatlari_2007.csv"
+    },
+    {
+     "bytes": 839650,
+     "path": "ckan/data/sebze-ve-meyve-hal-fiyatlari.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "891e4058f5f583824a3ad7a1028d51ccc5d83cd21cf2e6c26c86038f9d6d5b48",
+     "url": "https://acikveri.bizizmir.com/dataset/39f883f1-5627-4ec0-b424-8f65baf01969/resource/e835ebff-854e-44fd-aa86-1c848667b0bf/download/izbb-sebzemeyve-hal-fiyatlari_2006.csv"
+    },
+    {
+     "bytes": 56395,
+     "path": "ckan/data/ucretsiz-kablosuz-internet-wizmirnet-hizmeti-verileri.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "48dbcb7184c6db556b8d7ccc070b94a7226dda9cdf738f3de8e0b5d012190071",
+     "url": "https://acikveri.bizizmir.com/dataset/930cf6ae-fa1c-459f-9ef7-5001fed8d936/resource/535b7b93-8514-4da4-8348-c711a2c381b5/download/uye_olma_sayisi.csv"
+    },
+    {
+     "bytes": 29811,
+     "path": "ckan/data/tarimsal-destekler.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "d76b56d952271d22194c7bd9dcd5a8d2acf1131599019ba0064a4df10d69568b",
+     "url": "https://acikveri.bizizmir.com/dataset/3a195399-373d-4294-bb55-64e64b42a2de/resource/792b9053-3d04-444b-8bfb-c32eada75ea0/download/tarmsal-destekler.xlsx"
+    },
+    {
+     "bytes": 3010,
+     "path": "ckan/data/otopark-ucretleri.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "af4df42d1dd0ff320dae81c9418d14e23a69f0c3fa273d8b000fc6bc74ee04ec",
+     "url": "https://acikveri.bizizmir.com/dataset/8863674c-c082-4f55-ab1d-dc75219aca4f/resource/8dca3fb5-b7fe-4f16-91af-d8248da59f87/download/otopark-ucretleri.csv"
+    },
+    {
+     "bytes": 151027,
+     "path": "ckan/data/yillik-tarife-bilgileri-artislari.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "a605ba7cc0b2315d70c1a8c201f05ab479ef13e68c6ee80e94c54cee11d80811",
+     "url": "https://acikveri.bizizmir.com/dataset/0cac8e06-2fa3-49f3-af2b-2e203c891b33/resource/a523da27-7756-439b-83ed-1da073d8dc86/download/su-atiksu-tarifeleri.csv"
+    },
+    {
+     "bytes": 287,
+     "path": "ckan/data/yillara-gore-istihdam-sayilari.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "9c5c2a255562a17051a2a82a92fa4b4fa4fde3ae71f009f00d806e1e0e8e78ea",
+     "url": "https://acikveri.bizizmir.com/dataset/ac29fd33-446c-414e-afaf-f8c4d641fc8f/resource/b03c1ee1-3335-49ab-ac60-ee1bc2faff20/download/yillara-gore-istihdam-sayilari.csv"
+    },
+    {
+     "bytes": 385,
+     "path": "ckan/data/turizm-tesisleri.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "3c9facfaa8e7a576da134ad67f0d3a38997850240a4292ac44b38b1c55de0569",
+     "url": "https://acikveri.bizizmir.com/dataset/fd36f3c4-3dfb-4477-ada0-8b6e608d7a10/resource/2c66fad9-3b2a-40c1-96c9-bf47d4126ff0/download/yillara-gore-tesis-bilgileri.csv"
+    },
+    {
+     "bytes": 207,
+     "path": "ckan/data/izmir-yillara-gore-issizlik-orani.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "46c79f7b447b7abc5b469f4261e5c6120fcf7c032e98fccfd2e2054ee592817c",
+     "url": "https://acikveri.bizizmir.com/dataset/7d503b72-92f9-407b-9fec-88ed99221a25/resource/ba115dd3-780f-41ed-8f9f-da5c4c8c4188/download/yillara-gore-issizlik-orani.csv"
+    },
+    {
+     "bytes": 127079,
+     "path": "ckan/data/izmir-ilcelerine-ait-konut-ve-ozel-is-yeri-istatistikleri.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "8eb5141088109b909c032203685ff4ee7b646daff44922e31621561f2ce408e9",
+     "url": "https://acikveri.bizizmir.com/dataset/0dd78f1a-091a-4711-b393-90a50a7ae4e2/resource/03a8c6be-b9c6-4cf8-944f-db46711ef220/download/konut-sayisina-gore-mahalleler.csv"
+    },
+    {
+     "bytes": 216,
+     "path": "ckan/data/izmir-konut-satis-sayilarina-gore-dagilimi.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "2b8586142230919333d096f5c65c1909f8c51568d5d09030a9ebcd2a351341ca",
+     "url": "https://acikveri.bizizmir.com/dataset/a17c779f-8e5b-40eb-8577-0ae26e2d609a/resource/9cf1ef86-1a63-4a72-b027-e9fa301144ee/download/konut-satisi-izmir.csv"
+    },
+    {
+     "bytes": 803,
+     "path": "ckan/data/imalat-sanayi-ihracati.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "416ede2bb0b71b27ebbd6ec35cfff5e92b9a35dff916cc0fa2583db51dafc458",
+     "url": "https://acikveri.bizizmir.com/dataset/d5d70f9e-6866-492f-a30d-ebf74b2fea91/resource/70e6a720-6467-42c6-bd6e-5b558f4f21e2/download/yillara-gore-imalat-sanayi-ihracati.csv"
+    },
+    {
+     "bytes": 807,
+     "path": "ckan/data/imalat-sanayi-ithalati.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "7e59322138914d96b468aa6b899e269aafeb910ad9d9fc5aa0879910cfed4a1d",
+     "url": "https://acikveri.bizizmir.com/dataset/f508ace1-0dc6-4077-bcf5-f62ec5f619bd/resource/245c1516-c342-4e75-a199-cd0624f10cdd/download/yillara-gore-imalatsanayi-ithalati.csv"
+    },
+    {
+     "bytes": 848,
+     "path": "ckan/data/turizm-bilgilendirme-ofisleri-konum-verisi.csv",
+     "retrieved": "2026-11-27",
+     "sha256": "85b6f2967b01742dfaa8d92c74747a487e55841ce1a6152c5ed71ebe5ccd6e6b",
+     "url": "https://acikveri.bizizmir.com/dataset/b8497cf8-9448-4d1a-81cd-93aa72a8b4b4/resource/4b071eb4-bd82-4562-af30-b7ac330780df/download/turizm-bilgilendirme-ofisleri-konum-verisi.csv"
+    }
+   ],
+   "method": "ckan_catalog"
+  }
+ }
+}

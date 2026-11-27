@@ -24,6 +24,7 @@ evaluation and no desktop UI exist yet.**
 | Analysis Passport, fresh-process replay, cross-platform comparison | Implemented (Issue #3, accepted; ADRs 0007 and 0008 ratified), see [ADR 0007](docs/decisions/0007-analysis-passport-and-environment-capture.md), [ADR 0008](docs/decisions/0008-replay-mismatch-classification-and-comparison-criteria.md), [EXP-004](docs/evidence/experiments/EXP-004-replay-benchmark/MANIFEST.md), [EXP-005](docs/evidence/experiments/EXP-005-cross-platform/MANIFEST.md) |
 | Router candidate contract, schema projection, AXIOM Guard (confirmation before any dispatch) | Implemented, under review (Issue #4), see [ADR 0009](docs/decisions/0009-ax01-candidate-contract-and-schema-projection.md), [ADR 0010](docs/decisions/0010-axiom-guard-confirmation-and-dispatch.md) |
 | AXBENCH bilingual routing benchmark (synthetic draft, unreviewed) and rule baseline | Draft tooling under review (Issue #4), see [dataset card](data/axbench/DATASET_CARD.md), [ADR 0011](docs/decisions/0011-axbench-benchmark-metrics-and-sealing.md); rule baseline measured on validation only ([EXP-008](docs/evidence/experiments/EXP-008-axbench-rule-baseline/MANIFEST.md)) |
+| AXBENCH-TR v0.2 Turkey-first data acquisition and draft corpus (unreviewed; nothing trained) | Draft under review, see [dataset card](data/axbench-tr/DATASET_CARD.md), [DATA_SOURCES.md](data/axbench-tr/DATA_SOURCES.md), [EXP-TR01](docs/evidence/experiments/EXP-TR01-axbench-tr-acquisition/MANIFEST.md) |
 | AX-01 language model | Not trained; candidate checkpoints and an optional Apple Silicon environment prepared ([ADR 0012](docs/decisions/0012-optional-model-environment.md)) |
 | Desktop UI | Planned, not started |
 | Model training | Planned, protocols only; no results exist |
@@ -88,6 +89,7 @@ The exact commands, environment and exit statuses of the last verified run are r
 - `src/axiom_router/` – router candidate contract, schema projection, semantic validation, Guard, prompt, rule router
   (separate from `axiom`, so Core identities do not change)
 - `src/axbench/` – AXBENCH generator, audits, scoring, statistics, sealing (CLI `python -m axbench`);
+- `src/axbench_tr/` – AXBENCH-TR acquisition, real-schema inventory, corpus builder and validator (CLI `python -m axbench_tr`; raw data stays in the ignored `data/axbench-tr/_raw/`; `pyarrow==26.0.1` is needed only to rebuild the Cognipeer part and is not in the lockfile);
   `data/axbench/` – draft corpus and dataset card (no final test split)
 - `envs/model/` – optional Apple Silicon MLX-LM environment (separate lock, not needed for Core or CI)
 - `tests/` – tests, exact-arithmetic oracles, vendored NIST reference data

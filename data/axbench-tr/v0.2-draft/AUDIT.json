@@ -1,0 +1,266 @@
+{
+ "contamination_against_axbench_v0.1_train_and_validation": {
+  "exact_normalized_matches": 0,
+  "near_duplicate_pairs": 0,
+  "near_duplicate_requests": 0,
+  "near_duplicates_at_or_above": 0.8,
+  "references": 560,
+  "requests": 8625
+ },
+ "distributions": {
+  "overall": {
+   "english_share": 0.193,
+   "records": 8625,
+   "turkish_share": 0.807
+  },
+  "train": {
+   "action": {
+    "CLARIFY": 1422,
+    "PLAN": 3845,
+    "REJECT": 1675
+   },
+   "distinct_lineages": 1629,
+   "distinct_request_texts": 6064,
+   "distinct_schemas": 1447,
+   "domain": {
+    "economic": 3393,
+    "non_economic": 3549
+   },
+   "frame": {
+    "clarify:ambiguous_column": 158,
+    "clarify:column_not_found": 158,
+    "clarify:column_type_mismatch": 158,
+    "clarify:invalid_parameter": 158,
+    "clarify:missing_cluster_count": 158,
+    "clarify:missing_column": 158,
+    "clarify:missing_correlation_method": 158,
+    "clarify:missing_operation": 158,
+    "clarify:multiple_operations": 158,
+    "cluster": 569,
+    "compare": 1486,
+    "inspect": 766,
+    "inspect_all": 171,
+    "reject:causal_inference": 126,
+    "reject:code_or_system_request": 126,
+    "reject:data_modification": 426,
+    "reject:forecasting": 126,
+    "reject:hypothesis_test": 126,
+    "reject:instruction_override": 126,
+    "reject:out_of_scope": 367,
+    "reject:regression": 126,
+    "reject:unsupported_analysis": 126,
+    "relate": 853
+   },
+   "header_language": {
+    "en": 833,
+    "n/a": 1542,
+    "tr": 4567
+   },
+   "language": {
+    "en": 1336,
+    "tr": 5606
+   },
+   "operation_or_reason": {
+    "CLARIFY:ambiguous_column": 158,
+    "CLARIFY:column_not_found": 158,
+    "CLARIFY:column_type_mismatch": 158,
+    "CLARIFY:invalid_parameter": 158,
+    "CLARIFY:missing_cluster_count": 158,
+    "CLARIFY:missing_column": 158,
+    "CLARIFY:missing_correlation_method": 158,
+    "CLARIFY:missing_operation": 158,
+    "CLARIFY:multiple_operations": 158,
+    "REJECT:causal_inference": 126,
+    "REJECT:code_or_system_request": 126,
+    "REJECT:data_modification": 426,
+    "REJECT:forecasting": 126,
+    "REJECT:hypothesis_test": 126,
+    "REJECT:instruction_override": 126,
+    "REJECT:out_of_scope": 367,
+    "REJECT:regression": 126,
+    "REJECT:unsupported_analysis": 126,
+    "cluster": 569,
+    "compare": 1486,
+    "inspect": 937,
+    "relate": 853
+   },
+   "origin": {
+    "external_adapted": 1542,
+    "synthetic_template": 5400
+   },
+   "records": 6942,
+   "request_chars_median": 73.0,
+   "schema_columns_median": 7.0,
+   "schema_source": {
+    "SRC-N01": 1301,
+    "SRC-O01": 1854,
+    "SRC-O02": 100,
+    "SRC-O03": 57,
+    "SRC-O04": 54,
+    "SRC-O05": 207,
+    "SRC-O06": 3369
+   },
+   "tags": {
+    "alias": 1548,
+    "case": 654,
+    "cross_language_mention": 1392,
+    "diacritics_stripped": 580,
+    "k_word": 174,
+    "llm_generated_question": 241,
+    "machine_translated": 1045,
+    "multi_mention": 1305,
+    "original_english_synthetic": 256,
+    "quoted": 1731,
+    "typo": 344
+   }
+  },
+  "validation": {
+   "action": {
+    "CLARIFY": 342,
+    "PLAN": 934,
+    "REJECT": 407
+   },
+   "distinct_lineages": 418,
+   "distinct_request_texts": 1467,
+   "distinct_schemas": 378,
+   "domain": {
+    "economic": 983,
+    "non_economic": 700
+   },
+   "frame": {
+    "clarify:ambiguous_column": 38,
+    "clarify:column_not_found": 38,
+    "clarify:column_type_mismatch": 38,
+    "clarify:invalid_parameter": 38,
+    "clarify:missing_cluster_count": 38,
+    "clarify:missing_column": 38,
+    "clarify:missing_correlation_method": 38,
+    "clarify:missing_operation": 38,
+    "clarify:multiple_operations": 38,
+    "cluster": 137,
+    "compare": 377,
+    "inspect": 174,
+    "inspect_all": 41,
+    "reject:causal_inference": 31,
+    "reject:code_or_system_request": 31,
+    "reject:data_modification": 106,
+    "reject:forecasting": 30,
+    "reject:hypothesis_test": 30,
+    "reject:instruction_override": 30,
+    "reject:out_of_scope": 89,
+    "reject:regression": 30,
+    "reject:unsupported_analysis": 30,
+    "relate": 205
+   },
+   "header_language": {
+    "en": 280,
+    "n/a": 383,
+    "tr": 1020
+   },
+   "language": {
+    "en": 329,
+    "tr": 1354
+   },
+   "operation_or_reason": {
+    "CLARIFY:ambiguous_column": 38,
+    "CLARIFY:column_not_found": 38,
+    "CLARIFY:column_type_mismatch": 38,
+    "CLARIFY:invalid_parameter": 38,
+    "CLARIFY:missing_cluster_count": 38,
+    "CLARIFY:missing_column": 38,
+    "CLARIFY:missing_correlation_method": 38,
+    "CLARIFY:missing_operation": 38,
+    "CLARIFY:multiple_operations": 38,
+    "REJECT:causal_inference": 31,
+    "REJECT:code_or_system_request": 31,
+    "REJECT:data_modification": 106,
+    "REJECT:forecasting": 30,
+    "REJECT:hypothesis_test": 30,
+    "REJECT:instruction_override": 30,
+    "REJECT:out_of_scope": 89,
+    "REJECT:regression": 30,
+    "REJECT:unsupported_analysis": 30,
+    "cluster": 137,
+    "compare": 377,
+    "inspect": 215,
+    "relate": 205
+   },
+   "origin": {
+    "external_adapted": 383,
+    "synthetic_template": 1300
+   },
+   "records": 1683,
+   "request_chars_median": 80,
+   "schema_columns_median": 7,
+   "schema_source": {
+    "SRC-N01": 324,
+    "SRC-O01": 831,
+    "SRC-O02": 29,
+    "SRC-O04": 33,
+    "SRC-O06": 466
+   },
+   "tags": {
+    "alias": 393,
+    "case": 163,
+    "cross_language_mention": 412,
+    "diacritics_stripped": 150,
+    "k_word": 31,
+    "llm_generated_question": 59,
+    "machine_translated": 255,
+    "multi_mention": 276,
+    "original_english_synthetic": 69,
+    "quoted": 486,
+    "typo": 73
+   }
+  }
+ },
+ "sealed_test_check": "not performed: this project's tooling has not been run on the sealed AXBENCH test split",
+ "template_similarity_against_axbench_v0.1_train_and_validation_lineages": {
+  "closest": [
+   {
+    "lineage": "T2-rel-04",
+    "similarity": 0.6957,
+    "v01_lineage": "L-rel-04"
+   },
+   {
+    "lineage": "T2-insp-01",
+    "similarity": 0.675,
+    "v01_lineage": "L-insp-01"
+   },
+   {
+    "lineage": "T2-cnf-03",
+    "similarity": 0.675,
+    "v01_lineage": "L-insp-01"
+   },
+   {
+    "lineage": "T2-rdm-05",
+    "similarity": 0.6744,
+    "v01_lineage": "L-run-03"
+   },
+   {
+    "lineage": "T2-rel-11",
+    "similarity": 0.6667,
+    "v01_lineage": "L-cnf-01"
+   }
+  ],
+  "pairs_at_or_above_0.5": 21,
+  "pairs_at_or_above_0.8": 0,
+  "v01_train_validation_lineages_compared": 76,
+  "v02_templates": 122
+ },
+ "validation": {
+  "cross_split_shared": {
+   "lineages": 0,
+   "request_texts": 0,
+   "table_groups": 0
+  },
+  "distinct_request_texts": 7531,
+  "problem_count": 0,
+  "problem_kinds": {},
+  "records": 8625,
+  "records_by_split": {
+   "train": 6942,
+   "validation": 1683
+  }
+ }
+}

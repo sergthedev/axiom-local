@@ -231,3 +231,6 @@ __marimo__/
 *.npz
 models/
 adapters/
+
+# AXBENCH-TR raw downloads (kept outside Git; see data/axbench-tr/sources/ACQUISITION.json)
+data/axbench-tr/_raw/
