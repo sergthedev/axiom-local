@@ -9,8 +9,10 @@ SQL-looking text. Anything else is excluded with a reason, never relabelled.
 
 Supported summaries are those of the Core descriptive kernels: min, max, mean (no sum, no count).
 The Turkish side is a machine translation of the English prompt, so it is checked only for the
-presence of the matching aggregate word and for absence of added constraints; it is not verified
-for meaning.
+presence of the matching aggregate word, the group marker and the absence of added constraint,
+negation and ranking words. It is **not** checked for the translated measure or group, so a wrong
+Turkish measure or group can pass; such records carry the tag ``translation_unverified`` and are
+kept out of the smoke subset until a human has reviewed them.
 """
 
 from __future__ import annotations
@@ -32,9 +34,18 @@ _PREPOSITIONS = {
     "for", "in", "of", "at", "among", "within", "from", "by", "per", "across", "between",
     "during", "with", "where", "that", "who", "which", "when", "on", "to", "and", "or",
     "after", "before", "since", "than", "above", "below", "over", "under", "having", "has",
-    "have", "had", "is", "are", "was", "were",
+    "have", "had", "is", "are", "was", "were", "not", "no", "only", "except", "excluding",
+    "without", "but", "top", "bottom", "first", "last", "each", "every", "all", "any",
+    "least", "most", "more", "less",
 }  # fmt: skip
-_BAD_TR = re.compile(r"toplam|kaç|sayısı|adet|sırala|yüzde|ilk \d|en popüler|en çok", re.I)
+_BAD_TR = re.compile(
+    r"toplam|kaç|sayısı|adet|sırala|yüzde|ilk \d|en popüler|en çok"
+    r"|değil|olmayan|hariç|dışında|\bdışı|sadece|yalnızca|\byalnız\b|\bancak\b|\bfakat\b|\bama\b"
+    r"|daha (?:fazla|az|büyük|küçük|yüksek|düşük)|üzerinde|üstünde|altında|arasında"
+    r"|\bolan\b|\bolanlar|büyükse|küçükse|\beğer\b|\bise\b|\biken\b|\bilk\b|\bson\b"
+    r"|en iyi|en kötü",
+    re.I,
+)
 _UNITS = {"m", "km", "kg", "usd", "pct", "amt", "id", "num", "no", "cnt"}
 _AGG_IN_NAME = {"max", "min", "avg", "mean", "average", "total", "maximum", "minimum"}
 
@@ -44,7 +55,8 @@ def _words(text: str) -> list[str]:
 
 
 def _stem(word: str) -> str:
-    return word.rstrip("s'")[:5]
+    """The word up to a plural or possessive ending; no prefix truncation ("price", "priced")."""
+    return re.sub(r"('s|s')$", "", word).rstrip("s")
 
 
 def column_tokens(name: str) -> list[str]:
@@ -60,11 +72,9 @@ def _covers(phrase_words: list[str], required: list[str]) -> bool:
 
 
 def _extras_ok(phrase_words: list[str], required: list[str]) -> bool:
-    exact = set(required)
-    extra = [w for w in phrase_words if _stem(w) not in {_stem(t) for t in required}]
-    # no extra word may be a participle ("priced", "yielding": asks for the entity, not the value)
-    participle = any(w.endswith(("ed", "ing")) and w not in exact for w in phrase_words)
-    return len(extra) <= 1 and not participle
+    """The phrase is exactly the column's words: no extra modifier, qualifier or participle."""
+    need = {_stem(t) for t in required}
+    return all(_stem(w) in need for w in phrase_words)
 
 
 def english_problem(prompt: str, basis: dict[str, object]) -> str | None:

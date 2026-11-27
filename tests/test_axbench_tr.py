@@ -695,3 +695,96 @@ def test_the_sealed_test_is_never_touched_by_the_tooling() -> None:
     assert not any(
         "sealed" in str(p).lower() for p in (ROOT / "data" / "axbench-tr").rglob("*.jsonl")
     )
+
+
+# ----------------------------------------------- adversarial mutations of accepted requests
+
+_BASE_EN = "What is the average amount for each region?"
+_BASE_TR = "Her bölge için ortalama tutar nedir?"
+
+
+@pytest.mark.parametrize(
+    "mutated",
+    [
+        "What is the average amount for each region only?",  # a qualifier
+        "What is the average amount for each region excluding north?",  # exclusion
+        "What is the average amount for each region but not the south?",  # negation
+        "What is the average amount for each region except east?",
+        "What is the average amount for each region without outliers?",
+        "What is the average amount for each region where amount is above fifty?",  # filter
+        "What is the average amount for each region with amount over one hundred?",
+        "What is the average of the top amount for each region?",  # ranking word
+        "What is the average amount for each region and each year?",  # an extra group
+        "What is the average large amount for each region?",  # an extra modifier word
+        "What is the average salary for each region?",  # wrong measure
+        "What is the average amount for each country?",  # wrong group
+        "What is the average amount for each region not in the west",
+    ],
+)
+def test_english_gate_rejects_mutated_requests(mutated: str) -> None:
+    assert intent.english_problem(_BASE_EN, _cmp("AVG")) is None
+    assert intent.english_problem(mutated, _cmp("AVG")) is not None, mutated
+
+
+def test_english_gate_matches_whole_words_not_five_character_prefixes() -> None:
+    inspect_price = _ins("price", "AVG")
+    assert intent.english_problem("What is the average price?", inspect_price) is None
+    assert intent.english_problem("What is the average prices?", inspect_price) is None
+    for wrong in ("What is the average priced?", "What is the average pricey?"):
+        assert intent.english_problem(wrong, inspect_price) is not None, wrong
+
+
+@pytest.mark.parametrize(
+    "mutated",
+    [
+        "Her bölge için ortalama tutar nedir, kuzey hariç?",  # exclusion
+        "Her bölge için ortalama tutar kuzey olmayan?",  # negation
+        "Her bölge için ortalama tutarı güneyde olan?",  # a filter
+        "Her bölge için ortalama tutar elli üzerinde?",  # lowercase threshold
+        "Her bölge için ortalama tutar yalnızca kuzey?",  # only
+        "Her bölge için en iyi ortalama tutar nedir?",  # ranking
+        "Her bölge için toplam tutar nedir?",  # a total
+        "Her bölge için ortalama tutar değil mi?",  # negation
+    ],
+)
+def test_turkish_gate_rejects_negation_filters_and_rankings(mutated: str) -> None:
+    assert intent.turkish_problem(_BASE_TR, _cmp("AVG")) is None
+    assert intent.turkish_problem(mutated, _cmp("AVG")) is not None, mutated
+
+
+def test_turkish_gate_cannot_see_a_wrong_translated_measure_or_group() -> None:
+    """Known limit, asserted so nobody claims otherwise: the gate checks the aggregate word and
+    the group marker, not the translated column words. Such records are tagged and kept out of the
+    smoke subset instead."""
+    wrong_measure = "Her bölge için ortalama maaş nedir?"  # "salary" for a column named amount
+    wrong_group = "Her ülke için ortalama tutar nedir?"  # "country" for a column named region
+    assert intent.turkish_problem(wrong_measure, _cmp("AVG")) is None
+    assert intent.turkish_problem(wrong_group, _cmp("AVG")) is None
+
+
+@pytest.mark.skipif(not CORPUS.exists(), reason="corpus not built")
+def test_every_external_turkish_plan_is_tagged_unverified() -> None:
+    plans = [
+        r
+        for r in _corpus_records()
+        if r["provenance"]["origin"] == "external_adapted"
+        and r["language"] == "tr"
+        and r["gold"]["action"] == "PLAN"
+    ]
+    assert plans and all("translation_unverified" in r["tags"] for r in plans)
+    english = [r for r in _corpus_records() if r["language"] == "en"]
+    assert not any("translation_unverified" in r["tags"] for r in english)
+
+
+@pytest.mark.skipif(not CORPUS.exists(), reason="corpus not built")
+def test_smoke_and_probe_exports_hold_only_rights_cleared_template_rows(tmp_path: Path) -> None:
+    from axbench_tr import export
+
+    manifest = export.export(tmp_path)
+    ids = json.loads((tmp_path / "ROW_IDS.json").read_text("utf-8"))
+    origin = {r["id"]: r["provenance"]["origin"] for r in _corpus_records()}
+    tags = {r["id"]: r["tags"] for r in _corpus_records()}
+    for name in ("smoke/train.jsonl", "smoke/valid.jsonl", "peak_probe/train.jsonl"):
+        assert {origin[i] for i in ids[name]} == {"synthetic_template"}, name
+        assert not any("translation_unverified" in tags[i] for i in ids[name])
+    assert "external_adapted" in manifest["rights_cleared_subsets"]["full"]

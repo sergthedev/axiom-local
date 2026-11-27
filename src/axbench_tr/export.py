@@ -31,6 +31,7 @@ SMOKE_TRAIN = 400
 SMOKE_VALID = 40
 PROBE = 20
 SEED = "axbench-tr-0.2-export"
+CLEARED_ORIGIN = "synthetic_template"  # the only origin with no unresolved upstream terms
 
 
 def chat_record(rec: dict[str, Any]) -> dict[str, Any]:
@@ -88,12 +89,17 @@ def export(out: Path, version: str = CURRENT_VERSION) -> dict[str, Any]:
         )
     }
     train, valid = corpus["train"], corpus["validation"]
-    longest = sorted(train, key=lambda r: (-lengths[r["id"]], r["id"]))[:PROBE]
+    # The smoke and the probe use only rights-cleared records: this project's own template text.
+    # External adapted records (upstream Gretel generation terms unresolved) and unverified
+    # machine translations stay out of them.
+    cleared_train = [r for r in train if r["provenance"]["origin"] == CLEARED_ORIGIN]
+    cleared_valid = [r for r in valid if r["provenance"]["origin"] == CLEARED_ORIGIN]
+    longest = sorted(cleared_train, key=lambda r: (-lengths[r["id"]], r["id"]))[:PROBE]
     probe_ids = {r["id"] for r in longest}
     smoke_train = stratified_subset(
-        [r for r in train if r["id"] not in probe_ids], SMOKE_TRAIN, "t"
+        [r for r in cleared_train if r["id"] not in probe_ids], SMOKE_TRAIN, "t"
     )
-    smoke_valid = stratified_subset(valid, SMOKE_VALID, "v")
+    smoke_valid = stratified_subset(cleared_valid, SMOKE_VALID, "v")
     sets = {
         "full": (train, valid),
         "smoke": (smoke_train, smoke_valid),
@@ -116,6 +122,11 @@ def export(out: Path, version: str = CURRENT_VERSION) -> dict[str, Any]:
         "files": files,
         "peak_probe_lengths": sorted((lengths[r["id"]] for r in longest), reverse=True),
         "test_file": "none: this corpus has no test split and none is exported",
+        "rights_cleared_subsets": {
+            "smoke": f"origin {CLEARED_ORIGIN} only",
+            "peak_probe": f"origin {CLEARED_ORIGIN} only",
+            "full": "all origins; external_adapted rights unresolved: not cleared for training",
+        },
     }
     (out / "EXPORT_MANIFEST.json").write_text(
         json.dumps(manifest, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n"

@@ -1,7 +1,7 @@
 # Experiment manifest: EXP-TR01 AXBENCH-TR v0.2 acquisition and revised corpus (v0.2-rev1)
 
 - Issue / PR: [Issue #12](https://github.com/sergthedev/axiom-local/issues/12), draft [PR #13](https://github.com/sergthedev/axiom-local/pull/13)
-- Date: 2026-11-27 (acquisition and first draft), revised the same day after the technical review of PR #13
+- Date: 2026-11-27 (acquisition and first draft), revised twice the same day after the technical reviews of PR #13 (second revision: stricter intent gates, translation quarantine, rights-cleared smoke subset, harness revision)
 - Status: run (one machine; acquisition, corpus build and audits only; nothing was trained, no model was loaded)
 
 ## Provenance
@@ -23,24 +23,26 @@ PYTHONPATH=src envs/data/.venv/bin/python benchmarks/axbench_tr_token_stats.py -
     --per-example data/axbench-tr/v0.2-rev1/token_lengths_per_example.jsonl
 python -m axbench_tr export-mlx --out <directory outside the repository>
 pytest tests/test_axbench_tr.py tests/test_tr02_harness.py
+# on the M5, before clearance (no weights): see training/tr02/README.md, `check-iterator`
 ```
 - Exit codes: 0 on the final run of each command. No logs kept beyond the files named (no absolute paths in them).
 - Rebuild check: `train.jsonl`, `validation.jsonl`, `MANIFEST.json` and `AUDIT.json` hashed after a build in the isolated environment and again after a build in the main environment: identical. A fresh download from the upstream hosts was not repeated.
 
 ## Results (measured only)
-- Corpus: 7,432 records (train 5,998, validation 1,434); Turkish 5,837 (78.5%), English 1,595 (21.5%); 6,700 template and 732 external-adapted; 4,281 tagged economic; 0 validation problems.
+- Corpus: 7,269 records (train 5,873, validation 1,396); Turkish 5,757 (79.2%), English 1,512 (20.8%); 6,700 template and 569 external-adapted (97 Turkish external PLANs tagged `translation_unverified`, quarantined from product training); 4,261 tagged economic; 0 validation problems. The first revision had 7,432 records; the second revision's stricter English gate and removal of one near-duplicate validation lineage account for the difference (163 fewer external rows).
 - Split isolation (all origins): 0 shared lineages, table families, request texts, schema fingerprints or upstream rows across splits.
 - Overlap with AXBENCH v0.1 train and validation (560 requests): 0 exact, 0 near-duplicate pairs at 4-gram Jaccard 0.8.
-- Near-duplicates (char n-gram TF-IDF cosine, lexical proxy, not semantic): 0 cross-split pairs at 0.9, 7 at 0.8, after removing one validation lineage.
-- Adapted plans: only plain average, minimum or maximum questions qualify; exclusion reasons and counts in `AUDIT.json`.
-- Sequence lengths (pinned tokenizer, joint encoding): train 3,072,061 tokens (70 rows over 1,024, max 1,343); validation 742,194 (max 891); none over 2,048.
+- Near-duplicates (char n-gram TF-IDF cosine, lexical proxy, not semantic): 0 cross-split pairs at 0.9, 5 at 0.8, after removing one validation lineage.
+- Adapted plans: only plain average, minimum or maximum questions whose measure and group words equal the bound columns' (no extra modifier, no negation or filter word) qualify; exclusion reasons and counts in `AUDIT.json`. The Turkish measure and group are **not** verified; adversarial mutation tests cover the English gate and document the Turkish limitation.
+- Sequence lengths (pinned tokenizer, joint encoding): train 3,024,797 tokens (70 rows over 1,024, max 1,343; 3,018,924 in the harness convention without the template's trailing newline); validation 727,890 (max 891); none over 2,048.
 - Review sample: 390 records (300 Turkish) with predeclared gates (`v0.2-rev1/review/`); no review decision exists.
 - Licence evidence: 8 pages or cards fetched, hashed, excerpt found each; licence texts for Apache-2.0 and CC BY 4.0; economic CSV privacy audit (`economic/PRIVACY_AUDIT.json`).
-- EXP-TR02 harness checks (no model): export hashes pinned; all rows render to the measured lengths; seeded order equals the stock mlx-lm iterator.
+- EXP-TR02 harness checks (no model; Linux, mlx 0.32.4 CPU build, tokenizer only): export, corpus, per-example and checkpoint pins; all rows render to the measured lengths; seeded order, padded widths and loss mask checked against the real mlx-lm iterator for the probe and smoke subsets. **Finding:** the stock `default_loss` scores one extra target per row (the zero padding after `<|im_end|>`; 37 mask tokens against a 36-token answer on the first probe row); the harness uses an exact-mask loss. The no-weight tests (62 pass with the MLX CPU build, 57 with 5 skipped without it) do not show that the GPU path, memory or timing work.
 
 ## Limitations and failures
 - No human review of any record, gold plan, Turkish text or licence reading.
-- 90% of records come from 122 AI-authored templates; deduplication is lexical only; external Turkish is machine-translated and checked only for the aggregate word and added constraints.
+- 92% of records come from 122 AI-authored templates; deduplication is lexical only; external Turkish is machine-translated and checked only for the aggregate word and added constraints (hence `translation_unverified`).
+- Upstream Gretel generation terms and the SRC-N03 licence conflict are unresolved: no final corpus or product clearance; the smoke uses only rights-cleared template rows and is discard-only.
 - The sealed AXBENCH test split was never accessed; the owner-run overlap check has not been run.
 - TÜİK, EVDS, ILOSTAT, IMF and İBB were not acquired; no restriction was bypassed.
 - Mistakes found and fixed are in the development log entries of 2026-11-27, including the draft's SUM, filter and ranking labels (superseded) and a rebuild comparison that passed only because the build had crashed (caught and redone).

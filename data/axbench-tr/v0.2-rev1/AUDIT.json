@@ -5,7 +5,7 @@
   "near_duplicate_requests": 0,
   "near_duplicates_at_or_above": 0.8,
   "references": 560,
-  "requests": 7432
+  "requests": 7269
  },
  "cross_split_near_duplicate_resolution": {
   "dropped_validation_lineages": [
@@ -15,22 +15,22 @@
  },
  "distributions": {
   "overall": {
-   "english_share": 0.2146,
-   "records": 7432,
-   "turkish_share": 0.7854
+   "english_share": 0.208,
+   "records": 7269,
+   "turkish_share": 0.792
   },
   "train": {
    "action": {
     "CLARIFY": 1422,
-    "PLAN": 3131,
+    "PLAN": 3006,
     "REJECT": 1445
    },
-   "distinct_lineages": 543,
-   "distinct_request_texts": 5104,
-   "distinct_schemas": 607,
+   "distinct_lineages": 479,
+   "distinct_request_texts": 4979,
+   "distinct_schemas": 543,
    "domain": {
-    "economic": 3255,
-    "non_economic": 2743
+    "economic": 3239,
+    "non_economic": 2634
    },
    "frame": {
     "clarify:ambiguous_column": 158,
@@ -43,8 +43,8 @@
     "clarify:missing_operation": 158,
     "clarify:multiple_operations": 158,
     "cluster": 569,
-    "compare": 1069,
-    "inspect": 469,
+    "compare": 946,
+    "inspect": 467,
     "inspect_all": 171,
     "reject:causal_inference": 126,
     "reject:code_or_system_request": 126,
@@ -59,12 +59,12 @@
    },
    "header_language": {
     "en": 825,
-    "n/a": 598,
+    "n/a": 473,
     "tr": 4575
    },
    "language": {
-    "en": 1288,
-    "tr": 4710
+    "en": 1224,
+    "tr": 4649
    },
    "operation_or_reason": {
     "CLARIFY:ambiguous_column": 158,
@@ -86,19 +86,19 @@
     "REJECT:regression": 126,
     "REJECT:unsupported_analysis": 126,
     "cluster": 569,
-    "compare": 1069,
-    "inspect": 640,
+    "compare": 946,
+    "inspect": 638,
     "relate": 853
    },
    "origin": {
-    "external_adapted": 598,
+    "external_adapted": 473,
     "synthetic_template": 5400
    },
-   "records": 5998,
-   "request_chars_median": 71.0,
-   "schema_columns_median": 7.0,
+   "records": 5873,
+   "request_chars_median": 72,
+   "schema_columns_median": 7,
    "schema_source": {
-    "SRC-N01": 598,
+    "SRC-N01": 473,
     "SRC-O01": 1773,
     "SRC-O02": 105,
     "SRC-O03": 71,
@@ -112,25 +112,26 @@
     "cross_language_mention": 1397,
     "diacritics_stripped": 594,
     "k_word": 186,
-    "machine_translated": 390,
+    "machine_translated": 329,
     "multi_mention": 1282,
-    "original_english_synthetic": 208,
+    "original_english_synthetic": 144,
     "quoted": 1769,
+    "translation_unverified": 81,
     "typo": 321
    }
   },
   "validation": {
    "action": {
     "CLARIFY": 342,
-    "PLAN": 755,
+    "PLAN": 717,
     "REJECT": 337
    },
-   "distinct_lineages": 134,
-   "distinct_request_texts": 1215,
-   "distinct_schemas": 148,
+   "distinct_lineages": 115,
+   "distinct_request_texts": 1177,
+   "distinct_schemas": 129,
    "domain": {
-    "economic": 1026,
-    "non_economic": 408
+    "economic": 1022,
+    "non_economic": 374
    },
    "frame": {
     "clarify:ambiguous_column": 38,
@@ -143,8 +144,8 @@
     "clarify:missing_operation": 38,
     "clarify:multiple_operations": 38,
     "cluster": 137,
-    "compare": 254,
-    "inspect": 118,
+    "compare": 224,
+    "inspect": 110,
     "inspect_all": 41,
     "reject:causal_inference": 31,
     "reject:code_or_system_request": 31,
@@ -159,12 +160,12 @@
    },
    "header_language": {
     "en": 295,
-    "n/a": 134,
+    "n/a": 96,
     "tr": 1005
    },
    "language": {
-    "en": 307,
-    "tr": 1127
+    "en": 288,
+    "tr": 1108
    },
    "operation_or_reason": {
     "CLARIFY:ambiguous_column": 38,
@@ -186,19 +187,19 @@
     "REJECT:regression": 30,
     "REJECT:unsupported_analysis": 30,
     "cluster": 137,
-    "compare": 254,
-    "inspect": 159,
+    "compare": 224,
+    "inspect": 151,
     "relate": 205
    },
    "origin": {
-    "external_adapted": 134,
+    "external_adapted": 96,
     "synthetic_template": 1300
    },
-   "records": 1434,
-   "request_chars_median": 83.0,
+   "records": 1396,
+   "request_chars_median": 84.0,
    "schema_columns_median": 7.0,
    "schema_source": {
-    "SRC-N01": 134,
+    "SRC-N01": 96,
     "SRC-O01": 865,
     "SRC-O02": 27,
     "SRC-O04": 26,
@@ -210,10 +211,11 @@
     "cross_language_mention": 396,
     "diacritics_stripped": 142,
     "k_word": 30,
-    "machine_translated": 87,
+    "machine_translated": 68,
     "multi_mention": 294,
-    "original_english_synthetic": 47,
+    "original_english_synthetic": 28,
     "quoted": 484,
+    "translation_unverified": 16,
     "typo": 78
    }
   }
@@ -221,76 +223,61 @@
  "external_adapter_audit": {
   "excluded_by_reason": {
    "compare:digits_quotes_or_sql_words": 399,
-   "compare:extra_clause": 534,
-   "compare:extra_or_changed_words": 54,
+   "compare:extra_clause": 537,
+   "compare:extra_or_changed_words": 126,
    "compare:group_words_do_not_match_column": 37,
-   "compare:measure_words_do_not_match_column": 15,
+   "compare:measure_words_do_not_match_column": 18,
    "compare:not_a_plain_per_group_aggregate_question": 221,
    "compare:proper_noun_or_acronym": 166,
    "data_modification:prompt_does_not_ask_for_a_change": 73,
    "data_modification:prompt_is_a_question": 176,
    "inspect:digits_quotes_or_sql_words": 548,
    "inspect:extra_clause": 443,
-   "inspect:extra_or_changed_measure_words": 13,
+   "inspect:extra_or_changed_measure_words": 18,
    "inspect:not_a_plain_aggregate_question": 62,
    "inspect:proper_noun_or_acronym": 188,
    "schema_shared_with_other_split": 5223,
-   "select:shape_not_a_supported_summary": 81017,
-   "tr_compare:group_marker_missing": 1
+   "select:shape_not_a_supported_summary": 81017
   },
   "qualified_upstream_rows": {
-   "compare": 170,
+   "compare": 92,
    "data_modification": 8450,
-   "inspect": 11
+   "inspect": 6
   },
   "rule": "an adapted PLAN is kept only if the whole English request is a plain aggregate (average/min/max, no sum or count) question matching the bound columns; see axbench_tr/intent.py"
  },
  "near_duplicates_in_corpus": {
   "cross_split_examples": [
    {
-    "cosine": 0.824,
+    "cosine": 0.825,
     "ids": [
      "t2-train-00769",
      "t2-validation-00650"
     ]
    },
    {
-    "cosine": 0.89,
+    "cosine": 0.897,
     "ids": [
      "t2-x-cog-19021-en",
      "t2-x-cog-15505-en"
     ]
    },
    {
-    "cosine": 0.883,
+    "cosine": 0.89,
     "ids": [
      "t2-x-cog-61498-en",
      "t2-x-cog-22902-en"
     ]
    },
    {
-    "cosine": 0.838,
-    "ids": [
-     "t2-x-cog-61757-en",
-     "t2-x-cog-42500-en"
-    ]
-   },
-   {
-    "cosine": 0.841,
+    "cosine": 0.852,
     "ids": [
      "t2-x-cog-62188-en",
      "t2-x-cog-57133-en"
     ]
    },
    {
-    "cosine": 0.881,
-    "ids": [
-     "t2-x-cog-7566-en",
-     "t2-x-cog-3739-en"
-    ]
-   },
-   {
-    "cosine": 0.886,
+    "cosine": 0.894,
     "ids": [
      "t2-x-cog-7566-en",
      "t2-x-cog-57133-en"
@@ -298,7 +285,7 @@
    }
   ],
   "cross_split_pairs": {
-   ">=0.8": 7,
+   ">=0.8": 5,
    ">=0.9": 0,
    ">=0.95": 0
   },
@@ -306,14 +293,14 @@
   "note": "pairs of different text at or above the first threshold; templated requests that differ only in a column name score high by construction",
   "pairs_with_identical_normalised_text_excluded": 11586,
   "within_split_different_lineage_pairs": {
-   ">=0.8": 789,
-   ">=0.9": 43,
-   ">=0.95": 5
+   ">=0.8": 752,
+   ">=0.9": 37,
+   ">=0.95": 2
   },
   "within_split_same_lineage_pairs": {
-   ">=0.8": 8371,
-   ">=0.9": 2497,
-   ">=0.95": 1255
+   ">=0.8": 8374,
+   ">=0.9": 2499,
+   ">=0.95": 1254
   }
  },
  "sealed_test_check": "not performed: this project's tooling has not been run on the sealed AXBENCH test split",
@@ -358,13 +345,13 @@
    "table_groups": 0,
    "upstream_rows": 0
   },
-  "distinct_request_texts": 6319,
+  "distinct_request_texts": 6156,
   "problem_count": 0,
   "problem_kinds": {},
-  "records": 7432,
+  "records": 7269,
   "records_by_split": {
-   "train": 5998,
-   "validation": 1434
+   "train": 5873,
+   "validation": 1396
   }
  }
 }

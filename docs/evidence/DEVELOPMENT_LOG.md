@@ -588,3 +588,32 @@ for a comprehensive final audit of AXIOM Verify.
   MLX-peak and RSS rules, a supervisor and 21 tests. No model was loaded; PR #11 was not touched.
 - Not done: human review, independently authored held-out tasks, the separate replay-fingerprint PR (prepared after
   this PR, from `main`, as its own draft), the sealed-test check (not accessed), any training.
+
+### AXBENCH-TR revision 2 after the second technical review of PR #13 (2026-11-27)
+- The review accepted the progress and asked for a focused harness revision and no-weight tests, without widening
+  scope. Nothing was trained or loaded; the sealed test was not accessed; PR #11 was not touched.
+- Corpus gates: the English gate no longer accepts one extra modifier or 5-character stem prefixes (whole-word stems;
+  negation, "only", "except", ranking and quantifier words excluded). A first Turkish boundary pattern (`ama\b`) also
+  matched "ortalama"; the bug was caught by the corpus tests and fixed with `\bama\b`. The Turkish gate still does not
+  check the translated measure or group, so the 97 Turkish external PLANs are tagged `translation_unverified` and
+  quarantined from product training; mutation tests cover the English gate and document the Turkish limitation.
+  Rebuild: 7,269 records (569 external, from 732); the corpus, review sample, token statistics and all documents were
+  regenerated. The probe and smoke now draw only rights-cleared `synthetic_template` rows (Gretel terms and the SRC-N03
+  conflict remain open).
+- Harness blockers fixed in `training/tr02/tr02.py`: the stop rules now audit every event (validation, load and done
+  included), the exact event order, finite and in-range values, the final MLX peak, exact iteration indices, a finite
+  positive iteration rate, the optimizer step count, the LoRA tensor count and shapes (from the checkpoint config) and
+  a changed, non-zero saved adapter whose files the supervisor re-hashes; the reload is a supervised phase with hash and
+  tolerance checks; all ten EXP-009 checkpoint files are pinned by size and SHA-256 with extra-file rejection, plus
+  package, offline and clean-tree-at-the-approved-commit checks, all run at execution time in the supervisor and the
+  child; the baseline is taken before the child starts; fresh output and supervisor directories; the `ps` exit race,
+  malformed events, interrupts and probe failures terminate the child in a `finally`; logs are never overwritten; a
+  phase starts only after the previous phase's `COMPLETE.json`; padded and full-token rates are both reported;
+  `collect-evidence` keeps the raw events in the repository.
+- A finding from running the stock loss mask (`check-iterator`, CPU build): `default_loss` scores one extra target per
+  row (the padding after `<|im_end|>`). The harness uses an exact-mask loss. The three tests that were skipped in CI
+  (iterator and mask) pass in the MLX CPU build; they still do not validate the GPU path, so the M5 preflight is part of
+  the protocol.
+- A mistake caught while testing: my first events helper gave the validation events a lower MLX peak than the training
+  reports, which the new monotonic-peak rule correctly refused; the helper was fixed, not the rule.
+- Not done: human review, held-out authoring, the M5 preflight and the smoke (no approval), the sealed-test check.

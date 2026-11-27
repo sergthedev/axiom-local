@@ -291,7 +291,16 @@ def _cognipeer_record(
         "schema": view.to_prompt_payload(),
         "gold": gold,
         "accepted_variants": [],
-        "tags": sorted({"machine_translated"} if lang == "tr" else {"original_english_synthetic"}),
+        "tags": sorted(
+            {"machine_translated"}
+            | (
+                {"translation_unverified"}
+                if lang == "tr" and frame != "data_modification"
+                else set()
+            )
+            if lang == "tr"
+            else {"original_english_synthetic"}
+        ),
         "provenance": {
             "origin": "external_adapted",
             "source_id": "SRC-N01",
