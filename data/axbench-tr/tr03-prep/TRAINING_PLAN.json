@@ -1,0 +1,114 @@
+{
+ "budget": {
+  "inputs": {
+   "diagnostic_passes": 5,
+   "diagnostic_validation_rows_per_pass": 200,
+   "full_tokens_exposed": 2643854,
+   "full_validation_rows": 1274,
+   "rate_full_tokens_per_s": 1625.0,
+   "thermal_allowance_fraction": 0.25,
+   "validation_seconds_per_row": 0.206
+  },
+  "minutes": {
+   "hard_wall_cap": 60.0,
+   "total_conservative": 46.6,
+   "total_nominal": 34.9,
+   "training_nominal": 27.1,
+   "validation_nominal": 7.8
+  },
+  "seconds": {
+   "hard_wall_cap": 3600,
+   "total_conservative": 2795,
+   "total_nominal": 2096,
+   "training_conservative": 2169,
+   "training_nominal": 1627,
+   "validation_conservative": 625,
+   "validation_nominal": 468
+  },
+  "status": "extrapolated from EXP-TR02 rates (2.5 minute smoke); not measured at this scale",
+  "validation_overhead_fraction_of_training_nominal": 0.2879
+ },
+ "config_sha256": "f8aa9f33ab826d0ea72cc979ff2e6dfa01d1fb46978ed943e272950e84195f59",
+ "diagnostic_validation": {
+  "ids_sha256": "83f107d4ab9f1d22147d6c28e1c2903aa76fc7a95f65f5725b424b3cf4bc8338",
+  "rows": 200,
+  "tokens": 103956
+ },
+ "epoch_alternatives_not_selected": [
+  {
+   "epochs": 1,
+   "minutes_conservative": 46.6,
+   "minutes_nominal": 34.9,
+   "optimizer_updates": 1272,
+   "selected": true
+  },
+  {
+   "epochs": 2,
+   "minutes_conservative": 82.7,
+   "minutes_nominal": 62.1,
+   "optimizer_updates": 2544,
+   "selected": false
+  },
+  {
+   "epochs": 3,
+   "minutes_conservative": 118.9,
+   "minutes_nominal": 89.2,
+   "optimizer_updates": 3816,
+   "selected": false
+  }
+ ],
+ "epoch_choice": "one epoch: each eligible row is exposed once; no measurement supports a second epoch, 87 templates already repeat about 58 times per epoch, checkpoint selection is forbidden, so longer training would add overfitting risk without a stop criterion; a different schedule is a different experiment",
+ "eval_points_after_updates": [
+  0,
+  318,
+  636,
+  954,
+  1272
+ ],
+ "full_validation_tokens": 667446,
+ "input_sha256": {
+  "v0.2-rev1/token_lengths_per_example.jsonl": "8dde1cfb9b20c2e9ce095cd0161e860a406c6b8ffad1f24e75d1bbfba175c95d",
+  "v0.2-rev1/train.jsonl": "d5466e80c4e9cf06753d8fbc5c5d28476c35ea309b9f78e34a1a6ee94cb11372",
+  "v0.2-rev1/validation.jsonl": "d8e302d02b05579f50b035a2840445c19603ba555100ac6636a87decb0eb6301"
+ },
+ "monitor_windows": {
+  "updates_per_window": 25,
+  "windows": 51
+ },
+ "rows": {
+  "train_eligible": 5091,
+  "validation_eligible": 1274
+ },
+ "schedule": {
+  "each_row_exposed_at_most_once_per_epoch": true,
+  "epochs": 1,
+  "exposure_order_sha256": "52472f4613937544c930794ba09412d8fe9ad54f9ad570701db5f501af6040c1",
+  "full_tokens_exposed": 2643854,
+  "grad_accumulation": 4,
+  "microsteps": 5088,
+  "optimizer_updates": 1272,
+  "padded_tokens_exposed": 2724288,
+  "partial_batch_rule": "drop_remainder",
+  "row_set_sha256": "c3cec810c18f4fd72c918085972123277ce3848e17481d2edfe32f77d8f1f5c4",
+  "rows": 5091,
+  "seed": 2026,
+  "unexposed_rows_per_epoch": [
+   3
+  ]
+ },
+ "schema": "axbench-tr.tr03-training-plan/1",
+ "snapshot_points_after_updates": [
+  318,
+  636,
+  954,
+  1272
+ ],
+ "status": "proposal; nothing executed; applies to arm R exactly and to arm T as an upper bound (T uses a human-approved subset of these rows)",
+ "unexposed_row_ids": [
+  [
+   "t2-train-05351",
+   "t2-train-00830",
+   "t2-train-02436"
+  ]
+ ]
+}

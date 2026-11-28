@@ -1,0 +1,16 @@
+{
+ "corpus_version": "axbench-tr/0.2-rev1",
+ "files_sha256": {
+  "AUDIT.json": "d34303d9d764a05a375df8e0c0753428b0a49a06554ebba551d618f2f0f6694e",
+  "HELDOUT_SCHEMA_CANDIDATES.csv": "9095b418c72da5047f2927b2b160675cb6cedc698c2583ebbc9b037da8929b63",
+  "HUMAN_ROSTER.template.json": "ee0579cb199d7e63537af82973f2b65b31d6564ee4b8b7f118269a2401b20539",
+  "INVENTORY.json": "e059b25ac2dbf145edb6ba86a3d269a743e1326cd466a291b981bb0e781446c2",
+  "RIGHTS_WORKLIST.csv": "5d489d56966f01cdf28cf37fc362444fdffaf5c042cb0134b632f8a36f2ecf99",
+  "ROW_REVIEW_WORKLIST.csv": "f9d2c1bf636fb4822eb6b2c6bb9a2b2e2d8111442f3d04ea1c00dbd84d7120de",
+  "SIZING.json": "99b9a98b290f782288438283804fc08454aaf4b1f2ce02c975625bf395b4d36f",
+  "TEMPLATE_REVIEW_WORKLIST.csv": "08b6f342a7dff086c27cf4824d94ecf8a716f7ca3d50f3dd89486885df1d1f97"
+ },
+ "generator": "python -m axbench_tr.tr03 all",
+ "schema": "axbench-tr.tr03-prep-manifest/1",
+ "status": "prepared; generated deterministically from committed inputs; contains no human decision"
+}

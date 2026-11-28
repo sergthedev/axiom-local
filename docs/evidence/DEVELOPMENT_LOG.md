@@ -740,3 +740,23 @@ for a comprehensive final audit of AXIOM Verify.
   it itself, from a separate evidence checkout, because the owner asked to prioritize committing; this thread then verified all 50
   sanitized files against `REDACTIONS.json`, rescanned for private data, and cross-checked the numbers in `RUN_RESULT.md` against the
   raw events. The commit's git author name is the device account's git identity (not sanitizable after the push).
+
+## 2026-11-28: EXP-TR03 research protocol preparation (draft; no training)
+
+- Task: the technical lead's `EXP-TR03-PREP-50bea1f` (PR #13 comment 7235303471), authorized by the owner for preparation only.
+  Branch `claude/project-thread-4j9rsl` was reset to the immutable PR #13 evidence head `50bea1f` (it held no work of its own) and
+  carries only new files plus edits to index and evidence documents; the draft PR is based on the PR #13 branch. PR #11, PR #13's
+  branch, the TR02 harness and every frozen module are untouched.
+- Wrote `src/axbench_tr/tr03.py` (eligibility under the TR02 rights rule, inventory, split and shortcut audits, held-out layout
+  availability, sizing, four empty human worklists, a human-gate checker that refuses AI rows), `training/tr03/` (config inherited from
+  TR02 and tested against it, exposure schedule with a partial-batch rule, budget, fail-closed long-run monitor, thermal parser) and
+  `docs/evidence/experiments/EXP-TR03-research-protocol/` with ADR 0013. 28 + 62 new tests with synthetic ledgers and event streams.
+- One false alarm of my own audit was caught and fixed before commit: a first "label conflict" count (12 train, 7 validation) was column-id
+  numbering (the schema fingerprint ignores column order), and the next version (2 and 2) was unordered `inspect_all` column lists; compared
+  by column name with sets it is 0.
+- Audit findings worth the lead's attention: only 5,091 train rows come from 87 templates; one World Bank layout family is 34.8% of
+  train rows; only 5 licensed economic layouts are absent from the corpus and their column vocabulary overlaps training by 64% on
+  average, which limits how independent human-authored economic evaluation tasks can be.
+- Not done, by design: no model loaded, no driver written, no score of any system, no M5 preflight (none requested), no sealed-test or
+  v0.1 evaluation access beyond counting request overlaps, no human review simulated.
+

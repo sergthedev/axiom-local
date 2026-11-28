@@ -1,0 +1,23 @@
+{
+ "designated_by": "",
+ "designated_on": "",
+ "people": [
+  {
+   "id": "R1",
+   "native_turkish": null,
+   "note": "replace; use a code, not a name, if privacy requires",
+   "roles": [
+    "reviewer"
+   ],
+   "type": "human"
+  }
+ ],
+ "roles": {
+  "author": "writes held-out evaluation tasks; native Turkish",
+  "checker": "checks a held-out task's gold; never its author",
+  "reviewer": "judges template and row gold; at least two distinct people are needed",
+  "second_reviewer": "independent of the first reviewer of the same item"
+ },
+ "schema": "axbench-tr.tr03-roster/1",
+ "status": "TEMPLATE: empty. Only the owner designates people. An AI cannot be listed as human."
+}

@@ -89,7 +89,7 @@ The exact commands, environment and exit statuses of the last verified run are r
 - `src/axiom_router/` – router candidate contract, schema projection, semantic validation, Guard, prompt, rule router
   (separate from `axiom`, so Core identities do not change)
 - `src/axbench/` – AXBENCH generator, audits, scoring, statistics, sealing (CLI `python -m axbench`);
-- `src/axbench_tr/` – AXBENCH-TR acquisition, real-schema inventory, corpus builder and validator (CLI `python -m axbench_tr`; raw data stays in the ignored `data/axbench-tr/_raw/`; `pyarrow==26.0.1` is needed only to rebuild the Cognipeer part and is not in the lockfile);
+- `src/axbench_tr/` – AXBENCH-TR acquisition, real-schema inventory, corpus builder and validator (CLI `python -m axbench_tr`; EXP-TR03 preparation tooling `python -m axbench_tr.tr03`, draft; raw data stays in the ignored `data/axbench-tr/_raw/`; `pyarrow==26.0.1` is needed only to rebuild the Cognipeer part and is not in the lockfile);
   `data/axbench/` – draft corpus and dataset card (no final test split)
 - `envs/model/` – optional Apple Silicon MLX-LM environment (separate lock, not needed for Core or CI)
 - `tests/` – tests, exact-arithmetic oracles, vendored NIST reference data

@@ -1,0 +1,142 @@
+{
+ "gold_consistency": {
+  "train": {
+   "problems": {},
+   "records_checked": 5091
+  },
+  "validation": {
+   "problems": {},
+   "records_checked": 1274
+  }
+ },
+ "heldout_schema_availability": {
+  "column_vocabulary_overlap": {
+   "tables_in_no_record": {
+    "mean_share_of_columns_seen_in_train": 0.6433,
+    "tables": 55,
+    "tables_with_no_column_seen_in_train": 7
+   },
+   "validation_column_names_seen_in_train_schemas_by_source": {
+    "SRC-O01": {
+     "distinct_names": 16,
+     "seen_in_train_schemas": 4,
+     "share": 0.25
+    },
+    "SRC-O02": {
+     "distinct_names": 11,
+     "seen_in_train_schemas": 10,
+     "share": 0.9091
+    },
+    "SRC-O06": {
+     "distinct_names": 128,
+     "seen_in_train_schemas": 60,
+     "share": 0.4688
+    }
+   }
+  },
+  "licensed_tables_by_role": {
+   "in_eligible_train_records": {
+    "SRC-O01:economic": 14,
+    "SRC-O02:economic": 2,
+    "SRC-O06:economic": 20,
+    "SRC-O06:non_economic": 111
+   },
+   "in_no_record": {
+    "SRC-O06:economic": 5,
+    "SRC-O06:non_economic": 50
+   },
+   "validation_only_or_other_records": {
+    "SRC-O01:economic": 14,
+    "SRC-O02:economic": 1,
+    "SRC-O06:economic": 4,
+    "SRC-O06:non_economic": 29
+   }
+  },
+  "note": "a layout absent from every corpus record is the cleanest held-out schema, but authors still see only column names and kinds; economic coverage is the limit",
+  "tables_in_no_record": 55,
+  "tables_in_no_record_economic_domain": 5,
+  "tables_in_no_record_that_support_compare": 37,
+  "tables_in_no_record_that_support_relate": 23
+ },
+ "input_sha256": {
+  "v0.2-rev1/token_lengths_per_example.jsonl": "8dde1cfb9b20c2e9ce095cd0161e860a406c6b8ffad1f24e75d1bbfba175c95d",
+  "v0.2-rev1/train.jsonl": "d5466e80c4e9cf06753d8fbc5c5d28476c35ea309b9f78e34a1a6ee94cb11372",
+  "v0.2-rev1/validation.jsonl": "d8e302d02b05579f50b035a2840445c19603ba555100ac6636a87decb0eb6301"
+ },
+ "limitations": [
+  "lexical near-duplicate counts are a proxy, not semantic deduplication",
+  "shortcut statistics describe the data; they are not results of any system",
+  "gold consistency checks the label against the contract, not against human judgement",
+  "the eligible records are AI-authored; no human has judged any record"
+ ],
+ "schema": "axbench-tr.tr03-audit/1",
+ "shortcut_statistics": {
+  "train": {
+   "largest_action_share": 0.5302,
+   "largest_frame_share": 0.1607,
+   "mean_request_characters_by_action": {
+    "CLARIFY": 78.0,
+    "PLAN": 83.7,
+    "REJECT": 72.5
+   },
+   "plan_rows_considered": 2535,
+   "records_whose_normalized_request_repeats_an_earlier_record": 840,
+   "same_request_and_layout_differing_only_in_column_id_numbering": 12,
+   "same_request_and_layout_with_different_gold_by_column_name": 0,
+   "share_of_gold_group_columns_that_are_the_first_text_column": 0.5401,
+   "share_of_numeric_gold_columns_that_are_the_first_numeric_column": 0.141,
+   "share_of_plan_requests_naming_every_gold_column_verbatim": 0.8312
+  },
+  "validation": {
+   "largest_action_share": 0.5306,
+   "largest_frame_share": 0.1609,
+   "mean_request_characters_by_action": {
+    "CLARIFY": 99.3,
+    "PLAN": 97.6,
+    "REJECT": 86.4
+   },
+   "plan_rows_considered": 635,
+   "records_whose_normalized_request_repeats_an_earlier_record": 213,
+   "same_request_and_layout_differing_only_in_column_id_numbering": 7,
+   "same_request_and_layout_with_different_gold_by_column_name": 0,
+   "share_of_gold_group_columns_that_are_the_first_text_column": 0.6793,
+   "share_of_numeric_gold_columns_that_are_the_first_numeric_column": 0.0505,
+   "share_of_plan_requests_naming_every_gold_column_verbatim": 0.7701
+  }
+ },
+ "split_independence": {
+  "ids_unique": true,
+  "lexical_near_duplicate_pairs_validation_vs_train": {
+   "char_4gram_jaccard_ge_0.8": 0,
+   "char_4gram_jaccard_ge_0.9": 0,
+   "note": "lexical proxy only; not semantic deduplication"
+  },
+  "overlap_with_axbench_v0.1_train_and_validation_requests": {
+   "note": "v0.1 train and validation are public comparator data; the sealed test was not read",
+   "train": {
+    "exact_normalized_matches": 0,
+    "near_duplicate_pairs": 0,
+    "near_duplicate_requests": 0,
+    "near_duplicates_at_or_above": 0.8,
+    "references": 560,
+    "requests": 5091
+   },
+   "validation": {
+    "exact_normalized_matches": 0,
+    "near_duplicate_pairs": 0,
+    "near_duplicate_requests": 0,
+    "near_duplicates_at_or_above": 0.8,
+    "references": 560,
+    "requests": 1274
+   }
+  },
+  "shared_between_train_and_validation": {
+   "lineages": 0,
+   "normalized_requests": 0,
+   "schema_fingerprints": 0,
+   "table_families": 0,
+   "table_ids": 0,
+   "template_texts": 0
+  }
+ }
+}

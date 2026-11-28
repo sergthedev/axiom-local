@@ -1,0 +1,2526 @@
+{
+ "corpus_version": "axbench-tr/0.2-rev1",
+ "eligibility_rule": {
+  "excluded_always": [
+   "external_adapted records (upstream terms unresolved)",
+   "translation_unverified or machine-translated text",
+   "layouts from SRC-O03 (ECB), SRC-O04 (OECD), SRC-O05 (TCMB): terms unverified",
+   "any record of AXBENCH v0.1 (comparator evidence) and the sealed AXBENCH test"
+  ],
+  "meaning": "rights-documented for resource use only; not a legal clearance; not a human-reviewed corpus (see PROTOCOL.md, gates G1 to G6)",
+  "origin": "synthetic_template",
+  "schema_sources": [
+   "SRC-O01",
+   "SRC-O02",
+   "SRC-O06"
+  ]
+ },
+ "eligible_train": {
+  "action": {
+   "CLARIFY": 1332,
+   "PLAN": 2699,
+   "REJECT": 1060
+  },
+  "domain": {
+   "economic": 2888,
+   "non_economic": 2203
+  },
+  "frame": {
+   "clarify:ambiguous_column": 144,
+   "clarify:column_not_found": 149,
+   "clarify:column_type_mismatch": 148,
+   "clarify:invalid_parameter": 142,
+   "clarify:missing_cluster_count": 148,
+   "clarify:missing_column": 150,
+   "clarify:missing_correlation_method": 145,
+   "clarify:missing_operation": 150,
+   "clarify:multiple_operations": 156,
+   "cluster": 548,
+   "compare": 761,
+   "inspect": 408,
+   "inspect_all": 164,
+   "reject:causal_inference": 120,
+   "reject:code_or_system_request": 114,
+   "reject:data_modification": 119,
+   "reject:forecasting": 117,
+   "reject:hypothesis_test": 120,
+   "reject:instruction_override": 114,
+   "reject:out_of_scope": 116,
+   "reject:regression": 121,
+   "reject:unsupported_analysis": 119,
+   "relate": 818
+  },
+  "frame_class": {
+   "clarify": 1332,
+   "cluster": 548,
+   "compare": 761,
+   "inspect": 408,
+   "inspect_all": 164,
+   "reject": 1060,
+   "relate": 818
+  },
+  "header_language": {
+   "en": 598,
+   "tr": 4493
+  },
+  "human_review": {
+   "none": 5091
+  },
+  "language": {
+   "en": 1027,
+   "tr": 4064
+  },
+  "language_x_action": {
+   "en:CLARIFY": 270,
+   "en:PLAN": 571,
+   "en:REJECT": 186,
+   "tr:CLARIFY": 1062,
+   "tr:PLAN": 2128,
+   "tr:REJECT": 874
+  },
+  "lineages": 87,
+  "records": 5091,
+  "request_authoring": {
+   "ai_generated_from_templates": 5091
+  },
+  "schema_fingerprints": 136,
+  "schema_ids": 147,
+  "schema_source": {
+   "SRC-O01": 1773,
+   "SRC-O02": 105,
+   "SRC-O06": 3213
+  },
+  "table_families": 106,
+  "tags": {
+   "alias": 1494,
+   "case": 589,
+   "cross_language_mention": 1228,
+   "diacritics_stripped": 564,
+   "k_word": 179,
+   "multi_mention": 1201,
+   "quoted": 1682,
+   "typo": 311
+  }
+ },
+ "eligible_train_concentration": {
+  "effective_templates_inverse_simpson": 76.14,
+  "records_per_table_family": {
+   "max": 1773,
+   "mean": 48.028,
+   "min": 4,
+   "n": 106,
+   "p50": 24,
+   "p90": 65,
+   "p99": 201,
+   "sum": 5091
+  },
+  "records_per_template": {
+   "max": 113,
+   "mean": 58.517,
+   "min": 23,
+   "n": 87,
+   "p50": 53,
+   "p90": 95,
+   "p99": 113,
+   "sum": 5091
+  },
+  "top_10_templates_share": 0.1972,
+  "top_1_table_family": {
+   "family": "worldbank/train",
+   "share": 0.3483
+  },
+  "top_5_table_families_share": 0.459
+ },
+ "eligible_validation": {
+  "action": {
+   "CLARIFY": 333,
+   "PLAN": 676,
+   "REJECT": 265
+  },
+  "domain": {
+   "economic": 985,
+   "non_economic": 289
+  },
+  "frame": {
+   "clarify:ambiguous_column": 35,
+   "clarify:column_not_found": 34,
+   "clarify:column_type_mismatch": 37,
+   "clarify:invalid_parameter": 38,
+   "clarify:missing_cluster_count": 38,
+   "clarify:missing_column": 37,
+   "clarify:missing_correlation_method": 38,
+   "clarify:missing_operation": 38,
+   "clarify:multiple_operations": 38,
+   "cluster": 137,
+   "compare": 184,
+   "inspect": 109,
+   "inspect_all": 41,
+   "reject:causal_inference": 31,
+   "reject:code_or_system_request": 29,
+   "reject:data_modification": 29,
+   "reject:forecasting": 29,
+   "reject:hypothesis_test": 28,
+   "reject:instruction_override": 30,
+   "reject:out_of_scope": 29,
+   "reject:regression": 30,
+   "reject:unsupported_analysis": 30,
+   "relate": 205
+  },
+  "frame_class": {
+   "clarify": 333,
+   "cluster": 137,
+   "compare": 184,
+   "inspect": 109,
+   "inspect_all": 41,
+   "reject": 265,
+   "relate": 205
+  },
+  "header_language": {
+   "en": 269,
+   "tr": 1005
+  },
+  "human_review": {
+   "none": 1274
+  },
+  "language": {
+   "en": 254,
+   "tr": 1020
+  },
+  "language_x_action": {
+   "en:CLARIFY": 58,
+   "en:PLAN": 137,
+   "en:REJECT": 59,
+   "tr:CLARIFY": 275,
+   "tr:PLAN": 539,
+   "tr:REJECT": 206
+  },
+  "lineages": 35,
+  "records": 1274,
+  "request_authoring": {
+   "ai_generated_from_templates": 1274
+  },
+  "schema_fingerprints": 45,
+  "schema_ids": 48,
+  "schema_source": {
+   "SRC-O01": 865,
+   "SRC-O02": 27,
+   "SRC-O06": 382
+  },
+  "table_families": 25,
+  "tags": {
+   "alias": 370,
+   "case": 159,
+   "cross_language_mention": 378,
+   "diacritics_stripped": 139,
+   "k_word": 30,
+   "multi_mention": 293,
+   "quoted": 477,
+   "typo": 78
+  }
+ },
+ "eligible_validation_concentration": {
+  "effective_templates_inverse_simpson": 29.04,
+  "records_per_table_family": {
+   "max": 865,
+   "mean": 50.96,
+   "min": 3,
+   "n": 25,
+   "p50": 11,
+   "p90": 46,
+   "p99": 865,
+   "sum": 1274
+  },
+  "records_per_template": {
+   "max": 70,
+   "mean": 36.4,
+   "min": 12,
+   "n": 35,
+   "p50": 37,
+   "p90": 65,
+   "p99": 70,
+   "sum": 1274
+  },
+  "top_10_templates_share": 0.4451,
+  "top_1_table_family": {
+   "family": "worldbank/validation",
+   "share": 0.679
+  },
+  "top_5_table_families_share": 0.8446
+ },
+ "human_reviewed_records": {
+  "train": 0,
+  "validation": 0
+ },
+ "input_sha256": {
+  "v0.2-rev1/token_lengths_per_example.jsonl": "8dde1cfb9b20c2e9ce095cd0161e860a406c6b8ffad1f24e75d1bbfba175c95d",
+  "v0.2-rev1/train.jsonl": "d5466e80c4e9cf06753d8fbc5c5d28476c35ea309b9f78e34a1a6ee94cb11372",
+  "v0.2-rev1/validation.jsonl": "d8e302d02b05579f50b035a2840445c19603ba555100ac6636a87decb0eb6301"
+ },
+ "schema": "axbench-tr.tr03-inventory/1",
+ "source_attribution": [
+  {
+   "addendum_evidence_ids": [
+    "AD-01",
+    "AD-02",
+    "AD-03",
+    "WB-BN.CAB.XOKA.GD.ZS",
+    "WB-FP.CPI.TOTL.ZG",
+    "WB-FR.INR.LEND",
+    "WB-GC.DOD.TOTL.GD.ZS",
+    "WB-NE.EXP.GNFS.ZS",
+    "WB-NE.IMP.GNFS.ZS",
+    "WB-NY.GDP.MKTP.CD",
+    "WB-NY.GDP.MKTP.KD.ZG",
+    "WB-NY.GDP.PCAP.CD",
+    "WB-PA.NUS.FCRF",
+    "WB-SL.TLF.CACT.ZS",
+    "WB-SL.UEM.TOTL.ZS",
+    "WB-SP.POP.TOTL"
+   ],
+   "licence_evidence_in_registry": "World Bank Data Catalog 'Data Access and Licensing' page states datasets are licensed under CC BY 4.0 unless labelled otherwise; the WDI-specific label was not separately checked",
+   "licence_id": "CC-BY-4.0 (World Bank default for datasets)",
+   "name": "World Bank World Development Indicators (Turkiye and 14 comparison economies)",
+   "open_caveat": "SRC-O01: no indicator-level licence override was found (the API record has no licence field and the WDI catalogue page carries one dataset label, CC BY 4.0). Several indicators are compiled from IMF, ILO, UN, OECD or Eurostat; their upstream terms were not read separately, so the use rests on the WDI dataset label (AD-01). Only indicator names reach the examples as column headers.",
+   "publisher": "The World Bank",
+   "source_id": "SRC-O01",
+   "url": "https://api.worldbank.org/v2/",
+   "what_reaches_examples": "table and column names only; no observations"
+  },
+  {
+   "addendum_evidence_ids": [
+    "AD-04",
+    "AD-05",
+    "EU-namq_10_gdp",
+    "EU-prc_hicp_manr",
+    "EU-une_rt_m"
+   ],
+   "licence_evidence_in_registry": "Eurostat copyright notice: reuse of statistical data for commercial or non-commercial purposes is authorised provided the source is acknowledged",
+   "licence_id": "Eurostat reuse policy (Commission Decision of 12 December 2011)",
+   "name": "Eurostat (Turkey series: monthly unemployment, HICP inflation, quarterly and annual GDP)",
+   "open_caveat": "SRC-O02: terms rest on the Eurostat notice (AD-04, AD-05) and on the dataflow record naming Eurostat as creator; a dataset-specific copyright note was not found for any of the three datasets.",
+   "publisher": "Eurostat, European Commission",
+   "source_id": "SRC-O02",
+   "url": "https://ec.europa.eu/eurostat/web/main/data/database",
+   "what_reaches_examples": "table and column names only; no observations"
+  },
+  {
+   "addendum_evidence_ids": [
+    "AD-06",
+    "IZ-akaryakit-ve-veya-otogaz-satis-istasyonu-sayisi",
+    "IZ-ana-arterler-gunluk-hiz-ve-sure-verileri",
+    "IZ-arac-muayene-istasyonlari",
+    "IZ-aricilik-desteginin-yillara-gore-ilce-ve-mahallere-dagilimi",
+    "IZ-askida-fatura-rakamlari",
+    "IZ-bademsu-fabrikasi-uretim-verileri",
+    "IZ-balik-hal-fiyatlari",
+    "IZ-barajlarin-doluluk-oranlari",
+    "IZ-bergama-elektrik-uretim-verileri",
+    "IZ-bina-kimlik-belgesi",
+    "IZ-bisikletli-giris-sayilari",
+    "IZ-bisikletli-yaya-sayim-istasyonlari",
+    "IZ-co2-emisyon-degerleri-ton-ve-bir-milyon-yolcu-basina-co2-miktari",
+    "IZ-depolama-sahalari",
+    "IZ-elektrik-uretim-verileri",
+    "IZ-esrefpasa-hastanesi-randevu-bilgileri",
+    "IZ-gunluk-su-uretimi",
+    "IZ-halk-ekmek-fabrikasi-uretim-verileri",
+    "IZ-halkin-bakkali-siparisi-alinan-paket-miktarlari",
+    "IZ-halkin-bakkali-urunleri",
+    "IZ-hayvan-icme-suyu-his-goletleri-calismalari-ve-projeleri",
+    "IZ-hos-geldin-bebek-basvuru-listesi",
+    "IZ-ihtiyac-sahiplerine-gunluk-sicak-yemek-corba-pide-kumanya-ve-ikramlik-kahvaltilik-destegi",
+    "IZ-ilce-ve-mahallelere-ait-yol-sayilari",
+    "IZ-ilcelere-ait-bina-kat-sayilari",
+    "IZ-ilcelere-ait-mahalle-bazli-bina-sayilari",
+    "IZ-ilkogretim-ogrencilerine-yapilan-yardimlar",
+    "IZ-imalat-sanayi-ihracati",
+    "IZ-imalat-sanayi-ithalati",
+    "IZ-itfaiye-acil-mudahale-sayilari",
+    "IZ-itfaiye-egitim-hizmetleri",
+    "IZ-izban-elektrik-tuketimi",
+    "IZ-izban-istasyonlari",
+    "IZ-izdeniz-vapurlari",
+    "IZ-izelman-otopark-lokasyon-kapasite-ve-calisma-saati-verisi",
+    "IZ-izmir-banliyo-izban-duraklar-arasi-mesafeler",
+    "IZ-izmir-buyuksehir-belediyesi-yetki-alani-nufusu",
+    "IZ-izmir-buyuksehir-belediyesine-yapilan-staj-basvurulari",
+    "IZ-izmir-dis-ticaret-hacmi",
+    "IZ-izmir-elektrikli-otobus-projesinin-urettigi-cevresel-degerler",
+    "IZ-izmir-ilcelerine-ait-konut-ve-ozel-is-yeri-istatistikleri",
+    "IZ-izmir-ili-arizali-kazali-arac-verileri",
+    "IZ-izmir-itfaiyesi-aks112-arama-kurtarma-vakalari-mudahale-istatistigi",
+    "IZ-izmir-itfaiyesi-kontrol-emniyet-tedbir-ve-vatandasa-verilen-hizmetlerin-istatistigi",
+    "IZ-izmir-itfaiyesi-yangin-mudahale-istatistigi",
+    "IZ-izmir-konut-satis-sayilarina-gore-dagilimi",
+    "IZ-izmir-yillara-gore-issizlik-orani",
+    "IZ-izmir95-erken-cocukluk-gelisim-programi",
+    "IZ-izmirim-kart-aktarmali-binis-bilgileri",
+    "IZ-izmirim-kart-kullanim-istatistikleri",
+    "IZ-izmirin-goc-verdigi-illere-gore-nufus-dagilimi",
+    "IZ-kadin-danisma-merkezi-verilen-hizmet-detay-verisi",
+    "IZ-kadin-danisma-merkezinde-verilen-destekler",
+    "IZ-kadin-siginmaevi-istatistikleri",
+    "IZ-kestane-kanseri-ile-mucadele-destegi",
+    "IZ-kisirlastirilan-sokak-hayvanlari",
+    "IZ-korfez-degerleri-izleme",
+    "IZ-korfez-degerleri-izleme-istasyonlari-konum-verisi",
+    "IZ-kruvaziyer-gemi-bilgileri",
+    "IZ-kucukbas-hayvan-dagitimi",
+    "IZ-kuzey-guney-alani-park-sayilari",
+    "IZ-masalevleri",
+    "IZ-metro-ve-tramvay-sefer-planlama",
+    "IZ-mezbaha-kesim-adetleri",
+    "IZ-moduler-tuvaletler",
+    "IZ-motolu-kara-tasit-sayilari",
+    "IZ-muayene-edilen-sokak-hayvanlarina-ait-veriler",
+    "IZ-onemli-yerler-listesi",
+    "IZ-otobus-hat-guzergahlari",
+    "IZ-otopark-ucretleri",
+    "IZ-sebze-ve-meyve-hal-fiyatlari",
+    "IZ-sokak-hayvanlarina-dagitilan-mama-miktari",
+    "IZ-spor-ekipmani-destegi-verilen-okul-sayisi",
+    "IZ-su-kayiplari-yillik-raporlari",
+    "IZ-tarimsal-destekler",
+    "IZ-tek-tikla-doktor-basvurusu-destegi-sayilari",
+    "IZ-tesisler-ve-atiksu-miktarlari",
+    "IZ-toplu-ulasim-genel-binis-raporu",
+    "IZ-toplum-sagligi-egitimleri",
+    "IZ-turizm-tesisleri",
+    "IZ-turuncu-cember-sertifikasi-alan-isletmeler-listesi",
+    "IZ-ucretsiz-kablosuz-internet-wizmirnet-hizmeti-verileri",
+    "IZ-yabanci-turist-istatistikleri",
+    "IZ-yapilan-sosyal-yardimlar",
+    "IZ-yarimada-bag-yolu-gezi-rotalari",
+    "IZ-yarimada-yuruyus-ve-bisiklet-yolu-gezi-rotalari",
+    "IZ-yarimada-zeytin-yolu-gezi-rotalari",
+    "IZ-yemek-corba-pide-kumanya-destegi",
+    "IZ-yillara-gore-istihdam-sayilari",
+    "IZ-yillara-gore-yolcu-ve-arac-tasima-sayilari",
+    "IZ-yillik-ilce-ve-mahalle-bazli-su-tuketim-miktarlari",
+    "IZ-yillik-tarife-bilgileri-artislari",
+    "IZ-zubeyde-hanim-huzurevi-istatistikleri"
+   ],
+   "licence_evidence_in_registry": "Portal licence page: all materials are licensed under CC BY 4.0 unless stated otherwise; datasets whose CKAN license_id is 'notspecified' are excluded",
+   "licence_id": "CC-BY-4.0 (portal licence page)",
+   "name": "İzmir Metropolitan Municipality Open Data Portal (CKAN)",
+   "open_caveat": "SRC-O06: the licence field is the CKAN record's licence_id on the retrieval date; the per-package notes were not read for free-text exceptions beyond that field.",
+   "publisher": "İzmir Büyükşehir Belediyesi",
+   "source_id": "SRC-O06",
+   "url": "https://acikveri.bizizmir.com/",
+   "what_reaches_examples": "table and column names only; no observations"
+  }
+ ],
+ "status": "measured counts of a draft corpus; AI-authored, no human review of any record",
+ "templates": [
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:ambiguous_column",
+   "lineage_id": "T2-amb-01",
+   "mean_full_tokens": 526.43,
+   "records": 35,
+   "records_en": 4,
+   "records_tr": 31,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 10,
+   "template_text_sha256": "a254f0496dd20a68aa6291930fba2c88d3f97b47a36ebb9adbd8aebc1585b698"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:ambiguous_column",
+   "lineage_id": "T2-amb-02",
+   "mean_full_tokens": 567.7,
+   "records": 66,
+   "records_en": 16,
+   "records_tr": 50,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 21,
+   "template_text_sha256": "06319fa49d5620d0c66b4da769a3dd05480d63266fb462961518eb21f7b4f8dc"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:ambiguous_column",
+   "lineage_id": "T2-amb-03",
+   "mean_full_tokens": 531.1,
+   "records": 78,
+   "records_en": 22,
+   "records_tr": 56,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 28,
+   "template_text_sha256": "a522ced8e0205f37e4be72aa762cad5d175c7cf966686c9c9eb9bfea7e1418e2"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:invalid_parameter",
+   "lineage_id": "T2-cip-01",
+   "mean_full_tokens": 538.21,
+   "records": 38,
+   "records_en": 7,
+   "records_tr": 31,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 6,
+   "template_text_sha256": "02b38e8a02c6037c92c2b8e2fc0010a45ce2e5dc9fe10015f27dd0147a61aa21"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:invalid_parameter",
+   "lineage_id": "T2-cip-02",
+   "mean_full_tokens": 516.15,
+   "records": 47,
+   "records_en": 10,
+   "records_tr": 37,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 23,
+   "template_text_sha256": "f444071d31269e686226b6eb81490cffc67ca0365242a030a5de78e6410d8c7c"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:invalid_parameter",
+   "lineage_id": "T2-cip-03",
+   "mean_full_tokens": 536.91,
+   "records": 43,
+   "records_en": 7,
+   "records_tr": 36,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 19,
+   "template_text_sha256": "54965e898f4da49542fb8b1a59518ea75c43ccecdc6fcd46a28b4f9703fa052a"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:invalid_parameter",
+   "lineage_id": "T2-cip-04",
+   "mean_full_tokens": 574.17,
+   "records": 52,
+   "records_en": 9,
+   "records_tr": 43,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 22,
+   "template_text_sha256": "11329e450e9f4d19614ab883d4860b54ed601f9d449342ce94a92f9303d6707c"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "cluster",
+   "lineage_id": "T2-clu-01",
+   "mean_full_tokens": 534.39,
+   "records": 51,
+   "records_en": 11,
+   "records_tr": 40,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 7,
+   "template_text_sha256": "33f8923514d03f98caf2c0244db4bae64c83520e853cdcfe13d572ee81afa2a8"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "cluster",
+   "lineage_id": "T2-clu-02",
+   "mean_full_tokens": 550.27,
+   "records": 45,
+   "records_en": 10,
+   "records_tr": 35,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 7,
+   "template_text_sha256": "41d3f9a9a19ab8b28042a4aa177f142e8955f53ae3ce37455b76b09caed4c3d9"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "cluster",
+   "lineage_id": "T2-clu-03",
+   "mean_full_tokens": 537.81,
+   "records": 84,
+   "records_en": 21,
+   "records_tr": 63,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 28,
+   "template_text_sha256": "cb807513ee1e3bc3d4df5775e6321dd1359c509d1fe3b8720695834f1d167069"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "cluster",
+   "lineage_id": "T2-clu-04",
+   "mean_full_tokens": 561.57,
+   "records": 82,
+   "records_en": 19,
+   "records_tr": 63,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 26,
+   "template_text_sha256": "f0a48c99fbfa7c644eca3028d6b84ffe2c919fedbdfe3ac276534dad6cc1c4e6"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "cluster",
+   "lineage_id": "T2-clu-05",
+   "mean_full_tokens": 577.46,
+   "records": 89,
+   "records_en": 16,
+   "records_tr": 73,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 30,
+   "template_text_sha256": "958b78b9eb860f7d0f3d37a635db36d419915d9c27a15274df1778de534fff32"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "cluster",
+   "lineage_id": "T2-clu-06",
+   "mean_full_tokens": 528.01,
+   "records": 71,
+   "records_en": 14,
+   "records_tr": 57,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 33,
+   "template_text_sha256": "d10547696d32b5f7ce5309545ea48534b989cc88e68c1c8610d6ffa2b327cbd8"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "cluster",
+   "lineage_id": "T2-clu-07",
+   "mean_full_tokens": 562.54,
+   "records": 79,
+   "records_en": 22,
+   "records_tr": 57,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 28,
+   "template_text_sha256": "93fc9bd1f263295a09b4fd7a5dd3bfeca2cdf7f29252a8dcdfdf80e1dbb45b21"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "cluster",
+   "lineage_id": "T2-clu-08",
+   "mean_full_tokens": 548.15,
+   "records": 41,
+   "records_en": 9,
+   "records_tr": 32,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 5,
+   "template_text_sha256": "2f5fb4e3d1aae4a3e01f626f8b9e4ef7fa12262e6b1b115d05c27846c5a6d776"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "cluster",
+   "lineage_id": "T2-clu-09",
+   "mean_full_tokens": 551.55,
+   "records": 64,
+   "records_en": 14,
+   "records_tr": 50,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 29,
+   "template_text_sha256": "88fa1d5c76f09b3c999b92510bc20882da77ea585afce666c168321d287c243b"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "cluster",
+   "lineage_id": "T2-clu-10",
+   "mean_full_tokens": 538.32,
+   "records": 79,
+   "records_en": 12,
+   "records_tr": 67,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 33,
+   "template_text_sha256": "39f54233f9f1382c49368f120407b8868ccfcfec58279f062f8f720445043536"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:missing_column",
+   "lineage_id": "T2-cmc-01",
+   "mean_full_tokens": 491.46,
+   "records": 37,
+   "records_en": 6,
+   "records_tr": 31,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 16,
+   "template_text_sha256": "19b658e9d98110fec9a6a10d0ef22929582f366f971e36e9e53efa35cb7ea072"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:missing_column",
+   "lineage_id": "T2-cmc-02",
+   "mean_full_tokens": 473.21,
+   "records": 53,
+   "records_en": 14,
+   "records_tr": 39,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 37,
+   "template_text_sha256": "7b59547e0b363ba975157edbd3d3e813595adbebfd44da4983c26ed6b72a9740"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:missing_column",
+   "lineage_id": "T2-cmc-03",
+   "mean_full_tokens": 494.41,
+   "records": 44,
+   "records_en": 11,
+   "records_tr": 33,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 29,
+   "template_text_sha256": "8b3d3aee47379ac364a80cc082ea56419c14fdd2a3475e776af3ecde098be619"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:missing_column",
+   "lineage_id": "T2-cmc-04",
+   "mean_full_tokens": 475.81,
+   "records": 53,
+   "records_en": 9,
+   "records_tr": 44,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 27,
+   "template_text_sha256": "5e3e9ba72354d134dd0bd3ed2de1bf229b98e6469b56bd2fec9a68f9715f2700"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:missing_cluster_count",
+   "lineage_id": "T2-cmk-01",
+   "mean_full_tokens": 502.47,
+   "records": 47,
+   "records_en": 9,
+   "records_tr": 38,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 17,
+   "template_text_sha256": "80e3f36a7804991b03dcc7eb02f327efd08abec8f022e3faa0898d0f120049ba"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:missing_cluster_count",
+   "lineage_id": "T2-cmk-02",
+   "mean_full_tokens": 562.37,
+   "records": 54,
+   "records_en": 8,
+   "records_tr": 46,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 24,
+   "template_text_sha256": "8d40b783122088aaf7c0f9d6c03bb8a3fd73b89f7b1c66fa27f00db4ac088227"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:missing_cluster_count",
+   "lineage_id": "T2-cmk-03",
+   "mean_full_tokens": 534.11,
+   "records": 38,
+   "records_en": 8,
+   "records_tr": 30,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 6,
+   "template_text_sha256": "630290f850ebcc8ddaa060af7838c2ebb72d49f67119496d7720598a37978c8b"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:missing_cluster_count",
+   "lineage_id": "T2-cmk-04",
+   "mean_full_tokens": 490.36,
+   "records": 47,
+   "records_en": 11,
+   "records_tr": 36,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 30,
+   "template_text_sha256": "03627a8e4cccee01bf9b159f839d96caf6406e206c1caa74f05cf2a74b2f7ac7"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:missing_correlation_method",
+   "lineage_id": "T2-cmm-01",
+   "mean_full_tokens": 531.54,
+   "records": 52,
+   "records_en": 10,
+   "records_tr": 42,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 28,
+   "template_text_sha256": "c8a04a6f9ea2f3e68bfc0de6f1f04b44ae7d4bcdd67c3a05cf4b3190bca632cf"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:missing_correlation_method",
+   "lineage_id": "T2-cmm-02",
+   "mean_full_tokens": 535.61,
+   "records": 44,
+   "records_en": 7,
+   "records_tr": 37,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 21,
+   "template_text_sha256": "6c6707913d5b07782c8af0edf10a250b4973272ef1c3779bd3743a7169cae263"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:missing_correlation_method",
+   "lineage_id": "T2-cmm-03",
+   "mean_full_tokens": 559.65,
+   "records": 49,
+   "records_en": 11,
+   "records_tr": 38,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 30,
+   "template_text_sha256": "e30929720d9fd60e3e680ca2584291307bcde2f4494845f9dd557ab462f1157f"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:missing_correlation_method",
+   "lineage_id": "T2-cmm-04",
+   "mean_full_tokens": 528.39,
+   "records": 38,
+   "records_en": 8,
+   "records_tr": 30,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 10,
+   "template_text_sha256": "a543cf18cc39c6cf4fd9a786d553ffdb72da708b767e197c5dfc41f87bb88cae"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:missing_operation",
+   "lineage_id": "T2-cmo-01",
+   "mean_full_tokens": 490.62,
+   "records": 56,
+   "records_en": 18,
+   "records_tr": 38,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 35,
+   "template_text_sha256": "d7c4c23e96b7853cdd2978de78906891a460c1b0841b8f34cc47f47c485041d3"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:missing_operation",
+   "lineage_id": "T2-cmo-02",
+   "mean_full_tokens": 521.05,
+   "records": 38,
+   "records_en": 7,
+   "records_tr": 31,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 6,
+   "template_text_sha256": "2c15e10596246b21f3e25f6e2723f3f93ce4c161b3882026deef53161a371972"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:missing_operation",
+   "lineage_id": "T2-cmo-03",
+   "mean_full_tokens": 508.39,
+   "records": 59,
+   "records_en": 10,
+   "records_tr": 49,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 40,
+   "template_text_sha256": "ab17721caa83b57668317252761480be58812d3a53125d56f53b691d5ce6af47"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:missing_operation",
+   "lineage_id": "T2-cmo-04",
+   "mean_full_tokens": 545.57,
+   "records": 35,
+   "records_en": 6,
+   "records_tr": 29,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 21,
+   "template_text_sha256": "f4d46db114326007e5adb1d6ab732ccca255dcf32b7bcc8a8db5f69e2cc5d2d8"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "compare",
+   "lineage_id": "T2-cmp-01",
+   "mean_full_tokens": 494.95,
+   "records": 84,
+   "records_en": 14,
+   "records_tr": 70,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 43,
+   "template_text_sha256": "98dd7eea9ba4ee7dbe79210370aec63523abc06172e7c049db143e59aa157c11"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "compare",
+   "lineage_id": "T2-cmp-02",
+   "mean_full_tokens": 503.91,
+   "records": 70,
+   "records_en": 15,
+   "records_tr": 55,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 32,
+   "template_text_sha256": "e25564d683aef1c54959c0a0eefd46a4cccff7aab6cb736fb3488aace3a7c03d"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "compare",
+   "lineage_id": "T2-cmp-03",
+   "mean_full_tokens": 511.64,
+   "records": 96,
+   "records_en": 23,
+   "records_tr": 73,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 44,
+   "template_text_sha256": "31a971209773b37d90979657a888377b150d7f00f1e908cdb5bc897fc5be357f"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "compare",
+   "lineage_id": "T2-cmp-04",
+   "mean_full_tokens": 513.92,
+   "records": 90,
+   "records_en": 19,
+   "records_tr": 71,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 37,
+   "template_text_sha256": "4797a3348e90f005802c506ca328f24f10931d7594c8226a2a9e399cb701364f"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "compare",
+   "lineage_id": "T2-cmp-05",
+   "mean_full_tokens": 516.14,
+   "records": 70,
+   "records_en": 18,
+   "records_tr": 52,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 13,
+   "template_text_sha256": "0b2c12ca1d89dbca31dd3dfeb9ac309239c57a6c1494ec366d58a9200f3668a1"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "compare",
+   "lineage_id": "T2-cmp-06",
+   "mean_full_tokens": 510.11,
+   "records": 62,
+   "records_en": 9,
+   "records_tr": 53,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 13,
+   "template_text_sha256": "b92e9101183eb2edc0f92ea309934d7416cbcdf711cd601b02e54fa7d20b3859"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "compare",
+   "lineage_id": "T2-cmp-07",
+   "mean_full_tokens": 506.29,
+   "records": 52,
+   "records_en": 13,
+   "records_tr": 39,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 8,
+   "template_text_sha256": "0ab4f7d5fa7818fbfc6c62d4cf6047fd0b202f2ff8d4f7d566c4cbcb1e9a1dfc"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "compare",
+   "lineage_id": "T2-cmp-08",
+   "mean_full_tokens": 512.45,
+   "records": 86,
+   "records_en": 20,
+   "records_tr": 66,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 34,
+   "template_text_sha256": "9a0f1f5562d57d4d9974fbff7c82e6bc6c78de06d0dbf84be2c47845375d65da"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "compare",
+   "lineage_id": "T2-cmp-09",
+   "mean_full_tokens": 511.96,
+   "records": 79,
+   "records_en": 22,
+   "records_tr": 57,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 43,
+   "template_text_sha256": "70d54eada698b85b6e1c00c5fed1d36b23ff8dea157ade47c6b0b9edcd35c7f3"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "compare",
+   "lineage_id": "T2-cmp-10",
+   "mean_full_tokens": 510.53,
+   "records": 89,
+   "records_en": 21,
+   "records_tr": 68,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 41,
+   "template_text_sha256": "6041cc90c669d9c049240150fe69480321357d1859273a2c7ebf81d3f0b3a633"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "compare",
+   "lineage_id": "T2-cmp-11",
+   "mean_full_tokens": 500.23,
+   "records": 79,
+   "records_en": 9,
+   "records_tr": 70,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 38,
+   "template_text_sha256": "30a7a4059f57f79ff6589b9c821e3fc2dba53ac4f5f7be08aecfca92e0a4de35"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "compare",
+   "lineage_id": "T2-cmp-12",
+   "mean_full_tokens": 495.8,
+   "records": 88,
+   "records_en": 29,
+   "records_tr": 59,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 38,
+   "template_text_sha256": "ed22b8d48812c0157701f9cd3ef75420b1238af692c99432455ab8e930e40dc5"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:multiple_operations",
+   "lineage_id": "T2-cmu-01",
+   "mean_full_tokens": 544.74,
+   "records": 38,
+   "records_en": 6,
+   "records_tr": 32,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 3,
+   "template_text_sha256": "c8286c40dda91006f79cbe1d5ebed1586a728e03451b60d22f8a71139a3e8014"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:multiple_operations",
+   "lineage_id": "T2-cmu-02",
+   "mean_full_tokens": 555.75,
+   "records": 55,
+   "records_en": 14,
+   "records_tr": 41,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 18,
+   "template_text_sha256": "4a5e8db9578a6776e9a402bfd63e518f022bad45e72fa36b95cd9d00590b1abf"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:multiple_operations",
+   "lineage_id": "T2-cmu-03",
+   "mean_full_tokens": 589.19,
+   "records": 57,
+   "records_en": 11,
+   "records_tr": 46,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 19,
+   "template_text_sha256": "3c34575a4df8780f6f2259faf12fb01a817f2d5b3b1cda869c14aadae1701e37"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:multiple_operations",
+   "lineage_id": "T2-cmu-04",
+   "mean_full_tokens": 586.8,
+   "records": 44,
+   "records_en": 10,
+   "records_tr": 34,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 17,
+   "template_text_sha256": "9eff2c47317b0299cd9cacc69138cae9bddb8069b4d46d0ee9a8aacc09b76e58"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:column_not_found",
+   "lineage_id": "T2-cnf-01",
+   "mean_full_tokens": 534.15,
+   "records": 34,
+   "records_en": 8,
+   "records_tr": 26,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 8,
+   "template_text_sha256": "3b22104cca62e3b0dd2ad671d979f38756863d742927909d151def8a98bc1759"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:column_not_found",
+   "lineage_id": "T2-cnf-02",
+   "mean_full_tokens": 492.51,
+   "records": 53,
+   "records_en": 5,
+   "records_tr": 48,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 32,
+   "template_text_sha256": "78ef9ec816b582b8e061e6b194d00a403b8139b10260e217ca0aa45e625dfe72"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:column_not_found",
+   "lineage_id": "T2-cnf-03",
+   "mean_full_tokens": 452.46,
+   "records": 41,
+   "records_en": 7,
+   "records_tr": 34,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 25,
+   "template_text_sha256": "12c4e3f8e27932ed13fbb8b882212c6c431f177d9faa3c4413557ec79c7d7a59"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:column_not_found",
+   "lineage_id": "T2-cnf-04",
+   "mean_full_tokens": 516.22,
+   "records": 55,
+   "records_en": 7,
+   "records_tr": 48,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 31,
+   "template_text_sha256": "c6e752fd414c30e81cd2f8e70e7048008bcc1e5875e23b8ed4cff1d161c71710"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:column_type_mismatch",
+   "lineage_id": "T2-ctm-01",
+   "mean_full_tokens": 515.51,
+   "records": 37,
+   "records_en": 4,
+   "records_tr": 33,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 9,
+   "template_text_sha256": "187dbdb8b4a3d5c49d2db74241299290f79d455fd7abb289b5a12c321fbb9f67"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:column_type_mismatch",
+   "lineage_id": "T2-ctm-02",
+   "mean_full_tokens": 502.95,
+   "records": 76,
+   "records_en": 13,
+   "records_tr": 63,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 26,
+   "template_text_sha256": "f08ef97d5642bc40dff82190ba21d5f458e6bb11bffdb2d873fed980d428c160"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "clarify:column_type_mismatch",
+   "lineage_id": "T2-ctm-03",
+   "mean_full_tokens": 485.26,
+   "records": 72,
+   "records_en": 15,
+   "records_tr": 57,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 38,
+   "template_text_sha256": "f06aa36904f669acdcd5fd8d8f250259bc7c5a8f6d37f72a22787b2f92b5b0dc"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "inspect_all",
+   "lineage_id": "T2-insa-01",
+   "mean_full_tokens": 519.9,
+   "records": 52,
+   "records_en": 7,
+   "records_tr": 45,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 34,
+   "template_text_sha256": "bf4949505a9197bb4d44dbf917b6da8d285c8d3cfb2da254bc05d46c95526106"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "inspect_all",
+   "lineage_id": "T2-insa-02",
+   "mean_full_tokens": 519.23,
+   "records": 56,
+   "records_en": 8,
+   "records_tr": 48,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 39,
+   "template_text_sha256": "4df42724353c3b78af7ecc0e7f3fd885ca3f9c8870c0a41997b63f0b09855df1"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "inspect_all",
+   "lineage_id": "T2-insa-03",
+   "mean_full_tokens": 504.24,
+   "records": 41,
+   "records_en": 10,
+   "records_tr": 31,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 15,
+   "template_text_sha256": "1d8fd59aeb3fe5ae7dbe80fa25ec727aba3e54576577ca954410e6383c040162"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "inspect_all",
+   "lineage_id": "T2-insa-04",
+   "mean_full_tokens": 503.0,
+   "records": 56,
+   "records_en": 10,
+   "records_tr": 46,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 37,
+   "template_text_sha256": "78ea4656874038589ba51f5a44ae64445e2494312dc3e2d0729729c3efb6e247"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "inspect",
+   "lineage_id": "T2-insp-01",
+   "mean_full_tokens": 513.47,
+   "records": 60,
+   "records_en": 8,
+   "records_tr": 52,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 32,
+   "template_text_sha256": "e3f5dda63047068102c835b98ca45e849933ac1982998d5722d515681229d80c"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "inspect",
+   "lineage_id": "T2-insp-02",
+   "mean_full_tokens": 496.45,
+   "records": 58,
+   "records_en": 10,
+   "records_tr": 48,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 37,
+   "template_text_sha256": "82960d48e7bb1207177e121d369e267443f48284b8e8be09cc3920747f2c359c"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "inspect",
+   "lineage_id": "T2-insp-03",
+   "mean_full_tokens": 482.17,
+   "records": 60,
+   "records_en": 10,
+   "records_tr": 50,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 40,
+   "template_text_sha256": "22217e2680a017daa97d905dc6f28f40349fc91f1b363063b17507033e46ee5a"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "inspect",
+   "lineage_id": "T2-insp-04",
+   "mean_full_tokens": 522.04,
+   "records": 57,
+   "records_en": 14,
+   "records_tr": 43,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 31,
+   "template_text_sha256": "d51176f51133af4bd95020d6f58c4a3874ba6a63b0ad1571fcbe5ad2bb9b339a"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "inspect",
+   "lineage_id": "T2-insp-05",
+   "mean_full_tokens": 480.33,
+   "records": 54,
+   "records_en": 16,
+   "records_tr": 38,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 26,
+   "template_text_sha256": "b649e3f72251ba2e775658dcc952a2ba11d5946168ead586e4f457a8f733d2ef"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "inspect",
+   "lineage_id": "T2-insp-06",
+   "mean_full_tokens": 503.9,
+   "records": 40,
+   "records_en": 4,
+   "records_tr": 36,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 12,
+   "template_text_sha256": "98d06dad6b7ca4520ecece796bdfb5e56af286ee20c9827948154c3f549d1155"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "inspect",
+   "lineage_id": "T2-insp-07",
+   "mean_full_tokens": 490.12,
+   "records": 34,
+   "records_en": 11,
+   "records_tr": 23,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 8,
+   "template_text_sha256": "4015ae3716f300f2029d40c0240f059c7188da1dc9c88862d413c7124cfeacfd"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "inspect",
+   "lineage_id": "T2-insp-08",
+   "mean_full_tokens": 510.2,
+   "records": 35,
+   "records_en": 4,
+   "records_tr": 31,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 10,
+   "template_text_sha256": "2e1882f4de8e68d2d350ff4aaecd18d616ea347ade78cf5932a487371026da68"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "inspect",
+   "lineage_id": "T2-insp-09",
+   "mean_full_tokens": 490.68,
+   "records": 68,
+   "records_en": 19,
+   "records_tr": 49,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 32,
+   "template_text_sha256": "56a3abaa4efe604cf8a86be7a98592f41847e2304013d868ef25320d5bf841ab"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "inspect",
+   "lineage_id": "T2-insp-10",
+   "mean_full_tokens": 487.75,
+   "records": 51,
+   "records_en": 10,
+   "records_tr": 41,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 37,
+   "template_text_sha256": "6a4ec788a4b51f1a1be50f8691b1f07b2edcec44de871c0c06813cde87984130"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:causal_inference",
+   "lineage_id": "T2-rca-01",
+   "mean_full_tokens": 555.08,
+   "records": 38,
+   "records_en": 8,
+   "records_tr": 30,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 21,
+   "template_text_sha256": "c6b495e1d4fcfce6a72fac544fc9399623ef846fc69121127d1d0c934132fb32"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:causal_inference",
+   "lineage_id": "T2-rca-02",
+   "mean_full_tokens": 519.87,
+   "records": 31,
+   "records_en": 8,
+   "records_tr": 23,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 5,
+   "template_text_sha256": "5e7651fc147b90cd38d88f2f011af0be622481f42e7407efb870ed202508f362"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:causal_inference",
+   "lineage_id": "T2-rca-03",
+   "mean_full_tokens": 502.41,
+   "records": 49,
+   "records_en": 14,
+   "records_tr": 35,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 23,
+   "template_text_sha256": "a269978dcfac224d5b522b4590f9189c144483a8434436ea8bbafea6efdcf1d7"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:causal_inference",
+   "lineage_id": "T2-rca-04",
+   "mean_full_tokens": 525.55,
+   "records": 33,
+   "records_en": 5,
+   "records_tr": 28,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 22,
+   "template_text_sha256": "f99cd9e97382a9ccf207fb05a0e7a5871010d53fe961a5e0483e329b175d60cb"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:code_or_system_request",
+   "lineage_id": "T2-rcs-01",
+   "mean_full_tokens": 463.47,
+   "records": 15,
+   "records_en": 2,
+   "records_tr": 13,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 7,
+   "template_text_sha256": "74225d581ce71cc1541185c4b718a56f497275dc26790ee29d9d1da99b24d210"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:code_or_system_request",
+   "lineage_id": "T2-rcs-02",
+   "mean_full_tokens": 493.37,
+   "records": 30,
+   "records_en": 2,
+   "records_tr": 28,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 17,
+   "template_text_sha256": "f27c569387deee78edb17548dee82619e7783abc47a759bb5301bfaabdadde48"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:code_or_system_request",
+   "lineage_id": "T2-rcs-03",
+   "mean_full_tokens": 469.13,
+   "records": 47,
+   "records_en": 10,
+   "records_tr": 37,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 29,
+   "template_text_sha256": "1dd76b4929ed2dc9bee7ffb3cc9b5464f2403f4f2c9a2524342f14fb141de00f"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:code_or_system_request",
+   "lineage_id": "T2-rcs-04",
+   "mean_full_tokens": 461.65,
+   "records": 37,
+   "records_en": 6,
+   "records_tr": 31,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 27,
+   "template_text_sha256": "6111f87b8b0ba7d4fc3fe4730675f109c75cc4cb5239d1bccad5bc7e271094ca"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:code_or_system_request",
+   "lineage_id": "T2-rcs-05",
+   "mean_full_tokens": 459.79,
+   "records": 14,
+   "records_en": 0,
+   "records_tr": 14,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 9,
+   "template_text_sha256": "d8691b44ea19d78cf7b5d64634315f01f7ce625b92868ef35945c09db4466829"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:data_modification",
+   "lineage_id": "T2-rdm-01",
+   "mean_full_tokens": 531.29,
+   "records": 17,
+   "records_en": 6,
+   "records_tr": 11,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 6,
+   "template_text_sha256": "155445e34599f9991fa3d654ed44d7c2fd0af96ecff8c30dffb254dfc1c22e4d"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:data_modification",
+   "lineage_id": "T2-rdm-02",
+   "mean_full_tokens": 488.37,
+   "records": 49,
+   "records_en": 8,
+   "records_tr": 41,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 29,
+   "template_text_sha256": "e3878f4fdfb51c5c151cf39971712e39e7101cf14d92777bc739bc31f62795de"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:data_modification",
+   "lineage_id": "T2-rdm-03",
+   "mean_full_tokens": 484.81,
+   "records": 32,
+   "records_en": 4,
+   "records_tr": 28,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 25,
+   "template_text_sha256": "a3714f0acc22ba49fa2336b18a025a6e73e1e7f26bd2b1d6e48dbccd2872da01"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:data_modification",
+   "lineage_id": "T2-rdm-04",
+   "mean_full_tokens": 475.42,
+   "records": 12,
+   "records_en": 1,
+   "records_tr": 11,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 6,
+   "template_text_sha256": "b6349a39a104162aa422600321b869f720db627e2a87c7b10224dc3c118d2bd7"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:data_modification",
+   "lineage_id": "T2-rdm-05",
+   "mean_full_tokens": 496.16,
+   "records": 38,
+   "records_en": 6,
+   "records_tr": 32,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 22,
+   "template_text_sha256": "cdef5a116dc190cb56899fc0592a5aeed02d6c6c7e4f02f4aadc823c2c1da74e"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "relate",
+   "lineage_id": "T2-rel-01",
+   "mean_full_tokens": 541.47,
+   "records": 102,
+   "records_en": 24,
+   "records_tr": 78,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 39,
+   "template_text_sha256": "d275324f144e79437e9de884ae1b679ade163814a91cc317bd135ff67dd41f0e"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "relate",
+   "lineage_id": "T2-rel-02",
+   "mean_full_tokens": 549.42,
+   "records": 100,
+   "records_en": 23,
+   "records_tr": 77,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 35,
+   "template_text_sha256": "f7606e75aa463845a790b360e97b4b1e231796d26165df83bfb1bffa3ee3ddea"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "relate",
+   "lineage_id": "T2-rel-03",
+   "mean_full_tokens": 532.66,
+   "records": 65,
+   "records_en": 14,
+   "records_tr": 51,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 10,
+   "template_text_sha256": "9a9578e03b5b95c5688b4f1de64c5bd20eccad42b194816030bb9dc7aab60acf"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "relate",
+   "lineage_id": "T2-rel-04",
+   "mean_full_tokens": 550.19,
+   "records": 70,
+   "records_en": 15,
+   "records_tr": 55,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 8,
+   "template_text_sha256": "876351e1992f4b167d66a8ae4ddb9972c5885c4ac55904627573a23d4de81cef"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "relate",
+   "lineage_id": "T2-rel-05",
+   "mean_full_tokens": 532.85,
+   "records": 102,
+   "records_en": 17,
+   "records_tr": 85,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 37,
+   "template_text_sha256": "a0238c5b35b0166c181ff7b48e39605e9f6995601f202354e586f955298dca0b"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "relate",
+   "lineage_id": "T2-rel-06",
+   "mean_full_tokens": 563.03,
+   "records": 70,
+   "records_en": 9,
+   "records_tr": 61,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 7,
+   "template_text_sha256": "3a4c3e205ab2d91729edfe9913772724c65905e6c6320fabf02246758d541b2a"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "relate",
+   "lineage_id": "T2-rel-07",
+   "mean_full_tokens": 559.92,
+   "records": 104,
+   "records_en": 22,
+   "records_tr": 82,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 37,
+   "template_text_sha256": "a6fe8b34aa6ff9249f1fe7832797b29db273f2f297b0592eb927537879f659a4"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "relate",
+   "lineage_id": "T2-rel-08",
+   "mean_full_tokens": 518.55,
+   "records": 98,
+   "records_en": 24,
+   "records_tr": 74,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 38,
+   "template_text_sha256": "fcb7d92efaa474aac24c86eaebe1269edb91c3d2ad838a50b868755a3e58bde7"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "relate",
+   "lineage_id": "T2-rel-09",
+   "mean_full_tokens": 512.81,
+   "records": 113,
+   "records_en": 27,
+   "records_tr": 86,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 45,
+   "template_text_sha256": "ca5997865f1253070a3f6b18c6dcae1aef9c6291030ad415bfbef91018c01788"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "relate",
+   "lineage_id": "T2-rel-10",
+   "mean_full_tokens": 550.77,
+   "records": 95,
+   "records_en": 15,
+   "records_tr": 80,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 33,
+   "template_text_sha256": "142409db068dface0a6a80e8ff4062d34ee17c91a9d3861b31cd997f35e10c41"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "relate",
+   "lineage_id": "T2-rel-11",
+   "mean_full_tokens": 546.96,
+   "records": 104,
+   "records_en": 17,
+   "records_tr": 87,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 38,
+   "template_text_sha256": "eb5b6270222243b08b17417bc810b4dc38258aacc05e40092a74e0650ae6dd43"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:forecasting",
+   "lineage_id": "T2-rfc-01",
+   "mean_full_tokens": 494.32,
+   "records": 53,
+   "records_en": 10,
+   "records_tr": 43,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 33,
+   "template_text_sha256": "10c31b94ea83e9f6812210ca50ce0f3a505c345821695078327d03be810a85c0"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:forecasting",
+   "lineage_id": "T2-rfc-02",
+   "mean_full_tokens": 498.97,
+   "records": 29,
+   "records_en": 7,
+   "records_tr": 22,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 10,
+   "template_text_sha256": "51fd82650a0f7c43ba968465bb335de7ea5845b5f6ee5b88c82e943bc879f92f"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:forecasting",
+   "lineage_id": "T2-rfc-03",
+   "mean_full_tokens": 525.71,
+   "records": 34,
+   "records_en": 3,
+   "records_tr": 31,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 25,
+   "template_text_sha256": "b32d0aed438961ed4aecb2913b4e26c4cbcc5b748283197ba562d4ecef609da1"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:forecasting",
+   "lineage_id": "T2-rfc-04",
+   "mean_full_tokens": 490.17,
+   "records": 30,
+   "records_en": 3,
+   "records_tr": 27,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 21,
+   "template_text_sha256": "136a6cec8d3dbd3c35c6553cdbbdb9a3c0376a735c4f26737571c6c869d7881b"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:hypothesis_test",
+   "lineage_id": "T2-rht-01",
+   "mean_full_tokens": 545.2,
+   "records": 46,
+   "records_en": 6,
+   "records_tr": 40,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 25,
+   "template_text_sha256": "5a124b4835fe94be3176e38d846aa4e8832a89a5d355d773f061bea580868379"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:hypothesis_test",
+   "lineage_id": "T2-rht-02",
+   "mean_full_tokens": 585.33,
+   "records": 42,
+   "records_en": 10,
+   "records_tr": 32,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 22,
+   "template_text_sha256": "d14ef732d9fe30da079b1704ee91d6f775593110773e5e960f8d6bbc7473b4d0"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:hypothesis_test",
+   "lineage_id": "T2-rht-03",
+   "mean_full_tokens": 515.25,
+   "records": 28,
+   "records_en": 5,
+   "records_tr": 23,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 7,
+   "template_text_sha256": "9978464785d8c5765139f22c84b4d34e064c3eae115394e93c397c1d5c4e0459"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:hypothesis_test",
+   "lineage_id": "T2-rht-04",
+   "mean_full_tokens": 525.38,
+   "records": 32,
+   "records_en": 4,
+   "records_tr": 28,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 18,
+   "template_text_sha256": "9ec40194b53640ea0dc07109d6ceae6d943b4f770b286a360744cda80df42f9f"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:instruction_override",
+   "lineage_id": "T2-rio-01",
+   "mean_full_tokens": 521.41,
+   "records": 39,
+   "records_en": 7,
+   "records_tr": 32,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 23,
+   "template_text_sha256": "f55e189550be3986c708930fd70dcf0128caa37f8f7062351eb33dd0f4ac79f5"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:instruction_override",
+   "lineage_id": "T2-rio-02",
+   "mean_full_tokens": 555.53,
+   "records": 30,
+   "records_en": 8,
+   "records_tr": 22,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 6,
+   "template_text_sha256": "8ca667eaf05ede254f86fd9b7bd3627dbf4b0005ef43ae1d8948f23e02ea824e"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:instruction_override",
+   "lineage_id": "T2-rio-03",
+   "mean_full_tokens": 500.33,
+   "records": 33,
+   "records_en": 10,
+   "records_tr": 23,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 22,
+   "template_text_sha256": "8ea4badf48b85aafeb8dd88ce713770746c3b6aa7a03bd99edcdebf9d91ca04a"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:instruction_override",
+   "lineage_id": "T2-rio-04",
+   "mean_full_tokens": 490.76,
+   "records": 42,
+   "records_en": 7,
+   "records_tr": 35,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 27,
+   "template_text_sha256": "1f6c0531932870977932309e1d62e9a2c799b3539bec5dcbe405bd8d53897da5"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:out_of_scope",
+   "lineage_id": "T2-ros-01",
+   "mean_full_tokens": 460.88,
+   "records": 26,
+   "records_en": 6,
+   "records_tr": 20,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 19,
+   "template_text_sha256": "8b30f7b31e2b55a8a189653bf9cd69ba984a3dd445ba934696e9d43367a98942"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:out_of_scope",
+   "lineage_id": "T2-ros-02",
+   "mean_full_tokens": 521.07,
+   "records": 14,
+   "records_en": 2,
+   "records_tr": 12,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 7,
+   "template_text_sha256": "60c47e8cccfe66517954a6434f6c290e742cc8fb2a20d446271117febee30586"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:out_of_scope",
+   "lineage_id": "T2-ros-03",
+   "mean_full_tokens": 474.48,
+   "records": 33,
+   "records_en": 7,
+   "records_tr": 26,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 21,
+   "template_text_sha256": "896b12ceb0514b3aaa2148863972b2c7c17c758438f80ad51317d2d932fea0e8"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:out_of_scope",
+   "lineage_id": "T2-ros-04",
+   "mean_full_tokens": 503.09,
+   "records": 23,
+   "records_en": 3,
+   "records_tr": 20,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 16,
+   "template_text_sha256": "43fc99668a330ad544556caec18321f20a55b4d00b919227b9df0d8eccbb472b"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:out_of_scope",
+   "lineage_id": "T2-ros-05",
+   "mean_full_tokens": 494.79,
+   "records": 34,
+   "records_en": 5,
+   "records_tr": 29,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 26,
+   "template_text_sha256": "5c8b3c3a8a82a40ce15d31d9f73f01fce9812aa1296ea5b536b0c3e0d2f64da3"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:out_of_scope",
+   "lineage_id": "T2-ros-06",
+   "mean_full_tokens": 472.47,
+   "records": 15,
+   "records_en": 4,
+   "records_tr": 11,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 4,
+   "template_text_sha256": "d5e6537c14585f7906982835e64e912ed5180c56e638794c27d977175b4ccf7e"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:regression",
+   "lineage_id": "T2-rrg-01",
+   "mean_full_tokens": 525.63,
+   "records": 30,
+   "records_en": 7,
+   "records_tr": 23,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 6,
+   "template_text_sha256": "364fb947630341bfa8443e1511bedb939fef345427754042adf8839616d04600"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:regression",
+   "lineage_id": "T2-rrg-02",
+   "mean_full_tokens": 494.42,
+   "records": 38,
+   "records_en": 6,
+   "records_tr": 32,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 21,
+   "template_text_sha256": "ab2fa8e948ec2c6ee633a3885053157d9a13354206d4e940bcb3b6fe2430598c"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:regression",
+   "lineage_id": "T2-rrg-03",
+   "mean_full_tokens": 519.12,
+   "records": 41,
+   "records_en": 8,
+   "records_tr": 33,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 18,
+   "template_text_sha256": "7bba1f10180cd11d6a889e409c1d3967c0a310702a016f1cd81fd38ab9213048"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:regression",
+   "lineage_id": "T2-rrg-04",
+   "mean_full_tokens": 498.45,
+   "records": 42,
+   "records_en": 8,
+   "records_tr": 34,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 17,
+   "template_text_sha256": "78aa007c6205b6976c52616cd0ac9e7caea0757ceb0fcf71cd21b2d5978bd77c"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:unsupported_analysis",
+   "lineage_id": "T2-run-01",
+   "mean_full_tokens": 520.56,
+   "records": 16,
+   "records_en": 4,
+   "records_tr": 12,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 7,
+   "template_text_sha256": "b62a1851dc93f242c15586dcede0e3dd4146e216ed1608533c7e220da6647b1c"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:unsupported_analysis",
+   "lineage_id": "T2-run-02",
+   "mean_full_tokens": 482.32,
+   "records": 53,
+   "records_en": 5,
+   "records_tr": 48,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 31,
+   "template_text_sha256": "f298563982997aaf6dd2d8d3426b2fd90287d39ef71686880fb665ea39ce477c"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:unsupported_analysis",
+   "lineage_id": "T2-run-03",
+   "mean_full_tokens": 473.1,
+   "records": 39,
+   "records_en": 9,
+   "records_tr": 30,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 24,
+   "template_text_sha256": "eef834e74571ab81f8f7bfa45559d2a781040ea5af5cb04182c365a5225be703"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:unsupported_analysis",
+   "lineage_id": "T2-run-04",
+   "mean_full_tokens": 536.93,
+   "records": 14,
+   "records_en": 5,
+   "records_tr": 9,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "validation",
+   "table_families": 4,
+   "template_text_sha256": "3ffa2a56a8b04ed6d5666e47aca44de83aa3ba17a64a1a5268ad6d0ceb8f6224"
+  },
+  {
+   "authored_by": "ai_tool (implementing assistant); no human wrote or reviewed it",
+   "frame": "reject:unsupported_analysis",
+   "lineage_id": "T2-run-05",
+   "mean_full_tokens": 552.96,
+   "records": 27,
+   "records_en": 6,
+   "records_tr": 21,
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O06"
+   ],
+   "split": "train",
+   "table_families": 17,
+   "template_text_sha256": "4ed6b8f7fd752605b6e4c59e5e523ad5e7c5704e73a19597134e3afcf5ef16b9"
+  }
+ ],
+ "tokens": {
+  "train": {
+   "boundary_straddle_rows": 0,
+   "full_sequence_tokens": {
+    "max": 1342,
+    "mean": 519.682,
+    "min": 350,
+    "n": 5091,
+    "p50": 483,
+    "p90": 691,
+    "p99": 1083,
+    "sum": 2645703
+   },
+   "padded_compute_tokens_total": 2726208,
+   "prompt_tokens": {
+    "max": 1194,
+    "mean": 490.718,
+    "min": 327,
+    "n": 5091,
+    "p50": 453,
+    "p90": 658,
+    "p99": 1044,
+    "sum": 2498243
+   },
+   "rows_over_1024": 70,
+   "rows_over_2048": 0,
+   "supervised_answer_tokens": {
+    "max": 184,
+    "mean": 28.965,
+    "min": 21,
+    "n": 5091,
+    "p50": 29,
+    "p90": 36,
+    "p99": 45,
+    "sum": 147460
+   },
+   "supervised_share_of_full_tokens": 0.05574
+  },
+  "validation": {
+   "boundary_straddle_rows": 0,
+   "full_sequence_tokens": {
+    "max": 890,
+    "mean": 523.898,
+    "min": 375,
+    "n": 1274,
+    "p50": 499,
+    "p90": 582,
+    "p99": 844,
+    "sum": 667446
+   },
+   "padded_compute_tokens_total": 687392,
+   "prompt_tokens": {
+    "max": 822,
+    "mean": 494.986,
+    "min": 348,
+    "n": 1274,
+    "p50": 470,
+    "p90": 555,
+    "p99": 811,
+    "sum": 630612
+   },
+   "rows_over_1024": 0,
+   "rows_over_2048": 0,
+   "supervised_answer_tokens": {
+    "max": 104,
+    "mean": 28.912,
+    "min": 21,
+    "n": 1274,
+    "p50": 29,
+    "p90": 36,
+    "p99": 42,
+    "sum": 36834
+   },
+   "supervised_share_of_full_tokens": 0.05519
+  }
+ },
+ "totals": {
+  "corpus": {
+   "train": 5873,
+   "validation": 1396
+  },
+  "eligible": {
+   "train": 5091,
+   "validation": 1274
+  },
+  "excluded_by_reason": {
+   "train": {
+    "origin:external_adapted": 473,
+    "schema_source:SRC-O03": 71,
+    "schema_source:SRC-O04": 53,
+    "schema_source:SRC-O05": 185
+   },
+   "validation": {
+    "origin:external_adapted": 96,
+    "schema_source:SRC-O04": 26
+   }
+  }
+ }
+}

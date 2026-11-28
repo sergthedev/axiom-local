@@ -17,3 +17,4 @@ Statuses: Proposed, Accepted, Superseded, Rejected. Cite `REF-NNN` IDs from `REF
 | [0010](0010-axiom-guard-confirmation-and-dispatch.md) | AXIOM Guard, explicit confirmation and one-shot dispatch | Proposed |
 | [0011](0011-axbench-benchmark-metrics-and-sealing.md) | AXBENCH benchmark design, metrics and owner sealing of the final test | Proposed |
 | [0012](0012-optional-model-environment.md) | Optional Apple Silicon model environment and experiment protocols | Proposed |
+| [0013](0013-exp-tr03-research-protocol.md) | EXP-TR03 research protocol: eligibility, human gates and a bounded single-run LoRA plan | Proposed (draft) |
