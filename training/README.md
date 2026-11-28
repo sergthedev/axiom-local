@@ -12,3 +12,7 @@
 - EXP-TR03 (proposed, draft, nothing run): research protocol and plan tooling in [tr03/](tr03/README.md) and
   [docs/evidence/experiments/EXP-TR03-research-protocol/](../docs/evidence/experiments/EXP-TR03-research-protocol/PROTOCOL.md);
   blocked by human, rights and clearance gates.
+- EXP-TR04 (proposed, exploratory, nothing run): a separate automated one-epoch LoRA driver on machine-audited rows in
+  [tr04/](tr04/README.md) and
+  [docs/evidence/experiments/EXP-TR04-exploratory-lora/](../docs/evidence/experiments/EXP-TR04-exploratory-lora/PROTOCOL.md); not
+  human-validated, not deployment-ready, needs technical clearance; EXP-TR03's human-review gates are unchanged.

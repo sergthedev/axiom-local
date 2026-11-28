@@ -1,0 +1,29 @@
+{
+ "phases": {
+  "reload": {
+   "files": {
+    "COMPLETE.json": "f17fda6f808ece259625eee942e4a868ea94c3efb428051bb1edee74ae173939",
+    "child.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "events.jsonl": "4c60424bd2316b5e2abacbd82c00f666d0b7bebd4fd2cfa9842a5c5b12e6dca6",
+    "supervisor.jsonl": "c68da3f349fb4af09d1d361cc88e8700859f5ced0d48ac9f4b509ee4d1c2aff3"
+   },
+   "not_copied": {}
+  },
+  "train": {
+   "files": {
+    "COMPLETE.json": "cb4b732a74e5a7d8e8c2caf9e985ce97189f9eb96e2bb5aa30f497b72319cf43",
+    "adapter_config.json": "f3aaa07b59a559189cbcd2af64f90ade46560fc6787eb21a63c9e54282ce3541",
+    "child.log": "dfc478d8e2bde0fccda885f8e0bd754666f10841b369486337fca00b2e9913be",
+    "events.jsonl": "3d5b13def65d9426e03dbbc6dea5c5eae34b74c166af4e4b11efcb05e8184198",
+    "supervisor.jsonl": "c63e727dcc74e4065124fe858cb5309fc03589378591966bb19b74f55a998dea"
+   },
+   "not_copied": {
+    "adapters.safetensors": {
+     "bytes": 1838449,
+     "sha256": "233de39937a249874791bb3936ce3317df9525f9e3d5e0317f86b9f4e0ec15ec"
+    }
+   }
+  }
+ },
+ "schema": "axbench-tr.exp-tr02-evidence/1"
+}

@@ -1,0 +1,31 @@
+{
+ "export_ids_equal_keep_lists": {
+  "train": true,
+  "validation": true
+ },
+ "export_rows": {
+  "tr04/train.jsonl": 3164,
+  "tr04/valid.jsonl": 376
+ },
+ "families": 125,
+ "heldout_ids": 346,
+ "heldout_ids_in_export": [],
+ "kept": {
+  "train": 3164,
+  "validation": 376
+ },
+ "package_licences": {
+  "Izmir-Metropolitan-Municipality-License": 123,
+  "cc-by": 2
+ },
+ "packages_used": 125,
+ "packages_used_with_flags": 0,
+ "problem_count": 1,
+ "problems": [
+  "scan_hits"
+ ],
+ "scan_hits": {
+  "abs_path": 27,
+  "email": 0
+ }
+}

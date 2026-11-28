@@ -1,0 +1,56 @@
+{
+ "phase": "train",
+ "rows": 3164,
+ "problems": [],
+ "problem_count": 0,
+ "mask_samples": [
+  {
+   "microstep": 1,
+   "mask_tokens": 26,
+   "supervised_tokens": 26,
+   "stock_mask_tokens": 27
+  },
+  {
+   "microstep": 2,
+   "mask_tokens": 30,
+   "supervised_tokens": 30,
+   "stock_mask_tokens": 31
+  },
+  {
+   "microstep": 3,
+   "mask_tokens": 33,
+   "supervised_tokens": 33,
+   "stock_mask_tokens": 34
+  },
+  {
+   "microstep": 4,
+   "mask_tokens": 21,
+   "supervised_tokens": 21,
+   "stock_mask_tokens": 22
+  },
+  {
+   "microstep": 5,
+   "mask_tokens": 26,
+   "supervised_tokens": 26,
+   "stock_mask_tokens": 27
+  },
+  {
+   "microstep": 6,
+   "mask_tokens": 36,
+   "supervised_tokens": 36,
+   "stock_mask_tokens": 37
+  },
+  {
+   "microstep": 7,
+   "mask_tokens": 23,
+   "supervised_tokens": 23,
+   "stock_mask_tokens": 24
+  },
+  {
+   "microstep": 8,
+   "mask_tokens": 35,
+   "supervised_tokens": 35,
+   "stock_mask_tokens": 36
+  }
+ ]
+}

@@ -1,0 +1,23 @@
+{
+ "full_tokens_exposed": 1661578,
+ "minutes": {
+  "hard_wall_cap_train_phase": 45.0,
+  "total_conservative": 27.9,
+  "total_nominal": 20.9
+ },
+ "padded_tokens_exposed": 1712544,
+ "rows": {
+  "train": 3164,
+  "validation": 376
+ },
+ "seconds": {
+  "hard_wall_cap_reload_phase": 900,
+  "hard_wall_cap_total": 2700,
+  "hard_wall_cap_train_phase": 2700,
+  "total_conservative": 1675,
+  "total_nominal": 1257,
+  "training_nominal": 1023,
+  "validation_nominal_three_passes": 232
+ },
+ "status": "extrapolated from EXP-TR02 rates (2.5 minute smoke); not measured at this scale"
+}

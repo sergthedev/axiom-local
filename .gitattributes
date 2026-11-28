@@ -29,3 +29,7 @@ docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/**/*.md -text
 # (attribute only; the EXP-TR02 blob itself is unchanged).
 training/tr02/config.json -text
 training/tr03/config.json -text
+
+# EXP-TR04: the config pins the SHA-256 of these files, so their bytes must be identical on every platform.
+data/axbench-tr/tr04/**/*.txt -text
+training/tr04/config.json -text

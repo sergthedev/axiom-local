@@ -1,0 +1,13 @@
+windows 31 min 1303.1 max 1608.6 first 1608.6 reference(median first4) 1572.6
+min/ref 0.829 max/ref 1.023 min/first 0.81
+os samples 277 with rss 276 max rss gb 1.118306304
+swap first/last/min/max/delta_max 0.00244 0.00244 0.00244 0.00244 0.0
+pressure [1, 2] on_battery any False
+therm distinct ['Note: No thermal warning level has been recorded; Note: No performance warning level has been recorded; Note: No CPU power status has been recorded']
+baseline {'baseline': True, 'kind': 'os', 'on_battery': False, 'pressure_level': 1, 'rss_gb': None, 'swap_used_gb': 0.00244, 't': 1795895364.778826}
+peak mlx gb 6.197420616
+train loss first10 mean 1.6647 last10 mean 0.0627
+exposure [{'kind': 'train_total', 'optimizer_steps': 791, 'rows_exposed': 3164, 'schedule_complete': True, 'seconds': 1186.220898707994}]
+adapter [{'adapter_sha256': '233de39937a249874791bb3936ce3317df9525f9e3d5e0317f86b9f4e0ec15ec', 'bytes': 1838449, 'changed_tensors': 32, 'config_sha256': 'f3aaa07b59a559189cbcd2af64f90ade46560fc6787eb21a63c9e54282ce3541', 'finite': True, 'kind': 'adapter', 'lora_b_abs_sum': 198.85487747192383, 'max_abs_change': 0.007819965481758118, 'shapes_ok': True, 'tensors': 32}]
+reload events [{'adapter_sha256': '233de39937a249874791bb3936ce3317df9525f9e3d5e0317f86b9f4e0ec15ec', 'config_sha256': 'f3aaa07b59a559189cbcd2af64f90ade46560fc6787eb21a63c9e54282ce3541', 'finite': True, 'kind': 'adapter_check', 'shapes_ok': True, 'tensors': 32}, {'kind': 'val', 'peak_memory_gb': 4.21903678, 'rows': 376, 'seconds': 91.16030541600776, 'tag': 'reload', 'updates_done': 791, 'val_loss': 0.09964458644390106}, {'abs_diff': 3.725290298461914e-08, 'kind': 'reload', 'reference_loss': 0.09964462369680405, 'reload_loss': 0.09964458644390106, 'tolerance': 0.0001}]
+reload os samples 22 max rss 1.796030464 pressure [1] therm ['Note: No thermal warning level has been recorded; Note: No performance warning level has been recorded; Note: No CPU power status has been recorded']

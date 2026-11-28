@@ -89,3 +89,8 @@ The licence evidence read for each source (page, SHA-256, excerpt) is in
 (`data/axbench-tr/sources/LICENCE_EVIDENCE_ADDENDUM_1.json`, 2026-11-27) records the dataset-level terms of the World Bank WDI,
 Eurostat and İzmir datasets behind the EXP-TR02 probe and smoke subsets, with the limits of that evidence.
 
+
+**EXP-TR04 package records.** `data/axbench-tr/tr04/rights/IZMIR_PACKAGE_NOTES.json` keeps the text fields (title, notes, licence
+id, extras, resource names and descriptions; no contact data) of the İzmir Büyükşehir Belediyesi Açık Veri Portalı CKAN records of
+the 168 packages behind the corpus's İzmir layouts, fetched on 2026-11-28 (REF-TR-08), to document a rights screen. The portal states
+CC BY 4.0 unless noted; attribution: "İzmir Büyükşehir Belediyesi Açık Veri Portalı". The records are not modified.

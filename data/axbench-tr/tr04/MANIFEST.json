@@ -1,0 +1,17 @@
+{
+ "files_sha256": {
+  "AUDIT.json": "6764607af8967fc0ccd533b83a07957c89d21126bd5503d49b09289f80628237",
+  "EXCLUSIONS.csv": "3c146b5ef1c2d80755b0e7b045cbf46ea97276d254014cc346718368a4d3ec4b",
+  "KEEP_TRAIN.txt": "9785351c03d7b2253a8e673875a9c9f977f33e2332dee865442bfda6ff1c4848",
+  "KEEP_VALIDATION.txt": "15d43f60e3c17f8224dd649c1d8daa200632b21fa02e7e8e48cc2cc68bb55748",
+  "MUTATION_REPORT.json": "d31f26a644954143e4c40cd121772a701b57fcd1812e1dfd8dd487220f61e1bb",
+  "TEMPLATE_CONTRACT.json": "64e87d8ba56fce4df6fefbf986eee0744c904344ae2e498294e1c25c6c2188db"
+ },
+ "inputs_sha256": {
+  "tr04/rights/IZMIR_PACKAGE_NOTES.json": "972671a4eb181a69264c58d81ba8ef2a9f7d369348af4e81507c9965a7a6a989",
+  "v0.2-rev1/token_lengths_per_example.jsonl": "8dde1cfb9b20c2e9ce095cd0161e860a406c6b8ffad1f24e75d1bbfba175c95d",
+  "v0.2-rev1/train.jsonl": "d5466e80c4e9cf06753d8fbc5c5d28476c35ea309b9f78e34a1a6ee94cb11372",
+  "v0.2-rev1/validation.jsonl": "d8e302d02b05579f50b035a2840445c19603ba555100ac6636a87decb0eb6301"
+ },
+ "schema": "axbench-tr.tr04-manifest/1"
+}

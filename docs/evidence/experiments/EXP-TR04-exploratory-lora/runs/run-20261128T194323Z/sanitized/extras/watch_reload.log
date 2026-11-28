@@ -1,0 +1,14 @@
+{"event": "watcher_started", "mono": 95837.105640791, "phase_cap": 900.0, "poll": 15.0, "tag": "reload", "total_cap": 2700.0, "wall": "2026-11-28T20:12:55Z"}
+{"event": "ready_waiting", "mono": 95837.10598625, "wall": "2026-11-28T20:12:55Z"}
+{"event": "ready_waiting", "mono": 95838.116616583, "wall": "2026-11-28T20:12:56Z"}
+{"event": "ready_waiting", "mono": 95839.119939291, "wall": "2026-11-28T20:12:57Z"}
+{"event": "ready_waiting", "mono": 95840.130295833, "wall": "2026-11-28T20:12:59Z"}
+{"event": "armed", "mono": 95841.138143041, "phase_start": 95841.100247875, "sup_pid": 38288, "t0_mono": 94422.791292791, "wall": "2026-11-28T20:13:00Z"}
+{"clock_drift": -0.0, "elapsed_phase": 15.0, "elapsed_total": 1433.4, "event": "poll", "mono": 95856.151571458, "n": 1, "sup_log_age": 7.1, "sup_log_lines": 3, "supervisor_alive": true, "wall": "2026-11-28T20:13:15Z"}
+{"clock_drift": -0.0, "elapsed_phase": 30.1, "elapsed_total": 1448.4, "event": "poll", "mono": 95871.168623208, "n": 2, "sup_log_age": 22.1, "sup_log_lines": 3, "supervisor_alive": true, "wall": "2026-11-28T20:13:30Z"}
+{"clock_drift": -0.0, "elapsed_phase": 45.1, "elapsed_total": 1463.4, "event": "poll", "mono": 95886.184255208, "n": 3, "sup_log_age": 37.1, "sup_log_lines": 3, "supervisor_alive": true, "wall": "2026-11-28T20:13:45Z"}
+{"clock_drift": -0.0, "elapsed_phase": 60.1, "elapsed_total": 1478.4, "event": "poll", "mono": 95901.199269625, "n": 4, "sup_log_age": 52.1, "sup_log_lines": 3, "supervisor_alive": true, "wall": "2026-11-28T20:14:00Z"}
+{"clock_drift": -0.0, "elapsed_phase": 75.1, "elapsed_total": 1493.4, "event": "poll", "mono": 95916.209272125, "n": 5, "sup_log_age": 67.1, "sup_log_lines": 3, "supervisor_alive": true, "wall": "2026-11-28T20:14:15Z"}
+{"clock_drift": -0.0, "elapsed_phase": 90.1, "elapsed_total": 1508.4, "event": "poll", "mono": 95931.226104708, "n": 6, "sup_log_age": 82.1, "sup_log_lines": 3, "supervisor_alive": true, "wall": "2026-11-28T20:14:30Z"}
+{"clock_drift": -0.0, "elapsed_phase": 105.1, "elapsed_total": 1523.4, "event": "poll", "mono": 95946.285671875, "n": 7, "sup_log_age": 0.9, "sup_log_lines": 6, "supervisor_alive": false, "wall": "2026-11-28T20:14:45Z"}
+{"event": "done", "intervened": null, "mono": 95950.408635583, "remaining": 0, "survivors": 0, "wall": "2026-11-28T20:14:49Z"}

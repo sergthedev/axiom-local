@@ -1,0 +1,10 @@
+{
+ "phase": "train",
+ "seed": 2026,
+ "rows": 3164,
+ "microsteps": 3164,
+ "optimizer_updates": 791,
+ "tokens_total": 1661578,
+ "padded_tokens_total": 1712544,
+ "each_row_exposed_exactly_once": true
+}

@@ -1,0 +1,204 @@
+{
+ "meaning": "detection of deliberately injected faults on synthetic copies; not accuracy on real label errors",
+ "row_mutations_on_kept_train": {
+  "action_to_reject": {
+   "applied": 300,
+   "by_original_action_applied_flagged": {
+    "PLAN": [
+     300,
+     300
+    ]
+   },
+   "flagged": 300,
+   "not_flagged_examples": []
+  },
+  "change_k": {
+   "applied": 300,
+   "by_original_action_applied_flagged": {
+    "PLAN": [
+     300,
+     300
+    ]
+   },
+   "flagged": 300,
+   "not_flagged_examples": []
+  },
+  "clarify_operation_changed": {
+   "applied": 300,
+   "by_original_action_applied_flagged": {
+    "CLARIFY": [
+     300,
+     300
+    ]
+   },
+   "flagged": 300,
+   "not_flagged_examples": []
+  },
+  "drop_gold_column": {
+   "applied": 278,
+   "by_original_action_applied_flagged": {
+    "CLARIFY": [
+     44,
+     44
+    ],
+    "PLAN": [
+     234,
+     234
+    ]
+   },
+   "flagged": 278,
+   "not_flagged_examples": []
+  },
+  "exchange_group_measure": {
+   "applied": 300,
+   "by_original_action_applied_flagged": {
+    "PLAN": [
+     300,
+     300
+    ]
+   },
+   "flagged": 300,
+   "not_flagged_examples": []
+  },
+  "flip_method": {
+   "applied": 300,
+   "by_original_action_applied_flagged": {
+    "PLAN": [
+     300,
+     300
+    ]
+   },
+   "flagged": 300,
+   "not_flagged_examples": []
+  },
+  "frame_changed": {
+   "applied": 300,
+   "by_original_action_applied_flagged": {
+    "CLARIFY": [
+     82,
+     82
+    ],
+    "PLAN": [
+     146,
+     146
+    ],
+    "REJECT": [
+     72,
+     72
+    ]
+   },
+   "flagged": 300,
+   "not_flagged_examples": []
+  },
+  "language_label_swapped": {
+   "applied": 300,
+   "by_original_action_applied_flagged": {
+    "CLARIFY": [
+     82,
+     82
+    ],
+    "PLAN": [
+     146,
+     146
+    ],
+    "REJECT": [
+     72,
+     72
+    ]
+   },
+   "flagged": 300,
+   "not_flagged_examples": []
+  },
+  "mention_names_other_column": {
+   "applied": 300,
+   "by_original_action_applied_flagged": {
+    "PLAN": [
+     300,
+     300
+    ]
+   },
+   "flagged": 300,
+   "not_flagged_examples": []
+  },
+  "plan_to_clarify": {
+   "applied": 300,
+   "by_original_action_applied_flagged": {
+    "PLAN": [
+     300,
+     300
+    ]
+   },
+   "flagged": 300,
+   "not_flagged_examples": []
+  },
+  "reason_changed": {
+   "applied": 300,
+   "by_original_action_applied_flagged": {
+    "CLARIFY": [
+     158,
+     158
+    ],
+    "REJECT": [
+     142,
+     142
+    ]
+   },
+   "flagged": 300,
+   "not_flagged_examples": []
+  },
+  "reject_to_plan": {
+   "applied": 300,
+   "by_original_action_applied_flagged": {
+    "REJECT": [
+     300,
+     300
+    ]
+   },
+   "flagged": 300,
+   "not_flagged_examples": []
+  },
+  "request_from_other_row": {
+   "applied": 300,
+   "by_original_action_applied_flagged": {
+    "CLARIFY": [
+     82,
+     82
+    ],
+    "PLAN": [
+     146,
+     146
+    ],
+    "REJECT": [
+     72,
+     72
+    ]
+   },
+   "flagged": 300,
+   "not_flagged_examples": []
+  },
+  "swap_gold_column": {
+   "applied": 300,
+   "by_original_action_applied_flagged": {
+    "PLAN": [
+     300,
+     300
+    ]
+   },
+   "flagged": 300,
+   "not_flagged_examples": []
+  }
+ },
+ "schema": "axbench-tr.tr04-mutation-report/1",
+ "template_mutations": {
+  "drop_slot": {
+   "applied": 104,
+   "flagged": 104,
+   "not_flagged_examples": []
+  },
+  "relabel_frame": {
+   "applied": 122,
+   "flagged": 122,
+   "not_flagged_examples": []
+  }
+ }
+}

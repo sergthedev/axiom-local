@@ -1,0 +1,14 @@
+OK   a export hashes equal expected
+OK   b_01 problems []
+OK   b_03 problems []
+OK   b_05 problems []
+OK   schedule 3164 rows/791 updates/1661578 tokens/each row once
+OK   check-data 3164/376 rows, 0 problems
+OK   check-iterator problem_count 0, 8 samples mask_tokens==supervised_tokens
+OK   check-lora problems [], 8 tensors, 1792 params, mlx 0.32.4; names model.layers.2 q/v lora_a/lora_b
+OK   preflight problems [] at the execution SHA
+OK   pmset text is the three 'Note: No ... recorded' lines (parse_therm [] reported earlier)
+OK   stepb_all.txt shows nine EXIT=0 and no other EXIT
+ALL_OK True
+note: check-lora output lists tensor names and counts only (no shapes); the shapes of the 32 real tensors were checked in the train phase 'lora' event (shapes_ok true)
+sha256 inventory of the originals is in a7_preflight_logs_sha256.txt; originals unmodified (mtimes 2026-11-28 11:2x local, before this run)

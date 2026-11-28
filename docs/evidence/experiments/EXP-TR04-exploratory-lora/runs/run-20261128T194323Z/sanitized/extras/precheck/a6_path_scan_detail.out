@@ -1,0 +1,12 @@
+{
+ "train": {
+  "broad_distinct": {
+   "/etc/passwd": 27
+  },
+  "private_pattern_hits": 0
+ },
+ "valid": {
+  "broad_distinct": {},
+  "private_pattern_hits": 0
+ }
+}
