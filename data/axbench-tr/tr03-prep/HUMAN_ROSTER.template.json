@@ -1,0 +1,36 @@
+{
+ "attestation": {
+  "attested_by": "",
+  "attested_on": "",
+  "statement": "I designate each person listed as a real human being, not an AI system, script or automated service, and I take responsibility for the independence each role requires. This file is a record of my designation. The checking tool cannot authenticate anyone from a string.",
+  "statement_accepted": false
+ },
+ "dates": "ISO calendar dates, YYYY-MM-DD",
+ "designated_by": "",
+ "designated_on": "",
+ "id_rule": "a short private code, 2 to 32 characters of letters, digits, '_' or '-', starting with a letter, unique ignoring case; keep the mapping to real names outside the repository",
+ "people": [],
+ "person_entry_fields": {
+  "fluent_english": "true or false, never left out",
+  "id": "private code",
+  "independent_of_corpus_authoring": "true only if the person did not write the corpus templates, this tooling or this protocol",
+  "native_turkish": "true or false, never left out",
+  "roles": [
+   "adjudicator",
+   "author",
+   "checker",
+   "owner",
+   "reviewer"
+  ],
+  "type": "must be exactly 'human'"
+ },
+ "roles": {
+  "adjudicator": "decides a row or template on which two reviewers differ; never one of them",
+  "author": "writes held-out evaluation tasks; native Turkish; has not seen the training data",
+  "checker": "checks a held-out task and its gold; never the author of that task",
+  "owner": "records rights decisions; the project owner",
+  "reviewer": "first or second reviewer of templates and rows; judges gold and naturalness"
+ },
+ "schema": "axbench-tr.tr03-roster/2",
+ "status": "TEMPLATE: empty. Only the owner designates people. An AI cannot be listed as human."
+}

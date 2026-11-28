@@ -24,3 +24,8 @@ docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/**/*.txt -text
 docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/**/*.json -text
 docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/**/*.jsonl -text
 docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/**/*.md -text
+
+# EXP-TR03: the committed plan records the SHA-256 of these configuration files, so their bytes must be identical on every platform
+# (attribute only; the EXP-TR02 blob itself is unchanged).
+training/tr02/config.json -text
+training/tr03/config.json -text

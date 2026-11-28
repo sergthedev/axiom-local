@@ -1,0 +1,178 @@
+{
+ "arms": {
+  "research": {
+   "gates": [
+    "G1",
+    "G2",
+    "G3",
+    "G4",
+    "G5",
+    "G6",
+    "G7"
+   ],
+   "id": "EXP-TR03-T",
+   "needs": "every gate in PROTOCOL.md; not eligible today",
+   "needs_human_gates": true,
+   "purpose": "the single bounded research run whose adapter is evaluated once on the frozen independent held-out tasks",
+   "rows": "rows of effective-keep templates from rights-included sources, minus rows and templates removed by the human row review, exactly as derived by `axbench_tr.tr03_gates.research_manifest`; nothing is inferred or corrected"
+  },
+  "resource": {
+   "adapter": "discard-only; hashed; never evaluated, copied or used as initialization",
+   "id": "EXP-TR03-R",
+   "needs": "nothing is proposed; any use needs a new protocol amendment, clearance and owner authorization",
+   "needs_human_gates": false,
+   "purpose": "discard-only sustained-throughput, thermal and validation-overhead measurement at full corpus scale; no quality claim",
+   "rows": "all eligible train rows",
+   "status": "withdrawn from the proposal at the technical lead's instruction (PR #15 comment 7235630804): human review, not compute, is the bottleneck; not to be built, cleared or run; kept here only so the earlier plan numbers keep their meaning"
+  }
+ },
+ "data": {
+  "corpus_files_sha256": {
+   "train.jsonl": "d5466e80c4e9cf06753d8fbc5c5d28476c35ea309b9f78e34a1a6ee94cb11372",
+   "validation.jsonl": "d8e302d02b05579f50b035a2840445c19603ba555100ac6636a87decb0eb6301"
+  },
+  "corpus_version": "v0.2-rev1",
+  "diagnostic_validation_key": "tr03-diagnostic-validation",
+  "diagnostic_validation_rows": 200,
+  "eligibility": {
+   "origin": "synthetic_template",
+   "schema_sources": [
+    "SRC-O01",
+    "SRC-O02",
+    "SRC-O06"
+   ]
+  },
+  "never_used": [
+   "AXBENCH v0.1 train or validation (EXP-010 evaluation data)",
+   "the sealed AXBENCH test",
+   "any held-out evaluation task of EXP-TR03"
+  ],
+  "per_example_path": "data/axbench-tr/v0.2-rev1/token_lengths_per_example.jsonl",
+  "per_example_sha256": "8dde1cfb9b20c2e9ce095cd0161e860a406c6b8ffad1f24e75d1bbfba175c95d"
+ },
+ "experiment": "EXP-TR03",
+ "hyperparameters": {
+  "base": "fresh pinned Qwen3-1.7B; no probe, smoke, EXP-010 or resource-arm adapter and no optimizer state is loaded",
+  "epochs": 1,
+  "grad_accumulation": 4,
+  "grad_checkpoint": false,
+  "init_adapter": null,
+  "learning_rate": 1e-05,
+  "lora_dropout": 0.0,
+  "lora_keys": [
+   "self_attn.q_proj",
+   "self_attn.v_proj"
+  ],
+  "lora_layers": 8,
+  "lora_rank": 8,
+  "lora_scale": 20.0,
+  "lr_schedule": "constant",
+  "max_seq_length": 2048,
+  "micro_batch": 1,
+  "optimizer": "adam",
+  "partial_batch": "drop_remainder",
+  "seed": 2026
+ },
+ "inherits": {
+  "meaning": "model pins, packages, Python, hyperparameters and memory limits are copied unchanged from the TR02 config so that the rates measured in EXP-TR02 apply; tests/test_tr03_plan.py compares them",
+  "tr02_config_path": "training/tr02/config.json",
+  "tr02_config_sha256": "7d31d916621523281d2226de9802671ddc63b05aad219388064a275abaf5301c"
+ },
+ "limits_of_this_file": "a proposal; nothing here is measured except the rates copied from the EXP-TR02 record",
+ "model": {
+  "files": {
+   "LICENSE": {
+    "bytes": 11343,
+    "sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+   },
+   "config.json": {
+    "bytes": 726,
+    "sha256": "1ddb5b89ebc90dcb417a45c213d818577e65976454d29385c8f6140771d95197"
+   },
+   "generation_config.json": {
+    "bytes": 239,
+    "sha256": "2325da0f15bb848e018c5ae071b7943332e9f871d6b60e2ed22ca97d4cb993d2"
+   },
+   "merges.txt": {
+    "bytes": 1671853,
+    "sha256": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5"
+   },
+   "model-00001-of-00002.safetensors": {
+    "bytes": 3441185608,
+    "sha256": "169ad53ec313c3a34b06c0809216e4fc072cce444a5d4ff2b59690d064130ed5"
+   },
+   "model-00002-of-00002.safetensors": {
+    "bytes": 622329984,
+    "sha256": "912becff8d60672aa8628ef08c05898d9adf17c2ad4ae3caf99b065622fdeff9"
+   },
+   "model.safetensors.index.json": {
+    "bytes": 25605,
+    "sha256": "0d660e94b165eb912669a5249dff44b83188c4777a07ddb9611fb78d91b0578d"
+   },
+   "tokenizer.json": {
+    "bytes": 11422654,
+    "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+   },
+   "tokenizer_config.json": {
+    "bytes": 9732,
+    "sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+   },
+   "vocab.json": {
+    "bytes": 2776833,
+    "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+   }
+  },
+  "repo_id": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "tokenizer_sha256": {
+   "tokenizer.json": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+   "tokenizer_config.json": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+  }
+ },
+ "monitor": {
+  "ac_power_required": true,
+  "floor_ratio": 0.5,
+  "floor_windows": 3,
+  "mlx_peak_gb": 10.0,
+  "os_sample_seconds": 5,
+  "pressure_critical": 4,
+  "pressure_warning_level": 2,
+  "pressure_warning_samples": 12,
+  "reference_windows": 4,
+  "rss_gb": 11.0,
+  "slow_ratio": 0.7,
+  "slow_windows": 6,
+  "swap_growth_gb": 2.0,
+  "thermal": "any statement other than 'No thermal warning level has been recorded', 'No performance warning level has been recorded' or 'No CPU power status has been recorded' stops the run; unparseable output stops the run",
+  "updates_per_window": 25
+ },
+ "packages": {
+  "mlx": "0.32.4",
+  "mlx-lm": "0.32.2"
+ },
+ "python": [
+  3,
+  12
+ ],
+ "rates": {
+  "full_tokens_per_s_note": "probe on the 20 longest rows (1,625); smoke windows were 1,642.1 to 1,692.3",
+  "full_tokens_per_s_slowest_observed": 1625.0,
+  "model_load_seconds": 1.0,
+  "source": "docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/run5-attempt2-at-ed4e75b/RUN_RESULT.md",
+  "thermal_allowance_fraction": 0.25,
+  "thermal_allowance_note": "conservative allowance for a run about 15 times longer than the 2.5 minute smoke; not measured",
+  "validation_note": "8.24 s for 40 rows",
+  "validation_seconds_per_row_slowest_observed": 0.206,
+  "wall_cap_factor": 1.25,
+  "wall_cap_round_to_seconds": 900
+ },
+ "schedule": {
+  "candidate": "the adapter after the last optimizer update is the only candidate; no checkpoint selection",
+  "eval_points_after_updates": "floor(k * U / 4) for k = 1..4, plus one evaluation before the first update",
+  "eval_rows": "the fixed diagnostic validation rows (teacher-forced loss only)",
+  "final_full_validation": "all eligible validation rows once after the last update (teacher-forced loss only)",
+  "snapshots": "adapter saved at each eval point for post-mortem; hash recorded; never evaluated, selected or resumed from"
+ },
+ "schema": "axbench-tr.exp-tr03-config/1",
+ "status": "proposed; prepared; not executed; not approved; no clearance exists; no training is authorized; immutable once reviewed (change = new version)"
+}

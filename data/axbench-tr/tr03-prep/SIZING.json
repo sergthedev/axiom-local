@@ -1,0 +1,51 @@
+{
+ "method": "exact arithmetic; Wilson score interval from axbench.stats.wilson",
+ "proposed_heldout_evaluation_size": {
+  "basis": "at least 30 per supported operation and 10 per CLARIFY or REJECT reason; the owner decides the final numbers (HELDOUT_AUTHORING_KIT.md)",
+  "english_secondary": 100,
+  "near_miss_subset_within_turkish": 60,
+  "turkish_clarify": 90,
+  "turkish_plan": 120,
+  "turkish_reject": 90,
+  "turkish_total": 300
+ },
+ "proposed_review_sizes": {
+  "english_rows_per_stratum": 15,
+  "second_review_also": "every row a first reviewer marks gold_correct no or serious_error yes",
+  "second_review_fraction_of_rest": 0.1,
+  "strata": [
+   "inspect",
+   "inspect_all",
+   "relate",
+   "compare",
+   "cluster",
+   "clarify",
+   "reject"
+  ],
+  "turkish_rows_per_stratum": 59
+ },
+ "schema": "axbench-tr.tr03-sizing/1",
+ "wilson_half_width_at_p_0.1": {
+  "100": 0.0596,
+  "150": 0.0484,
+  "200": 0.0419,
+  "30": 0.1108,
+  "300": 0.0341,
+  "400": 0.0295,
+  "59": 0.0786
+ },
+ "wilson_half_width_at_p_0.5": {
+  "100": 0.0962,
+  "150": 0.079,
+  "200": 0.0686,
+  "30": 0.1685,
+  "300": 0.0562,
+  "400": 0.0488,
+  "59": 0.1236
+ },
+ "zero_failure_sample_size": {
+  "gold_correct_gate_failure_rate_0.05": 59,
+  "meaning": "with zero failures in n reviewed rows, the one-sided 95% upper bound of the failure rate is at most the stated rate; any failure needs a larger sample",
+  "natural_or_fixable_gate_failure_rate_0.10": 29
+ }
+}

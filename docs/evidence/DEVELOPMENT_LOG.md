@@ -740,3 +740,44 @@ for a comprehensive final audit of AXIOM Verify.
   it itself, from a separate evidence checkout, because the owner asked to prioritize committing; this thread then verified all 50
   sanitized files against `REDACTIONS.json`, rescanned for private data, and cross-checked the numbers in `RUN_RESULT.md` against the
   raw events. The commit's git author name is the device account's git identity (not sanitizable after the push).
+
+## 2026-11-28: EXP-TR03 research protocol preparation (draft; no training)
+
+- Task: the technical lead's `EXP-TR03-PREP-50bea1f` (PR #13 comment 7235303471), authorized by the owner for preparation only.
+  Branch `claude/project-thread-4j9rsl` was reset to the immutable PR #13 evidence head `50bea1f` (it held no work of its own) and
+  carries only new files plus edits to index and evidence documents; the draft PR is based on the PR #13 branch. PR #11, PR #13's
+  branch, the TR02 harness and every frozen module are untouched.
+- Wrote `src/axbench_tr/tr03.py` (eligibility under the TR02 rights rule, inventory, split and shortcut audits, held-out layout
+  availability, sizing, four empty human worklists, a human-gate checker that refuses AI rows), `training/tr03/` (config inherited from
+  TR02 and tested against it, exposure schedule with a partial-batch rule, budget, fail-closed long-run monitor, thermal parser) and
+  `docs/evidence/experiments/EXP-TR03-research-protocol/` with ADR 0013. 28 + 62 new tests with synthetic ledgers and event streams.
+- One false alarm of my own audit was caught and fixed before commit: a first "label conflict" count (12 train, 7 validation) was column-id
+  numbering (the schema fingerprint ignores column order), and the next version (2 and 2) was unordered `inspect_all` column lists; compared
+  by column name with sets it is 0.
+- Audit findings worth the lead's attention: only 5,091 train rows come from 87 templates; one World Bank layout family is 34.8% of
+  train rows; only 5 licensed economic layouts are absent from the corpus and their column vocabulary overlaps training by 64% on
+  average, which limits how independent human-authored economic evaluation tasks can be.
+- Not done, by design: no model loaded, no driver written, no score of any system, no M5 preflight (none requested), no sealed-test or
+  v0.1 evaluation access beyond counting request overlaps, no human review simulated.
+
+### Revision: gate hardening and statistics (technical review PR #15 comment 7235630804; preparation only)
+
+- The review found that my first gate checker was too permissive: G4 to G7 counted as true when a file merely existed (an empty
+  JSON sufficed), row and template ledgers were not tied to the frozen worklists (blanks shrank denominators, repeated rows could
+  inflate n, the second reviewer could be the first, adjudication was incomplete), the template gate expected only train
+  lineages, and the training-id function ignored second reviews, adjudications, wrong-gold rows and rights. All confirmed by reading
+  the code; I replaced that code with `src/axbench_tr/tr03_gates.py` instead of patching it.
+- New rules: exact frozen worklists (identity cells, keys, header), owner-attested roster v2, explicit adjudication rule, language
+  competence, frozen denominators, structural parsing of G4 to G7 bound by SHA-256 to protocol, config, plan, manifest and tooling,
+  and a hard rule that the tool never reports "passed" or opens execution. `research_manifest` derives the filtered train and
+  validation lists and `training/tr03/tr03.py research-plan` the exact exposure plan, only from complete valid ledgers.
+- Protocol revised as asked: the wrong "Holm" wording is withdrawn; Bonferroni one-sided 97.5% bounds within an efficacy family and
+  a safety family on a joint paired cluster bootstrap; the +10 pp target and +2 pp noninferiority margin kept; H2 recall as
+  secondary; H3 against both comparators; S1 and S3 policies; absolute rates and D14 thresholds descriptive; cluster minima and
+  precision limits; earlier per-origin gates kept with the Turkish frame gate as an addition; sample frozen, dropped templates not
+  replaced; economic-schema track proposed; C2 optional; arm R withdrawn (config marks it so, plan regenerated).
+- Added a human review guide with real examples outside the sample (a test checks that) and per-source rights options.
+- Worklists gained columns (second-review and adjudication judgements, dates, workload batches); the selected rows are unchanged.
+  A first test run found my own mistakes (a regenerated ledger hash key with a stray suffix, tests that mutated identity columns) and
+  they were fixed; no check was weakened.
+- Still not done: no ledger, roster or decision exists; no model, driver, training, generation or scoring; no sealed-test access.
