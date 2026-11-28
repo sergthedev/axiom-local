@@ -1,0 +1,214 @@
+{
+ "budget": {
+  "full_tokens_exposed": 1661578,
+  "minutes": {
+   "hard_wall_cap_train_phase": 45.0,
+   "total_conservative": 27.9,
+   "total_nominal": 20.9
+  },
+  "padded_tokens_exposed": 1712544,
+  "rows": {
+   "train": 3164,
+   "validation": 376
+  },
+  "seconds": {
+   "hard_wall_cap_reload_phase": 900,
+   "hard_wall_cap_total": 2700,
+   "hard_wall_cap_train_phase": 2700,
+   "total_conservative": 1675,
+   "total_nominal": 1257,
+   "training_nominal": 1023,
+   "validation_nominal_three_passes": 232
+  },
+  "status": "extrapolated from EXP-TR02 rates (2.5 minute smoke); not measured at this scale"
+ },
+ "data": {
+  "never_used": [
+   "AXBENCH v0.1 train or validation (EXP-010 evaluation data)",
+   "the sealed AXBENCH test",
+   "the EXP-TR04 held-out benchmark (data/axbench-tr/tr04/heldout): never exported, never trained on, never validated on during training",
+   "any EXP-TR03 held-out evaluation task"
+  ],
+  "review": "automated and exploratory; no human reviewed any row, label, template or rights decision",
+  "rows": "the rows listed in data/axbench-tr/tr04/KEEP_TRAIN.txt and KEEP_VALIDATION.txt: synthetic_template rows on Izmir (SRC-O06) layouts whose CKAN package text screen found no restriction, after the automated label audit; train trimmed to a multiple of 4 rows"
+ },
+ "evaluation": {
+  "deployment_ready": false,
+  "frozen_in": "docs/evidence/experiments/EXP-TR04-exploratory-lora/PROTOCOL.md",
+  "heldout": "data/axbench-tr/tr04/heldout/HELDOUT.jsonl (AI-authored, synthetic, unreviewed)",
+  "human_validated": false,
+  "needs": "a separate technical clearance for any evaluation run; nothing is evaluated, generated or scored before it",
+  "scorer": "axbench.score/0.2 through axbench_tr.tr04_heldout.score_predictions"
+ },
+ "experiment": "EXP-TR04",
+ "hyperparameters": {
+  "base": "fresh pinned Qwen3-1.7B; no probe, smoke, EXP-010 or EXP-TR03 adapter and no optimizer state is loaded",
+  "epochs": 1,
+  "grad_accumulation": 4,
+  "grad_checkpoint": false,
+  "init_adapter": null,
+  "learning_rate": 1e-05,
+  "lora_dropout": 0.0,
+  "lora_keys": [
+   "self_attn.q_proj",
+   "self_attn.v_proj"
+  ],
+  "lora_layers": 8,
+  "lora_rank": 8,
+  "lora_scale": 20.0,
+  "max_seq_length": 2048,
+  "micro_batch": 1,
+  "optimizer": "adam",
+  "partial_batch": "drop_remainder",
+  "seed": 2026
+ },
+ "inherits": {
+  "meaning": "model pins, packages, Python, hyperparameters, memory limits and the loss/exposure/LoRA contracts are those of the frozen EXP-TR02 harness (imported, never edited), so the rates measured in EXP-TR02 apply; tests/test_tr04_driver.py compares them",
+  "tr02_config_path": "training/tr02/config.json",
+  "tr02_config_sha256": "7d31d916621523281d2226de9802671ddc63b05aad219388064a275abaf5301c",
+  "tr03_tools": "training/tr03/tr03.py (thermal parser; monitor ratios) - plan tooling only; the EXP-TR03 human-review gates are not part of this experiment and are not weakened"
+ },
+ "inputs": {
+  "audit_files_sha256": {
+   "AUDIT.json": "6764607af8967fc0ccd533b83a07957c89d21126bd5503d49b09289f80628237",
+   "EXCLUSIONS.csv": "3c146b5ef1c2d80755b0e7b045cbf46ea97276d254014cc346718368a4d3ec4b",
+   "KEEP_TRAIN.txt": "9785351c03d7b2253a8e673875a9c9f977f33e2332dee865442bfda6ff1c4848",
+   "KEEP_VALIDATION.txt": "15d43f60e3c17f8224dd649c1d8daa200632b21fa02e7e8e48cc2cc68bb55748",
+   "MANIFEST.json": "c13b400aed529828d78c22b38c140b55c06ae43d13d9667e23ef1509aec7e7f2",
+   "MUTATION_REPORT.json": "d31f26a644954143e4c40cd121772a701b57fcd1812e1dfd8dd487220f61e1bb",
+   "TEMPLATE_CONTRACT.json": "64e87d8ba56fce4df6fefbf986eee0744c904344ae2e498294e1c25c6c2188db",
+   "rights/IZMIR_PACKAGE_NOTES.json": "972671a4eb181a69264c58d81ba8ef2a9f7d369348af4e81507c9965a7a6a989"
+  },
+  "corpus_files_sha256": {
+   "train.jsonl": "d5466e80c4e9cf06753d8fbc5c5d28476c35ea309b9f78e34a1a6ee94cb11372",
+   "validation.jsonl": "d8e302d02b05579f50b035a2840445c19603ba555100ac6636a87decb0eb6301"
+  },
+  "corpus_version": "v0.2-rev1",
+  "export_files": {
+   "ROW_IDS.json": "8b5aac32b70e0876fda682815521d5c0bdbf459e6ea19d61ad884e3fce0904f1",
+   "tr04/train.jsonl": "594b9879375f9c0b384b6b5aff6838b6d7f571259428bf50b6cc201e4b0ae860",
+   "tr04/valid.jsonl": "5181935fe71f4a61b5958270e652f7a8c78541195904beaa515621915b676d04"
+  },
+  "export_manifest_sha256": "bb946467661f66171bd1f0b5f2a3a1eff3012b9ce98ad8360c6ee97cc460eb34",
+  "heldout_files_sha256": {
+   "HELDOUT.jsonl": "b0a1dd11c5c5994cd2c979e281f8c980b84fbef2a2a8c3ec7879df5f6bb22cea",
+   "HELDOUT_AUDIT.json": "1e6d6ceadbb2bb5e1893adddfcf44e39dbb2a21889296cf890f0f9b3d6b20cfa",
+   "HELDOUT_MANIFEST.json": "5856a15aa3cfb3eea8dce0d7351c3e3c052b198b06622f77335864b8602414f6"
+  },
+  "per_example_path": "data/axbench-tr/v0.2-rev1/token_lengths_per_example.jsonl",
+  "per_example_sha256": "8dde1cfb9b20c2e9ce095cd0161e860a406c6b8ffad1f24e75d1bbfba175c95d"
+ },
+ "limits": {
+  "mlx_peak_gb": 10.0,
+  "pressure_critical": 4,
+  "reload_abs_tolerance": 0.0001,
+  "reports_per_window": 25,
+  "rss_gb": 11.0,
+  "swap_growth_gb": 2.0,
+  "window_count": 3,
+  "window_ratio_floor": 0.5
+ },
+ "model": {
+  "files": {
+   "LICENSE": {
+    "bytes": 11343,
+    "sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+   },
+   "config.json": {
+    "bytes": 726,
+    "sha256": "1ddb5b89ebc90dcb417a45c213d818577e65976454d29385c8f6140771d95197"
+   },
+   "generation_config.json": {
+    "bytes": 239,
+    "sha256": "2325da0f15bb848e018c5ae071b7943332e9f871d6b60e2ed22ca97d4cb993d2"
+   },
+   "merges.txt": {
+    "bytes": 1671853,
+    "sha256": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5"
+   },
+   "model-00001-of-00002.safetensors": {
+    "bytes": 3441185608,
+    "sha256": "169ad53ec313c3a34b06c0809216e4fc072cce444a5d4ff2b59690d064130ed5"
+   },
+   "model-00002-of-00002.safetensors": {
+    "bytes": 622329984,
+    "sha256": "912becff8d60672aa8628ef08c05898d9adf17c2ad4ae3caf99b065622fdeff9"
+   },
+   "model.safetensors.index.json": {
+    "bytes": 25605,
+    "sha256": "0d660e94b165eb912669a5249dff44b83188c4777a07ddb9611fb78d91b0578d"
+   },
+   "tokenizer.json": {
+    "bytes": 11422654,
+    "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+   },
+   "tokenizer_config.json": {
+    "bytes": 9732,
+    "sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+   },
+   "vocab.json": {
+    "bytes": 2776833,
+    "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+   }
+  },
+  "repo_id": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "tokenizer_sha256": {
+   "tokenizer.json": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+   "tokenizer_config.json": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+  }
+ },
+ "monitor": {
+  "ac_power_required": true,
+  "floor_ratio": 0.5,
+  "floor_windows": 3,
+  "os_sample_seconds": 5,
+  "pressure_warning_level": 2,
+  "pressure_warning_samples": 12,
+  "reference_windows": 4,
+  "slow_ratio": 0.7,
+  "slow_windows": 6,
+  "thermal": "any statement other than 'No thermal warning level has been recorded', 'No performance warning level has been recorded' or 'No CPU power status has been recorded' stops the run; unparseable output stops the run",
+  "updates_per_window": 25
+ },
+ "packages": {
+  "mlx": "0.32.4",
+  "mlx-lm": "0.32.2"
+ },
+ "phases": [
+  {
+   "data": "tr04",
+   "grad_accumulation": 4,
+   "loss_is_diagnostic": false,
+   "max_wall_s": 2700,
+   "microsteps": 3164,
+   "microsteps_per_report": 4,
+   "name": "train",
+   "optimizer_updates": 791
+  },
+  {
+   "kind": "reload",
+   "max_wall_s": 900,
+   "name": "reload",
+   "requires": "train"
+  }
+ ],
+ "python": [
+  3,
+  12
+ ],
+ "rates": {
+  "full_tokens_per_s_note": "probe on the 20 longest rows (1,625); smoke windows were 1,642.1 to 1,692.3",
+  "full_tokens_per_s_slowest_observed": 1625.0,
+  "model_load_seconds": 1.0,
+  "source": "docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/run5-attempt2-at-ed4e75b/RUN_RESULT.md",
+  "thermal_allowance_fraction": 0.25,
+  "thermal_allowance_note": "conservative allowance for a run about 15 times longer than the 2.5 minute smoke; not measured",
+  "validation_note": "8.24 s for 40 rows",
+  "validation_seconds_per_row_slowest_observed": 0.206,
+  "wall_cap_factor": 1.25,
+  "wall_cap_round_to_seconds": 900
+ },
+ "schema": "axbench-tr.exp-tr04-config/1",
+ "status": "proposed; prepared; not executed; not approved; no clearance exists; no training is authorized; exploratory, not human-validated and not deployment-ready; immutable once reviewed (change = new version)"
+}

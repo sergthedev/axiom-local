@@ -1,0 +1,82 @@
+{
+ "checks": {
+  "column_names_also_in_corpus_share": 0.0346,
+  "column_names_note": "descriptive: generic words such as year or month can coincide",
+  "ids_unique": true,
+  "layouts_at_or_above_jaccard_limit": [],
+  "lexical_near_duplicate_requests_vs_corpus_ge_0.8": 0,
+  "lexical_near_duplicate_templates_vs_corpus_ge_0.8": 0,
+  "lineages_with_contract_problems": [],
+  "max_column_set_jaccard_with_any_corpus_layout": 0.1111,
+  "overlap_with_axbench_v0.1_requests": {
+   "exact_normalized_matches": 0,
+   "near_duplicate_pairs": 0,
+   "near_duplicate_requests": 0,
+   "near_duplicates_at_or_above": 0.8,
+   "references": 560,
+   "requests": 346
+  },
+  "rows": 346,
+  "rows_with_audit_problems": 0,
+  "sealed_test_referenced": false,
+  "shared_layout_fingerprints_with_corpus": 0,
+  "shared_normalized_requests_with_corpus": 0,
+  "shared_table_families_with_corpus": 0,
+  "shared_template_texts_with_corpus": 0
+ },
+ "distribution": {
+  "action": {
+   "CLARIFY": 100,
+   "PLAN": 182,
+   "REJECT": 64
+  },
+  "domain": {
+   "economic": 51,
+   "non_economic": 295
+  },
+  "frame": {
+   "clarify:ambiguous_column": 12,
+   "clarify:column_not_found": 12,
+   "clarify:column_type_mismatch": 12,
+   "clarify:invalid_parameter": 12,
+   "clarify:missing_cluster_count": 12,
+   "clarify:missing_column": 4,
+   "clarify:missing_correlation_method": 12,
+   "clarify:missing_operation": 12,
+   "clarify:multiple_operations": 12,
+   "cluster": 40,
+   "compare": 40,
+   "inspect": 40,
+   "inspect_all": 12,
+   "reject:causal_inference": 8,
+   "reject:code_or_system_request": 6,
+   "reject:data_modification": 8,
+   "reject:forecasting": 8,
+   "reject:hypothesis_test": 8,
+   "reject:instruction_override": 6,
+   "reject:out_of_scope": 4,
+   "reject:regression": 8,
+   "reject:unsupported_analysis": 8,
+   "relate": 50
+  },
+  "header_language": {
+   "en": 177,
+   "tr": 169
+  },
+  "language": {
+   "en": 173,
+   "tr": 173
+  },
+  "layouts": 28,
+  "lineages": 55
+ },
+ "limitations": [
+  "written by the same AI tool as the training templates: correlated style and blind spots",
+  "fictional layouts are cleaner than real open-data headers; no real observation is involved",
+  "346 rows over 55 lineages and 28 layouts: small, clustered, exploratory",
+  "no human wrote, checked or validated any row"
+ ],
+ "passed": true,
+ "schema": "axbench-tr.tr04-heldout-audit/1",
+ "status": "AI-authored, synthetic, unreviewed; not human-authored; not human-validated"
+}

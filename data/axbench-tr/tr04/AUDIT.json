@@ -1,0 +1,259 @@
+{
+ "corpus": "axbench-tr/v0.2-rev1",
+ "excluded_by_reason": {
+  "train|label|ambiguous_mention_is_also_an_exact_column": 11,
+  "train|label|duplicate_request_on_the_same_layout": 23,
+  "train|rights|SRC-O01": 1773,
+  "train|rights|SRC-O02": 105,
+  "train|rights|SRC-O03": 71,
+  "train|rights|SRC-O04": 53,
+  "train|rights|SRC-O05": 185,
+  "train|rights|izmir_package_not_usable": 12,
+  "train|rights|origin": 473,
+  "train|trim|partial_batch_trim": 3,
+  "validation|label|ambiguous_mention_is_also_an_exact_column": 1,
+  "validation|label|duplicate_request_on_the_same_layout": 2,
+  "validation|rights|SRC-O01": 865,
+  "validation|rights|SRC-O02": 27,
+  "validation|rights|SRC-O04": 26,
+  "validation|rights|origin": 96,
+  "validation|trim|partial_batch_trim": 3
+ },
+ "excluded_by_stage": {
+  "label": {
+   "train": 34,
+   "validation": 3
+  },
+  "rights": {
+   "train": 2672,
+   "validation": 1014
+  },
+  "trim": {
+   "train": 3,
+   "validation": 3
+  }
+ },
+ "independence_of_kept_splits": {
+  "lineages": 0,
+  "normalized_requests": 0,
+  "schema_fingerprints": 0,
+  "table_families": 0
+ },
+ "input_records": {
+  "train": 5873,
+  "validation": 1396
+ },
+ "kept_distribution": {
+  "train": {
+   "action": {
+    "CLARIFY": 815,
+    "PLAN": 1659,
+    "REJECT": 690
+   },
+   "domain": {
+    "economic": 984,
+    "non_economic": 2180
+   },
+   "frame": {
+    "clarify:ambiguous_column": 78,
+    "clarify:column_not_found": 102,
+    "clarify:column_type_mismatch": 81,
+    "clarify:invalid_parameter": 84,
+    "clarify:missing_cluster_count": 86,
+    "clarify:missing_column": 105,
+    "clarify:missing_correlation_method": 93,
+    "clarify:missing_operation": 110,
+    "clarify:multiple_operations": 76,
+    "cluster": 315,
+    "compare": 464,
+    "inspect": 263,
+    "inspect_all": 119,
+    "reject:causal_inference": 79,
+    "reject:code_or_system_request": 75,
+    "reject:data_modification": 82,
+    "reject:forecasting": 80,
+    "reject:hypothesis_test": 77,
+    "reject:instruction_override": 77,
+    "reject:out_of_scope": 81,
+    "reject:regression": 65,
+    "reject:unsupported_analysis": 74,
+    "relate": 498
+   },
+   "language": {
+    "en": 637,
+    "tr": 2527
+   },
+   "lineages": 87,
+   "records": 3164,
+   "schema_fingerprints": 121,
+   "table_families": 102
+  },
+  "validation": {
+   "action": {
+    "CLARIFY": 94,
+    "PLAN": 193,
+    "REJECT": 89
+   },
+   "domain": {
+    "economic": 92,
+    "non_economic": 284
+   },
+   "frame": {
+    "clarify:ambiguous_column": 12,
+    "clarify:column_not_found": 13,
+    "clarify:column_type_mismatch": 10,
+    "clarify:invalid_parameter": 8,
+    "clarify:missing_cluster_count": 8,
+    "clarify:missing_column": 17,
+    "clarify:missing_correlation_method": 12,
+    "clarify:missing_operation": 9,
+    "clarify:multiple_operations": 5,
+    "cluster": 38,
+    "compare": 57,
+    "inspect": 35,
+    "inspect_all": 18,
+    "reject:causal_inference": 7,
+    "reject:code_or_system_request": 13,
+    "reject:data_modification": 12,
+    "reject:forecasting": 13,
+    "reject:hypothesis_test": 7,
+    "reject:instruction_override": 9,
+    "reject:out_of_scope": 9,
+    "reject:regression": 8,
+    "reject:unsupported_analysis": 11,
+    "relate": 45
+   },
+   "language": {
+    "en": 68,
+    "tr": 308
+   },
+   "lineages": 35,
+   "records": 376,
+   "schema_fingerprints": 32,
+   "table_families": 23
+  }
+ },
+ "kept_records": {
+  "train": 3164,
+  "validation": 376
+ },
+ "limitations": [
+  "the audit restates the generator's rules; it finds inconsistencies, it does not show that a request is natural or a label is what a human would choose",
+  "the template cue lists were written by the same AI tool as the templates (correlated blind spots)",
+  "the İzmir package screen is a pattern match over text fields, not a legal opinion; no hit does not mean no restriction",
+  "no kept record is human-reviewed; provenance.human_review stays 'none'",
+  "dropping World Bank and Eurostat layouts removes all economic layouts from training and validation"
+ ],
+ "rights": {
+  "izmir_packages": 168,
+  "izmir_packages_flagged_by_the_screen": 1,
+  "rule": "kept only if origin synthetic_template, schema source SRC-O06 and the package screen is clean",
+  "source_decisions": {
+   "SRC-O01": "wdi_upstream_compilers_terms_unread",
+   "SRC-O02": "eurostat_dataset_notes_not_found",
+   "SRC-O03": "terms_unverified",
+   "SRC-O04": "terms_unverified",
+   "SRC-O05": "terms_unverified",
+   "SRC-O06": "included_if_package_screen_clean"
+  },
+  "wdi_indicators": [
+   {
+    "addendum_sha256": "0c9f6a6e82c0fb828a7d41a14766f8810a57109b219db5d768d5bd53fdfedfb5",
+    "id": "WB-BN.CAB.XOKA.GD.ZS",
+    "indicator": "Current account balance (% of GDP)",
+    "third_party_compiler": true,
+    "upstream_compiler": "Balance of Payments Statistics Yearbook and data files, International Monetary Fund (IMF); World Development Indicators Database, World Bank (WB); National Acco"
+   },
+   {
+    "addendum_sha256": "df9371a3b6c01e55a3f28991e62e1b1ebbe0cd2a7da94456be9938c7a2962233",
+    "id": "WB-FP.CPI.TOTL.ZG",
+    "indicator": "Inflation, consumer prices (annual %)",
+    "third_party_compiler": true,
+    "upstream_compiler": "International Financial Statistics database, International Monetary Fund (IMF)"
+   },
+   {
+    "addendum_sha256": "5ba11a439eaa6c91ab9fa1ac555c5da4a5a697c1cb0aac1c99342af54dbdb80c",
+    "id": "WB-FR.INR.LEND",
+    "indicator": "Lending interest rate (%)",
+    "third_party_compiler": true,
+    "upstream_compiler": "International Financial Statistics database, International Monetary Fund (IMF)"
+   },
+   {
+    "addendum_sha256": "840db52efe87e4415fecd7d9ac7ca68f875cd8388755126e05609d2e688b5da0",
+    "id": "WB-GC.DOD.TOTL.GD.ZS",
+    "indicator": "Central government debt, total (% of GDP)",
+    "third_party_compiler": true,
+    "upstream_compiler": "Government Finance Statistics Yearbook and data files, International Monetary Fund (IMF)"
+   },
+   {
+    "addendum_sha256": "2324e64be12297b7dd655312acf3581dff838c732d6c989cdfc75653956bd542",
+    "id": "WB-NE.EXP.GNFS.ZS",
+    "indicator": "Exports of goods and services (% of GDP)",
+    "third_party_compiler": true,
+    "upstream_compiler": "Country official statistics, National Statistical Offices (NSOs); National Accounts data files, Central Banks; Staff estimates, World Bank (WB)"
+   },
+   {
+    "addendum_sha256": "7b4d9cbb46f5e6baca7dd719e96f2dc355bd8cd6959dccd11fa48e64ea1f15f3",
+    "id": "WB-NE.IMP.GNFS.ZS",
+    "indicator": "Imports of goods and services (% of GDP)",
+    "third_party_compiler": true,
+    "upstream_compiler": "Country official statistics, National Statistical Offices (NSOs); National Accounts data files, Central Banks; Staff estimates, World Bank (WB)"
+   },
+   {
+    "addendum_sha256": "51cec1e144a5bad8d92238630c0a305e20116e86d34ad95c7c315ed166255b28",
+    "id": "WB-NY.GDP.MKTP.CD",
+    "indicator": "GDP (current US$)",
+    "third_party_compiler": true,
+    "upstream_compiler": "Country official statistics, National Statistical Organizations and/or Central Banks; National Accounts data files, Organisation for Economic Co-operation and D"
+   },
+   {
+    "addendum_sha256": "ed7703d841d4dde2d1cb858f0dd53229fe3e841f72abb17dbc8c950ad20c88ce",
+    "id": "WB-NY.GDP.MKTP.KD.ZG",
+    "indicator": "GDP growth (annual %)",
+    "third_party_compiler": true,
+    "upstream_compiler": "Country official statistics, National Statistical Organizations and/or Central Banks; National Accounts data files, Organisation for Economic Co-operation and D"
+   },
+   {
+    "addendum_sha256": "96520c3a22b1f9da1c7456349a6e70b1643db88d427671faced17cb8b9eaf907",
+    "id": "WB-NY.GDP.PCAP.CD",
+    "indicator": "GDP per capita (current US$)",
+    "third_party_compiler": true,
+    "upstream_compiler": "Country official statistics, National Statistical Organizations and/or Central Banks; National Accounts data files, Organisation for Economic Co-operation and D"
+   },
+   {
+    "addendum_sha256": "879ac40c1e115d0575c0ac1d26a45b68432303927ea163be9c80e7f47c739b12",
+    "id": "WB-PA.NUS.FCRF",
+    "indicator": "Official exchange rate (LCU per US$, period average)",
+    "third_party_compiler": true,
+    "upstream_compiler": "International Financial Statistics database, International Monetary Fund (IMF)"
+   },
+   {
+    "addendum_sha256": "10154473c4d75dd636f728baf231162ddd5a12c910084f832a3b93fe55038fe7",
+    "id": "WB-SL.TLF.CACT.ZS",
+    "indicator": "Labor force participation rate, total (% of total population ages 15+) (modeled ILO estimate)",
+    "third_party_compiler": true,
+    "upstream_compiler": "ILO Modelled Estimates database (ILOEST), International Labour Organization (ILO), publisher: ILOSTAT, type: external database, date accessed: January 17, 2026"
+   },
+   {
+    "addendum_sha256": "3ae370ed4bebba092338e94334c35add71490324ee57f1dfe81885dade51f52f",
+    "id": "WB-SL.UEM.TOTL.ZS",
+    "indicator": "Unemployment, total (% of total labor force) (modeled ILO estimate)",
+    "third_party_compiler": true,
+    "upstream_compiler": "ILO Modelled Estimates database (ILOEST), International Labour Organization (ILO), publisher: ILOSTAT, type: external database, date accessed: January 17, 2026"
+   },
+   {
+    "addendum_sha256": "2f8491efc00bf2c0995112ff8e87aba69e5e9d22d0880b22f7e3a4ec757ba05c",
+    "id": "WB-SP.POP.TOTL",
+    "indicator": "Population, total",
+    "third_party_compiler": true,
+    "upstream_compiler": "World Population Prospects, United Nations (UN), publisher: UN Population Division; Statistical databases and publications from national statistical offices, Na"
+   }
+  ]
+ },
+ "schema": "axbench-tr.tr04-audit/1",
+ "status": "automated and exploratory; not human-reviewed; not human-validated; no model involved",
+ "template_contract": {
+  "lineages": 122,
+  "lineages_with_problems": []
+ }
+}

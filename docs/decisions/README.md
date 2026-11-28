@@ -18,3 +18,4 @@ Statuses: Proposed, Accepted, Superseded, Rejected. Cite `REF-NNN` IDs from `REF
 | [0011](0011-axbench-benchmark-metrics-and-sealing.md) | AXBENCH benchmark design, metrics and owner sealing of the final test | Proposed |
 | [0012](0012-optional-model-environment.md) | Optional Apple Silicon model environment and experiment protocols | Proposed |
 | [0013](0013-exp-tr03-research-protocol.md) | EXP-TR03 research protocol: eligibility, human gates and a bounded single-run LoRA plan | Proposed (draft) |
+| [0014](0014-exp-tr04-exploratory-automated-run.md) | EXP-TR04: a separate, automated, exploratory one-epoch run on audited data | Proposed (draft) |

@@ -36,3 +36,8 @@ src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+# EXP-TR04 modules carry long audit-statement strings that are written verbatim into the
+# generated, hashed reports; wrapping them would only obscure the text.
+"src/axbench_tr/tr04*.py" = ["E501"]

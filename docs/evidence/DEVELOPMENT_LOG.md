@@ -781,3 +781,24 @@ for a comprehensive final audit of AXIOM Verify.
   A first test run found my own mistakes (a regenerated ledger hash key with a stray suffix, tests that mutated identity columns) and
   they were fixed; no check was weakened.
 - Still not done: no ledger, roster or decision exists; no model, driver, training, generation or scoring; no sealed-test access.
+
+## 2026-11-28: EXP-TR04 automated exploratory preparation (separate from EXP-TR03; no training)
+
+- Task: after the technical lead accepted the gate-hardening preparation at `150992f`, prepare a separate automated exploratory
+  experiment: audit the corpus automatically, exclude uncertain rights and incorrect labels, build a separate synthetic held-out
+  benchmark, implement the executable driver on the TR02 infrastructure, freeze a one-epoch configuration and return for
+  clearance. TR03 is frozen and unedited; its human gates are untouched.
+- Rights: found that the EXP-TR02 licence addendum covers only the 93 İzmir packages of the probe and smoke subsets; the corpus
+  uses 168. Fetched every package's CKAN record through `resource_show` (first attempt timed out in the foreground and finished in
+  the background), kept text fields only and screened them with a pattern list. The strict rule (exclude anything uncertain) removes
+  every World Bank, Eurostat and SRC-O03 to O05 layout and all external rows: all kept rows are İzmir layouts. This is a real cost
+  and is stated in the protocol, not worked around.
+- Labels: wrote cue lists for the 122 templates. The first pass flagged 15 lineages; all were lexicon false positives and the lists
+  were narrowed, no template was relabelled. The row re-derivation found 25 duplicate rows and 12 rows whose ambiguous mention is
+  also an exact column name (excluded). Fault injection needed fixes in my own mutation code (a `KeyError` from a missing field, a
+  self-replacement that did not change the mention, a `StopIteration`); the audit now fails closed on records it cannot read.
+- Held-out: wrote 55 phrasings with fictional layouts; the first generator run failed on two phrasings (one cue matched inside a
+  Turkish word, one capital `I` lost by Turkish lower-casing), reworded; a docstring and a limitation string still said 31 lineages
+  (55 is right) and were corrected before freezing.
+- Driver: `training/tr04/` imports TR02 unchanged and adds its config, rules and reload. 90 new tests, no weights loaded.
+- Not done, by design: no model loaded, nothing trained, generated or scored, no sealed-test access, no merge.
