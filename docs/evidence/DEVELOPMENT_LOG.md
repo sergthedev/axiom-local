@@ -732,3 +732,11 @@ for a comprehensive final audit of AXIOM Verify.
   logs and the record are in `docs/evidence/experiments/EXP-TR02-feasibility-smoke/preflight/` (`PREFLIGHT_NOWEIGHT_ed4e75b.md`,
   `at-ed4e75b-sanitized-logs/`); each file was matched against the device's hashes (one word-level transport typo and one
   duplicated fragment were caught by the hashes and resent). A new execution authorization is still required.
+- Second authorized EXP-TR02 sequence at the frozen code head `ed4e75b`, run once on the owner's M5 (owner decision 2026-11-27 21:13Z,
+  resumed by the owner's message 2026-11-28 00:25Z after the first launch was denied by the Mac's own permission control and
+  nothing ran). Probe, smoke and reload all completed with valid `COMPLETE.json` files and no stop rule: MLX peak 6.20 GB, smoke
+  124.1 s for 100 updates, about 1,670 full tokens/s, reload difference 3e-8. Evidence (commit `0800cd4`, 52 files, no weights) is in
+  `docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/run5-attempt2-at-ed4e75b/`. The device session committed and pushed
+  it itself, from a separate evidence checkout, because the owner asked to prioritize committing; this thread then verified all 50
+  sanitized files against `REDACTIONS.json`, rescanned for private data, and cross-checked the numbers in `RUN_RESULT.md` against the
+  raw events. The commit's git author name is the device account's git identity (not sanitizable after the push).
