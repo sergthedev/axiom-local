@@ -1,0 +1,45 @@
+== date -u
+Fri Nov 27 20:51:00 UTC 2026
+== sw_vers
+ProductName:		macOS
+ProductVersion:		27.0.1
+BuildVersion:		26A434
+== sysctl hw.model hw.memsize machdep.cpu.brand_string
+hw.model: Mac17,3
+hw.memsize: 17179869184
+machdep.cpu.brand_string: Apple M5
+== pmset -g batt
+Now drawing from 'AC Power'
+ -InternalBattery-0 (id=22937699)	95%; AC attached; not charging present: true
+== vm_pressure_level
+1
+== swap (vm.swapusage)
+vm.swapusage: total = 1024.00M  used = 2.44M  free = 1021.56M  (encrypted)
+== ps aux | grep -i -E 'mlx|python|train|exp010' | grep -v grep
+(end ps)
+== uv --version
+uv 0.13.10 (Homebrew 2026-11-24 aarch64-apple-darwin)
+== worktree HEAD
+ed4e75b7668c5541c0912a066b57cce88c938713
+== git status --porcelain --untracked-files=all
+[]
+== config.json sha256 (rev5) / at d5f6cd5 (rev4) / expected
+7d31d916621523281d2226de9802671ddc63b05aad219388064a275abaf5301c
+7d31d916621523281d2226de9802671ddc63b05aad219388064a275abaf5301c
+7d31d916621523281d2226de9802671ddc63b05aad219388064a275abaf5301c
+== checkpoint PROVENANCE
+  "repo_id": "Qwen/Qwen3-1.7B",
+  "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+== output dirs
+export absent
+probe absent
+smoke absent
+reload absent
+probe.supervisor absent
+smoke.supervisor absent
+reload.supervisor absent
+
+== versions in the model env (import check only; no weights)
+3.12.16 Device(gpu, 0) mlx 0.32.4 mlx-lm 0.32.2
+== worktree status after sync
+[]

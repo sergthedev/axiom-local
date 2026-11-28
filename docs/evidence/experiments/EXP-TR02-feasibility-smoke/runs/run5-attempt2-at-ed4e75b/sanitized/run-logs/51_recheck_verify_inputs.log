@@ -1,0 +1,24 @@
+CMD: uv run --locked --project envs/model python training/tr02/tr02.py verify-inputs --export $HOME/tr02-run5-work/export
+START: Sat Nov 28 00:25:57 UTC 2026
+{
+ "problems": []
+}
+        0.16 real         0.05 user         0.03 sys
+            34242560  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                3694  page reclaims
+                1415  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   1  messages sent
+                   1  messages received
+                   1  signals received
+                 342  voluntary context switches
+                 733  involuntary context switches
+           176913257  instructions retired
+            81972433  cycles elapsed
+            10109456  peak memory footprint
+EXIT_STATUS: 0

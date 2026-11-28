@@ -1,0 +1,111 @@
+{
+ "access_date": "2026-11-27",
+ "entries": [
+  {
+   "bytes": 2326,
+   "excerpt": "\"license:apache-2.0\"",
+   "id": "LE-01",
+   "retrieved": "2026-11-27",
+   "sha256": "51e15433211518cf03c9e202dac94254eef230ebf5facb911887a095b0fafedd",
+   "sources": [
+    "SRC-N01"
+   ],
+   "status": "excerpt_found",
+   "supports": "Hub metadata tag for the Turkish translation: Apache-2.0. Apache-2.0 permits modification and redistribution with notice and a statement of changes.",
+   "url": "https://huggingface.co/api/datasets/Cognipeer/synthetic-text-to-sql-tr"
+  },
+  {
+   "bytes": 1968,
+   "excerpt": "\"license:apache-2.0\"",
+   "id": "LE-02",
+   "retrieved": "2026-11-27",
+   "sha256": "f73e992565e05fcb82988c1521934cf51928d0cc8ca9d31616eead91e3b479b8",
+   "sources": [
+    "SRC-N01"
+   ],
+   "status": "excerpt_found",
+   "supports": "The upstream English dataset that Cognipeer translated is Apache-2.0 on the Hub.",
+   "url": "https://huggingface.co/api/datasets/gretelai/synthetic_text_to_sql"
+  },
+  {
+   "bytes": 1532,
+   "excerpt": "\"license:mit\"",
+   "id": "LE-03",
+   "retrieved": "2026-11-27",
+   "sha256": "4b013103f97b3697c7a3eb8e6a8ad33a3198592b946eeee8304e8202068a81da",
+   "sources": [
+    "SRC-N03"
+   ],
+   "status": "excerpt_found",
+   "supports": "Hub metadata tag: MIT (the README badge says Apache-2.0; both are permissive). Used only for short out-of-scope questions that become REJECT negatives.",
+   "url": "https://huggingface.co/api/datasets/AlicanKiraz0/Turkish-Finance-SFT-Dataset"
+  },
+  {
+   "bytes": 24920,
+   "excerpt": "tüm materyaller aksi belirtilmedikçe CC BY 4.0 uluslararası lisansı ile İzmir Büyükşehir Belediyesi tarafından lisanslanmıştır. Lisans detayları için; https://creativecommons.org/licenses/by/4.0/deed.tr bağlantısını kullanabilirsiniz. Veriler atıf vermek kaydıyla ticari amaç da dahil olmak üzere kopyalanabilir, düzenlenebilir, dağıtılabilir. Şunları Yapmakta Özgür",
+   "id": "LE-04",
+   "retrieved": "2026-11-27",
+   "sha256": "857bcf22ac2fef6c9da2fe067e1358fef93d29d7a031052dcd36f8bede39401d",
+   "sources": [
+    "SRC-O06"
+   ],
+   "status": "excerpt_found",
+   "supports": "İzmir open-data licence page: CC BY 4.0, copying, editing and distribution allowed with attribution, commercial use included. Datasets labelled otherwise were excluded.",
+   "url": "https://acikveri.bizizmir.com/license"
+  },
+  {
+   "bytes": 1876253,
+   "excerpt": "License : Creative Commons Attribution 4.0 This dataset is licensed under Creative Commons Attribution 4.0 Contact data@wo",
+   "id": "LE-05",
+   "retrieved": "2026-11-27",
+   "sha256": "7f94ce704e9cffb441f3e968404082330a604d17ea0f4eb9acab238812f82503",
+   "sources": [
+    "SRC-O01"
+   ],
+   "status": "excerpt_found",
+   "supports": "WDI-specific catalogue page: licensed under Creative Commons Attribution 4.0.",
+   "url": "https://datacatalog.worldbank.org/search/dataset/0037712/World-Development-Indicators"
+  },
+  {
+   "bytes": 17657,
+   "excerpt": "The Creative Commons Attribution 4.0 International license allows users to copy, modify and distribute data in any format for any purpose, including commercial use. Users are only obligated to give appropriate credit (attribution) and indicate if they have made any",
+   "id": "LE-06",
+   "retrieved": "2026-11-27",
+   "sha256": "f7106582fe705d8ea31c2bd7ef726636942b870104a88d882563b16bcece3910",
+   "sources": [
+    "SRC-O01"
+   ],
+   "status": "excerpt_found",
+   "supports": "CC BY 4.0 allows copying, modification and distribution for any purpose with credit.",
+   "url": "https://datacatalog.worldbank.org/public-licenses"
+  },
+  {
+   "bytes": 179849,
+   "excerpt": "Reuse of statistical data, metadata, publications, and other dissemination tools published on this website for commercial or non-commercial purposes is authorised provided the source is acknowledged. The reuse policy of the European Commission is implemented by the Dec",
+   "id": "LE-07",
+   "retrieved": "2026-11-27",
+   "sha256": "92eb8337512e377da3d27938a2c1b251b510599dcc2ec0528b3a315a6c65e15e",
+   "sources": [
+    "SRC-O02"
+   ],
+   "status": "excerpt_found",
+   "supports": "Eurostat copyright notice: reuse of statistical data is authorised for commercial and non-commercial purposes provided the source is acknowledged.",
+   "url": "https://ec.europa.eu/eurostat/web/main/help/copyright-notice"
+  },
+  {
+   "bytes": 9186,
+   "excerpt": "\"license:apache-2.0\"",
+   "id": "LE-08",
+   "retrieved": "2026-11-27",
+   "sha256": "48de5f51eb5b12f9b67ca867297c2129fe7142c20235a54d6b6db1dc97070022",
+   "sources": [
+    "SRC-M01"
+   ],
+   "status": "excerpt_found",
+   "supports": "Qwen3-1.7B: Apache-2.0. Only the tokenizer and chat template were downloaded.",
+   "url": "https://huggingface.co/api/models/Qwen/Qwen3-1.7B"
+  }
+ ],
+ "note": "Evidence for a human reader, not legal advice; hashes identify the bytes read.",
+ "schema": "axbench-tr.licence-evidence/1"
+}

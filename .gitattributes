@@ -8,3 +8,19 @@ uv.lock text eol=lf
 data/axbench/**/*.jsonl -text
 data/axbench/**/*.json -text
 data/axbench/**/*.csv -text
+# AXBENCH-TR files are hashed in MANIFEST.json, ACQUISITION.json and the registry manifest: keep their bytes identical on every platform.
+data/axbench-tr/**/*.jsonl -text
+data/axbench-tr/**/*.json -text
+data/axbench-tr/**/*.csv -text
+
+# EXP-TR02 preflight evidence logs: raw bytes are hashed in the evidence index; keep them identical on every platform.
+docs/evidence/experiments/EXP-TR02-feasibility-smoke/preflight/**/*.log -text
+docs/evidence/experiments/EXP-TR02-feasibility-smoke/preflight/**/*.txt -text
+docs/evidence/experiments/EXP-TR02-feasibility-smoke/preflight/**/*.json -text
+# EXP-TR02 run evidence (sanitized logs): keep raw bytes identical on every platform.
+docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/**/*.log -text
+docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/**/*.stdout -text
+docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/**/*.txt -text
+docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/**/*.json -text
+docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/**/*.jsonl -text
+docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/**/*.md -text

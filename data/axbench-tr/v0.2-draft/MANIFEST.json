@@ -1,0 +1,39 @@
+{
+ "acquisition_manifest_sha256": "15cb4c9dd74b4a9bc02d90eade780a49f6f7cf1fadae9f0f0231511b58308b68",
+ "base_commit": "fbd4adc3bab3d50e6912935a6bf982fbec62f10b",
+ "corpus_version": "axbench-tr/0.2-draft",
+ "external_adapted": {
+  "SRC-N01 requested Turkish counts": {
+   "compare": 700,
+   "data_modification": 300,
+   "inspect": 300
+  },
+  "SRC-N03 negatives": 300
+ },
+ "files": {
+  "train.jsonl": {
+   "bytes": 10536327,
+   "records": 6942,
+   "sha256": "c40d1bc8c18dad84a0cbabdf0bc109e03a3645e60025ef3adaa31425ed676792"
+  },
+  "validation.jsonl": {
+   "bytes": 2595608,
+   "records": 1683,
+   "sha256": "4d7d82414c5aa639955a23bf2f97b0f27193662efdf6c8e2683f77a5979c24e0"
+  }
+ },
+ "generator": "axbench_tr.synth/0.2",
+ "registry_sha256": "9440310ae28280ded828ce9c58f9e02b3fc9415c8f8f1bb0963d080f345f9115",
+ "seed": "axbench-tr-0.2-draft",
+ "status": "draft: AI-authored, no human review (human_review is none on every record)",
+ "synthetic_sizes": {
+  "train": 5400,
+  "validation": 1300
+ },
+ "table_partition_counts": {
+  "train": 146,
+  "validation": 54
+ },
+ "tables_in_inventory": 255,
+ "tables_usable": 200
+}

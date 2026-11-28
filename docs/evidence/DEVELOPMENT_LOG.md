@@ -526,6 +526,167 @@ for a comprehensive final audit of AXIOM Verify.
   byte-identical to attempt 2 on all 160 requests.
 - The final test was not accessed. Nothing was trained.
 
+### AXBENCH-TR v0.2 draft: acquisition and corpus (2026-11-27)
+- New package `src/axbench_tr` (acquisition, real-schema inventory, generator, adapters, validator, contamination
+  checks). The deterministic engine, `axiom_router` contracts, `src/axbench` and EXP-010 were not changed.
+- 35 sources were surveyed; 21 were downloaded (raw files stay outside Git with SHA-256 in `ACQUISITION.json`).
+  The proxy allowlist was widened step by step with the owner's approval; no access restriction was bypassed.
+- Failures found and fixed while building: TCMB archive 404 for some dates; the Cognipeer parquet needed an
+  optional `pyarrow` (build-time only); templates that echoed v0.1 phrasing (caught by the contamination check);
+  column collisions in `inspect all` records; a year column treated as a measure; ambiguous partial column names;
+  vacuous test assertions; a UTF-8 byte-order mark leading 95 train records' first header (stripped, tested).
+- The validator, mutation-tested, refuses the build on any problem. Result: 8,625 records, 0 problems.
+- Not done: TÜİK, EVDS, ILOSTAT, IMF and İBB data; human review; the sealed-test overlap check (never accessed);
+  any training.
+- GitHub write access returned 403 in this environment, so the branch was committed locally first.
+- Full suite in this container: 720 passed, 4 to 5 failed in `tests/test_replay.py` and
+  `tests/test_review_regressions.py` (fresh-process replay and environment metadata; the set varies between runs).
+  The same files fail with 5 failures on an untouched `origin/main` here, so they are environmental, not caused by this
+  branch; they were not investigated. All 26 new tests pass.
+
+### AXBENCH-TR pre-training clearance work (2026-11-27, after Issue #12 and PR #13)
+- Draft PR #13 opened against Issue #12 after GitHub authorization returned.
+- First CI run on the PR: macOS passed all tests; Windows failed `test_committed_corpus_matches_manifest_and_validates`
+  because Git converted line endings of `train.jsonl`. Fix: `.gitattributes` rules `-text` for
+  `data/axbench-tr/**/*.{jsonl,json,csv}`, matching `data/axbench`.
+- Replay failures: the environment fingerprint sorts `detected_pools` by API and prefix only; NumPy and SciPy ship two
+  OpenBLAS builds with the same prefix, so their order differs between fresh processes. Adding `version` to the sort key
+  gave 74 of 74 passes in 3 runs; the change was reverted (engine rule) and is proposed separately.
+- Defect found by the review-sample work: 8 finance negatives began with list numbers ("40. ...") copied from the
+  source text; the adapter now strips them. The corpus was rebuilt (counts unchanged) and hashes recorded again.
+- `base_commit` in the corpus manifest is now the merge base with `origin/main`, so the manifest does not change when
+  the branch gets commits. Two consecutive builds were byte-identical.
+- Added: reproducible 300-record Turkish review sample and protocol; licence evidence (8 pages, hashed, excerpts);
+  near-duplicate audit; token gate and per-example lengths; MLX export; tests (33 in `tests/test_axbench_tr.py`).
+- Sealed test: not accessed and its contamination command not run, per the owner.
+
+### AXBENCH-TR revision 1 after the technical review of PR #13 (2026-11-27)
+- The review accepted the draft as acquisition evidence only. Blocking defect confirmed: the adapters derived a plan
+  from SQL shape, so SUM (not a Core kernel), value filters, rankings and wrong measures became labelled PLANs.
+  Fix: `axbench_tr/intent.py` keeps an upstream row only if the whole request is a plain average, minimum or maximum
+  question matching the bound columns; nothing is relabelled. Exclusions and reasons are in `AUDIT.json`.
+- Splits: schema fingerprints (normalised column names and kinds) and table families are now checked across all
+  origins; an upstream schema shared by domains of both splits is used in one split only (5,223 rows excluded);
+  one validation lineage was removed for a cross-split lexical near-duplicate at cosine 0.9. The audit says plainly
+  that this is not semantic deduplication.
+- SRC-N03 is quarantined (MIT tag versus Apache badge); nothing from it is in v0.2-rev1. No blanket MIT: per-origin
+  licences, Apache-2.0 and CC BY 4.0 texts in `data/axbench-tr/LICENSES/`. The committed economic CSVs were scanned for
+  private fields; one CSV with contact details was removed. Documentation no longer calls the Cognipeer tables real.
+- The draft (8,625 records) is preserved unchanged under `v0.2-draft/` with a README; `v0.2-rev1/` has a new seed and
+  a new 390-record review sample (300 Turkish) with predeclared gates and a second-review protocol.
+- Reproducibility: an isolated locked environment (`envs/data`, pyarrow, tokenizers, jinja2) rebuilds the corpus; the
+  raw files are verified against `ACQUISITION.json` before a build, which stops on a mismatch; two builds, one in
+  each environment, were byte-identical. A first isolated rebuild differed only because my snapshot predated two
+  code edits, not because the build is unstable.
+- A comparison that "passed" while the build had crashed (system Python lacked scikit-learn, files not rewritten) was
+  caught by checking file modification times and redone with the project environment.
+- Token statistics now verify the pinned tokenizer hashes, encode the whole sequence jointly, and report boundary
+  straddles (0) and separate-versus-joint differences (0).
+- EXP-TR02: reading mlx-lm 0.32.2 showed the stock trainer truncates silently, reports loss-token throughput, validates
+  one update early and supervises the empty thinking block. A new independent harness (`training/tr02/`) fixes each,
+  with immutable input hashes, an exact schedule (smoke: 400 rows once = 400 microsteps = 100 updates), separate
+  MLX-peak and RSS rules, a supervisor and 21 tests. No model was loaded; PR #11 was not touched.
+- Not done: human review, independently authored held-out tasks, the separate replay-fingerprint PR (prepared after
+  this PR, from `main`, as its own draft), the sealed-test check (not accessed), any training.
+
+### AXBENCH-TR revision 2 after the second technical review of PR #13 (2026-11-27)
+- The review accepted the progress and asked for a focused harness revision and no-weight tests, without widening
+  scope. Nothing was trained or loaded; the sealed test was not accessed; PR #11 was not touched.
+- Corpus gates: the English gate no longer accepts one extra modifier or 5-character stem prefixes (whole-word stems;
+  negation, "only", "except", ranking and quantifier words excluded). A first Turkish boundary pattern (`ama\b`) also
+  matched "ortalama"; the bug was caught by the corpus tests and fixed with `\bama\b`. The Turkish gate still does not
+  check the translated measure or group, so the 97 Turkish external PLANs are tagged `translation_unverified` and
+  quarantined from product training; mutation tests cover the English gate and document the Turkish limitation.
+  Rebuild: 7,269 records (569 external, from 732); the corpus, review sample, token statistics and all documents were
+  regenerated. The probe and smoke now draw only rights-cleared `synthetic_template` rows (Gretel terms and the SRC-N03
+  conflict remain open).
+- Harness blockers fixed in `training/tr02/tr02.py`: the stop rules now audit every event (validation, load and done
+  included), the exact event order, finite and in-range values, the final MLX peak, exact iteration indices, a finite
+  positive iteration rate, the optimizer step count, the LoRA tensor count and shapes (from the checkpoint config) and
+  a changed, non-zero saved adapter whose files the supervisor re-hashes; the reload is a supervised phase with hash and
+  tolerance checks; all ten EXP-009 checkpoint files are pinned by size and SHA-256 with extra-file rejection, plus
+  package, offline and clean-tree-at-the-approved-commit checks, all run at execution time in the supervisor and the
+  child; the baseline is taken before the child starts; fresh output and supervisor directories; the `ps` exit race,
+  malformed events, interrupts and probe failures terminate the child in a `finally`; logs are never overwritten; a
+  phase starts only after the previous phase's `COMPLETE.json`; padded and full-token rates are both reported;
+  `collect-evidence` keeps the raw events in the repository.
+- A finding from running the stock loss mask (`check-iterator`, CPU build): `default_loss` scores one extra target per
+  row (the padding after `<|im_end|>`). The harness uses an exact-mask loss. The three tests that were skipped in CI
+  (iterator and mask) pass in the MLX CPU build; they still do not validate the GPU path, so the M5 preflight is part of
+  the protocol.
+- A mistake caught while testing: my first events helper gave the validation events a lower MLX peak than the training
+  reports, which the new monotonic-peak rule correctly refused; the helper was fixed, not the rule.
+- Not done: human review, held-out authoring, the M5 preflight and the smoke (no approval), the sealed-test check.
+
+### EXP-TR02 no-weight M5 preflight (2026-11-27, after the technical clearance of PR #13 at 96cbdf7)
+- The review cleared only the no-weight preflight at the immutable head. It was run on the owner's M5 from a clean,
+  isolated worktree at exactly that commit with the locked model environment and offline flags: export, `verify-inputs`,
+  `verify-model` (hashing only), `check-data`, `check-iterator` for probe and smoke, `preflight probe`. All seven exited 0
+  with no problems; memory pressure stayed at 1; no weights were loaded and `supervise`/`run` were not executed.
+- The loss-mask finding from the CPU build holds on the M5: the stock `default_loss` counts one token more than the answer in
+  every sample, the exact-mask loss equals the answer. The export hashes are byte-identical to the Linux export.
+- Source-rights check of the selected rows: none uses an SRC-N01 (Gretel-derived) schema, but 23 smoke rows are on header
+  layouts from SRC-O03, O04 and O05, whose terms are unverified. Recorded as an open point for the reviewer; no code changed.
+- Evidence: `docs/evidence/experiments/EXP-TR02-feasibility-smoke/preflight/`. The record is transcribed from the report of
+  the session that ran the commands; the raw logs stayed on the device.
+
+
+### EXP-TR02 final licensing revision (2026-11-27, owner-authorized, no training)
+- Trigger: the owner-authorized comment on PR #13 asked to resolve the 23 smoke records on schema sources with unverified
+  terms (ECB 8 train, OECD 4 train and 1 validation, TCMB 10 train) and to verify the raw M5 logs behind the preflight record.
+- Decision: restrict the probe and smoke to `synthetic_template` rows on table schemas from SRC-O01, O02 and O06
+  (`RIGHTS_VERIFIED_SCHEMA_SOURCES` in `src/axbench_tr/export.py`). The ranking is unchanged, so each dropped row is replaced
+  by the next-ranked eligible row of the same frame: 22 train and 1 validation rows changed; 378 train rows, 39 validation
+  rows and all 20 probe rows are unchanged (the probe was already entirely SRC-O06).
+- Evidence for the three sources was read for the exact datasets the subsets use and recorded in a new file,
+  `data/axbench-tr/sources/LICENCE_EVIDENCE_ADDENDUM_1.json` (`python -m axbench_tr licences-addendum`); the original
+  `LICENCE_EVIDENCE.json` is unchanged (a test pins its hash). WDI: the catalogue page labels the dataset CC BY 4.0; the
+  World Bank site terms say content is non-commercial "unless otherwise stated", so the use rests on that dataset label,
+  and no indicator-level override was found (several indicators are compiled from IMF, ILO, UN, OECD or Eurostat; their own
+  terms were not read). Eurostat: general reuse permission with acknowledgement; the commercial-use exception list covers
+  data for countries other than EU, EFTA and official acceding or candidate countries, and Turkey is a candidate country; the
+  dataflow records name Eurostat as creator for the three datasets. İzmir: 93 packages (116 tables) used; 92 carry
+  `Izmir-Metropolitan-Municipality-License`, whose licence URL is the page that states CC BY 4.0 unless stated otherwise, and
+  one carries `cc-by`. A first draft of the addendum copied WDI `sourceOrganization` text containing a URL path that the
+  repository's own privacy test matched as a local path; the URL text is now removed from that field (the raw bytes are
+  still identified by their hash).
+- Numbers after the change: smoke 400 train rows, 206,526 full tokens (212,704 padded), supervised answer tokens 10,530
+  (train) and 1,069 (validation); smoke train rows by schema source O06 257, O01 133, O02 10; validation O01 28, O06 11, O02 1;
+  probe unchanged (20 rows, 24,260 tokens). The export manifest, `ROW_IDS.json`, `smoke/train.jsonl`, `smoke/valid.jsonl` and
+  `training/tr02/config.json` were re-pinned; `peak_probe` files are byte-identical to the previous export.
+- Checks run on Linux (no weights): `verify-inputs`, `check-data`, `check-iterator` for probe and smoke (0 problems); ruff;
+  62 harness tests with the MLX CPU build; 82 `axbench_tr` tests. Four replay tests that fail on this Linux host come from the
+  pool-order defect fixed in PR #14 and do not touch this change.
+
+### EXP-TR02 log verification and second no-weight preflight (2026-11-27, same review, no training)
+- The original raw logs of the first M5 preflight (head 96cbdf7) were checked on the device against the transcribed record: no
+  numeric discrepancy; SHA-256 of all nine originals measured twice with identical results. Sanitized copies (home directory
+  prefixes and one Homebrew path replaced; no account or device names or credentials were present) were committed byte-exact
+  in `at-96cbdf7-sanitized-logs/` after decoding the transported base64 here and matching every hash against the device's
+  `REDACTIONS.json`. Facts the first record had taken from live terminal output and no log preserved (AC power, process check,
+  OS and hardware, MLX device line, worktree status, checkpoint revision, `uv sync`) are listed in `LOG_VERIFICATION.md`.
+- Code head d5f6cd5 passed CI on macOS and Windows before the second preflight was requested. The preflight ran once on the
+  owner's M5 from a clean worktree at that exact commit: all seven steps (plus the logged `uv sync`) exited 0 with no problems,
+  AC power and memory pressure 1, no other MLX or Python process, export hashes equal to the pins, no weights loaded,
+  `supervise` and `run` not executed. This time the safety readings, export hash list and MLX device line were saved in
+  `00_environment.txt`, and step 6's output was kept. One transport typo in one base64 block (a mangled word in
+  `03_verify_model.log`) was caught by the hash check and the block re-sent; the committed file matches the device hash.
+- Observed differences from the first run, as expected from the changed subset: smoke supervised answer tokens 10,530
+  (was 10,534), new smoke mask samples; probe values identical.
+
+### EXP-TR02 authorized sequence at d5f6cd5: probe stopped by the harness (2026-11-27, no training)
+- The owner authorized exactly one probe, smoke and reload sequence at code commit d5f6cd5 (decision card in the project
+  thread, 19:08 UTC). The authorization was recorded on the device before any model load; pre-launch checks, execution-time
+  checks and the export hashes all passed.
+- The first `supervise` launch was denied by the Mac's local permission control and not bypassed; after the owner's interactive
+  approval the original command ran once. The weights loaded (MLX peak 3.44 GB), 32 LoRA tensors with 458,752 trainable
+  parameters were attached, and the harness stopped with `lora_shapes_not_ok` before any update: it expects names starting with
+  `layers.` and mlx-lm 0.32.2 names them `model.layers.`. P2 and P3 were not started; no retry, no code change.
+- Reproduced the naming without weights on a tiny CPU Qwen3 model. The Linux unit tests did not use a real mlx-lm model object.
+- Sanitized failure evidence was verified byte-exact against the device's hashes and committed under
+  `docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/p1-probe-stopped-at-d5f6cd5/`. The README `collect-evidence`
+  command only writes inside the repository and was not used on the clean execution worktree.
+
 ### Environment fingerprint: deterministic order of same-prefix native pools (2026-11-27)
 - Symptom: on Linux, `tests/test_replay.py::test_replay_in_fresh_processes_is_byte_identical` and three tests in
   `tests/test_review_regressions.py` failed on untouched `origin/main` in a varying subset (5, 1 and 3 failures in three
@@ -549,3 +710,33 @@ for a comprehensive final audit of AXIOM Verify.
   criteria apply and never the exact-bytes ones. No numerical kernel, tolerance, result hash or fingerprint schema
   changed. A reviewer-side reproduction of the Linux subprocess measurements has not been done.
 
+### EXP-TR02 harness revision 5: name contract, tiny-model tests, evidence workflow (2026-11-27, no training)
+- Owner authorization in the project thread (corrective engineering only, no training); the technical lead's task on PR #13
+  set the scope. Baseline first: PR #13 conflicted with `main` after PR #14 merged, so GitHub started no CI on the evidence
+  commit; `main` was merged into the branch (no rebase, no force-push, conflicts only in the three append-only evidence
+  files, both sides kept) and CI went green on macOS and Windows at `2c8eac2` (run 46064296958).
+- Fix: `expected_lora_shapes` now names `model.layers.N...` from the config and refuses other model types. Every call site
+  was audited (initial attachment, saved adapter versus contract and versus live, reload versus contract; `build_rules` uses
+  counts only) and `run_reload` gained a live-versus-saved tensor check. The `lora` event carries a bounded name and shape
+  report. `config.json` is byte-identical to revision 4 (test).
+- Reproduced the prefixed names on a real tiny Qwen3 before the fix, then wrote regression tests on a real randomly initialized tiny
+  Qwen3 (no pretrained weights, no optimizer step) with the locked MLX and mlx-lm; skipped, not passed, where MLX is absent.
+  mlx-lm's own `load_adapters` was read and refuses names that are not adapter parameters, which the tests use as an
+  independent check.
+- Evidence workflow: `collect-evidence` refuses missing runs and duplicate names and never copies weights; new
+  `sanitize-evidence` with a redaction manifest; a documented separate evidence checkout (`.evidence-raw/` is git-ignored).
+- Another session on the owner's Mac had started the same repair locally in parallel; it was stopped before any commit.
+- M5 no-weight preflight at the frozen code head `ed4e75b` (CI green on macOS and Windows, run 46065804096): ten steps, each run
+  once, all exit 0 (inputs, checkpoint inventory, data, probe and smoke iterator masks, `check-lora`, `preflight`, 13 tiny-model
+  tests passed on the M5 with MLX 0.32.4); no model weights were loaded, nothing was trained, no sealed-test access. Sanitized
+  logs and the record are in `docs/evidence/experiments/EXP-TR02-feasibility-smoke/preflight/` (`PREFLIGHT_NOWEIGHT_ed4e75b.md`,
+  `at-ed4e75b-sanitized-logs/`); each file was matched against the device's hashes (one word-level transport typo and one
+  duplicated fragment were caught by the hashes and resent). A new execution authorization is still required.
+- Second authorized EXP-TR02 sequence at the frozen code head `ed4e75b`, run once on the owner's M5 (owner decision 2026-11-27 21:13Z,
+  resumed by the owner's message 2026-11-28 00:25Z after the first launch was denied by the Mac's own permission control and
+  nothing ran). Probe, smoke and reload all completed with valid `COMPLETE.json` files and no stop rule: MLX peak 6.20 GB, smoke
+  124.1 s for 100 updates, about 1,670 full tokens/s, reload difference 3e-8. Evidence (commit `0800cd4`, 52 files, no weights) is in
+  `docs/evidence/experiments/EXP-TR02-feasibility-smoke/runs/run5-attempt2-at-ed4e75b/`. The device session committed and pushed
+  it itself, from a separate evidence checkout, because the owner asked to prioritize committing; this thread then verified all 50
+  sanitized files against `REDACTIONS.json`, rescanned for private data, and cross-checked the numbers in `RUN_RESULT.md` against the
+  raw events. The commit's git author name is the device account's git identity (not sanitizable after the push).

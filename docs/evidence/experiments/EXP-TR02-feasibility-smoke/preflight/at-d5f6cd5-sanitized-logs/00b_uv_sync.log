@@ -1,0 +1,73 @@
+CMD: uv sync --locked --project envs/model
+START: Fri Nov 27 18:44:56 UTC 2026
+Using CPython 3.12.16 interpreter at: <local-path>
+Creating virtual environment at: envs/model/.venv
+Resolved 46 packages in 8ms
+   Building axiom-local @ file://$HOME/tr02-preflight-work-2/repo
+      Built axiom-local @ file://$HOME/tr02-preflight-work-2/repo
+Prepared 1 package in 803ms
+Installed 45 packages in 152ms
+ + annotated-doc==0.0.6
+ + annotated-types==0.8.0
+ + anyio==4.16.0
+ + axiom-local==0.0.0 (from file://$HOME/tr02-preflight-work-2/repo)
+ + click==8.5.1
+ + cloudpickle==3.1.2
+ + filelock==4.2.10
+ + fsspec==2026.9.0
+ + h11==0.16.0
+ + hf-xet==1.8.0
+ + httpcore2==2.16.0
+ + httpx2==2.16.0
+ + huggingface-hub==2.4.0
+ + idna==3.20
+ + jinja2==3.1.6
+ + joblib==1.6.0
+ + markdown-it-py==4.3.0
+ + markupsafe==3.0.4
+ + mdurl==0.1.2
+ + mlx==0.32.4
+ + mlx-lm==0.32.2
+ + mlx-metal==0.32.4
+ + narwhals==2.28.0
+ + numpy==2.5.5
+ + packaging==26.3
+ + protobuf==7.36.2
+ + pydantic==2.14.4
+ + pydantic-core==2.50.5
+ + pygments==2.21.0
+ + pyyaml==6.0.3
+ + regex==2026.11.9
+ + rich==15.0.0
+ + safetensors==0.8.0
+ + scikit-learn==1.9.1
+ + scipy==1.18.1
+ + sentencepiece==0.2.3
+ + shellingham==1.5.4
+ + threadpoolctl==3.8.0
+ + tokenizers==0.23.3
+ + tqdm==4.70.1
+ + transformers==5.22.2
+ + truststore==0.10.5
+ + typer==0.29.1
+ + typing-extensions==4.16.0
+ + typing-inspection==0.4.5
+        1.16 real         0.30 user         0.26 sys
+            51953664  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                9870  page reclaims
+                1683  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                  24  messages sent
+                  27  messages received
+                   2  signals received
+                1742  voluntary context switches
+                2767  involuntary context switches
+          2579789663  instructions retired
+           952948776  cycles elapsed
+            28345088  peak memory footprint
+EXIT_STATUS: 0

@@ -1,0 +1,24 @@
+CMD: uv run --locked --project envs/model --with pytest==9.2.0 python -m pytest tests/test_tr02_lora_tiny_qwen3.py -q -p no:cacheprovider
+START: Fri Nov 27 20:52:12 UTC 2026
+Installed 5 packages in 10ms
+.............                                                            [100%]
+13 passed in 1.12s
+        1.77 real         1.19 user         0.26 sys
+           125550592  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               17676  page reclaims
+                 332  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                  23  messages sent
+                  24  messages received
+                   1  signals received
+                 852  voluntary context switches
+                1517  involuntary context switches
+           742920431  instructions retired
+           228153120  cycles elapsed
+            18088704  peak memory footprint
+EXIT_STATUS: 0

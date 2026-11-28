@@ -1,0 +1,77 @@
+CMD: uv run --locked --project envs/model python training/tr02/tr02.py check-iterator --export $HOME/tr02-preflight-work/export --tokenizer-dir $HOME/axiom-models/qwen3-1.7b --phase smoke
+START: Fri Nov 27 16:32:04 UTC 2026
+{
+ "phase": "smoke",
+ "rows": 400,
+ "problems": [],
+ "problem_count": 0,
+ "mask_samples": [
+  {
+   "microstep": 1,
+   "mask_tokens": 30,
+   "supervised_tokens": 30,
+   "stock_mask_tokens": 31
+  },
+  {
+   "microstep": 2,
+   "mask_tokens": 28,
+   "supervised_tokens": 28,
+   "stock_mask_tokens": 29
+  },
+  {
+   "microstep": 3,
+   "mask_tokens": 27,
+   "supervised_tokens": 27,
+   "stock_mask_tokens": 28
+  },
+  {
+   "microstep": 4,
+   "mask_tokens": 36,
+   "supervised_tokens": 36,
+   "stock_mask_tokens": 37
+  },
+  {
+   "microstep": 5,
+   "mask_tokens": 22,
+   "supervised_tokens": 22,
+   "stock_mask_tokens": 23
+  },
+  {
+   "microstep": 6,
+   "mask_tokens": 22,
+   "supervised_tokens": 22,
+   "stock_mask_tokens": 23
+  },
+  {
+   "microstep": 7,
+   "mask_tokens": 40,
+   "supervised_tokens": 40,
+   "stock_mask_tokens": 41
+  },
+  {
+   "microstep": 8,
+   "mask_tokens": 27,
+   "supervised_tokens": 27,
+   "stock_mask_tokens": 28
+  }
+ ]
+}
+        1.53 real         1.35 user         0.16 sys
+           282738688  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               22596  page reclaims
+                  78  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   1  messages sent
+                   1  messages received
+                   1  signals received
+                   4  voluntary context switches
+                2849  involuntary context switches
+           105407505  instructions retired
+            42169680  cycles elapsed
+            10076712  peak memory footprint
+EXIT_STATUS: 0

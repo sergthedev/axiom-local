@@ -1,0 +1,197 @@
+{
+  "corpus": "axbench-tr/0.2-draft",
+  "examples_over_gate": 0,
+  "longest_ten": [
+    {
+      "columns": 43,
+      "completion_tokens": 37,
+      "id": "t2-train-00074",
+      "language": "tr",
+      "prompt_tokens": 1182,
+      "sequence_tokens": 1219,
+      "split": "train"
+    },
+    {
+      "columns": 43,
+      "completion_tokens": 22,
+      "id": "t2-train-03685",
+      "language": "tr",
+      "prompt_tokens": 1196,
+      "sequence_tokens": 1218,
+      "split": "train"
+    },
+    {
+      "columns": 43,
+      "completion_tokens": 31,
+      "id": "t2-train-02797",
+      "language": "tr",
+      "prompt_tokens": 1185,
+      "sequence_tokens": 1216,
+      "split": "train"
+    },
+    {
+      "columns": 43,
+      "completion_tokens": 36,
+      "id": "t2-train-03175",
+      "language": "tr",
+      "prompt_tokens": 1179,
+      "sequence_tokens": 1215,
+      "split": "train"
+    },
+    {
+      "columns": 43,
+      "completion_tokens": 22,
+      "id": "t2-train-03305",
+      "language": "tr",
+      "prompt_tokens": 1193,
+      "sequence_tokens": 1215,
+      "split": "train"
+    },
+    {
+      "columns": 43,
+      "completion_tokens": 36,
+      "id": "t2-train-00927",
+      "language": "tr",
+      "prompt_tokens": 1177,
+      "sequence_tokens": 1213,
+      "split": "train"
+    },
+    {
+      "columns": 43,
+      "completion_tokens": 21,
+      "id": "t2-train-03073",
+      "language": "tr",
+      "prompt_tokens": 1190,
+      "sequence_tokens": 1211,
+      "split": "train"
+    },
+    {
+      "columns": 43,
+      "completion_tokens": 37,
+      "id": "t2-train-00142",
+      "language": "tr",
+      "prompt_tokens": 1172,
+      "sequence_tokens": 1209,
+      "split": "train"
+    },
+    {
+      "columns": 43,
+      "completion_tokens": 38,
+      "id": "t2-train-00832",
+      "language": "en",
+      "prompt_tokens": 1170,
+      "sequence_tokens": 1208,
+      "split": "train"
+    },
+    {
+      "columns": 43,
+      "completion_tokens": 32,
+      "id": "t2-train-01194",
+      "language": "tr",
+      "prompt_tokens": 1176,
+      "sequence_tokens": 1208,
+      "split": "train"
+    }
+  ],
+  "max_seq_length_gate": 2048,
+  "previous_limit": 1024,
+  "rendering": "chat_template(enable_thinking=False, generation prompt) + compact gold JSON + <|im_end|>; Qwen3-1.7B tokenizer.json",
+  "train": {
+    "completion_tokens": {
+      "max": 160,
+      "mean": 28.3,
+      "median": 28,
+      "p95": 36,
+      "p99": 45,
+      "records": 6942,
+      "total_tokens": 196206
+    },
+    "english": {
+      "max": 1208,
+      "mean": 496.8,
+      "median": 464,
+      "p95": 800,
+      "p99": 1187,
+      "records": 1336,
+      "total_tokens": 663669
+    },
+    "over_1024": 91,
+    "over_2048": 0,
+    "prompt_tokens": {
+      "max": 1196,
+      "mean": 474.0,
+      "median": 441,
+      "p95": 773,
+      "p99": 1045,
+      "records": 6942,
+      "total_tokens": 3290807
+    },
+    "sequence_tokens": {
+      "max": 1219,
+      "mean": 502.3,
+      "median": 469,
+      "p95": 804,
+      "p99": 1076,
+      "records": 6942,
+      "total_tokens": 3487013
+    },
+    "turkish": {
+      "max": 1219,
+      "mean": 503.6,
+      "median": 470,
+      "p95": 806,
+      "p99": 1072,
+      "records": 5606,
+      "total_tokens": 2823344
+    }
+  },
+  "validation": {
+    "completion_tokens": {
+      "max": 104,
+      "mean": 28.3,
+      "median": 29,
+      "p95": 36,
+      "p99": 42,
+      "records": 1683,
+      "total_tokens": 47701
+    },
+    "english": {
+      "max": 845,
+      "mean": 499.0,
+      "median": 480,
+      "p95": 802,
+      "p99": 844,
+      "records": 329,
+      "total_tokens": 164160
+    },
+    "over_1024": 0,
+    "over_2048": 0,
+    "prompt_tokens": {
+      "max": 828,
+      "mean": 474.2,
+      "median": 457,
+      "p95": 786,
+      "p99": 813,
+      "records": 1683,
+      "total_tokens": 798026
+    },
+    "sequence_tokens": {
+      "max": 890,
+      "mean": 502.5,
+      "median": 486,
+      "p95": 816,
+      "p99": 847,
+      "records": 1683,
+      "total_tokens": 845727
+    },
+    "turkish": {
+      "max": 890,
+      "mean": 503.4,
+      "median": 487,
+      "p95": 817,
+      "p99": 849,
+      "records": 1354,
+      "total_tokens": 681567
+    }
+  }
+}

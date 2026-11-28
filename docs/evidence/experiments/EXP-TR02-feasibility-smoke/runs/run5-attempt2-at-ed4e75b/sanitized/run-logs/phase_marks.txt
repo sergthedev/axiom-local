@@ -1,0 +1,55 @@
+authorization recorded: Fri Nov 27 21:14:39 UTC 2026
+worktree created: Fri Nov 27 21:14:40 UTC 2026
+environment recorded: Fri Nov 27 21:14:48 UTC 2026
+01_uv_sync start 21:15:04Z
+01_uv_sync end 21:15:06Z rc=0
+02 start 21:15:06Z
+02 end 21:15:23Z rc=0
+03 start 21:15:23Z
+03 end 21:15:25Z rc=0
+04 start 21:15:25Z
+04 end 21:15:27Z rc=0
+05 start 21:15:27Z
+05 end 21:15:36Z rc=0
+06 start 21:15:36Z
+06 end 21:15:39Z rc=0
+07 start 21:15:39Z
+07 end 21:15:42Z rc=0
+08 start 21:15:42Z
+08 end 21:15:44Z rc=0
+09 start 21:15:44Z
+09 end 21:15:47Z rc=0
+prelaunch complete: Fri Nov 27 21:15:56 UTC 2026
+P1 sampler started Fri Nov 27 21:16:16 UTC 2026
+P1 launch DENIED by local permission control 2026-11-27T21:16:32Z; sampler stopped; nothing ran
+owner resume message; recheck start 2026-11-28T00:25:40Z
+resume authorized 2026-11-28T00:25:57Z
+51 start 00:25:57Z
+51 end 00:25:58Z rc=0
+52 start 00:25:58Z
+52 end 00:26:01Z rc=0
+53 start 00:26:01Z
+53 end 00:26:09Z rc=0
+54 start 00:26:09Z
+54 end 00:26:12Z rc=0
+55 start 00:26:12Z
+55 end 00:26:14Z rc=0
+56 start 00:26:14Z
+56 end 00:26:16Z rc=0
+57 start 00:26:16Z
+57 end 00:26:19Z rc=0
+P1 sampler started Sat Nov 28 00:26:36 UTC 2026
+P1 start Sat Nov 28 00:26:44 UTC 2026
+P1 end Sat Nov 28 00:27:27 UTC 2026 rc=0
+P1 sampler stopped Sat Nov 28 00:27:27 UTC 2026
+P2 sampler started Sat Nov 28 00:27:58 UTC 2026
+P2 start Sat Nov 28 00:28:05 UTC 2026
+P2 end Sat Nov 28 00:30:33 UTC 2026 rc=0
+P2 sampler stopped Sat Nov 28 00:30:41 UTC 2026
+P3 sampler started Sat Nov 28 00:30:57 UTC 2026
+P3 start Sat Nov 28 00:31:07 UTC 2026
+P3 end Sat Nov 28 00:31:25 UTC 2026 rc=0
+P3 sampler stopped Sat Nov 28 00:31:25 UTC 2026
+collect start Sat Nov 28 00:32:06 UTC 2026
+collect end Sat Nov 28 00:32:07 UTC 2026
+all three phases complete; evidence copy refresh Sat Nov 28 00:32:21 UTC 2026

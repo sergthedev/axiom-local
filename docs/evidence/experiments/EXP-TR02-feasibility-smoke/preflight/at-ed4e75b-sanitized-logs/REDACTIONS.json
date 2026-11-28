@@ -1,0 +1,244 @@
+{
+ "files": [
+  {
+   "original_bytes": 1401,
+   "original_filename": "00_environment.txt",
+   "original_sha256": "ed613a6d4ab661754ed5aa4c2525bdb21834cc2272083d34cb937617aeb9f321",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 0,
+    "named_term": 0,
+    "other_absolute_local_path": 0
+   },
+   "sanitized_bytes": 1401,
+   "sanitized_sha256": "ed613a6d4ab661754ed5aa4c2525bdb21834cc2272083d34cb937617aeb9f321"
+  },
+  {
+   "original_bytes": 2169,
+   "original_filename": "01_uv_sync.log",
+   "original_sha256": "6decd71d629db2b2f3e1176e9af21813485c74a7f477fc6ad93cae318811fd50",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 3,
+    "named_term": 0,
+    "other_absolute_local_path": 1
+   },
+   "sanitized_bytes": 2113,
+   "sanitized_sha256": "d52dc7dcb11a86e5dd7d5424448c4ed5ddca63d00ac6b547df7d3e8fb24b5ae2"
+  },
+  {
+   "original_bytes": 1247,
+   "original_filename": "02_export.log",
+   "original_sha256": "ce09b076620ef3afca76403a5890588f63932755ffd9ef30a80e89cb22025178",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 1,
+    "named_term": 0,
+    "other_absolute_local_path": 1
+   },
+   "sanitized_bytes": 1207,
+   "sanitized_sha256": "750578b3acd471a3ef904492d15ca3dc9976a0507949d10210bfefd554becb17"
+  },
+  {
+   "original_bytes": 978,
+   "original_filename": "03_verify_inputs.log",
+   "original_sha256": "b81f4a88574a0a20fcbde7c0f58de7a4afef05231d889efa8b6ab60d4ccd2982",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 1,
+    "named_term": 0,
+    "other_absolute_local_path": 0
+   },
+   "sanitized_bytes": 970,
+   "sanitized_sha256": "29b10d389890a2a3214b6473010bb79b0fd579ea55390f3ec61e4cdeae73653b"
+  },
+  {
+   "original_bytes": 982,
+   "original_filename": "04_verify_model.log",
+   "original_sha256": "ff45ade2cd8fb540f001a67851d1017a5411d41fe20975211f3bf005b0a65882",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 1,
+    "named_term": 0,
+    "other_absolute_local_path": 0
+   },
+   "sanitized_bytes": 974,
+   "sanitized_sha256": "fa8006b3ff65ebd7a443784193cf36973116537d61d203803cc37675904b6f30"
+  },
+  {
+   "original_bytes": 1983,
+   "original_filename": "05_check_data.log",
+   "original_sha256": "15cae89ecf69b27a896eca9095754a93c562ba49cceb8c53a2d500c268738146",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 2,
+    "named_term": 0,
+    "other_absolute_local_path": 0
+   },
+   "sanitized_bytes": 1967,
+   "sanitized_sha256": "6c0f74abeff90737b8b0e84e59dc725bccab011d2a4cb1f8a4bb74f76cee1c5f"
+  },
+  {
+   "original_bytes": 184,
+   "original_filename": "05_pressure.txt",
+   "original_sha256": "32f351b1c00faba737579385a0fe975a7fb165498030f84d300dbe88e39cfcd9",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 0,
+    "named_term": 0,
+    "other_absolute_local_path": 0
+   },
+   "sanitized_bytes": 184,
+   "sanitized_sha256": "32f351b1c00faba737579385a0fe975a7fb165498030f84d300dbe88e39cfcd9"
+  },
+  {
+   "original_bytes": 1962,
+   "original_filename": "06_check_iterator_probe.log",
+   "original_sha256": "740234ebc28257f23c384d0c86ffcad86c038fda79ded4aa78a0a9fecce015c7",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 2,
+    "named_term": 0,
+    "other_absolute_local_path": 0
+   },
+   "sanitized_bytes": 1946,
+   "sanitized_sha256": "e27520f6d2bff93af8d972c57410e2b53c2fe6f01e94ec80a89fba33c5312ff4"
+  },
+  {
+   "original_bytes": 184,
+   "original_filename": "06_pressure.txt",
+   "original_sha256": "32f351b1c00faba737579385a0fe975a7fb165498030f84d300dbe88e39cfcd9",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 0,
+    "named_term": 0,
+    "other_absolute_local_path": 0
+   },
+   "sanitized_bytes": 184,
+   "sanitized_sha256": "32f351b1c00faba737579385a0fe975a7fb165498030f84d300dbe88e39cfcd9"
+  },
+  {
+   "original_bytes": 1963,
+   "original_filename": "07_check_iterator_smoke.log",
+   "original_sha256": "8bbae61819de819af5b51920a025c95dd829e01ca5f2c593a8bd0bb091aaed36",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 2,
+    "named_term": 0,
+    "other_absolute_local_path": 0
+   },
+   "sanitized_bytes": 1947,
+   "sanitized_sha256": "b890a3ba7606ff5b686929fe915033db390697f9d941c7159656623e45a53877"
+  },
+  {
+   "original_bytes": 184,
+   "original_filename": "07_pressure.txt",
+   "original_sha256": "32f351b1c00faba737579385a0fe975a7fb165498030f84d300dbe88e39cfcd9",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 0,
+    "named_term": 0,
+    "other_absolute_local_path": 0
+   },
+   "sanitized_bytes": 184,
+   "sanitized_sha256": "32f351b1c00faba737579385a0fe975a7fb165498030f84d300dbe88e39cfcd9"
+  },
+  {
+   "original_bytes": 1181,
+   "original_filename": "08_check_lora.log",
+   "original_sha256": "33f54dc53111f708b31c7b899e4ba8d7b279bebd42405a4cabbf6edc3f001b39",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 0,
+    "named_term": 0,
+    "other_absolute_local_path": 0
+   },
+   "sanitized_bytes": 1181,
+   "sanitized_sha256": "33f54dc53111f708b31c7b899e4ba8d7b279bebd42405a4cabbf6edc3f001b39"
+  },
+  {
+   "original_bytes": 184,
+   "original_filename": "08_pressure.txt",
+   "original_sha256": "32f351b1c00faba737579385a0fe975a7fb165498030f84d300dbe88e39cfcd9",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 0,
+    "named_term": 0,
+    "other_absolute_local_path": 0
+   },
+   "sanitized_bytes": 184,
+   "sanitized_sha256": "32f351b1c00faba737579385a0fe975a7fb165498030f84d300dbe88e39cfcd9"
+  },
+  {
+   "original_bytes": 1614,
+   "original_filename": "09_preflight_probe.log",
+   "original_sha256": "19c3e02ddecf2d2166e272fc10d7fc1f117c7c174adcad856a97a74ad66a0877",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 3,
+    "named_term": 0,
+    "other_absolute_local_path": 0
+   },
+   "sanitized_bytes": 1590,
+   "sanitized_sha256": "c695b56fe106bb4f6a217b7062d00f097a40cf72cce23ce494b7e586e5c4194e"
+  },
+  {
+   "original_bytes": 184,
+   "original_filename": "09_pressure.txt",
+   "original_sha256": "32f351b1c00faba737579385a0fe975a7fb165498030f84d300dbe88e39cfcd9",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 0,
+    "named_term": 0,
+    "other_absolute_local_path": 0
+   },
+   "sanitized_bytes": 184,
+   "sanitized_sha256": "32f351b1c00faba737579385a0fe975a7fb165498030f84d300dbe88e39cfcd9"
+  },
+  {
+   "original_bytes": 184,
+   "original_filename": "10_pressure.txt",
+   "original_sha256": "32f351b1c00faba737579385a0fe975a7fb165498030f84d300dbe88e39cfcd9",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 0,
+    "named_term": 0,
+    "other_absolute_local_path": 0
+   },
+   "sanitized_bytes": 184,
+   "sanitized_sha256": "32f351b1c00faba737579385a0fe975a7fb165498030f84d300dbe88e39cfcd9"
+  },
+  {
+   "original_bytes": 1094,
+   "original_filename": "10_pytest_tiny_qwen3.log",
+   "original_sha256": "e9ee76d3f40757270a9fb2bd012a4fafdfb60953d3e98778adb937a736dcda53",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 0,
+    "named_term": 0,
+    "other_absolute_local_path": 0
+   },
+   "sanitized_bytes": 1094,
+   "sanitized_sha256": "e9ee76d3f40757270a9fb2bd012a4fafdfb60953d3e98778adb937a736dcda53"
+  },
+  {
+   "original_bytes": 457,
+   "original_filename": "11_post_checks.txt",
+   "original_sha256": "0683fa5a2f52daedd4dab4809fa669f693d05edf33ebe3386c11a466499b8560",
+   "redaction_counts": {
+    "credential_like_token": 0,
+    "home_directory_prefix": 0,
+    "named_term": 0,
+    "other_absolute_local_path": 0
+   },
+   "sanitized_bytes": 457,
+   "sanitized_sha256": "0683fa5a2f52daedd4dab4809fa669f693d05edf33ebe3386c11a466499b8560"
+  }
+ ],
+ "named_term_placeholders": [
+  "<device>",
+  "<owner>",
+  "<user>"
+ ],
+ "note": "Home directory prefix to $HOME, other absolute local paths to <local-path>, named terms to their placeholders, credential-like tokens to <redacted-credential>."
+}

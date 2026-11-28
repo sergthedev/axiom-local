@@ -1,0 +1,275 @@
+{
+  "note": "Only absolute private paths, user account name, device/host name and credential-like tokens are redacted. $HOME replaces the home directory prefix; <local-path> replaces any other absolute local path; <device> replaces machine names; <user> replaces a standalone account name; <redacted-credential> replaces credential-like tokens; <owner> replaces the capitalised owner first name (same string as the account name, other case).",
+  "files": [
+    {
+      "original_filename": "00_environment.txt",
+      "original_sha256": "d140f924143bfa78776a69dad31322767ee5acc2f129f3a4b00d122a6ff49321",
+      "sanitized_sha256": "d140f924143bfa78776a69dad31322767ee5acc2f129f3a4b00d122a6ff49321",
+      "original_bytes": 1322,
+      "sanitized_bytes": 1322,
+      "redaction_counts": {
+        "home_directory_prefix": 0,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 0
+      }
+    },
+    {
+      "original_filename": "00b_uv_sync.log",
+      "original_sha256": "74a3de22528a57347ce364d3aadb5086bbfe8c21cb6ae69fc949d68a6fa220c3",
+      "sanitized_sha256": "cc2765536456404ee3adb7f698e62d85b5d30b0e21fa25756c922aefd9d5a3b8",
+      "original_bytes": 2166,
+      "sanitized_bytes": 2110,
+      "redaction_counts": {
+        "home_directory_prefix": 3,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 1,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 0
+      }
+    },
+    {
+      "original_filename": "01_export.log",
+      "original_sha256": "d5a9919f6536b49afdfb61cfcb1fd41aa1521bb40ad3ea06db3b065a6097fa0e",
+      "sanitized_sha256": "32e0e2a250ed7d95b7c7ef84ac0290f50d2fbf8b2f3ab64ddc38722fb3d8b412",
+      "original_bytes": 1246,
+      "sanitized_bytes": 1206,
+      "redaction_counts": {
+        "home_directory_prefix": 1,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 1,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 0
+      }
+    },
+    {
+      "original_filename": "02_verify_inputs.log",
+      "original_sha256": "f08cba5f091d7d970d73df5761c6081fa0a05354cba7d0a484017172f3cbba38",
+      "sanitized_sha256": "03cb2a18afe84d52610be60195b35312776402c51f7c036cfd201062ee804084",
+      "original_bytes": 977,
+      "sanitized_bytes": 969,
+      "redaction_counts": {
+        "home_directory_prefix": 1,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 0
+      }
+    },
+    {
+      "original_filename": "03_verify_model.log",
+      "original_sha256": "d3eba0210dc64673899a208f002aa58e440ca3ebbe0b1fbd9f85449a99a0d6ae",
+      "sanitized_sha256": "506e51d35aef8b93269fbf669b1a3edf15d2b0f76310ca2d1f042368c663e731",
+      "original_bytes": 982,
+      "sanitized_bytes": 974,
+      "redaction_counts": {
+        "home_directory_prefix": 1,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 0
+      }
+    },
+    {
+      "original_filename": "04_check_data.log",
+      "original_sha256": "1b9a5d0aed81eda5e4c8691ed132e5b9ab9d73e941f7ae9b33a69ac81964c252",
+      "sanitized_sha256": "07fb8858a2a5042820412d94065ed4f5356fe2cf435da971233f551383756694",
+      "original_bytes": 1982,
+      "sanitized_bytes": 1966,
+      "redaction_counts": {
+        "home_directory_prefix": 2,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 0
+      }
+    },
+    {
+      "original_filename": "05_check_iterator_probe.log",
+      "original_sha256": "38e73e02e449255902759c088160cc250a43ae6b63af10bab5ae91e8122227f5",
+      "sanitized_sha256": "5bae6108c117ac225de5e2856b23b3aba7026a77f710293c639f161b8bb09b1c",
+      "original_bytes": 1961,
+      "sanitized_bytes": 1945,
+      "redaction_counts": {
+        "home_directory_prefix": 2,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 0
+      }
+    },
+    {
+      "original_filename": "06_check_iterator_smoke.log",
+      "original_sha256": "dc7709892c2ed23cee49d65354e87dd8e42a52e57f83a2f4791212a43195f1a3",
+      "sanitized_sha256": "f291aa1b05f11dad82aa53325c461f46e875199063e06dd016d262cf66c7e140",
+      "original_bytes": 1962,
+      "sanitized_bytes": 1946,
+      "redaction_counts": {
+        "home_directory_prefix": 2,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 0
+      }
+    },
+    {
+      "original_filename": "07_preflight_probe.log",
+      "original_sha256": "6f29d963b3b8d0c73ea77629c4168428a57482c80fe4349cb57d7cfba520591c",
+      "sanitized_sha256": "95771462c42bb27e956b04557cdf7b7582eb7572482450dd060e48a41bc36017",
+      "original_bytes": 1612,
+      "sanitized_bytes": 1588,
+      "redaction_counts": {
+        "home_directory_prefix": 3,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 0
+      }
+    },
+    {
+      "original_filename": "10_supervise_probe.log",
+      "original_sha256": "ba8de24438a963a2908f91ed74a33b1431e40965f4b7e9d30bee99f4133dfde0",
+      "sanitized_sha256": "a431f25ec97a67a86ee603319f987bf12d9eb5286145b9876daac06eb73ab098",
+      "original_bytes": 1214,
+      "sanitized_bytes": 1190,
+      "redaction_counts": {
+        "home_directory_prefix": 3,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 0
+      }
+    },
+    {
+      "original_filename": "10_supervise_probe.stdout",
+      "original_sha256": "6700a1bd3676fb33e70dcd38941b82b82dd4f37f476afed65d9df0d35d788294",
+      "sanitized_sha256": "6700a1bd3676fb33e70dcd38941b82b82dd4f37f476afed65d9df0d35d788294",
+      "original_bytes": 892,
+      "sanitized_bytes": 892,
+      "redaction_counts": {
+        "home_directory_prefix": 0,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 0
+      }
+    },
+    {
+      "original_filename": "20_collect_evidence.log",
+      "original_sha256": "32852268ce99bf0d6b477155662db2245f18cf644b8f74ec35964bca2d54ae2e",
+      "sanitized_sha256": "ec641a287ce634290007c57472c12ad713c8eabab3a73fd52f2cfa3675aacde6",
+      "original_bytes": 1059,
+      "sanitized_bytes": 1043,
+      "redaction_counts": {
+        "home_directory_prefix": 2,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 0
+      }
+    },
+    {
+      "original_filename": "AUTHORIZATION.md",
+      "original_sha256": "48ac4d5c16871964dc1644afceed5fef880ee26e727716728b415a484bfe1919",
+      "sanitized_sha256": "d8a6fece29ea33dcbbe687561d18d1f295980aeaa2c3417d660a33d8885241c6",
+      "original_bytes": 918,
+      "sanitized_bytes": 919,
+      "redaction_counts": {
+        "home_directory_prefix": 0,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 1
+      }
+    },
+    {
+      "original_filename": "phase_marks.txt",
+      "original_sha256": "322d0c5f175c3732c8eb17a86802c684536dff61309add81a6800d4da755c72c",
+      "sanitized_sha256": "322d0c5f175c3732c8eb17a86802c684536dff61309add81a6800d4da755c72c",
+      "original_bytes": 80,
+      "sanitized_bytes": 80,
+      "redaction_counts": {
+        "home_directory_prefix": 0,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 0
+      }
+    },
+    {
+      "original_filename": "probe.supervisor__STOP.json",
+      "original_sha256": "9a115f54f8451ebdd86b2545032ac5a51a9fa04d594c06eb70acff49ade5a3c4",
+      "sanitized_sha256": "9a115f54f8451ebdd86b2545032ac5a51a9fa04d594c06eb70acff49ade5a3c4",
+      "original_bytes": 100,
+      "sanitized_bytes": 100,
+      "redaction_counts": {
+        "home_directory_prefix": 0,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 0
+      }
+    },
+    {
+      "original_filename": "probe.supervisor__child.log",
+      "original_sha256": "da900514573aa985dc8f9729afa471eff922f8ff8dea4449b9463fc59aee2764",
+      "sanitized_sha256": "34aa85454b6ead7b49d7269b9099488070b33ce656462291712376bab5f3492e",
+      "original_bytes": 573,
+      "sanitized_bytes": 549,
+      "redaction_counts": {
+        "home_directory_prefix": 3,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 0
+      }
+    },
+    {
+      "original_filename": "probe.supervisor__supervisor.jsonl",
+      "original_sha256": "dd59cbbd3fb12bbd8788241395c0ee9966d7c8955fc199b44eb6631ce94de896",
+      "sanitized_sha256": "dd59cbbd3fb12bbd8788241395c0ee9966d7c8955fc199b44eb6631ce94de896",
+      "original_bytes": 1365,
+      "sanitized_bytes": 1365,
+      "redaction_counts": {
+        "home_directory_prefix": 0,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 0
+      }
+    },
+    {
+      "original_filename": "probe__events.jsonl",
+      "original_sha256": "86256cf5a92a185c50d3a351d141485d3d19400fbc736b3849aa78dc74edab8e",
+      "sanitized_sha256": "86256cf5a92a185c50d3a351d141485d3d19400fbc736b3849aa78dc74edab8e",
+      "original_bytes": 1219,
+      "sanitized_bytes": 1219,
+      "redaction_counts": {
+        "home_directory_prefix": 0,
+        "user_account_name": 0,
+        "host_or_device_name": 0,
+        "other_absolute_local_path": 0,
+        "credential_like_token": 0,
+        "owner_name_capitalised": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,1111 @@
+{
+ "schema": "axbench-tr.source-registry/1",
+ "access_date": "2026-11-27",
+ "sources": [
+  {
+   "id": "SRC-N01",
+   "name": "Cognipeer/synthetic-text-to-sql-tr",
+   "category": "nlp",
+   "publisher": "Cognipeer (Hugging Face)",
+   "url": "https://huggingface.co/datasets/Cognipeer/synthetic-text-to-sql-tr",
+   "revision": "99734807e190805731c1813810bded466c97b5e0",
+   "license": {
+    "id": "Apache-2.0",
+    "evidence": "Hugging Face dataset card metadata; card states it is a Turkish translation of gretelai/synthetic_text_to_sql (Apache-2.0 per the card)",
+    "derivatives_allowed": true,
+    "redistribution": "allowed with notice (Apache-2.0)",
+    "upstream_generation": "The Gretel README states the data were designed and generated using Gretel Navigator and released under Apache 2.0 by the publisher; the terms of the underlying generator model are not stated and were not verified. Records carry provenance.upstream_license and can be excluded as a group (origin external_adapted)."
+   },
+   "language": [
+    "tr",
+    "en"
+   ],
+   "domain": "synthetic cross-domain business tables (text-to-SQL)",
+   "status": "accepted_adapted",
+   "origin": "machine_translated_synthetic",
+   "justification": "Only request texts whose whole meaning is a plain average, minimum or maximum (optionally per group) on the bound columns, and INSERT/UPDATE/DELETE prompts (REJECT), are adapted. SUM, count, filters, rankings, named places and wrong-measure prompts are excluded (axbench_tr/intent.py). The CREATE TABLE contexts are synthetic, not real published tables. The SQL is parsed only to derive the gold plan and is never taught or emitted. The Turkish text is machine-made and unreviewed.",
+   "suitability": "partial: synthetic domains and tables, English column names, machine-translated Turkish; about 190 qualified upstream rows",
+   "acquire": {
+    "method": "hf_files",
+    "repo": "Cognipeer/synthetic-text-to-sql-tr",
+    "revision": "99734807e190805731c1813810bded466c97b5e0",
+    "files": [
+     "README.md",
+     "data/train-00000-of-00001.parquet"
+    ]
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-N02",
+   "name": "AliBugra/TURSpider",
+   "category": "nlp",
+   "publisher": "Ali Bugra Kanburoglu, Faik Boray Tek (Hugging Face / GitHub)",
+   "url": "https://huggingface.co/datasets/AliBugra/TURSpider",
+   "revision": "b01f5fc8608604aa2f96c1332110b7217bebe7ac",
+   "license": {
+    "id": "CC-BY-4.0 (card metadata)",
+    "evidence": "Hugging Face card; the card describes the data as a human translation of Spider and does not address Spider's own dataset terms; the Spider GitHub repository ships an Apache-2.0 LICENSE file, but the dataset-level terms on the Spider project site could not be consulted from this environment",
+    "derivatives_allowed": null,
+    "redistribution": "unverified"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "cross-domain text-to-SQL (Spider translation)",
+   "status": "rejected_license_unverified",
+   "origin": "human_translated",
+   "justification": "Human-translated Turkish questions are valuable, but redistribution terms of the upstream Spider data are not verified and Spider contains databases and questions we cannot re-license. Downloaded for review only; no derived text is committed. Re-evaluate after the upstream terms are checked by the owner.",
+   "suitability": "good Turkish phrasing, but SQL-centred and licence-unverified",
+   "acquire": {
+    "method": "hf_files",
+    "repo": "AliBugra/TURSpider",
+    "revision": "b01f5fc8608604aa2f96c1332110b7217bebe7ac",
+    "files": [
+     "README.md",
+     "train.csv",
+     "dev.csv"
+    ]
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-N03",
+   "name": "AlicanKiraz0/Turkish-Finance-SFT-Dataset",
+   "category": "nlp",
+   "publisher": "Alican Kiraz (Hugging Face)",
+   "url": "https://huggingface.co/datasets/AlicanKiraz0/Turkish-Finance-SFT-Dataset",
+   "revision": "d106acf808bfa59040b1290d360314d079ef1cb7",
+   "license": {
+    "id": "MIT (card metadata); README badge says Apache-2.0",
+    "evidence": "Hugging Face card metadata and README badge disagree; both are permissive",
+    "derivatives_allowed": null,
+    "redistribution": "unresolved: quarantined"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "crypto, equities, finance Q&A (LLM-generated)",
+   "status": "quarantined_licence_unresolved",
+   "origin": "llm_generated",
+   "justification": "Hub card metadata says MIT while the README badge says Apache-2.0, and the card names no copyright holder or upstream provenance for the questions. The conflict is unresolved, so nothing from this source is used (it was 300 out_of_scope negatives in the preserved v0.2-draft). Reinstating it needs the publisher's clarification.",
+   "suitability": "quarantined: no records used in v0.2-rev1",
+   "acquire": {
+    "method": "hf_files",
+    "repo": "AlicanKiraz0/Turkish-Finance-SFT-Dataset",
+    "revision": "d106acf808bfa59040b1290d360314d079ef1cb7",
+    "files": [
+     "README.md",
+     "finance_sft_dataset.jsonl"
+    ]
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-N04",
+   "name": "veripazari/Turkish-Finance-SFT-Dataset",
+   "category": "nlp",
+   "publisher": "veripazari (Hugging Face)",
+   "url": "https://huggingface.co/datasets/veripazari/Turkish-Finance-SFT-Dataset",
+   "revision": "7966ebf8012bacb092cbe2cd5f7159301f9a2fc7",
+   "license": {
+    "id": "MIT (card metadata)",
+    "evidence": "Hugging Face card metadata",
+    "derivatives_allowed": true,
+    "redistribution": "allowed with notice"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "finance Q&A",
+   "status": "rejected_duplicate",
+   "origin": "mirror",
+   "justification": "Mirror of SRC-N03: the data file is byte-identical (SHA-256 equality is recorded in ACQUISITION.json); not used.",
+   "suitability": "duplicate",
+   "access_date": "2026-11-27",
+   "acquire": {
+    "method": "hf_files",
+    "repo": "veripazari/Turkish-Finance-SFT-Dataset",
+    "revision": "7966ebf8012bacb092cbe2cd5f7159301f9a2fc7",
+    "files": [
+     "finance_sft_dataset.jsonl"
+    ]
+   }
+  },
+  {
+   "id": "SRC-N05",
+   "name": "emre/finance-reasoning-turkish",
+   "category": "nlp",
+   "publisher": "Davut Emre Tasar, Enes Bulut (Hugging Face)",
+   "url": "https://huggingface.co/datasets/emre/finance-reasoning-turkish",
+   "revision": "7cbefa2c102f4b75a17b9e2cf1bbc31cb162f267",
+   "license": {
+    "id": "AFL-3.0 (card metadata)",
+    "evidence": "The card body states 'Academic Use Only License ... commercial use is strictly prohibited', which contradicts the AFL-3.0 metadata",
+    "derivatives_allowed": false,
+    "redistribution": "conflicting terms"
+   },
+   "language": [
+    "tr",
+    "en"
+   ],
+   "domain": "finance Q&A with RAG context and reasoning traces",
+   "status": "rejected_license_conflict",
+   "origin": "llm_generated",
+   "justification": "Conflicting licence statements (permissive metadata, academic-only body text). The content is long-form RAG reasoning, not routing. README retained as evidence only.",
+   "suitability": "not suitable",
+   "acquire": {
+    "method": "hf_files",
+    "repo": "emre/finance-reasoning-turkish",
+    "revision": "7cbefa2c102f4b75a17b9e2cf1bbc31cb162f267",
+    "files": [
+     "README.md"
+    ]
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-N06",
+   "name": "furkancekic/turkish-stockmarket-instructions",
+   "category": "nlp",
+   "publisher": "furkancekic (Hugging Face)",
+   "url": "https://huggingface.co/datasets/furkancekic/turkish-stockmarket-instructions",
+   "revision": "dee2c8331c0a7f5cf2c73187b8fbe6ee5895fd75",
+   "license": {
+    "id": "MIT (card metadata)",
+    "evidence": "The card states the data were generated from 100+ official PDFs (Takasbank, MKK, Borsa Istanbul, SPK); the terms of those source documents are not stated",
+    "derivatives_allowed": null,
+    "redistribution": "unverified (derived from third-party regulatory PDFs)"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "capital-markets regulation Q&A",
+   "status": "rejected_task_mismatch",
+   "origin": "llm_generated_from_pdfs",
+   "justification": "Regulation question answering has no tabular analysis content and its upstream document terms are unverified. README retained as evidence only.",
+   "suitability": "not suitable",
+   "acquire": {
+    "method": "hf_files",
+    "repo": "furkancekic/turkish-stockmarket-instructions",
+    "revision": "dee2c8331c0a7f5cf2c73187b8fbe6ee5895fd75",
+    "files": [
+     "README.md"
+    ]
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-N07",
+   "name": "Dbmaxwell/turkish-finance-instruction-dataset (nearest match to the requested finagent-tr)",
+   "category": "nlp",
+   "publisher": "Dbmaxwell (Hugging Face)",
+   "url": "https://huggingface.co/datasets/Dbmaxwell/turkish-finance-instruction-dataset",
+   "revision": "c5f4d777daf5b1b3c869084f3921724665c2b4ce",
+   "license": {
+    "id": "MIT (card metadata)",
+    "evidence": "The card states the data mix synthetic data, manually curated data and real social-media question-answer pairs taken from online finance discussions",
+    "derivatives_allowed": null,
+    "redistribution": "unverified (social-media content)"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "finance Q&A",
+   "status": "rejected_provenance",
+   "origin": "mixed_including_social_media",
+   "justification": "Includes scraped social-media Q&A of unknown terms and possible personal data; the requested 'Dbmaxwell/finagent-tr' does not resolve on Hugging Face. Not downloaded beyond the README.",
+   "suitability": "not suitable",
+   "acquire": {
+    "method": "hf_files",
+    "repo": "Dbmaxwell/turkish-finance-instruction-dataset",
+    "revision": "c5f4d777daf5b1b3c869084f3921724665c2b4ce",
+    "files": [
+     "README.md"
+    ]
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-N08",
+   "name": "Dbmaxwell/finagent-tr",
+   "category": "nlp",
+   "publisher": "unknown",
+   "url": "https://huggingface.co/datasets/Dbmaxwell/finagent-tr",
+   "license": {
+    "id": "unknown",
+    "evidence": "Hugging Face API returned no dataset for this identifier on the access date",
+    "derivatives_allowed": null,
+    "redistribution": "unknown"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "unknown",
+   "status": "rejected_not_found",
+   "origin": "unknown",
+   "justification": "The identifier does not resolve (HTTP 401 for a non-existent or private repository). Hugging Face searches for 'finagent' returned only unrelated English datasets.",
+   "suitability": "not available",
+   "access_date": "2026-11-27",
+   "acquire": {
+    "method": "none"
+   }
+  },
+  {
+   "id": "SRC-N09",
+   "name": "turkish-nlp-datasets/economy-and-finance",
+   "category": "nlp",
+   "publisher": "turkish-nlp-datasets (Hugging Face)",
+   "url": "https://huggingface.co/datasets/turkish-nlp-datasets/economy-and-finance",
+   "revision": "c9f66c989aa97722b85f7cb982d5a1eebf8a252e",
+   "license": {
+    "id": "CC-BY-NC-4.0 (card metadata)",
+    "evidence": "Hugging Face card metadata",
+    "derivatives_allowed": false,
+    "redistribution": "non-commercial only"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "Turkish economy discussions (topic files)",
+   "status": "rejected_license_noncommercial",
+   "origin": "web_discussions",
+   "justification": "Non-commercial licence is incompatible with the project's MIT licence and commercial reuse; topic-named files suggest discussion text that may contain personal data.",
+   "suitability": "not suitable",
+   "acquire": {
+    "method": "hf_files",
+    "repo": "turkish-nlp-datasets/economy-and-finance",
+    "revision": "c9f66c989aa97722b85f7cb982d5a1eebf8a252e",
+    "files": [
+     "README.md"
+    ]
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-N10",
+   "name": "yusufbaykaloglu/turkish-finance-dataset",
+   "category": "nlp",
+   "publisher": "yusufbaykaloglu (Hugging Face)",
+   "url": "https://huggingface.co/datasets/yusufbaykaloglu/turkish-finance-dataset",
+   "revision": "54d0ae5c0c8c3ee105c2630f8a13476f18adf6cf",
+   "license": {
+    "id": "Apache-2.0 (card metadata)",
+    "evidence": "Hugging Face card metadata; the README holds 42 bytes and documents neither provenance nor the translation source",
+    "derivatives_allowed": null,
+    "redistribution": "unverified (undocumented translated data)"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "translated finance data",
+   "status": "rejected_undocumented",
+   "origin": "machine_translated_unknown_source",
+   "justification": "Undocumented translation of an unnamed source; its upstream licence cannot be established.",
+   "suitability": "not suitable",
+   "acquire": {
+    "method": "hf_files",
+    "repo": "yusufbaykaloglu/turkish-finance-dataset",
+    "revision": "54d0ae5c0c8c3ee105c2630f8a13476f18adf6cf",
+    "files": [
+     "README.md"
+    ]
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-N11",
+   "name": "cardiffnlp/databench",
+   "category": "nlp",
+   "publisher": "Cardiff NLP (Hugging Face)",
+   "url": "https://huggingface.co/datasets/cardiffnlp/databench",
+   "revision": "e75d53add267d2f9cfa32efd65ad77f0807adfad",
+   "license": {
+    "id": "MIT (card metadata)",
+    "evidence": "Hugging Face card metadata; the underlying tables come from third-party sources with their own terms",
+    "derivatives_allowed": null,
+    "redistribution": "benchmark MIT; table licences not individually verified"
+   },
+   "language": [
+    "en"
+   ],
+   "domain": "question answering over 65 real-world tables (DataBench)",
+   "status": "rejected_task_mismatch",
+   "origin": "human_and_llm",
+   "justification": "Answer-extraction questions over table values (lookups, counts), not routing to a closed set of four operations; the tables are heterogeneous third-party data. Its test split must not be training material. README retained as evidence only (the repository totals about 380 MB).",
+   "suitability": "not suitable for routing",
+   "acquire": {
+    "method": "hf_files",
+    "repo": "cardiffnlp/databench",
+    "revision": "e75d53add267d2f9cfa32efd65ad77f0807adfad",
+    "files": [
+     "README.md"
+    ]
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-N12",
+   "name": "HKUSTDial/StatQA",
+   "category": "nlp",
+   "publisher": "HKUST DIAL (GitHub)",
+   "url": "https://github.com/HKUSTDial/StatQA",
+   "revision": "3d5f6b5b6926600dc952f39d79dfdef82999aeeb",
+   "license": {
+    "id": "GPL-3.0 (repository LICENSE)",
+    "evidence": "GitHub repository LICENSE file; the dataset-specific licence is not stated separately",
+    "derivatives_allowed": null,
+    "redistribution": "copyleft; data terms unspecified"
+   },
+   "language": [
+    "en"
+   ],
+   "domain": "applicability of hypothesis tests",
+   "status": "rejected_scope_and_license",
+   "origin": "llm_assisted",
+   "justification": "Its task is choosing and applying hypothesis tests, which AXIOM rejects by contract (hypothesis_test). Copyleft code licence with unspecified data terms. LICENSE and README retained as evidence only.",
+   "suitability": "not suitable (out of scope)",
+   "acquire": {
+    "method": "github_files",
+    "repo": "HKUSTDial/StatQA",
+    "commit": "3d5f6b5b6926600dc952f39d79dfdef82999aeeb",
+    "files": [
+     "LICENSE",
+     "README.md"
+    ]
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-N13",
+   "name": "NExT-plusplus TAT-QA (GitHub) / next-tat/TAT-QA (Hugging Face)",
+   "category": "nlp",
+   "publisher": "NExT++ (GitHub, Hugging Face)",
+   "url": "https://huggingface.co/datasets/next-tat/TAT-QA",
+   "revision": "c96247f5077eac447f63527fd3dcfdc58bb56d6a",
+   "license": {
+    "id": "CC-BY-4.0",
+    "evidence": "Hugging Face card metadata and the GitHub README ('Creative Commons (CC BY) Attribution 4.0 International')",
+    "derivatives_allowed": true,
+    "redistribution": "allowed with attribution"
+   },
+   "language": [
+    "en"
+   ],
+   "domain": "hybrid tabular and text QA over financial reports",
+   "status": "reviewed_not_used",
+   "origin": "human_annotated",
+   "justification": "Numeric reasoning over report excerpts, not requests to analyse a loaded dataset. Train split acquired for the content audit only; dev/test splits are not acquired and are never training material.",
+   "suitability": "reserved for a later numeric-reasoning study",
+   "acquire": {
+    "method": "hf_files",
+    "repo": "next-tat/TAT-QA",
+    "revision": "c96247f5077eac447f63527fd3dcfdc58bb56d6a",
+    "files": [
+     "README.md",
+     "tatqa_dataset_train.json"
+    ]
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-N14",
+   "name": "czyssrs/FinQA",
+   "category": "nlp",
+   "publisher": "Zhiyu Chen et al. (GitHub)",
+   "url": "https://github.com/czyssrs/FinQA",
+   "revision": "0f16e2867befa6840783e58be38c9efb9229d742",
+   "license": {
+    "id": "MIT (repository LICENSE)",
+    "evidence": "GitHub repository LICENSE file",
+    "derivatives_allowed": true,
+    "redistribution": "allowed with notice"
+   },
+   "language": [
+    "en"
+   ],
+   "domain": "numerical reasoning over financial reports",
+   "status": "reviewed_not_used",
+   "origin": "human_annotated",
+   "justification": "Same mismatch as SRC-N13. Train split acquired for the content audit only; test split not acquired.",
+   "suitability": "reserved for a later numeric-reasoning study",
+   "acquire": {
+    "method": "github_files",
+    "repo": "czyssrs/FinQA",
+    "commit": "0f16e2867befa6840783e58be38c9efb9229d742",
+    "files": [
+     "LICENSE",
+     "dataset/train.json"
+    ]
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-N15",
+   "name": "czyssrs/ConvFinQA",
+   "category": "nlp",
+   "publisher": "Zhiyu Chen et al. (GitHub)",
+   "url": "https://github.com/czyssrs/ConvFinQA",
+   "revision": "cf3eed2d5984960bf06bb8145bcea5e80b0222a6",
+   "license": {
+    "id": "MIT (repository LICENSE)",
+    "evidence": "GitHub repository LICENSE file",
+    "derivatives_allowed": true,
+    "redistribution": "allowed with notice"
+   },
+   "language": [
+    "en"
+   ],
+   "domain": "conversational numerical reasoning over financial reports",
+   "status": "reviewed_not_used",
+   "origin": "human_annotated",
+   "justification": "Same mismatch as SRC-N13; multi-turn format. LICENSE and README retained as evidence only.",
+   "suitability": "not suitable now",
+   "acquire": {
+    "method": "github_files",
+    "repo": "czyssrs/ConvFinQA",
+    "commit": "cf3eed2d5984960bf06bb8145bcea5e80b0222a6",
+    "files": [
+     "LICENSE",
+     "README.md"
+    ]
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-O01",
+   "name": "World Bank World Development Indicators (Turkiye and 14 comparison economies)",
+   "category": "international_economic",
+   "publisher": "The World Bank",
+   "url": "https://api.worldbank.org/v2/",
+   "license": {
+    "id": "CC-BY-4.0 (World Bank default for datasets)",
+    "evidence": "World Bank Data Catalog 'Data Access and Licensing' page states datasets are licensed under CC BY 4.0 unless labelled otherwise; the WDI-specific label was not separately checked",
+    "derivatives_allowed": true,
+    "redistribution": "allowed with attribution"
+   },
+   "language": [
+    "en"
+   ],
+   "domain": "inflation, unemployment, GDP, trade, exchange rate, public debt, demography",
+   "status": "accepted_reference",
+   "origin": "official_statistics_compilation",
+   "justification": "Real country-year indicator tables. Observations stay in data/axbench-tr/economic/ and are never part of the supervised examples; only the table schema (country, year, indicator columns) feeds the corpus.",
+   "suitability": "good for schema realism and demos; English names only",
+   "acquire": {
+    "method": "worldbank_indicators",
+    "countries": [
+     "TUR",
+     "DEU",
+     "FRA",
+     "ITA",
+     "ESP",
+     "POL",
+     "GBR",
+     "USA",
+     "BRA",
+     "MEX",
+     "IDN",
+     "KOR",
+     "JPN",
+     "GRC",
+     "ROU"
+    ],
+    "date": "2000:2024",
+    "indicators": [
+     "FP.CPI.TOTL.ZG",
+     "SL.UEM.TOTL.ZS",
+     "NY.GDP.MKTP.CD",
+     "NY.GDP.MKTP.KD.ZG",
+     "NY.GDP.PCAP.CD",
+     "NE.EXP.GNFS.ZS",
+     "NE.IMP.GNFS.ZS",
+     "PA.NUS.FCRF",
+     "FR.INR.LEND",
+     "SP.POP.TOTL",
+     "GC.DOD.TOTL.GD.ZS",
+     "BN.CAB.XOKA.GD.ZS",
+     "SL.TLF.CACT.ZS"
+    ]
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-O02",
+   "name": "Eurostat (Turkey series: monthly unemployment, HICP inflation, quarterly and annual GDP)",
+   "category": "international_economic",
+   "publisher": "Eurostat, European Commission",
+   "url": "https://ec.europa.eu/eurostat/web/main/data/database",
+   "license": {
+    "id": "Eurostat reuse policy (Commission Decision of 12 December 2011)",
+    "evidence": "Eurostat copyright notice: reuse of statistical data for commercial or non-commercial purposes is authorised provided the source is acknowledged",
+    "derivatives_allowed": true,
+    "redistribution": "allowed with source acknowledgement"
+   },
+   "language": [
+    "en"
+   ],
+   "domain": "unemployment, consumer prices, GDP",
+   "status": "accepted_reference",
+   "origin": "official_statistics",
+   "justification": "Real dissemination tables (SDMX-CSV) with official dimension columns; observations kept apart from training examples.",
+   "suitability": "good for schema realism; English headers",
+   "acquire": {
+    "method": "http_files",
+    "files": [
+     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data/une_rt_m/M.SA.TOTAL.PC_ACT.T.TR?startPeriod=2015&format=SDMX-CSV",
+      "path": "eurostat/une_rt_m_TR.csv"
+     },
+     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data/prc_hicp_manr/M.RCH_A.CP00.TR?startPeriod=2015&format=SDMX-CSV",
+      "path": "eurostat/prc_hicp_manr_TR.csv"
+     },
+     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data/namq_10_gdp/Q.CLV_PCH_PRE.SCA.B1GQ.TR?startPeriod=2015&format=SDMX-CSV",
+      "path": "eurostat/namq_10_gdp_TR.csv"
+     }
+    ]
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-O03",
+   "name": "ECB euro foreign-exchange reference rates (TRY and USD per EUR)",
+   "category": "international_economic",
+   "publisher": "European Central Bank",
+   "url": "https://data.ecb.europa.eu/",
+   "license": {
+    "id": "ECB statistics reuse terms (not verified in this session)",
+    "evidence": "The ECB terms page could not be read in this environment",
+    "derivatives_allowed": null,
+    "redistribution": "unverified"
+   },
+   "language": [
+    "en"
+   ],
+   "domain": "exchange rates",
+   "status": "accepted_schema_only",
+   "origin": "official_statistics",
+   "justification": "Real SDMX-CSV exchange-rate table. Downloaded for local use and column schema only; observations are not committed until the ECB reuse terms are verified.",
+   "suitability": "schema realism",
+   "acquire": {
+    "method": "http_files",
+    "files": [
+     {
+      "url": "https://data-api.ecb.europa.eu/service/data/EXR/D.TRY.EUR.SP00.A?format=csvdata&startPeriod=2020-01-01",
+      "path": "ecb/exr_try_eur_daily.csv"
+     },
+     {
+      "url": "https://data-api.ecb.europa.eu/service/data/EXR/D.USD.EUR.SP00.A?format=csvdata&startPeriod=2020-01-01",
+      "path": "ecb/exr_usd_eur_daily.csv"
+     }
+    ]
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-O04",
+   "name": "OECD SDMX API: monthly unemployment rates and consumer prices (Turkiye)",
+   "category": "international_economic",
+   "publisher": "OECD",
+   "url": "https://sdmx.oecd.org/public/rest/",
+   "license": {
+    "id": "OECD terms and conditions (not verified in this session)",
+    "evidence": "The OECD terms page returned no readable text in this environment",
+    "derivatives_allowed": null,
+    "redistribution": "unverified"
+   },
+   "language": [
+    "en"
+   ],
+   "domain": "unemployment, prices",
+   "status": "accepted_schema_only",
+   "origin": "official_statistics",
+   "justification": "Reachable; downloaded for local use and column schema only. Observations are not committed until the OECD terms are verified.",
+   "suitability": "schema realism",
+   "acquire": {
+    "method": "http_files",
+    "files": [
+     {
+      "url": "https://sdmx.oecd.org/public/rest/data/OECD.SDD.TPS,DSD_LFS@DF_IALFS_UNE_M,1.0/TUR........?startPeriod=2023-01&format=csvfilewithlabels",
+      "path": "oecd/une_m_TUR.csv"
+     },
+     {
+      "url": "https://sdmx.oecd.org/public/rest/data/OECD.SDD.TPS,DSD_PRICES@DF_PRICES_ALL,1.0/TUR.......?startPeriod=2024-01&format=csvfilewithlabels",
+      "path": "oecd/prices_TUR.csv"
+     }
+    ]
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-O05",
+   "name": "TCMB daily indicative exchange rates (public XML, first Wednesday of each month of 2025)",
+   "category": "official_economic",
+   "publisher": "Central Bank of the Republic of Turkiye (TCMB)",
+   "url": "https://www.tcmb.gov.tr/kurlar/today.xml",
+   "license": {
+    "id": "TCMB terms not verified in this session",
+    "evidence": "The EVDS disclaimer PDF could not be read; the public XML carries no licence statement",
+    "derivatives_allowed": null,
+    "redistribution": "unverified"
+   },
+   "language": [
+    "tr",
+    "en"
+   ],
+   "domain": "exchange rates (Turkish and English tags)",
+   "status": "accepted_schema_only",
+   "origin": "official_statistics",
+   "justification": "Real official table with Turkish headers (Isim, Birim, Doviz Alis...). Downloaded for local use and column schema only; observations are not committed until redistribution terms are confirmed.",
+   "suitability": "good Turkish official schema",
+   "acquire": {
+    "method": "http_files",
+    "files": [
+     {
+      "url": "https://www.tcmb.gov.tr/kurlar/202501/01012025.xml",
+      "path": "tcmb/kurlar_20250101.xml"
+     },
+     {
+      "url": "https://www.tcmb.gov.tr/kurlar/202502/05022025.xml",
+      "path": "tcmb/kurlar_20250205.xml"
+     },
+     {
+      "url": "https://www.tcmb.gov.tr/kurlar/202503/05032025.xml",
+      "path": "tcmb/kurlar_20250305.xml"
+     },
+     {
+      "url": "https://www.tcmb.gov.tr/kurlar/202504/02042025.xml",
+      "path": "tcmb/kurlar_20250402.xml"
+     },
+     {
+      "url": "https://www.tcmb.gov.tr/kurlar/202505/07052025.xml",
+      "path": "tcmb/kurlar_20250507.xml"
+     },
+     {
+      "url": "https://www.tcmb.gov.tr/kurlar/202506/04062025.xml",
+      "path": "tcmb/kurlar_20250604.xml"
+     },
+     {
+      "url": "https://www.tcmb.gov.tr/kurlar/202507/02072025.xml",
+      "path": "tcmb/kurlar_20250702.xml"
+     },
+     {
+      "url": "https://www.tcmb.gov.tr/kurlar/202508/06082025.xml",
+      "path": "tcmb/kurlar_20250806.xml"
+     },
+     {
+      "url": "https://www.tcmb.gov.tr/kurlar/202509/03092025.xml",
+      "path": "tcmb/kurlar_20250903.xml"
+     },
+     {
+      "url": "https://www.tcmb.gov.tr/kurlar/202510/01102025.xml",
+      "path": "tcmb/kurlar_20251001.xml"
+     },
+     {
+      "url": "https://www.tcmb.gov.tr/kurlar/202511/05112025.xml",
+      "path": "tcmb/kurlar_20251105.xml"
+     },
+     {
+      "url": "https://www.tcmb.gov.tr/kurlar/202512/03122025.xml",
+      "path": "tcmb/kurlar_20251203.xml"
+     }
+    ],
+    "tolerate_missing": true
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-O06",
+   "name": "İzmir Metropolitan Municipality Open Data Portal (CKAN)",
+   "category": "municipal_open_data",
+   "publisher": "İzmir Büyükşehir Belediyesi",
+   "url": "https://acikveri.bizizmir.com/",
+   "license": {
+    "id": "CC-BY-4.0 (portal licence page)",
+    "evidence": "Portal licence page: all materials are licensed under CC BY 4.0 unless stated otherwise; datasets whose CKAN license_id is 'notspecified' are excluded",
+    "derivatives_allowed": true,
+    "redistribution": "allowed with attribution"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "municipal services, prices, social aid, labour (Turkish headers)",
+   "status": "accepted_reference",
+   "origin": "municipal_open_data",
+   "justification": "Largest open source of real Turkish table schemas with typed columns. Column schemas of every table under an accepted licence feed the corpus; a small set of economic CSV tables is downloaded as real observations and kept apart from training examples.",
+   "suitability": "good Turkish schemas; mostly municipal, partly economic",
+   "acquire": {
+    "method": "ckan_catalog",
+    "base": "https://acikveri.bizizmir.com",
+    "allowed_license_ids": [
+     "Izmir-Metropolitan-Municipality-License",
+     "cc-by"
+    ],
+    "max_downloads": 25,
+    "max_bytes": 5242880
+   },
+   "access_date": "2026-11-27"
+  },
+  {
+   "id": "SRC-O07",
+   "name": "TÜİK data portal (veriportali.tuik.gov.tr and legacy data.tuik.gov.tr)",
+   "category": "official_economic",
+   "publisher": "Turkish Statistical Institute (TÜİK)",
+   "url": "https://veriportali.tuik.gov.tr/",
+   "license": {
+    "id": "no open licence found",
+    "evidence": "TÜİK page 'Veri/Bilgilerin Ücretlendirilmesi': information offered on the website and social media is free of charge; no reuse or redistribution licence was found",
+    "derivatives_allowed": null,
+    "redistribution": "unverified"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "CPI, labour force, GDP, trade, demographics",
+   "status": "blocked_access",
+   "origin": "official_statistics",
+   "justification": "The new portal is a single-page application behind an OIDC login flow (no anonymous API was found; no login or key is used); the legacy host data.tuik.gov.tr timed out from this environment. Nothing was acquired. Next step for the owner: confirm anonymous bulletin-table URLs and the reuse terms.",
+   "suitability": "highest priority, not acquired",
+   "access_date": "2026-11-27",
+   "acquire": {
+    "method": "none"
+   }
+  },
+  {
+   "id": "SRC-O08",
+   "name": "TCMB EVDS (Electronic Data Delivery System)",
+   "category": "official_economic",
+   "publisher": "TCMB",
+   "url": "https://evds3.tcmb.gov.tr/",
+   "license": {
+    "id": "EVDS terms not verified",
+    "evidence": "EVDS web-service documentation indicates an API key per registered user; the disclaimer PDF could not be read here",
+    "derivatives_allowed": null,
+    "redistribution": "unverified"
+   },
+   "language": [
+    "tr",
+    "en"
+   ],
+   "domain": "interest rates, inflation, banking, money, balance of payments",
+   "status": "blocked_access",
+   "origin": "official_statistics",
+   "justification": "Requires a personal registered API key. The project does not obtain, store or share keys; the owner may run the acquisition locally with their own key after reviewing the EVDS terms.",
+   "suitability": "highest priority, not acquired",
+   "access_date": "2026-11-27",
+   "acquire": {
+    "method": "none"
+   }
+  },
+  {
+   "id": "SRC-O09",
+   "name": "SBB (Strategy and Budget Presidency)",
+   "category": "official_economic",
+   "publisher": "Presidency of Strategy and Budget",
+   "url": "https://www.sbb.gov.tr/",
+   "license": {
+    "id": "not determined",
+    "evidence": "Home page reachable (HTTP 200) on the access date; no licence or open-data terms were read",
+    "derivatives_allowed": null,
+    "redistribution": "unverified"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "development plans, public investment",
+   "status": "probed_not_acquired",
+   "origin": "official_statistics",
+   "justification": "No machine-readable, anonymously accessible dataset endpoint with stated reuse terms was identified in this session. Tabular publications (PDF or Excel bulletins) need per-publication licence review before any use.",
+   "suitability": "candidate for a later targeted pass",
+   "access_date": "2026-11-27",
+   "acquire": {
+    "method": "none"
+   }
+  },
+  {
+   "id": "SRC-O10",
+   "name": "Ministry of Treasury and Finance (HMB)",
+   "category": "official_economic",
+   "publisher": "Ministry of Treasury and Finance",
+   "url": "https://www.hmb.gov.tr/",
+   "license": {
+    "id": "not determined",
+    "evidence": "Home page reachable (HTTP 200) on the access date; no licence or open-data terms were read",
+    "derivatives_allowed": null,
+    "redistribution": "unverified"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "budget, public debt statistics",
+   "status": "probed_not_acquired",
+   "origin": "official_statistics",
+   "justification": "No machine-readable, anonymously accessible dataset endpoint with stated reuse terms was identified in this session. Tabular publications (PDF or Excel bulletins) need per-publication licence review before any use.",
+   "suitability": "candidate for a later targeted pass",
+   "access_date": "2026-11-27",
+   "acquire": {
+    "method": "none"
+   }
+  },
+  {
+   "id": "SRC-O11",
+   "name": "BDDK (Banking Regulation and Supervision Agency)",
+   "category": "official_economic",
+   "publisher": "BDDK",
+   "url": "https://www.bddk.org.tr/",
+   "license": {
+    "id": "not determined",
+    "evidence": "Home page reachable (HTTP 200) on the access date; no licence or open-data terms were read",
+    "derivatives_allowed": null,
+    "redistribution": "unverified"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "banking sector monthly bulletins",
+   "status": "probed_not_acquired",
+   "origin": "official_statistics",
+   "justification": "No machine-readable, anonymously accessible dataset endpoint with stated reuse terms was identified in this session. Tabular publications (PDF or Excel bulletins) need per-publication licence review before any use.",
+   "suitability": "candidate for a later targeted pass",
+   "access_date": "2026-11-27",
+   "acquire": {
+    "method": "none"
+   }
+  },
+  {
+   "id": "SRC-O12",
+   "name": "SGK (Social Security Institution)",
+   "category": "official_economic",
+   "publisher": "SGK",
+   "url": "https://www.sgk.gov.tr/",
+   "license": {
+    "id": "not determined",
+    "evidence": "Home page reachable (HTTP 200) on the access date; no licence or open-data terms were read",
+    "derivatives_allowed": null,
+    "redistribution": "unverified"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "insured workers and pensions statistics",
+   "status": "probed_not_acquired",
+   "origin": "official_statistics",
+   "justification": "No machine-readable, anonymously accessible dataset endpoint with stated reuse terms was identified in this session. Tabular publications (PDF or Excel bulletins) need per-publication licence review before any use.",
+   "suitability": "candidate for a later targeted pass",
+   "access_date": "2026-11-27",
+   "acquire": {
+    "method": "none"
+   }
+  },
+  {
+   "id": "SRC-O13",
+   "name": "İŞKUR (Turkish Employment Agency)",
+   "category": "official_economic",
+   "publisher": "İŞKUR",
+   "url": "https://www.iskur.gov.tr/",
+   "license": {
+    "id": "not determined",
+    "evidence": "Home page reachable (HTTP 200) on the access date; no licence or open-data terms were read",
+    "derivatives_allowed": null,
+    "redistribution": "unverified"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "registered unemployed, vacancies",
+   "status": "probed_not_acquired",
+   "origin": "official_statistics",
+   "justification": "No machine-readable, anonymously accessible dataset endpoint with stated reuse terms was identified in this session. Tabular publications (PDF or Excel bulletins) need per-publication licence review before any use.",
+   "suitability": "candidate for a later targeted pass",
+   "access_date": "2026-11-27",
+   "acquire": {
+    "method": "none"
+   }
+  },
+  {
+   "id": "SRC-O14",
+   "name": "KAP (Public Disclosure Platform)",
+   "category": "official_economic",
+   "publisher": "Public Disclosure Platform",
+   "url": "https://www.kap.org.tr/",
+   "license": {
+    "id": "not determined",
+    "evidence": "Home page reachable (HTTP 200) on the access date; no licence or open-data terms were read",
+    "derivatives_allowed": null,
+    "redistribution": "unverified"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "listed-company disclosures",
+   "status": "probed_not_acquired",
+   "origin": "official_statistics",
+   "justification": "No machine-readable, anonymously accessible dataset endpoint with stated reuse terms was identified in this session. Tabular publications (PDF or Excel bulletins) need per-publication licence review before any use.",
+   "suitability": "candidate for a later targeted pass",
+   "access_date": "2026-11-27",
+   "acquire": {
+    "method": "none"
+   }
+  },
+  {
+   "id": "SRC-O15",
+   "name": "TEFAS (Turkey Electronic Fund Trading Platform)",
+   "category": "official_economic",
+   "publisher": "Takasbank / TEFAS",
+   "url": "https://www.tefas.gov.tr/",
+   "license": {
+    "id": "not determined",
+    "evidence": "Home page reachable (HTTP 200) on the access date; no licence or open-data terms were read",
+    "derivatives_allowed": null,
+    "redistribution": "unverified"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "investment fund prices",
+   "status": "probed_not_acquired",
+   "origin": "official_statistics",
+   "justification": "No machine-readable, anonymously accessible dataset endpoint with stated reuse terms was identified in this session. Tabular publications (PDF or Excel bulletins) need per-publication licence review before any use.",
+   "suitability": "candidate for a later targeted pass",
+   "access_date": "2026-11-27",
+   "acquire": {
+    "method": "none"
+   }
+  },
+  {
+   "id": "SRC-O16",
+   "name": "Ministry of Trade",
+   "category": "official_economic",
+   "publisher": "Ministry of Trade",
+   "url": "https://ticaret.gov.tr/",
+   "license": {
+    "id": "not determined",
+    "evidence": "Home page reachable (HTTP 200) on the access date; no licence or open-data terms were read",
+    "derivatives_allowed": null,
+    "redistribution": "unverified"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "foreign trade statistics",
+   "status": "probed_not_acquired",
+   "origin": "official_statistics",
+   "justification": "No machine-readable, anonymously accessible dataset endpoint with stated reuse terms was identified in this session. Tabular publications (PDF or Excel bulletins) need per-publication licence review before any use.",
+   "suitability": "candidate for a later targeted pass",
+   "access_date": "2026-11-27",
+   "acquire": {
+    "method": "none"
+   }
+  },
+  {
+   "id": "SRC-O17",
+   "name": "ILOSTAT and IMF data portals",
+   "category": "international_economic",
+   "publisher": "ILO; IMF",
+   "url": "https://ilostat.ilo.org/",
+   "license": {
+    "id": "not determined",
+    "evidence": "Both hosts returned HTTP 403 to automated requests on the access date",
+    "derivatives_allowed": null,
+    "redistribution": "unverified"
+   },
+   "language": [
+    "en"
+   ],
+   "domain": "labour statistics; macro and financial statistics",
+   "status": "blocked_access",
+   "origin": "official_statistics",
+   "justification": "Automated access was refused (HTTP 403, including through the environment's allowlisted route); access restrictions are not bypassed. Wages and unemployment are covered through other sources for now.",
+   "suitability": "candidate for manual download by the owner",
+   "access_date": "2026-11-27",
+   "acquire": {
+    "method": "none"
+   }
+  },
+  {
+   "id": "SRC-O18",
+   "name": "İBB (Istanbul) open data portal",
+   "category": "municipal_open_data",
+   "publisher": "Istanbul Metropolitan Municipality",
+   "url": "https://data.ibb.gov.tr/",
+   "license": {
+    "id": "not determined",
+    "evidence": "The host did not answer from this environment",
+    "derivatives_allowed": null,
+    "redistribution": "unverified"
+   },
+   "language": [
+    "tr"
+   ],
+   "domain": "municipal open data",
+   "status": "blocked_access",
+   "origin": "municipal_open_data",
+   "justification": "Connection failed (no HTTP response) on the access date; nothing acquired.",
+   "suitability": "candidate for a later pass",
+   "access_date": "2026-11-27",
+   "acquire": {
+    "method": "none"
+   }
+  },
+  {
+   "id": "SRC-O19",
+   "name": "UN Data (data.un.org SDMX)",
+   "category": "international_economic",
+   "publisher": "United Nations Statistics Division",
+   "url": "https://data.un.org/",
+   "license": {
+    "id": "not determined",
+    "evidence": "Host reachable (HTTP 200/302); terms page not read",
+    "derivatives_allowed": null,
+    "redistribution": "unverified"
+   },
+   "language": [
+    "en"
+   ],
+   "domain": "national accounts, demographics",
+   "status": "probed_not_acquired",
+   "origin": "official_statistics",
+   "justification": "Lower priority than sources with stronger Turkey coverage; no dataset acquired.",
+   "suitability": "candidate for a later pass",
+   "access_date": "2026-11-27",
+   "acquire": {
+    "method": "none"
+   }
+  },
+  {
+   "id": "SRC-M01",
+   "name": "Qwen/Qwen3-1.7B (tokenizer and chat template only)",
+   "category": "nlp",
+   "publisher": "Qwen team, Alibaba Cloud (Hugging Face)",
+   "url": "https://huggingface.co/Qwen/Qwen3-1.7B",
+   "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+   "license": {
+    "id": "Apache-2.0 (card metadata)",
+    "evidence": "Hugging Face model card metadata; the repository ships a LICENSE file",
+    "derivatives_allowed": true,
+    "redistribution": "allowed with notice; not redistributed here"
+   },
+   "language": [
+    "multilingual"
+   ],
+   "domain": "base model of AX-01 (selected under EXP-009)",
+   "status": "reviewed_not_used",
+   "origin": "base_model",
+   "justification": "Only tokenizer.json and tokenizer_config.json are downloaded, to measure token counts of the corpus with the real tokenizer. No weights are downloaded; model selection and training belong to Issue #4.",
+   "suitability": "measurement only",
+   "access_date": "2026-11-27",
+   "acquire": {
+    "method": "hf_files",
+    "repo": "Qwen/Qwen3-1.7B",
+    "repo_type": "model",
+    "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+    "files": [
+     "tokenizer.json",
+     "tokenizer_config.json"
+    ]
+   }
+  }
+ ]
+}

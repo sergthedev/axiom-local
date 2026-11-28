@@ -1,0 +1,39 @@
+{
+ "acquisition_manifest_sha256": "15cb4c9dd74b4a9bc02d90eade780a49f6f7cf1fadae9f0f0231511b58308b68",
+ "base_commit": "fbd4adc3bab3d50e6912935a6bf982fbec62f10b",
+ "corpus_version": "axbench-tr/0.2-rev1",
+ "external_adapted": {
+  "SRC-N01 row caps": {
+   "compare": 1000,
+   "data_modification": 300,
+   "inspect": 1000
+  },
+  "SRC-N03": "quarantined: licence evidence conflicts, no records used"
+ },
+ "files": {
+  "train.jsonl": {
+   "bytes": 9121665,
+   "records": 5873,
+   "sha256": "d5466e80c4e9cf06753d8fbc5c5d28476c35ea309b9f78e34a1a6ee94cb11372"
+  },
+  "validation.jsonl": {
+   "bytes": 2230374,
+   "records": 1396,
+   "sha256": "d8e302d02b05579f50b035a2840445c19603ba555100ac6636a87decb0eb6301"
+  }
+ },
+ "generator": "axbench_tr.synth/0.2",
+ "registry_sha256": "6c9eabcaaf2b7ba6b0e59b4b8458c8bef1213e0646087d2ed6209611595a736f",
+ "seed": "axbench-tr-0.2-rev1",
+ "status": "draft: AI-authored, no human review (human_review is none on every record)",
+ "synthetic_sizes": {
+  "train": 5400,
+  "validation": 1300
+ },
+ "table_partition_counts": {
+  "train": 151,
+  "validation": 49
+ },
+ "tables_in_inventory": 255,
+ "tables_usable": 200
+}

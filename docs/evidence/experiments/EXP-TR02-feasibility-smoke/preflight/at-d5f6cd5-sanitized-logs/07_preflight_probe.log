@@ -1,0 +1,38 @@
+CMD: uv run --locked --project envs/model python training/tr02/tr02.py preflight --phase probe --model-dir $HOME/axiom-models/qwen3-1.7b --export $HOME/tr02-preflight-work-2/export --out $HOME/tr02-preflight-work-2/probe --expect-commit d5f6cd56c0d3a12ecb9e917570d028788809ac78
+START: Fri Nov 27 18:46:03 UTC 2026
+{
+ "record": {
+  "commit": "d5f6cd56c0d3a12ecb9e917570d028788809ac78",
+  "phase": "probe",
+  "versions": {
+   "python": "3.12",
+   "mlx": "0.32.4",
+   "mlx-lm": "0.32.2"
+  },
+  "offline": true,
+  "export_manifest_sha256": "f99d236d0681852e3ba0c57959f6ace89a41fabc4c96bd4fd7bf5ee9ba033b92",
+  "per_example_sha256": "8dde1cfb9b20c2e9ce095cd0161e860a406c6b8ffad1f24e75d1bbfba175c95d",
+  "model_revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "after_complete_sha256": {}
+ },
+ "problems": []
+}
+        1.53 real         1.26 user         0.24 sys
+            33472512  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                8021  page reclaims
+                 149  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   1  messages sent
+                   1  messages received
+                   1  signals received
+                  41  voluntary context switches
+                 575  involuntary context switches
+            99635162  instructions retired
+            35578756  cycles elapsed
+            10076736  peak memory footprint
+EXIT_STATUS: 0

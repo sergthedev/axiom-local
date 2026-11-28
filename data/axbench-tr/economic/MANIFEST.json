@@ -1,0 +1,114 @@
+{
+ "schema": "axbench-tr.economic-observations/1",
+ "files": [
+  {
+   "path": "worldbank_wdi_turkiye_and_peers.csv",
+   "source_id": "SRC-O01",
+   "rows": 375,
+   "sha256": "2eb1c1390567433c8cd3ae65b1d432cc42c3c0ed3c9d62a1823801353c57184f",
+   "bytes": 70260
+  },
+  {
+   "path": "eurostat_namq_10_gdp_TR.csv",
+   "source_id": "SRC-O02",
+   "sha256": "1ca9a09b77340d5bfbcb9258c3b5d72f7536879acf5877967ed97d48b14a42ca",
+   "bytes": 3875
+  },
+  {
+   "path": "eurostat_prc_hicp_manr_TR.csv",
+   "source_id": "SRC-O02",
+   "sha256": "9c15f445a7957643e010ccba5c8be5e403965aa5c22d7015e11b1fab989e4ba5",
+   "bytes": 10090
+  },
+  {
+   "path": "eurostat_une_rt_m_TR.csv",
+   "source_id": "SRC-O02",
+   "sha256": "900bd39e3944d07747a3aad78f350bc8f68223c656ba9b097b821ed23d726552",
+   "bytes": 10905
+  },
+  {
+   "path": "izmir/balik-hal-fiyatlari.csv",
+   "source_id": "SRC-O06",
+   "sha256": "d7933f3d437b881b6701d328a496f5f631e77e45509d3963f00de4e6ed09116c",
+   "bytes": 23689
+  },
+  {
+   "path": "izmir/imalat-sanayi-ihracati.csv",
+   "source_id": "SRC-O06",
+   "sha256": "416ede2bb0b71b27ebbd6ec35cfff5e92b9a35dff916cc0fa2583db51dafc458",
+   "bytes": 803
+  },
+  {
+   "path": "izmir/imalat-sanayi-ithalati.csv",
+   "source_id": "SRC-O06",
+   "sha256": "7e59322138914d96b468aa6b899e269aafeb910ad9d9fc5aa0879910cfed4a1d",
+   "bytes": 807
+  },
+  {
+   "path": "izmir/izmir-ilcelerine-ait-konut-ve-ozel-is-yeri-istatistikleri.csv",
+   "source_id": "SRC-O06",
+   "sha256": "8eb5141088109b909c032203685ff4ee7b646daff44922e31621561f2ce408e9",
+   "bytes": 127079
+  },
+  {
+   "path": "izmir/izmir-konut-satis-sayilarina-gore-dagilimi.csv",
+   "source_id": "SRC-O06",
+   "sha256": "2b8586142230919333d096f5c65c1909f8c51568d5d09030a9ebcd2a351341ca",
+   "bytes": 216
+  },
+  {
+   "path": "izmir/izmir-yillara-gore-issizlik-orani.csv",
+   "source_id": "SRC-O06",
+   "sha256": "46c79f7b447b7abc5b469f4261e5c6120fcf7c032e98fccfd2e2054ee592817c",
+   "bytes": 207
+  },
+  {
+   "path": "izmir/kablosuz-internet-baglanti-noktalari.csv",
+   "source_id": "SRC-O06",
+   "sha256": "607e9041b1d5379f3ae097b0e22304d963784a44eb5d57eb3d644a1ff85c86f8",
+   "bytes": 67312
+  },
+  {
+   "path": "izmir/otopark-ucretleri.csv",
+   "source_id": "SRC-O06",
+   "sha256": "af4df42d1dd0ff320dae81c9418d14e23a69f0c3fa273d8b000fc6bc74ee04ec",
+   "bytes": 3010
+  },
+  {
+   "path": "izmir/sebze-ve-meyve-hal-fiyatlari.csv",
+   "source_id": "SRC-O06",
+   "sha256": "891e4058f5f583824a3ad7a1028d51ccc5d83cd21cf2e6c26c86038f9d6d5b48",
+   "bytes": 839650
+  },
+  {
+   "path": "izmir/tarimsal-destekler.csv",
+   "source_id": "SRC-O06",
+   "sha256": "d76b56d952271d22194c7bd9dcd5a8d2acf1131599019ba0064a4df10d69568b",
+   "bytes": 29811
+  },
+  {
+   "path": "izmir/turizm-tesisleri.csv",
+   "source_id": "SRC-O06",
+   "sha256": "3c9facfaa8e7a576da134ad67f0d3a38997850240a4292ac44b38b1c55de0569",
+   "bytes": 385
+  },
+  {
+   "path": "izmir/ucretsiz-kablosuz-internet-wizmirnet-hizmeti-verileri.csv",
+   "source_id": "SRC-O06",
+   "sha256": "48dbcb7184c6db556b8d7ccc070b94a7226dda9cdf738f3de8e0b5d012190071",
+   "bytes": 56395
+  },
+  {
+   "path": "izmir/yillara-gore-istihdam-sayilari.csv",
+   "source_id": "SRC-O06",
+   "sha256": "9c5c2a255562a17051a2a82a92fa4b4fa4fde3ae71f009f00d806e1e0e8e78ea",
+   "bytes": 287
+  },
+  {
+   "path": "izmir/yillik-tarife-bilgileri-artislari.csv",
+   "source_id": "SRC-O06",
+   "sha256": "a605ba7cc0b2315d70c1a8c201f05ab479ef13e68c6ee80e94c54cee11d80811",
+   "bytes": 151027
+  }
+ ]
+}

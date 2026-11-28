@@ -1,0 +1,206 @@
+{
+ "excluded_from_commit": {
+  "turizm-bilgilendirme-ofisleri-konum-verisi.csv": "office street addresses and phone numbers"
+ },
+ "files": [
+  {
+   "file": "eurostat_namq_10_gdp_TR.csv",
+   "personal_looking_headers": [],
+   "rows": 46,
+   "value_pattern_hits": {}
+  },
+  {
+   "file": "eurostat_prc_hicp_manr_TR.csv",
+   "personal_looking_headers": [],
+   "rows": 132,
+   "value_pattern_hits": {}
+  },
+  {
+   "file": "eurostat_une_rt_m_TR.csv",
+   "personal_looking_headers": [],
+   "rows": 141,
+   "value_pattern_hits": {}
+  },
+  {
+   "ai_note": "'MAL_ADI' is a commodity name",
+   "ckan_package": {
+    "license_id": "Izmir-Metropolitan-Municipality-License",
+    "license_title": "Izmir Metropolitan Municipality Open Data License"
+   },
+   "file": "izmir/balik-hal-fiyatlari.csv",
+   "personal_looking_headers": [
+    "MAL_ADI"
+   ],
+   "rows": 506,
+   "value_pattern_hits": {}
+  },
+  {
+   "ai_note": "phone-like hits are 10-digit trade values",
+   "ckan_package": {
+    "license_id": "Izmir-Metropolitan-Municipality-License",
+    "license_title": "Izmir Metropolitan Municipality Open Data License"
+   },
+   "file": "izmir/imalat-sanayi-ihracati.csv",
+   "personal_looking_headers": [],
+   "rows": 14,
+   "value_pattern_hits": {
+    "tr_phone": 4
+   }
+  },
+  {
+   "ai_note": "phone-like hits are 10-digit trade values",
+   "ckan_package": {
+    "license_id": "Izmir-Metropolitan-Municipality-License",
+    "license_title": "Izmir Metropolitan Municipality Open Data License"
+   },
+   "file": "izmir/imalat-sanayi-ithalati.csv",
+   "personal_looking_headers": [],
+   "rows": 14,
+   "value_pattern_hits": {
+    "tr_phone": 1
+   }
+  },
+  {
+   "ai_note": "ILCE_ADI and MAHALLE_ADI are district and neighbourhood names",
+   "ckan_package": {
+    "license_id": "Izmir-Metropolitan-Municipality-License",
+    "license_title": "Izmir Metropolitan Municipality Open Data License"
+   },
+   "file": "izmir/izmir-ilcelerine-ait-konut-ve-ozel-is-yeri-istatistikleri.csv",
+   "personal_looking_headers": [
+    "ILCE_ADI",
+    "MAHALLE_ADI"
+   ],
+   "rows": 3924,
+   "value_pattern_hits": {}
+  },
+  {
+   "ckan_package": {
+    "license_id": "Izmir-Metropolitan-Municipality-License",
+    "license_title": "Izmir Metropolitan Municipality Open Data License"
+   },
+   "file": "izmir/izmir-konut-satis-sayilarina-gore-dagilimi.csv",
+   "personal_looking_headers": [],
+   "rows": 10,
+   "value_pattern_hits": {}
+  },
+  {
+   "ckan_package": {
+    "license_id": "Izmir-Metropolitan-Municipality-License",
+    "license_title": "Izmir Metropolitan Municipality Open Data License"
+   },
+   "file": "izmir/izmir-yillara-gore-issizlik-orani.csv",
+   "personal_looking_headers": [],
+   "rows": 19,
+   "value_pattern_hits": {}
+  },
+  {
+   "ai_note": "'ADI' is a street name (public Wi-Fi point)",
+   "ckan_package": {
+    "license_id": "Izmir-Metropolitan-Municipality-License",
+    "license_title": "Izmir Metropolitan Municipality Open Data License"
+   },
+   "file": "izmir/kablosuz-internet-baglanti-noktalari.csv",
+   "personal_looking_headers": [
+    "ADI"
+   ],
+   "rows": 857,
+   "value_pattern_hits": {}
+  },
+  {
+   "ckan_package": {
+    "license_id": "Izmir-Metropolitan-Municipality-License",
+    "license_title": "Izmir Metropolitan Municipality Open Data License"
+   },
+   "file": "izmir/otopark-ucretleri.csv",
+   "personal_looking_headers": [],
+   "rows": 39,
+   "value_pattern_hits": {}
+  },
+  {
+   "ai_note": "'MAL_ADI' is a commodity name",
+   "ckan_package": {
+    "license_id": "Izmir-Metropolitan-Municipality-License",
+    "license_title": "Izmir Metropolitan Municipality Open Data License"
+   },
+   "file": "izmir/sebze-ve-meyve-hal-fiyatlari.csv",
+   "personal_looking_headers": [
+    "MAL_ADI"
+   ],
+   "rows": 18066,
+   "value_pattern_hits": {}
+  },
+  {
+   "ckan_package": {
+    "license_id": "Izmir-Metropolitan-Municipality-License",
+    "license_title": "Izmir Metropolitan Municipality Open Data License"
+   },
+   "file": "izmir/tarimsal-destekler.csv",
+   "personal_looking_headers": [],
+   "rows": 686,
+   "value_pattern_hits": {}
+  },
+  {
+   "ckan_package": {
+    "license_id": "Izmir-Metropolitan-Municipality-License",
+    "license_title": "Izmir Metropolitan Municipality Open Data License"
+   },
+   "file": "izmir/turizm-tesisleri.csv",
+   "personal_looking_headers": [],
+   "rows": 8,
+   "value_pattern_hits": {}
+  },
+  {
+   "ckan_package": {
+    "license_id": "Izmir-Metropolitan-Municipality-License",
+    "license_title": "Izmir Metropolitan Municipality Open Data License"
+   },
+   "file": "izmir/ucretsiz-kablosuz-internet-wizmirnet-hizmeti-verileri.csv",
+   "personal_looking_headers": [],
+   "rows": 1329,
+   "value_pattern_hits": {}
+  },
+  {
+   "ckan_package": {
+    "license_id": "Izmir-Metropolitan-Municipality-License",
+    "license_title": "Izmir Metropolitan Municipality Open Data License"
+   },
+   "file": "izmir/yillara-gore-istihdam-sayilari.csv",
+   "personal_looking_headers": [],
+   "rows": 19,
+   "value_pattern_hits": {}
+  },
+  {
+   "ckan_package": {
+    "license_id": "Izmir-Metropolitan-Municipality-License",
+    "license_title": "Izmir Metropolitan Municipality Open Data License"
+   },
+   "file": "izmir/yillik-tarife-bilgileri-artislari.csv",
+   "personal_looking_headers": [],
+   "rows": 1876,
+   "value_pattern_hits": {}
+  },
+  {
+   "ai_note": "hits are 11-digit GDP and similar magnitudes",
+   "file": "worldbank_wdi_turkiye_and_peers.csv",
+   "personal_looking_headers": [],
+   "rows": 375,
+   "value_pattern_hits": {
+    "tc_identity_number": 103,
+    "tr_phone": 29
+   }
+  }
+ ],
+ "files_scanned": 18,
+ "files_with_candidates": [
+  "izmir/balik-hal-fiyatlari.csv",
+  "izmir/imalat-sanayi-ihracati.csv",
+  "izmir/imalat-sanayi-ithalati.csv",
+  "izmir/izmir-ilcelerine-ait-konut-ve-ozel-is-yeri-istatistikleri.csv",
+  "izmir/kablosuz-internet-baglanti-noktalari.csv",
+  "izmir/sebze-ve-meyve-hal-fiyatlari.csv",
+  "worldbank_wdi_turkiye_and_peers.csv"
+ ],
+ "limits": "pattern scan only; a human must still decide on every candidate",
+ "schema": "axbench-tr.economic-privacy-audit/1"
+}

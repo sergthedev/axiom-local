@@ -1,0 +1,32 @@
+CMD: uv run --locked python -m axbench_tr export-mlx --out $HOME/tr02-run5-work/export
+START: Fri Nov 27 21:15:06 UTC 2026
+Using CPython 3.12.16 interpreter at: <local-path>
+Creating virtual environment at: .venv
+Installed 19 packages in 33ms
+{
+ "full/train.jsonl": 5873,
+ "full/valid.jsonl": 1396,
+ "smoke/train.jsonl": 400,
+ "smoke/valid.jsonl": 40,
+ "peak_probe/train.jsonl": 20,
+ "peak_probe/valid.jsonl": 20
+}
+       16.27 real         3.15 user         0.42 sys
+           362643456  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               48253  page reclaims
+                 438  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   1  messages sent
+                   1  messages received
+                   1  signals received
+                1074  voluntary context switches
+                1175  involuntary context switches
+           872005815  instructions retired
+           358371322  cycles elapsed
+            17760856  peak memory footprint
+EXIT_STATUS: 0

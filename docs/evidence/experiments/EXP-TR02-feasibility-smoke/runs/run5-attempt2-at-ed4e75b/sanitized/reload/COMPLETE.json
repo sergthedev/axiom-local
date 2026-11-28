@@ -1,0 +1,28 @@
+{
+ "adapter_config_sha256": "f3aaa07b59a559189cbcd2af64f90ade46560fc6787eb21a63c9e54282ce3541",
+ "adapter_sha256": "e3777eede1a715a2bf336cf087f268ab999fbb01e48747341c93acb58affed7d",
+ "files": {
+  "out/events.jsonl": "26eee1eac0986e086b9e38e4a88152583f913df5969cfd6cc64bbe029a5ff4ec",
+  "supervisor/child.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "supervisor/supervisor.jsonl": "57ab25c8718ca12cd74767339dcfbb9813c2901a983ebd617d8c0dc27b1d365f"
+ },
+ "phase": "reload",
+ "preflight": {
+  "after_complete_sha256": "acbb808238bbb5736cf7296701fa69f8cd3838e4d1ed5440b8ed81687162be38",
+  "commit": "ed4e75b7668c5541c0912a066b57cce88c938713",
+  "export_manifest_sha256": "f99d236d0681852e3ba0c57959f6ace89a41fabc4c96bd4fd7bf5ee9ba033b92",
+  "model_revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "offline": true,
+  "per_example_sha256": "8dde1cfb9b20c2e9ce095cd0161e860a406c6b8ffad1f24e75d1bbfba175c95d",
+  "phase": "reload",
+  "versions": {
+   "mlx": "0.32.4",
+   "mlx-lm": "0.32.2",
+   "python": "3.12"
+  }
+ },
+ "reference_val_loss": null,
+ "schema": "axbench-tr.exp-tr02-complete/1",
+ "window_rates_full_tokens_per_s": [],
+ "window_rates_padded_tokens_per_s": []
+}
