@@ -1,0 +1,12 @@
+{
+ "problems": [],
+ "tensors": 8,
+ "trainable_params": 1792,
+ "names": [
+  "model.layers.2.self_attn.q_proj.lora_a",
+  "model.layers.2.self_attn.q_proj.lora_b",
+  "model.layers.2.self_attn.v_proj.lora_a",
+  "model.layers.2.self_attn.v_proj.lora_b"
+ ],
+ "mlx": "0.32.4"
+}

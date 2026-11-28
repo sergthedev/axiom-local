@@ -1,0 +1,16 @@
+{
+ "tr04/train.jsonl": {
+  "rows": 3164,
+  "problems": [],
+  "supervised_tokens": 91884,
+  "supervised_min": 21,
+  "supervised_max": 184
+ },
+ "tr04/valid.jsonl": {
+  "rows": 376,
+  "problems": [],
+  "supervised_tokens": 11010,
+  "supervised_min": 21,
+  "supervised_max": 104
+ }
+}
