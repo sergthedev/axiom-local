@@ -1,6 +1,8 @@
-# EXP-010 pilot training run (200 optimizer updates; executed 2026-11-27; pending technical acceptance)
+# EXP-010 pilot training run (200 optimizer updates; executed 2026-11-27; technically accepted)
 
-- Status: **completed** (sequence exit 0). This record covers **training only**. No reload, evaluation, validation
+- Status: **completed** (sequence exit 0). Accepted by the lead as a completed training experiment, not a routing-accuracy or
+  deployment result ([technical acceptance](https://github.com/sergthedev/axiom-local/pull/11#issuecomment-7219505123));
+  the two clarifications it asked for (pre-start time, monitor sample count) are applied below. This record covers **training only**. No reload, evaluation, validation
   generation or scoring was run, and nothing here is an accuracy or deployment result. The pre-registered pilot outcome
   (D13) and the deployment gates (D14) can only be read after a separately reviewed and approved evaluation and the
   frozen analysis (PRERUN section 8, steps 3-5).
@@ -12,7 +14,9 @@
 - Head: `9902a022f50ccff65861d0f23d713e765ed9b251` (clean tree; checked by the launcher and recorded by the training
   process as `dirty: false`). CI run 45838268425 on that head was successful: Windows job 139972806934 and macOS job
   139972807586.
-- Pre-start checks (about 13:08 UTC):
+- Pre-start checks (completed before the authorization record, which GitHub timestamps 13:09:12 UTC, and before the
+  sequence start at 13:09:22 UTC; the record's own "about 13:10 UTC" was an approximation and is superseded by these
+  timestamps):
   - the ten pinned Qwen3-1.7B BF16 checkpoint files at revision `70d244cc…` were re-hashed and equal the accepted
     EXP-009 provenance record (SHA-256 and sizes);
   - the frozen exports were `437c2ef0…` (train) and `40f83a3c…` (valid), as pinned;
@@ -102,7 +106,8 @@ are not used to select anything.
   monitor's largest sampled resident size of the training process was 3.26 × 10⁹ bytes.
 - Swap: 2,558,525 bytes used at the baseline and at every sample, so there was no growth.
 - Memory pressure stayed at level 1 (normal) throughout; the lowest free-memory sample was 42%.
-- The machine was on AC power at every sample. The monitor took 19 samples (30 s interval) and raised no stop.
+- The machine was on AC power at every sample. The external monitor wrote 18 resource samples (30 s interval) plus 1 final marker and raised
+  no stop.
 
 **Loss.** These are teacher-forced losses only. They are reported descriptively and are not a pre-registered endpoint
 or evidence of routing accuracy.

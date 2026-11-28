@@ -1,0 +1,7 @@
+== 2026-11-28T05:55:55Z start exp010.supervise/2 pid 32952 steps ['evaluate']
+== 2026-11-28T05:55:55Z monitor started pid 32969
+== 2026-11-28T05:55:56Z monitor ready
+== 2026-11-28T05:55:56Z evaluate started pid 32975
+== 2026-11-28T06:00:16Z evaluate exited rc=0
+== 2026-11-28T06:00:16Z monitor rc=0
+== 2026-11-28T06:00:16Z end rc=0

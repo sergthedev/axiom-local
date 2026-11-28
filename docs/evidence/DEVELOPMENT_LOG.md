@@ -658,3 +658,15 @@ for a comprehensive final audit of AXIOM Verify.
   throughput fell from 0.92 to 0.79 updates/s, far from the stop rule.
 - Evidence-only commit of `runs/pilot/` and [PILOT_TRAINING.md](experiments/EXP-010-lora-pilot/PILOT_TRAINING.md);
   C-059. No reload, evaluation, validation generation, scoring, sealed-test access, code or configuration change.
+
+## 2026-11-28 — Issue #4, Phase 3C: EXP-010 validation generations (raw, not scored)
+
+- The lead accepted the pilot training (PR #11 comment 7219505123) and cleared one frozen validation-generation
+  sequence at `edf49fa`, under the owner's bounded delegation (comment 7231617648); the owner's instruction followed
+  in the project thread. Prerequisites and the authorization were recorded on the PR before the start (comment
+  7234971828).
+- PRERUN section 8 step 3 ran once, detached and supervised, 05:55-06:00 UTC: exit 0, 5 warm-ups and 160 validation
+  requests, all status `ok` (8 reached the 256-token cap), no stop. The frozen D18 integrity checks found no problem.
+  Raw records committed unchanged with [EVALUATION_RAW.md](experiments/EXP-010-lora-pilot/EVALUATION_RAW.md) and
+  C-060; the lead's two wording clarifications applied to PILOT_TRAINING.md. Nothing was scored; no training,
+  sealed-test access, code or configuration change.
