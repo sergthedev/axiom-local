@@ -1,0 +1,6 @@
+head d8d0782c5be7142d51b8fab700ac84b1b9e6949a
+2026-11-28T06:14:04Z
+uv 0.13.10 (Homebrew 2026-11-24 aarch64-apple-darwin)
+Python 3.12.16
+analysis start 2026-11-28T06:16:03Z end 2026-11-28T06:16:04Z rc=0 stderr_bytes 0
+results.json sha256 b9000152936e1a1ed5d72c49d133a1bba110fdbbde767e4c2b924bbf140f5182

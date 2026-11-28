@@ -670,3 +670,15 @@ for a comprehensive final audit of AXIOM Verify.
   Raw records committed unchanged with [EVALUATION_RAW.md](experiments/EXP-010-lora-pilot/EVALUATION_RAW.md) and
   C-060; the lead's two wording clarifications applied to PILOT_TRAINING.md. Nothing was scored; no training,
   sealed-test access, code or configuration change.
+
+## 2026-11-28 — Issue #4, Phase 3C: EXP-010 frozen analysis (step 5)
+
+- The lead accepted the raw preservation and cleared one frozen analysis at `d8d0782` (PR #11 comment 7235124783),
+  without merging `main` (PR #11 conflicts with it, so no CI ran at `d8d0782`).
+- Checks before scoring: exact clean head, ancestry and evidence-only delta, 158 files byte-equal to `HEAD`, comparator,
+  EXP-009 and manifest pins, no prior result; Ruff clean and 1,019 Core tests passed, 0 skipped, at `d8d0782`.
+- PRERUN section 8 step 5 ran once (06:16 UTC, exit 0) and its output was moved unchanged to `results.json`
+  (`b9000152…`). Outcome `improvement_demonstrated` (adapter 31 vs untuned 12 of 160, +11.875 pp, cluster CI
+  [+7.41, +17.48]); 6 of 12 deployment gates passed; 0 unauthorized dispatches; 26.25 pp below the rules. Recorded in
+  [RESULTS.md](experiments/EXP-010-lora-pilot/RESULTS.md) and C-061. No training, generation, retry, sealed-test
+  access, merge or code change.
