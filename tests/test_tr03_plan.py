@@ -259,8 +259,13 @@ def test_plan_cli_check_and_readiness_exit_codes():
     assert run("verify-config").returncode == 0
     assert run("check-plan").returncode == 0
     ready = run("readiness")
-    assert ready.returncode == 1  # every human gate is closed
-    assert json.loads(ready.stdout)["research_training_open"] is False
+    assert ready.returncode == 1  # every gate is absent; the tool never exits 0
+    report = json.loads(ready.stdout)
+    assert report["research_training_open"] is False
+    assert {g["status"] for g in report["gates"].values()} == {"absent"}
+    refused = run("research-plan")
+    assert refused.returncode == 1  # no ledgers: nothing is derived
+    assert json.loads(refused.stdout)["ok"] is False
 
 
 # ------------------------------------------------------------------------- thermal parser

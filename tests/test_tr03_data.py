@@ -9,6 +9,7 @@ from __future__ import annotations
 import copy
 import csv
 import json
+import re
 from collections import Counter
 from pathlib import Path
 
@@ -226,33 +227,19 @@ def _read(outputs, name):
     return list(csv.DictReader(outputs[name].decode("utf-8").splitlines()))
 
 
-HUMAN_ROW_COLUMNS = (
-    "reviewer_id",
-    "reviewer_type",
-    "request_natural",
-    "gold_correct",
-    "serious_error",
-    "decision",
-    "notes",
-    "second_reviewer_id",
-    "second_reviewer_type",
-    "second_decision",
-    "adjudicated_decision",
-)
-
-
 def test_worklists_hold_no_decision_of_any_kind(outputs):
-    for name in ("ROW_REVIEW_WORKLIST.csv", "TEMPLATE_REVIEW_WORKLIST.csv"):
+    for name, cols in (
+        ("ROW_REVIEW_WORKLIST.csv", tr03.ROW_COLUMNS),
+        ("TEMPLATE_REVIEW_WORKLIST.csv", tr03.TEMPLATE_COLUMNS),
+    ):
+        human = cols[cols.index("reviewer_id") :]
         for row in _read(outputs, name):
-            assert all(
-                row[c] == "" for c in row if c in HUMAN_ROW_COLUMNS or c.endswith("_natural")
-            )
-            assert row["reviewer_type"] == ""
+            assert all(row[c] == "" for c in human), name
     for row in _read(outputs, "RIGHTS_WORKLIST.csv"):
         assert row["owner_decision"] == "" and row["decided_by"] == ""
     roster = json.loads(outputs["HUMAN_ROSTER.template.json"])
-    assert roster["designated_by"] == ""
-    assert tr03.roster_problems(roster)  # the template is not a valid roster
+    assert roster["designated_by"] == "" and roster["people"] == []  # the template stays empty
+    assert roster["attestation"]["statement_accepted"] is False
 
 
 def test_row_worklist_strata_and_scope(outputs, corpus):
@@ -300,187 +287,56 @@ def test_inventory_templates_are_ai_authored_and_counted(outputs):
     assert {a["source_id"] for a in inv["source_attribution"]} == set(tr03.ELIGIBLE_SOURCES)
 
 
-# ----------------------------------------------------------------------------------- the gates
-
-
-ROSTER = {
-    "schema": "axbench-tr.tr03-roster/1",
-    "designated_by": "owner",
-    "designated_on": "2026-12-01",
-    "people": [
-        {"id": "R1", "type": "human", "native_turkish": True, "roles": ["reviewer"]},
-        {"id": "R2", "type": "human", "native_turkish": False, "roles": ["reviewer"]},
-    ],
-}
-
-
-def _filled_row_ledger(outputs, *, second=True):
+def test_worklists_carry_frozen_workload_batches_and_a_planned_second_tenth(outputs):
     rows = _read(outputs, "ROW_REVIEW_WORKLIST.csv")
-    for r in rows:
-        r.update(
-            reviewer_id="R1",
-            reviewer_type="human",
-            request_natural="yes",
-            gold_correct="yes",
-            serious_error="no",
-            decision="keep",
-        )
-        if second and r["second_review_planned"] == "yes":
-            r.update(second_reviewer_id="R2", second_reviewer_type="human", second_decision="keep")
-    return rows
-
-
-def test_roster_problems():
-    assert tr03.roster_problems(None) == ["roster_missing"]
-    assert tr03.roster_problems(ROSTER) == []
-    solo = copy.deepcopy(ROSTER)
-    solo["people"] = solo["people"][:1]
-    assert "fewer_than_two_human_reviewers" in tr03.roster_problems(solo)
-    no_tr = copy.deepcopy(ROSTER)
-    no_tr["people"][0]["native_turkish"] = False
-    assert "no_native_turkish_reviewer" in tr03.roster_problems(no_tr)
-    ai = copy.deepcopy(ROSTER)
-    ai["people"].append({"id": "A1", "type": "ai", "roles": ["reviewer"]})
-    assert "non_human_person_listed" in tr03.roster_problems(ai)
-    undesignated = {**ROSTER, "designated_by": ""}
-    assert "designation_missing" in tr03.roster_problems(undesignated)
-
-
-def test_a_complete_synthetic_ledger_passes_the_row_gates(outputs):
-    report = tr03.row_gate_report(_filled_row_ledger(outputs), ROSTER)
-    assert report["all_row_gates_passed"], report["gates"]
-    assert report["rows_refused_not_a_human_on_the_roster"] == 0
-    assert "not a research-quality claim" in report["claim"]
-
-
-def test_ai_reviewed_rows_are_refused_as_decisions(outputs):
-    rows = _filled_row_ledger(outputs)
-    for r in rows:
-        r["reviewer_type"] = "ai"
-    report = tr03.row_gate_report(rows, ROSTER)
-    assert report["rows_counted_as_human_decisions"] == 0
-    assert report["rows_refused_not_a_human_on_the_roster"] == len(rows)
-    assert not report["all_row_gates_passed"]
-    stranger = _filled_row_ledger(outputs)
-    for r in stranger:
-        r["reviewer_id"] = "R9"  # not on the roster
-    assert tr03.row_gate_report(stranger, ROSTER)["rows_counted_as_human_decisions"] == 0
-
-
-def test_row_gates_fail_on_each_predeclared_condition(outputs):
-    def first_tr(rows, cls):
-        return [r for r in rows if r["language"] == "tr" and tr03.frame_class(r["frame"]) == cls]
-
-    # a stratum below 95% gold correct (4 of 59 wrong is 93.2%)
-    rows = _filled_row_ledger(outputs)
-    for r in first_tr(rows, "compare")[:4]:
-        r.update(gold_correct="no", decision="drop")
-        r.update(second_reviewer_id="R2", second_reviewer_type="human", second_decision="drop")
-    report = tr03.row_gate_report(rows, ROSTER)
-    assert not report["gates"]["G3c_every_turkish_stratum_has_min_n_and_95pct"]
-
-    # a serious error that is kept
-    rows = _filled_row_ledger(outputs)
-    first_tr(rows, "reject")[0].update(serious_error="yes")
-    assert not tr03.row_gate_report(rows, ROSTER)["gates"]["G3d_zero_serious_errors_kept"]
-
-    # a 'no' without a second review
-    rows = _filled_row_ledger(outputs)
-    target = first_tr(rows, "relate")[0]
-    target.update(
-        gold_correct="no", decision="drop", second_reviewer_id="", second_reviewer_type=""
-    )
-    assert not tr03.row_gate_report(rows, ROSTER)["gates"]["G3e_second_review_complete"]
-
-    # a disagreement without adjudication
-    rows = _filled_row_ledger(outputs)
-    planned = next(r for r in rows if r["second_review_planned"] == "yes")
-    planned.update(second_decision="drop", adjudicated_decision="")
-    assert not tr03.row_gate_report(rows, ROSTER)["gates"]["G3e_second_review_complete"]
-    planned["adjudicated_decision"] = "keep"
-    assert tr03.row_gate_report(rows, ROSTER)["gates"]["G3e_second_review_complete"]
-
-    # too few rows in a stratum
-    rows = _filled_row_ledger(outputs)
-    drop = first_tr(rows, "cluster")[0]["sample_id"]
-    rows = [r for r in rows if r["sample_id"] != drop]
-    assert not tr03.row_gate_report(rows, ROSTER)["gates"][
-        "G3c_every_turkish_stratum_has_min_n_and_95pct"
-    ]
-
-    # an empty ledger passes nothing
-    assert not tr03.row_gate_report([], ROSTER)["all_row_gates_passed"]
-
-
-def test_template_gate_and_research_row_rule(outputs, corpus):
-    templates = _read(outputs, "TEMPLATE_REVIEW_WORKLIST.csv")
-    expected = [t["lineage_id"] for t in templates]
-    for t in templates:
-        t.update(reviewer_id="R1", reviewer_type="human", decision="keep", serious_error="no")
-    ok = tr03.template_gate_report(templates, ROSTER, expected)
-    assert ok["gate_G2_every_template_has_a_human_decision"]
-    assert ok["templates_kept"] == len(expected)
-
-    templates[0].update(decision="fix")  # fix removes the template: nothing is relabelled
-    templates[1].update(serious_error="yes")
-    templates[2].update(reviewer_type="ai")
-    rep = tr03.template_gate_report(templates, ROSTER, expected)
-    assert not rep["gate_G2_every_template_has_a_human_decision"]
-    assert rep["templates_missing_a_human_decision"] == 1
-    assert templates[0]["lineage_id"] not in rep["kept_lineage_ids"]
-    assert templates[1]["lineage_id"] not in rep["kept_lineage_ids"]
-
-    kept = {t["lineage_id"] for t in templates[3:] if t["reviewer_type"] == "human"}
-    row_ledger = _filled_row_ledger(outputs)
-    victim = next(r for r in row_ledger if r["lineage_id"] in kept)
-    victim.update(decision="fix")
-    ai_drop = next(r for r in row_ledger if r["lineage_id"] in kept and r is not victim)
-    ai_drop.update(decision="drop", reviewer_type="ai")  # an AI 'drop' is not a human decision
-    ids = tr03.research_training_ids(corpus["elig_t"], kept, row_ledger, ROSTER)
-    assert victim["record_id"] not in ids
-    assert ai_drop["record_id"] in ids
-    assert all(r["lineage_id"] in kept for r in corpus["elig_t"] if r["id"] in set(ids))
-    assert ids == sorted(ids)
-
-
-def test_gates_report_is_closed_today_and_opens_only_with_every_file(tmp_path, outputs):
-    today = tr03.gates_report()  # the repository has no ledgers directory
-    assert today["research_training_open"] is False
-    assert today["G1_roster_designated_by_owner"] is False
-    assert "roster_missing" in today["G1_problems"]
-    assert not (PREP / "ledgers").exists()
-
-    led = tmp_path / "ledgers"
-    led.mkdir()
-    (led / "HUMAN_ROSTER.json").write_text(json.dumps(ROSTER), "utf-8")
-    templates = _read(outputs, "TEMPLATE_REVIEW_WORKLIST.csv")
-    for t in templates:
-        t.update(reviewer_id="R1", reviewer_type="human", decision="keep", serious_error="no")
-    for name, rows, cols in (
-        ("TEMPLATE_REVIEW_RESULTS.csv", templates, tr03.TEMPLATE_COLUMNS),
-        ("ROW_REVIEW_RESULTS.csv", _filled_row_ledger(outputs), tr03.ROW_COLUMNS),
-    ):
-        with (led / name).open("w", newline="", encoding="utf-8") as fh:
-            w = csv.DictWriter(fh, fieldnames=list(cols), lineterminator="\n")
-            w.writeheader()
-            w.writerows(rows)
-    partial = tr03.gates_report(tmp_path)
-    assert partial["G2_templates"]["gate_G2_every_template_has_a_human_decision"]
-    assert partial["G3_rows"]["all_row_gates_passed"]
+    assert {r["batch"][:6] for r in rows} == {"RW-tr-", "RW-en-"}
     assert (
-        partial["research_training_open"] is False
-    )  # rights, held-out, preregistration, clearance
-    for name in (
-        "RIGHTS_DECISIONS.json",
-        "HELDOUT_FROZEN.json",
-        "PREREGISTRATION.json",
-        "CLEARANCE.json",
-    ):
-        (led / name).write_text("{}", "utf-8")
-    assert tr03.gates_report(tmp_path)["research_training_open"] is True
+        max(Counter(r["batch"] for r in rows).values())
+        - min(Counter(r["batch"] for r in rows).values())
+        <= 3
+    )
+    assert all(r["batch"].startswith("RW-" + r["language"]) for r in rows)
+    templates = _read(outputs, "TEMPLATE_REVIEW_WORKLIST.csv")
+    assert {t["batch"][:3] for t in templates} == {"TW-"}
+    assert 0 < sum(t["second_review_planned"] == "yes" for t in templates) < 30
+
+
+def test_batches_are_a_pure_function_of_the_keys():
+    keys = [f"k{i}" for i in range(40)]
+    a = tr03.assign_batches(keys, 4, "B")
+    assert a == tr03.assign_batches(list(reversed(keys)), 4, "B")
+    assert sorted(Counter(a.values()).values()) == [10, 10, 10, 10]
 
 
 def test_module_reads_no_test_split_and_loads_no_model():
-    source = (ROOT / "src/axbench_tr/tr03.py").read_text("utf-8")
-    for forbidden in ("test.jsonl", "mlx", "transformers", "torch", "load_model", "generate("):
-        assert forbidden not in source.replace("mlx-lm", "")
+    for name in ("tr03.py", "tr03_gates.py"):
+        source = (ROOT / "src/axbench_tr" / name).read_text("utf-8")
+        for forbidden in ("test.jsonl", "mlx", "transformers", "torch", "load_model", "generate("):
+            assert forbidden not in source.replace("mlx-lm", ""), (name, forbidden)
+
+
+def test_review_guide_examples_are_real_and_outside_the_review_sample(corpus, outputs):
+    guide = (
+        ROOT / "docs/evidence/experiments/EXP-TR03-research-protocol/REVIEW_GUIDE.md"
+    ).read_text("utf-8")
+    sample = {r["record_id"] for r in _read(outputs, "ROW_REVIEW_WORKLIST.csv")}
+    by_id = {r["id"]: r for r in corpus["elig_t"]}
+    flat = " ".join(guide.split())  # the guide wraps lines
+    cited = sorted(set(re.findall(r"`(t2-train-\d{5})`", guide)))
+    assert len(cited) >= 9
+    for rid in cited:
+        assert rid in by_id, rid  # a real eligible train record
+        assert rid not in sample, rid  # never a row a reviewer will judge
+        quoted = " ".join(by_id[rid]["request"].split())
+        assert quoted in flat, rid  # the quoted request is the record's own
+    assert "An AI system may not judge" in guide
+
+
+def test_rights_options_cover_every_rights_row_without_deciding(outputs):
+    options = (
+        ROOT / "docs/evidence/experiments/EXP-TR03-research-protocol/RIGHTS_DECISION_OPTIONS.md"
+    ).read_text("utf-8")
+    for row in _read(outputs, "RIGHTS_WORKLIST.csv"):
+        key = row["source_id"].split(" ")[0]
+        assert key in options or key == "external_adapted", key
+    assert "not legal advice" in options and "no decision is recorded" in options

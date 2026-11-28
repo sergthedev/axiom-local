@@ -15,7 +15,10 @@ the model environment):
 * ``plan``: the exposure schedule summary and time budget for all eligible train rows.
 * ``check-therm``: parse ``pmset -g therm`` text from standard input (run on the Mac in a no-weight
   preflight; it has been tested only against the text recorded in the TR02 run).
-* ``readiness``: which human gates are open (all closed today); exit status 1 unless all are open.
+* ``readiness``: the state of every gate (all absent today); exit 1, or 2 when every artifact is
+  consistent; never 0, because this code cannot open execution.
+* ``research-plan``: the exposure plan for exactly the rows the human ledgers keep (refuses unless
+  every ledger is complete and valid; derived from files this tool cannot authenticate).
 """
 
 from __future__ import annotations
@@ -41,10 +44,10 @@ PLAN_PATH = REPO / "data" / "axbench-tr" / "tr03-prep" / "TRAINING_PLAN.json"
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 try:  # the repository's source tree is importable when run through ``uv run`` from its root
-    from axbench_tr import export, tr03
+    from axbench_tr import export, tr03, tr03_gates
 except ModuleNotFoundError:  # pragma: no cover - plain ``python`` without the project
     sys.path.insert(0, str(REPO / "src"))
-    from axbench_tr import export, tr03
+    from axbench_tr import export, tr03, tr03_gates
 
 
 def _load_tr02() -> Any:
@@ -509,12 +512,30 @@ def window_count(updates: int, updates_per_window: int) -> int:
 # ----------------------------------------------------------------------------------- plan
 
 
-def build_plan(cfg: Mapping[str, Any] | None = None) -> dict[str, Any]:
-    """Schedule and budget for all eligible train rows (arm R exactly; arm T's upper bound)."""
+def build_plan(
+    cfg: Mapping[str, Any] | None = None,
+    train_ids: Sequence[str] | None = None,
+    validation_ids: Sequence[str] | None = None,
+) -> dict[str, Any]:
+    """Schedule and budget for all eligible train rows (arm R exactly; arm T's upper bound), or,
+    when both id lists are given, for exactly those rows (a plan derived from human ledgers)."""
     cfg = cfg or load_config()
     train, valid, per, hashes = tr03.load()
     elig_t, _ = tr03.split_eligible(train)
     elig_v, _ = tr03.split_eligible(valid)
+    filtered = train_ids is not None or validation_ids is not None
+    if filtered:
+        if train_ids is None or validation_ids is None:
+            raise ValueError("give both id lists or neither")
+        for name, want, have in (
+            ("train", train_ids, elig_t),
+            ("validation", validation_ids, elig_v),
+        ):
+            have_ids = {r["id"] for r in have}
+            if len(set(want)) != len(want) or not set(want) <= have_ids or not want:
+                raise ValueError(f"{name} ids are duplicated, empty or not eligible rows")
+        elig_t = [r for r in elig_t if r["id"] in set(train_ids)]
+        elig_v = [r for r in elig_v if r["id"] in set(validation_ids)]
     lengths = {r["id"]: int(per[r["id"]]["separate_tokens"]) for r in (*elig_t, *elig_v)}
     ids = sorted(r["id"] for r in elig_t)  # file order is irrelevant: the row set is sorted by id
     hp = cfg["hyperparameters"]
@@ -541,10 +562,31 @@ def build_plan(cfg: Mapping[str, Any] | None = None) -> dict[str, Any]:
         eval_count=len(points),
     )
     win = int(cfg["monitor"]["updates_per_window"])
+    status = (
+        "derived from human ledgers that this tool cannot authenticate; not a clearance; "
+        "nothing executed"
+        if filtered
+        else "proposal; nothing executed; applies to arm R exactly and to arm T as an upper "
+        "bound (T uses a human-approved subset of these rows)"
+    )
+    selection = (
+        {
+            "row_selection": {
+                "train_ids_sha256": hashlib.sha256(
+                    "\n".join(sorted(train_ids)).encode()
+                ).hexdigest(),
+                "validation_ids_sha256": hashlib.sha256(
+                    "\n".join(sorted(validation_ids)).encode()
+                ).hexdigest(),
+            }
+        }
+        if filtered
+        else {}
+    )
     return {
         "schema": "axbench-tr.tr03-training-plan/1",
-        "status": "proposal; nothing executed; applies to arm R exactly and to arm T as an upper "
-        "bound (T uses a human-approved subset of these rows)",
+        "status": status,
+        **selection,
         "config_sha256": sha256_file(CONFIG_PATH),
         "input_sha256": hashes,
         "rows": {"train_eligible": len(ids), "validation_eligible": len(elig_v)},
@@ -586,7 +628,11 @@ def main(argv: Iterable[str] | None = None) -> int:
     p.add_argument("--write", action="store_true", help=f"write {PLAN_PATH.name}")
     sub.add_parser("check-plan", help="the committed plan equals a fresh rebuild")
     sub.add_parser("check-therm", help="read pmset -g therm text from stdin")
-    sub.add_parser("readiness")
+    sub.add_parser("readiness", help="state of every gate; exit 1 or 2, never 0")
+    rp = sub.add_parser(
+        "research-plan", help="exposure plan for the rows the human ledgers keep (needs ledgers)"
+    )
+    rp.add_argument("--ledgers", type=Path, default=None)
     a = ap.parse_args(list(argv) if argv is not None else None)
     if a.cmd == "verify-config":
         problems = config_problems(load_config())
@@ -606,9 +652,18 @@ def main(argv: Iterable[str] | None = None) -> int:
         problems = parse_therm(sys.stdin.read())
         print(json.dumps({"problems": problems}, indent=1))
         return 1 if problems else 0
-    report = tr03.gates_report()
+    if a.cmd == "research-plan":
+        report = tr03_gates.gates_report(ledgers=a.ledgers, include_ids=True)
+        derived = report["derived_training_set"]
+        if not derived.get("ok"):
+            print(json.dumps({"ok": False, "reasons": derived["reasons"]}, indent=1))
+            return 1
+        plan = build_plan(None, derived["train_ids"], derived["validation_ids"])
+        sys.stdout.write(plan_bytes(plan).decode("utf-8"))
+        return 0
+    report = tr03_gates.gates_report()
     print(json.dumps(report, indent=1, sort_keys=True))
-    return 0 if report["research_training_open"] else 1
+    return tr03_gates.exit_code(report)
 
 
 if __name__ == "__main__":

@@ -14,15 +14,16 @@
    "needs": "every gate in PROTOCOL.md; not eligible today",
    "needs_human_gates": true,
    "purpose": "the single bounded research run whose adapter is evaluated once on the frozen independent held-out tasks",
-   "rows": "eligible train rows of human-kept templates minus rows a human marked fix, drop or serious error"
+   "rows": "rows of effective-keep templates from rights-included sources, minus rows and templates removed by the human row review, exactly as derived by `axbench_tr.tr03_gates.research_manifest`; nothing is inferred or corrected"
   },
   "resource": {
    "adapter": "discard-only; hashed; never evaluated, copied or used as initialization",
    "id": "EXP-TR03-R",
-   "needs": "separate technical clearance at an immutable commit and owner authorization",
+   "needs": "nothing is proposed; any use needs a new protocol amendment, clearance and owner authorization",
    "needs_human_gates": false,
    "purpose": "discard-only sustained-throughput, thermal and validation-overhead measurement at full corpus scale; no quality claim",
-   "rows": "all eligible train rows"
+   "rows": "all eligible train rows",
+   "status": "withdrawn from the proposal at the technical lead's instruction (PR #15 comment 7235630804): human review, not compute, is the bottleneck; not to be built, cleared or run; kept here only so the earlier plan numbers keep their meaning"
   }
  },
  "data": {

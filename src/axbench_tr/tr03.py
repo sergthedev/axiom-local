@@ -19,8 +19,9 @@ What it does:
   schema candidates). No cell for a human decision is filled; an AI judgement is never recorded
   as one.
 * ``sizing``: exact binomial sizing tables for the proposed review and evaluation sizes.
-* ``gates``: reads filled-in ledgers (if any) and reports which human gates are open. Rows whose
-  reviewer is not a human on the roster are refused. It never declares research quality.
+* ``gates`` (``tr03_gates``): validates filled-in ledgers (if any) against the frozen worklists and
+  reports each gate as absent, invalid, incomplete or consistent-but-unverified. It never opens
+  execution and never declares research quality.
 
 Everything written is a pure function of the committed inputs (sorted keys, LF endings).
 """
@@ -692,7 +693,35 @@ def sizing() -> dict[str, Any]:
 
 # ------------------------------------------------------------------------------------ worklists
 
-TEMPLATE_COLUMNS = (
+# Human-judgement blocks. Every reviewed item carries a first review, an optional independent
+# second review and an optional adjudication by a third person. The judgement fields differ by
+# ledger; the block layout is the same so that one checker (``tr03_gates``) validates both.
+TEMPLATE_JUDGMENTS = ("tr_natural", "en_natural", "gold_rule_correct", "serious_error", "decision")
+ROW_JUDGMENTS = ("request_natural", "gold_correct", "serious_error", "decision")
+
+
+def review_blocks(
+    judgments: Sequence[str],
+) -> tuple[tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
+    first = ("reviewer_id", "reviewer_type", "reviewed_on", *judgments, "notes")
+    second = (
+        "second_reviewer_id",
+        "second_reviewer_type",
+        "second_reviewed_on",
+        *(f"second_{j}" for j in judgments),
+        "second_notes",
+    )
+    adjudication = (
+        "adjudicator_id",
+        "adjudicator_type",
+        "adjudicated_on",
+        *(f"adjudicated_{j}" for j in judgments),
+        "adjudication_notes",
+    )
+    return first, second, adjudication
+
+
+TEMPLATE_IDENTITY = (
     "lineage_id",
     "frame",
     "split",
@@ -701,20 +730,10 @@ TEMPLATE_COLUMNS = (
     "template_en",
     "example_record_ids",
     "authored_by",
-    "reviewer_id",
-    "reviewer_type",
-    "tr_natural",
-    "en_natural",
-    "gold_rule_correct",
-    "serious_error",
-    "decision",
-    "notes",
-    "second_reviewer_id",
-    "second_reviewer_type",
-    "second_decision",
-    "adjudicated_decision",
+    "batch",
+    "second_review_planned",
 )
-ROW_COLUMNS = (
+ROW_IDENTITY = (
     "sample_id",
     "record_id",
     "language",
@@ -726,19 +745,13 @@ ROW_COLUMNS = (
     "request",
     "gold_readable",
     "gold_json",
+    "batch",
     "second_review_planned",
-    "reviewer_id",
-    "reviewer_type",
-    "request_natural",
-    "gold_correct",
-    "serious_error",
-    "decision",
-    "notes",
-    "second_reviewer_id",
-    "second_reviewer_type",
-    "second_decision",
-    "adjudicated_decision",
 )
+TEMPLATE_COLUMNS = tuple(
+    c for block in (TEMPLATE_IDENTITY, *review_blocks(TEMPLATE_JUDGMENTS)) for c in block
+)
+ROW_COLUMNS = tuple(c for block in (ROW_IDENTITY, *review_blocks(ROW_JUDGMENTS)) for c in block)
 RIGHTS_COLUMNS = (
     "source_id",
     "name",
@@ -825,11 +838,36 @@ def select_row_sample(
     return out
 
 
+ROW_BATCHES = {"tr": 8, "en": 2}  # about 52 rows per batch, never mixing the two languages
+TEMPLATE_BATCHES = 6  # about 20 templates per batch
+IDENTITY_SEED = REVIEW_SEED + "/batch"
+
+
+def assign_batches(keys: Sequence[str], count: int, prefix: str) -> dict[str, str]:
+    """Deterministic, seed-ranked split of ``keys`` into ``count`` near-equal batches. The batch
+    is an immutable workload label for the owner to allocate people; it carries no judgement."""
+    ranked = sorted(keys, key=lambda k: _rank(IDENTITY_SEED, k))
+    return {k: f"{prefix}{i % count + 1:02d}" for i, k in enumerate(ranked)}
+
+
+def _second_planned(key: str) -> str:
+    share = int(_rank(REVIEW_SEED + "/second", key)[:8], 16) / 0xFFFFFFFF
+    return "yes" if share < SECOND_REVIEW_FRACTION else ""
+
+
+def _blank(columns: Sequence[str], first_blank: str) -> dict[str, str]:
+    return {c: "" for c in columns[columns.index(first_blank) :]}
+
+
 def row_worklist(rows: Sequence[dict[str, Any]]) -> list[dict[str, str]]:
-    sample = select_row_sample(rows)
+    sample = sorted(select_row_sample(rows), key=lambda r: (r["language"], r["id"]))
+    batch: dict[str, str] = {}
+    for lang, n in ROW_BATCHES.items():
+        batch.update(
+            assign_batches([r["id"] for r in sample if r["language"] == lang], n, f"RW-{lang}-")
+        )
     items = []
-    for i, r in enumerate(sorted(sample, key=lambda r: (r["language"], r["id"])), 1):
-        plan_second = int(_rank(REVIEW_SEED + "/second", r["id"])[:8], 16) / 0xFFFFFFFF
+    for i, r in enumerate(sample, 1):
         items.append(
             {
                 "sample_id": f"tr03-{i:04d}",
@@ -845,8 +883,9 @@ def row_worklist(rows: Sequence[dict[str, Any]]) -> list[dict[str, str]]:
                 "request": r["request"],
                 "gold_readable": readable_gold(r),
                 "gold_json": json.dumps(r["gold"], ensure_ascii=False, sort_keys=True),
-                "second_review_planned": "yes" if plan_second < SECOND_REVIEW_FRACTION else "",
-                **{c: "" for c in ROW_COLUMNS[ROW_COLUMNS.index("reviewer_id") :]},
+                "batch": batch[r["id"]],
+                "second_review_planned": _second_planned(r["id"]),
+                **_blank(ROW_COLUMNS, "reviewer_id"),
             }
         )
     return items
@@ -856,11 +895,11 @@ def template_worklist(rows: Sequence[dict[str, Any]]) -> list[dict[str, str]]:
     by_lineage: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for r in rows:
         by_lineage[r["lineage_id"]].append(r)
+    lineages = [lin for lin in sorted(LINEAGES, key=lambda x: x.id) if by_lineage.get(lin.id)]
+    batch = assign_batches([lin.id for lin in lineages], TEMPLATE_BATCHES, "TW-")
     items = []
-    for lin in sorted(LINEAGES, key=lambda x: x.id):
-        recs = by_lineage.get(lin.id)
-        if not recs:
-            continue
+    for lin in lineages:
+        recs = by_lineage[lin.id]
         examples = sorted(recs, key=lambda r: _rank(REVIEW_SEED + "/example", r["id"]))[:2]
         items.append(
             {
@@ -872,7 +911,9 @@ def template_worklist(rows: Sequence[dict[str, Any]]) -> list[dict[str, str]]:
                 "template_en": lin.en,
                 "example_record_ids": ";".join(r["id"] for r in examples),
                 "authored_by": "ai_tool",
-                **{c: "" for c in TEMPLATE_COLUMNS[TEMPLATE_COLUMNS.index("reviewer_id") :]},
+                "batch": batch[lin.id],
+                "second_review_planned": _second_planned(lin.id),
+                **_blank(TEMPLATE_COLUMNS, "reviewer_id"),
             }
         )
     return items
@@ -955,200 +996,52 @@ def _json_bytes(obj: Any) -> bytes:
     return (json.dumps(obj, indent=1, ensure_ascii=False, sort_keys=True) + "\n").encode("utf-8")
 
 
+ROSTER_STATEMENT = (
+    "I designate each person listed as a real human being, not an AI system, script or automated "
+    "service, and I take responsibility for the independence each role requires. This file is a "
+    "record of my designation. The checking tool cannot authenticate anyone from a string."
+)
+ROSTER_ROLES = {
+    "reviewer": "first or second reviewer of templates and rows; judges gold and naturalness",
+    "adjudicator": "decides a row or template on which two reviewers differ; never one of them",
+    "author": "writes held-out evaluation tasks; native Turkish; has not seen the training data",
+    "checker": "checks a held-out task and its gold; never the author of that task",
+    "owner": "records rights decisions; the project owner",
+}
+ROSTER_PERSON_FIELDS = (
+    "id",
+    "type",
+    "roles",
+    "native_turkish",
+    "fluent_english",
+    "independent_of_corpus_authoring",
+)
 ROSTER_TEMPLATE = {
-    "schema": "axbench-tr.tr03-roster/1",
+    "schema": "axbench-tr.tr03-roster/2",
     "status": "TEMPLATE: empty. Only the owner designates people. An AI cannot be listed as human.",
     "designated_by": "",
     "designated_on": "",
-    "people": [
-        {
-            "id": "R1",
-            "type": "human",
-            "native_turkish": None,
-            "roles": ["reviewer"],
-            "note": "replace; use a code, not a name, if privacy requires",
-        }
-    ],
-    "roles": {
-        "reviewer": "judges template and row gold; at least two distinct people are needed",
-        "second_reviewer": "independent of the first reviewer of the same item",
-        "author": "writes held-out evaluation tasks; native Turkish",
-        "checker": "checks a held-out task's gold; never its author",
+    "attestation": {
+        "statement": ROSTER_STATEMENT,
+        "statement_accepted": False,
+        "attested_by": "",
+        "attested_on": "",
     },
+    "people": [],
+    "id_rule": "a short private code, 2 to 32 characters of letters, digits, '_' or '-', starting "
+    "with a letter, unique ignoring case; keep the mapping to real names outside the repository",
+    "person_entry_fields": {
+        "id": "private code",
+        "type": "must be exactly 'human'",
+        "roles": sorted(ROSTER_ROLES),
+        "native_turkish": "true or false, never left out",
+        "fluent_english": "true or false, never left out",
+        "independent_of_corpus_authoring": "true only if the person did not write the corpus "
+        "templates, this tooling or this protocol",
+    },
+    "roles": ROSTER_ROLES,
+    "dates": "ISO calendar dates, YYYY-MM-DD",
 }
-
-
-# ------------------------------------------------------------------------------------- gates
-
-
-def roster_problems(roster: dict[str, Any] | None) -> list[str]:
-    if roster is None:
-        return ["roster_missing"]
-    problems: list[str] = []
-    people = roster.get("people", [])
-    ids = [p.get("id") for p in people]
-    if len(set(ids)) != len(ids):
-        problems.append("duplicate_person_id")
-    if not roster.get("designated_by") or not roster.get("designated_on"):
-        problems.append("designation_missing")
-    humans = [p for p in people if p.get("type") == "human"]
-    reviewers = [p for p in humans if "reviewer" in p.get("roles", [])]
-    turkish_reviewers = [p for p in reviewers if p.get("native_turkish") is True]
-    if len(reviewers) < 2:
-        problems.append("fewer_than_two_human_reviewers")
-    if not turkish_reviewers:
-        problems.append("no_native_turkish_reviewer")
-    if any(p.get("type") != "human" for p in people):
-        problems.append("non_human_person_listed")
-    return problems
-
-
-def _human_ids(roster: dict[str, Any]) -> set[str]:
-    return {p["id"] for p in roster.get("people", []) if p.get("type") == "human"}
-
-
-def read_ledger(path: Path) -> list[dict[str, str]]:
-    with path.open(newline="", encoding="utf-8") as fh:
-        return list(csv.DictReader(fh))
-
-
-def _is_human_decision(row: dict[str, str], humans: set[str], prefix: str = "") -> bool:
-    return (
-        row.get(f"{prefix}reviewer_type") == "human"
-        and row.get(f"{prefix}reviewer_id", "") in humans
-    )
-
-
-def _rate(rows: Sequence[dict[str, str]], column: str, ok: Sequence[str]) -> dict[str, Any]:
-    answered = [r for r in rows if r.get(column)]
-    good = sum(r[column] in ok for r in answered)
-    out: dict[str, Any] = {"answered": len(answered), "ok": good}
-    if answered:
-        out["rate"] = round(good / len(answered), 4)
-        lo, _ = wilson(good, len(answered)) or (0.0, 0.0)
-        out["wilson_lower_95"] = round(lo, 4)
-    return out
-
-
-def row_gate_report(ledger: Sequence[dict[str, str]], roster: dict[str, Any]) -> dict[str, Any]:
-    """Proposed row-level gates. A pass supports using the reviewed rows for training only."""
-    humans = _human_ids(roster)
-    counted = [r for r in ledger if _is_human_decision(r, humans)]
-    refused = len(ledger) - len(counted)
-    strata: dict[str, list[dict[str, str]]] = defaultdict(list)
-    for r in counted:
-        strata[f"{r['language']}:{frame_class(r['frame'])}"].append(r)
-    per_stratum = {}
-    for key, rows in sorted(strata.items()):
-        per_stratum[key] = {
-            "reviewed": len(rows),
-            "gold_correct": _rate(rows, "gold_correct", ("yes",)),
-            "natural_or_fixable": _rate(rows, "request_natural", ("yes", "fixable")),
-            "serious_errors_kept": sum(
-                r.get("serious_error") == "yes" and r.get("decision") == "keep" for r in rows
-            ),
-        }
-    tr = [r for r in counted if r["language"] == "tr"]
-    gold = _rate(tr, "gold_correct", ("yes",))
-    nat = _rate(tr, "request_natural", ("yes", "fixable"))
-    # Second review: every disagreement-prone row (a no or a serious error) plus a random tenth.
-    must_second = [
-        r for r in counted if r.get("gold_correct") == "no" or r.get("serious_error") == "yes"
-    ]
-    second_done = [r for r in must_second if _is_human_decision(r, humans, "second_")]
-    planned = [r for r in counted if r.get("second_review_planned") == "yes"]
-    planned_done = [r for r in planned if _is_human_decision(r, humans, "second_")]
-    disagreements = [
-        r
-        for r in counted
-        if r.get("second_decision") and r.get("second_decision") != r.get("decision")
-    ]
-    unadjudicated = [r for r in disagreements if not r.get("adjudicated_decision")]
-    serious_kept = sum(
-        r.get("serious_error") == "yes" and r.get("decision") == "keep" for r in counted
-    )
-    gates = {
-        "G3a_turkish_gold_correct_ge_95pct": bool(gold["answered"] >= GATE_MIN_N)
-        and gold.get("rate", 0) >= GOLD_CORRECT_MIN,
-        "G3b_turkish_natural_or_fixable_ge_90pct": bool(nat["answered"] >= GATE_MIN_N)
-        and nat.get("rate", 0) >= NATURAL_OR_FIXABLE_MIN,
-        "G3c_every_turkish_stratum_has_min_n_and_95pct": bool(per_stratum)
-        and all(
-            s["reviewed"] >= GATE_MIN_N and s["gold_correct"].get("rate", 0) >= GOLD_CORRECT_MIN
-            for k, s in per_stratum.items()
-            if k.startswith("tr:")
-        )
-        and sum(k.startswith("tr:") for k in per_stratum) == len(FRAME_CLASSES),
-        "G3d_zero_serious_errors_kept": bool(counted) and serious_kept == 0,
-        "G3e_second_review_complete": bool(counted)
-        and len(second_done) == len(must_second)
-        and len(planned_done) == len(planned)
-        and not unadjudicated,
-    }
-    return {
-        "rows_in_ledger": len(ledger),
-        "rows_counted_as_human_decisions": len(counted),
-        "rows_refused_not_a_human_on_the_roster": refused,
-        "turkish_gold_correct": gold,
-        "turkish_natural_or_fixable": nat,
-        "per_stratum": per_stratum,
-        "serious_errors_kept": serious_kept,
-        "second_review": {
-            "required_for_no_or_serious": len(must_second),
-            "done": len(second_done),
-            "random_tenth_planned": len(planned),
-            "random_tenth_done": len(planned_done),
-            "disagreements_without_adjudication": len(unadjudicated),
-        },
-        "gates": gates,
-        "all_row_gates_passed": all(gates.values()),
-        "claim": "a pass supports using the reviewed rows' templates for training; it is not a "
-        "research-quality claim and not a claim about any model",
-    }
-
-
-def template_gate_report(
-    ledger: Sequence[dict[str, str]], roster: dict[str, Any], expected: Sequence[str]
-) -> dict[str, Any]:
-    humans = _human_ids(roster)
-    counted = {r["lineage_id"]: r for r in ledger if _is_human_decision(r, humans)}
-    kept = sorted(
-        lid
-        for lid, r in counted.items()
-        if r.get("decision") == "keep" and r.get("serious_error") != "yes"
-    )
-    missing = sorted(set(expected) - set(counted))
-    return {
-        "templates_expected": len(expected),
-        "templates_with_a_human_decision": len(set(counted) & set(expected)),
-        "templates_missing_a_human_decision": len(missing),
-        "templates_kept": len(set(kept) & set(expected)),
-        "kept_lineage_ids": sorted(set(kept) & set(expected)),
-        "gate_G2_every_template_has_a_human_decision": not missing and bool(expected),
-        "rule": "a template is used only if a human marked it keep without a serious error; "
-        "fix and drop remove all of its rows; nothing is relabelled automatically",
-    }
-
-
-def research_training_ids(
-    eligible_train: Sequence[dict[str, Any]],
-    kept_lineages: Iterable[str],
-    row_ledger: Sequence[dict[str, str]],
-    roster: dict[str, Any],
-) -> list[str]:
-    """Row ids a research run may use: rows of human-kept templates, minus every row a human
-    marked drop, fix or serious error in the row ledger. Sorted by id."""
-    humans = _human_ids(roster)
-    kept = set(kept_lineages)
-    removed = {
-        r["record_id"]
-        for r in row_ledger
-        if _is_human_decision(r, humans)
-        and (r.get("decision") in ("fix", "drop") or r.get("serious_error") == "yes")
-    }
-    return sorted(
-        r["id"] for r in eligible_train if r["lineage_id"] in kept and r["id"] not in removed
-    )
 
 
 # ------------------------------------------------------------------------------------ writing
@@ -1204,62 +1097,12 @@ def check_outputs(out_dir: Path = PREP_DIR, version: str = CURRENT_VERSION) -> l
     return problems
 
 
-def gates_report(prep_dir: Path = PREP_DIR) -> dict[str, Any]:
-    """Which human gates are open, from the files present in ``prep_dir/ledgers``."""
-    ledgers = prep_dir / "ledgers"
-    roster_path = ledgers / "HUMAN_ROSTER.json"
-    roster = json.loads(roster_path.read_text("utf-8")) if roster_path.exists() else None
-    problems = roster_problems(roster)
-    out: dict[str, Any] = {
-        "G1_roster_designated_by_owner": not problems,
-        "G1_problems": problems,
-    }
-    train, valid, _, _ = load()
-    elig_t, _ = split_eligible(train)
-    expected = sorted({r["lineage_id"] for r in elig_t})
-    tpath, rpath = ledgers / "TEMPLATE_REVIEW_RESULTS.csv", ledgers / "ROW_REVIEW_RESULTS.csv"
-    if roster is not None and not problems and tpath.exists():
-        out["G2_templates"] = template_gate_report(read_ledger(tpath), roster, expected)
-    else:
-        out["G2_templates"] = {"gate_G2_every_template_has_a_human_decision": False}
-    if roster is not None and not problems and rpath.exists():
-        out["G3_rows"] = row_gate_report(read_ledger(rpath), roster)
-    else:
-        out["G3_rows"] = {"all_row_gates_passed": False}
-    for gate, filename in (
-        ("G4_rights_decisions_by_owner", "RIGHTS_DECISIONS.json"),
-        ("G5_heldout_evaluation_frozen_with_author_roster", "HELDOUT_FROZEN.json"),
-        ("G6_protocol_preregistered_and_comparators_pinned", "PREREGISTRATION.json"),
-        ("G7_technical_clearance_at_immutable_commit", "CLEARANCE.json"),
-    ):
-        out[gate] = (ledgers / filename).exists()
-    out["research_training_open"] = bool(
-        out["G1_roster_designated_by_owner"]
-        and out["G2_templates"].get("gate_G2_every_template_has_a_human_decision")
-        and out["G3_rows"].get("all_row_gates_passed")
-        and all(
-            out[g]
-            for g in (
-                "G4_rights_decisions_by_owner",
-                "G5_heldout_evaluation_frozen_with_author_roster",
-                "G6_protocol_preregistered_and_comparators_pinned",
-                "G7_technical_clearance_at_immutable_commit",
-            )
-        )
-    )
-    out["note"] = (
-        "a file's presence is checked here; the content of G4 to G7 is reviewed by the technical "
-        "lead and the owner, not by this tool"
-    )
-    return out
-
-
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="axbench_tr.tr03", description=__doc__.split("\n\n")[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("all", help="write every file under data/axbench-tr/tr03-prep/")
     sub.add_parser("check", help="regenerate in memory and compare with the committed files")
-    sub.add_parser("gates", help="report which human gates are open (all closed today)")
+    sub.add_parser("gates", help="report the state of each gate; never opens execution")
     a = ap.parse_args(argv)
     if a.cmd == "all":
         print(json.dumps(write_outputs(), indent=1, sort_keys=True))
@@ -1268,9 +1111,11 @@ def main(argv: list[str] | None = None) -> int:
         print("\n".join(problems) or "committed files equal a fresh deterministic rebuild")
         return 1 if problems else 0
     else:
-        report = gates_report()
+        from . import tr03_gates  # late: tr03_gates imports this module
+
+        report = tr03_gates.gates_report()
         print(json.dumps(report, indent=1, sort_keys=True))
-        return 0 if report["research_training_open"] else 1
+        return tr03_gates.exit_code(report)
     return 0
 
 

@@ -760,3 +760,24 @@ for a comprehensive final audit of AXIOM Verify.
 - Not done, by design: no model loaded, no driver written, no score of any system, no M5 preflight (none requested), no sealed-test or
   v0.1 evaluation access beyond counting request overlaps, no human review simulated.
 
+### Revision: gate hardening and statistics (technical review PR #15 comment 7235630804; preparation only)
+
+- The review found that my first gate checker was too permissive: G4 to G7 counted as true when a file merely existed (an empty
+  JSON sufficed), row and template ledgers were not tied to the frozen worklists (blanks shrank denominators, repeated rows could
+  inflate n, the second reviewer could be the first, adjudication was incomplete), the template gate expected only train
+  lineages, and the training-id function ignored second reviews, adjudications, wrong-gold rows and rights. All confirmed by reading
+  the code; I replaced that code with `src/axbench_tr/tr03_gates.py` instead of patching it.
+- New rules: exact frozen worklists (identity cells, keys, header), owner-attested roster v2, explicit adjudication rule, language
+  competence, frozen denominators, structural parsing of G4 to G7 bound by SHA-256 to protocol, config, plan, manifest and tooling,
+  and a hard rule that the tool never reports "passed" or opens execution. `research_manifest` derives the filtered train and
+  validation lists and `training/tr03/tr03.py research-plan` the exact exposure plan, only from complete valid ledgers.
+- Protocol revised as asked: the wrong "Holm" wording is withdrawn; Bonferroni one-sided 97.5% bounds within an efficacy family and
+  a safety family on a joint paired cluster bootstrap; the +10 pp target and +2 pp noninferiority margin kept; H2 recall as
+  secondary; H3 against both comparators; S1 and S3 policies; absolute rates and D14 thresholds descriptive; cluster minima and
+  precision limits; earlier per-origin gates kept with the Turkish frame gate as an addition; sample frozen, dropped templates not
+  replaced; economic-schema track proposed; C2 optional; arm R withdrawn (config marks it so, plan regenerated).
+- Added a human review guide with real examples outside the sample (a test checks that) and per-source rights options.
+- Worklists gained columns (second-review and adjudication judgements, dates, workload batches); the selected rows are unchanged.
+  A first test run found my own mistakes (a regenerated ledger hash key with a stray suffix, tests that mutated identity columns) and
+  they were fixed; no check was weakened.
+- Still not done: no ledger, roster or decision exists; no model, driver, training, generation or scoring; no sealed-test access.

@@ -21,7 +21,7 @@
 - `uv run python -m axbench_tr.tr03 all` writes `data/axbench-tr/tr03-prep/*` (about 10 s).
 - `uv run python -m axbench_tr.tr03 check`: the committed files equal a fresh rebuild.
 - `uv run python training/tr03/tr03.py verify-config | plan --write | check-plan`.
-- `uv run python -m axbench_tr.tr03 gates` and `training/tr03/tr03.py readiness`: exit status 1, every human gate closed (expected).
+- `uv run python -m axbench_tr.tr03 gates` and `training/tr03/tr03.py readiness`: exit status 1, every gate `absent` (expected); `training/tr03/tr03.py research-plan`: exit 1, nothing derived.
 - `uv run pytest` (full suite), `uv run ruff check .`, `uv run ruff format --check .`: results in the PR description.
 - Sanitized log path: none needed; no run produced a private log. Outputs contain no absolute path.
 
@@ -38,10 +38,22 @@
 
 ## Limitations and failures
 - All templates and rows are AI-authored; no human decision exists; the worklists are empty by design and the gate checker refuses
-  AI judgements. Research training is blocked by gates G1 to G7 (`PROTOCOL.md` section 6).
+  AI-typed judgements, but cannot authenticate a person: the roster is the owner's attestation. Research training is blocked by gates G1 to G7 (`PROTOCOL.md` section 6).
 - Lexical near-duplicate counts are a proxy, not semantic deduplication; the 87 train templates limit independence (rows are not
   independent examples).
 - The thermal parser and wall-time budget are unverified on a Mac in this task; no no-weight M5 preflight was run (none requested).
-- No driver exists to run T or R; it is a separate, reviewed task if the lead wants it.
+- No driver exists to run T; arm R was withdrawn at the lead's instruction. A driver is a separate, reviewed task and is not requested.
 - A false alarm was found and fixed in the audit itself before commit: a "label conflict" count that turned out to be column-id
   numbering and unordered column lists, now compared by column name with unordered sets (0 true conflicts).
+
+## Revision after the technical review (PR #15 comment 7235630804, preparation only)
+- Hardened `tr03_gates.py` (new): exact frozen-worklist identity and hash linkage, explicit adjudication rule, roster roles and
+  attestation, G4 to G7 parsed and bound to the current protocol, config, plan, manifest and tooling hashes, derived filtered
+  train and validation lists and exposure plan, and no path that opens execution. 94 new tests include the negative cases the review
+  listed. The old file-presence checks were wrong (empty JSON counted as passed) and are gone.
+- Worklists: columns added for second-review and adjudication judgements, dates, adjudicator, workload `batch`; the selected 518
+  rows and the 122 templates are unchanged (record ids equal the first revision), so the sample is not redrawn.
+- Protocol: inference method, families and levels, H2 recall as secondary, H3 noninferiority against both comparators, S1 and S3
+  policies, precision and cluster limits, retained per-origin gates with the Turkish frame gate as an addition, dropped-template rule,
+  economic-schema track proposal, optional C2, arm R withdrawn.
+- Added `REVIEW_GUIDE.md` and `RIGHTS_DECISION_OPTIONS.md`. No ledger, decision or held-out task exists or was committed.

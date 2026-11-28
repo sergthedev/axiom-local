@@ -28,7 +28,7 @@
   "status": "extrapolated from EXP-TR02 rates (2.5 minute smoke); not measured at this scale",
   "validation_overhead_fraction_of_training_nominal": 0.2879
  },
- "config_sha256": "f8aa9f33ab826d0ea72cc979ff2e6dfa01d1fb46978ed943e272950e84195f59",
+ "config_sha256": "e58a5fe219f3c5744155997fc1f3b2583fdca3008b765f7d13dc42187ab7f559",
  "diagnostic_validation": {
   "ids_sha256": "83f107d4ab9f1d22147d6c28e1c2903aa76fc7a95f65f5725b424b3cf4bc8338",
   "rows": 200,

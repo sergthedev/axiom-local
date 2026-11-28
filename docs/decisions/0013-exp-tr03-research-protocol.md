@@ -20,7 +20,8 @@ are unresolved for most external data; and PR #11's pilot figures are explorator
   human tasks.
 - **More epochs, or checkpoint selection by validation loss or accuracy.** Rejected: no measurement supports it and selection on the
   data that decides the result invites leakage.
-- **A research-arm and a separate discard-only resource arm (chosen)** instead of one run that pretends to be both.
+- **A research arm and a separate discard-only resource arm.** Chosen at first, then withdrawn on the lead's instruction; only the
+  research arm remains proposed.
 - **Build the training driver now.** Deferred: it loads weights and needs its own review; human review is the bottleneck.
 
 ## Decision
@@ -29,18 +30,23 @@ are unresolved for most external data; and PR #11's pilot figures are explorator
    rights-documented for resource use, not cleared and not reviewed.
 2. Research training (T) needs gates G1 to G7 (named human roster, human template and row review with the predeclared thresholds,
    owner rights decisions, a frozen independent human-authored evaluation set, a pinned protocol and comparators, immutable
-   clearance). The tooling counts only decisions by roster-listed humans and refuses AI rows.
+   clearance). The tooling counts only decisions by roster-listed humans and refuses AI rows. It reports each gate as absent,
+   invalid, incomplete, criteria not met or consistent-but-unverified, never as passed, and never opens execution: a program
+   cannot authenticate people or verify rights, so opening execution is the lead's and owner's clearance on GitHub.
 3. One run, one epoch, TR02 hyperparameters and pins unchanged so that TR02's measured rates apply, fresh base, `drop_remainder`
    partial-batch rule, fixed diagnostic evaluation and snapshot points, final adapter only, no selection, no retry, fail-closed monitor
    with sustained-throughput, wall-time, memory, swap, AC and thermal rules.
-4. A discard-only resource arm (R) is described and justified separately; its adapter is never evaluated or used.
+4. The discard-only resource arm (R) first proposed here was withdrawn at the technical lead's instruction (comment 7235630804):
+   the bottleneck is human review, not compute.
 5. New logic lives in new files (`src/axbench_tr/tr03.py`, `training/tr03/`); no frozen experiment or harness file is edited.
 
 ## Tradeoffs and consequences
 
 The plan is conservative: it will not run until humans exist, so progress depends on the owner's designation of reviewers. It
 reuses TR02's measured configuration (no tuning), which makes the budget credible but forbids exploring other settings. The
-research data remain 87 templates, so even a pass supports only a narrow claim.
+research data remain 87 templates, so even a pass supports only a narrow claim. Inference uses Bonferroni-adjusted one-sided bounds on
+a joint paired cluster bootstrap; the checker may be strict enough to block a legitimate roster until the owner amends a proposed
+requirement, which is the intended direction of error.
 
 ## Unvalidated assumptions
 
