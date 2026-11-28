@@ -1,0 +1,11 @@
+{"baseline": true, "kind": "os", "on_battery": false, "pressure_level": 1, "rss_gb": null, "swap_used_gb": 0.00244, "t": 1795825869.0544}
+{"kind": "os", "on_battery": false, "pressure_level": 1, "rss_gb": 0.000770048, "swap_used_gb": 0.00244, "t": 1795825869.066321}
+{"kind": "os", "on_battery": false, "pressure_level": 1, "rss_gb": 2.125185024, "swap_used_gb": 0.00244, "t": 1795825874.084208}
+{"commit": "ed4e75b7668c5541c0912a066b57cce88c938713", "kind": "start", "phase": "reload", "preflight": {"after_complete_sha256": "acbb808238bbb5736cf7296701fa69f8cd3838e4d1ed5440b8ed81687162be38", "commit": "ed4e75b7668c5541c0912a066b57cce88c938713", "export_manifest_sha256": "f99d236d0681852e3ba0c57959f6ace89a41fabc4c96bd4fd7bf5ee9ba033b92", "model_revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e", "offline": true, "per_example_sha256": "8dde1cfb9b20c2e9ce095cd0161e860a406c6b8ffad1f24e75d1bbfba175c95d", "phase": "reload", "versions": {"mlx": "0.32.4", "mlx-lm": "0.32.2", "python": "3.12"}}}
+{"kind": "load", "peak_memory_gb": 3.441150296, "seconds": 0.6214808750009979}
+{"adapter_sha256": "e3777eede1a715a2bf336cf087f268ab999fbb01e48747341c93acb58affed7d", "config_sha256": "f3aaa07b59a559189cbcd2af64f90ade46560fc6787eb21a63c9e54282ce3541", "finite": true, "kind": "adapter_check", "shapes_ok": true, "tensors": 32}
+{"kind": "os", "on_battery": false, "pressure_level": 1, "rss_gb": 2.124611584, "swap_used_gb": 0.00244, "t": 1795825879.108293}
+{"kind": "os", "on_battery": false, "pressure_level": 1, "rss_gb": 0.0, "swap_used_gb": 0.00244, "t": 1795825884.128511}
+{"kind": "val", "peak_memory_gb": 4.187825004, "rows": 40, "seconds": 7.778944458004844, "tag": "reload", "updates_done": 100, "val_loss": 0.19035692512989044}
+{"abs_diff": 2.9802322387695312e-08, "kind": "reload", "reference_loss": 0.19035695493221283, "reload_loss": 0.19035692512989044, "tolerance": 0.0001}
+{"kind": "done", "peak_memory_gb": 4.187825004}

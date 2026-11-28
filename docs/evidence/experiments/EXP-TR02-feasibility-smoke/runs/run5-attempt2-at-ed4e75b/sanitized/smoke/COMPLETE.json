@@ -1,0 +1,52 @@
+{
+ "adapter_config_sha256": "f3aaa07b59a559189cbcd2af64f90ade46560fc6787eb21a63c9e54282ce3541",
+ "adapter_sha256": "e3777eede1a715a2bf336cf087f268ab999fbb01e48747341c93acb58affed7d",
+ "files": {
+  "out/adapter_config.json": "f3aaa07b59a559189cbcd2af64f90ade46560fc6787eb21a63c9e54282ce3541",
+  "out/adapters.safetensors": "e3777eede1a715a2bf336cf087f268ab999fbb01e48747341c93acb58affed7d",
+  "out/events.jsonl": "80edcafa50b6c7b5a7862f3d0a3e87992f39a1a61617f52dc5e5fe1a4d8d9d84",
+  "supervisor/child.log": "7dc2471a83ddb22403d0f725db3e455807ad920be29c8afef58e5c6b77509a49",
+  "supervisor/supervisor.jsonl": "965c09746dde28c91d0853dd84985de153338e7019cb0b337b772fd65d061a56"
+ },
+ "phase": "smoke",
+ "preflight": {
+  "after_complete_sha256": "6c5cc83de2fca9b14db24133f2f4ffebc3a450234aec32bd89d4aeeae6a806b3",
+  "commit": "ed4e75b7668c5541c0912a066b57cce88c938713",
+  "export_manifest_sha256": "f99d236d0681852e3ba0c57959f6ace89a41fabc4c96bd4fd7bf5ee9ba033b92",
+  "model_revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "offline": true,
+  "per_example_sha256": "8dde1cfb9b20c2e9ce095cd0161e860a406c6b8ffad1f24e75d1bbfba175c95d",
+  "phase": "smoke",
+  "versions": {
+   "mlx": "0.32.4",
+   "mlx-lm": "0.32.2",
+   "python": "3.12"
+  }
+ },
+ "reference_val_loss": 0.19035695493221283,
+ "schema": "axbench-tr.exp-tr02-complete/1",
+ "window_rates_full_tokens_per_s": [
+  1678.5648191026748,
+  1668.3632103372345,
+  1679.1147389704042,
+  1692.3081721892227,
+  1679.7067631584518,
+  1669.363573950816,
+  1669.7280698230434,
+  1651.4232088888903,
+  1643.3200269721817,
+  1642.141658725972
+ ],
+ "window_rates_padded_tokens_per_s": [
+  1734.7225668699855,
+  1717.9440544885147,
+  1733.6909475680188,
+  1734.403059115707,
+  1725.609429638975,
+  1725.9192143505275,
+  1722.6294237029708,
+  1693.2902761564958,
+  1687.9994282421965,
+  1696.3959017400787
+ ]
+}

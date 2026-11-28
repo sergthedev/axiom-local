@@ -1,0 +1,16 @@
+# EXP-TR02 new attempt (protocol revision 5): authorization record
+
+- Code commit (execution): ed4e75b7668c5541c0912a066b57cce88c938713 (sergthedev/axiom-local, branch feat/axbench-tr-v02-dataset-acquisition). Not the evidence head be7dbfc, not main.
+- Authorization as relayed to the implementing session by the coordinator session: the owner tapped "Yes, run it once" on the decision card "Do you authorize one new EXP-TR02 probe, smoke and reload run at ed4e75b on your M5?" in the project thread at 2026-11-27T21:13:16Z (described as platform-verified by the coordinator). The technical lead's GitHub comment 7228236693 on PR #13 (2026-11-27T21:12:44Z) sets the conditions. The device session cannot read the project thread or GitHub for this record, so the decision and the comment are recorded as relayed.
+- Scope: exactly one probe, then smoke, then reload sequence, each once, at the commit above. This is not a resume or retry of the earlier attempt at d5f6cd5 (recorded failed attempt, authorization exhausted).
+- Not authorized: retry, resume, sweep, checkpoint selection, generation, accuracy scoring, sealed-test access or contamination command, merge, push, PR change, code or config change.
+- If any command is denied by local permission control: stop, report, ask the owner for interactive approval of the same command; never bypass.
+- Local interactive approvals and denials (UTC), appended below as they happen:
+- Recorded at: 2026-11-27T21:14:39Z, before any model load.
+- 2026-11-27T21:16:32Z: local permission control (auto-mode classifier) DENIED the first 'supervise --phase probe' command (reason shown: Destructive or Unwanted Actions). Nothing ran: no phase started, no model loaded. Sampler stopped. Reported to the coordinator; waiting for the owner's interactive approval of the same command.
+- 2026-11-28T00:25:07Z: owner message in the project thread (platform-attested): resume the pending authorized sequence at ed4e75b7668c5541c0912a066b57cce88c938713, confirm the earlier denial never launched the probe, recheck prerequisites, request interactive approval for the identical command, execute probe, smoke, reload once each under every stop rule; no automatic retry, no config change, no full training, no merge, no sealed test. Recheck started 2026-11-28T00:25:40Z.
+- 2026-11-28T00:25:57Z: resume authorized (owner message 2026-11-28T00:25:07Z, relayed and confirmed by the coordinator at 00:25:36Z; the owner's earlier 'No, stop here' of 21:22:34Z is replaced by it, as relayed). The 21:16:32Z denial record above is kept unchanged.
+- 2026-11-28T00:26:44Z: P1 (supervise --phase probe) launched once after the owner's interactive approval; no denial this time. Completed 00:27:27Z, exit 0, COMPLETE.json valid.
+- 2026-11-28T00:28:05Z: P2 (supervise --phase smoke --after probe) launched once; completed 00:30:33Z, exit 0, COMPLETE.json valid. No denial.
+- 2026-11-28T00:31:0xZ: P3 (supervise --phase reload --after smoke) launched once; completed, exit 0, COMPLETE.json valid. No denial.
+- No retry, resume, sweep, generation, accuracy scoring, sealed-test access, contamination command, merge or push was made by the device session. Evidence collection afterwards from a separate evidence checkout.

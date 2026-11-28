@@ -1,0 +1,49 @@
+== recheck date -u
+Sat Nov 28 00:25:40 UTC 2026
+== did the earlier denied command launch anything? (must be: no probe dirs, no supervisor dirs)
+probe absent
+smoke absent
+reload absent
+probe.supervisor absent
+smoke.supervisor absent
+reload.supervisor absent
+== probe-phase os sampler file lines (4 expected, all python_mlx_rss_kb=0)
+       4
+   4 python_mlx_rss_kb=0
+== ps for mlx/python/train/exp010
+(end ps)
+== pmset
+Now drawing from 'AC Power'
+ -InternalBattery-0 (id=22937699)	95%; AC attached; not charging present: true
+== pressure / swap
+1
+vm.swapusage: total = 1024.00M  used = 2.44M  free = 1021.56M  (encrypted)
+== thermal
+Note: No thermal warning level has been recorded
+Note: No performance warning level has been recorded
+Note: No CPU power status has been recorded
+== worktree
+ed4e75b7668c5541c0912a066b57cce88c938713
+detached
+[]
+7d31d916621523281d2226de9802671ddc63b05aad219388064a275abaf5301c
+== export hashes
+f99d236d0681852e3ba0c57959f6ace89a41fabc4c96bd4fd7bf5ee9ba033b92 EXPORT_MANIFEST.json
+2646499c1583414e50f39fd59f25a1e6d7a519eb39a826892b51edcf26412197 ROW_IDS.json
+455099332e82f8803c9d15ef0ac5d1ae397faeb44b73265a40e49f34adf2ce2c smoke/train.jsonl
+6b56ff796a83ea712969db29d2444fb5945a16e666662518ede747ef6a8c543a smoke/valid.jsonl
+787296439900464802bf4600daaead77194d1c1a4897b9c32f418101e79d4f76 peak_probe/train.jsonl
+787296439900464802bf4600daaead77194d1c1a4897b9c32f418101e79d4f76 peak_probe/valid.jsonl
+== free disk
+/dev/disk3s5   460Gi   170Gi   264Gi    40%    1.5M  2.8G    0%   /System/Volumes/Data
+== B) nothing launched by the 21:16:32Z denial (2026-11-28T00:25:57Z)
+probe absent
+smoke absent
+reload absent
+probe.supervisor absent
+smoke.supervisor absent
+reload.supervisor absent
+-- .safetensors / COMPLETE / STOP files anywhere under WORK:
+       0
+-- mlx/python/supervise processes:
+       0

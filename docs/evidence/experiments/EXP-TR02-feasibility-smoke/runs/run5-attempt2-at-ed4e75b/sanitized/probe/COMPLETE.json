@@ -1,0 +1,30 @@
+{
+ "adapter_config_sha256": "f3aaa07b59a559189cbcd2af64f90ade46560fc6787eb21a63c9e54282ce3541",
+ "adapter_sha256": "34f77bddf94eb013a3bfa007d22338ebd9f2b67abd6b4531633310a5d3d570a5",
+ "files": {
+  "out/adapter_config.json": "f3aaa07b59a559189cbcd2af64f90ade46560fc6787eb21a63c9e54282ce3541",
+  "out/adapters.safetensors": "34f77bddf94eb013a3bfa007d22338ebd9f2b67abd6b4531633310a5d3d570a5",
+  "out/events.jsonl": "63b6417fba132a8a64da489846ebfc32ad566b1fcca0375b8ddbd578369cad87",
+  "supervisor/child.log": "336000fc1942d818eadef57cfef21353504b43b242de2c158468a66663cda655",
+  "supervisor/supervisor.jsonl": "f88df7b05cb30debcdabd624eedadb819519b89be810188076a903bd66c49b7b"
+ },
+ "phase": "probe",
+ "preflight": {
+  "after_complete_sha256": {},
+  "commit": "ed4e75b7668c5541c0912a066b57cce88c938713",
+  "export_manifest_sha256": "f99d236d0681852e3ba0c57959f6ace89a41fabc4c96bd4fd7bf5ee9ba033b92",
+  "model_revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+  "offline": true,
+  "per_example_sha256": "8dde1cfb9b20c2e9ce095cd0161e860a406c6b8ffad1f24e75d1bbfba175c95d",
+  "phase": "probe",
+  "versions": {
+   "mlx": "0.32.4",
+   "mlx-lm": "0.32.2",
+   "python": "3.12"
+  }
+ },
+ "reference_val_loss": 1.2109427452087402,
+ "schema": "axbench-tr.exp-tr02-complete/1",
+ "window_rates_full_tokens_per_s": [],
+ "window_rates_padded_tokens_per_s": []
+}
